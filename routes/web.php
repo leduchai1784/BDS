@@ -201,20 +201,18 @@ function getMockProperties() {
 }
 
 // Route trang chủ
-Route::get('/', function () {
-    return view('home', ['properties' => getMockProperties()]);
+Route::get('/', function (\App\Services\PropertyService $propertyService) {
+    return view('home', [
+        'properties' => $propertyService->getFeaturedProperties(6),
+        'latestProperties' => $propertyService->getLatestProperties(3),
+        'stats' => $propertyService->getSystemStats()
+    ]);
 });
 
 // Route trang chi tiết bất động sản
-Route::get('/property/{id}', function ($id) {
-    $properties = getMockProperties();
-    
-    // Tìm kiếm bất động sản theo ID
-    $property = collect($properties)->firstWhere('id', (int)$id);
-    
-    if (!$property) {
-        abort(404, 'Không tìm thấy bất động sản yêu cầu.');
-    }
+Route::get('/property/{id}', function ($id, \App\Services\PropertyService $propertyService) {
+    $property = $propertyService->getPropertyById((int)$id);
+    $properties = $propertyService->getAllProperties();
     
     return view('detail', [
         'property' => $property,
@@ -223,7 +221,7 @@ Route::get('/property/{id}', function ($id) {
 });
 
 // Route trang hồ sơ thành viên
-Route::get('/profile', function () {
+Route::get('/profile', function (\App\Services\PropertyService $propertyService) {
     return view('profile', [
         'user' => [
             'name' => 'Nguyễn Văn Hùng',
@@ -233,18 +231,20 @@ Route::get('/profile', function () {
             'role' => 'Chủ nhà / Môi giới',
             'join_date' => '06/01/2015'
         ],
-        'properties' => getMockProperties()
+        'properties' => $propertyService->getFeaturedProperties(3) // mock favorite properties from API
     ]);
 });
 
 // Route trang danh sách bất động sản
-Route::get('/listings', function () {
-    return view('listings', ['properties' => getMockProperties()]);
+Route::get('/listings', function (\Illuminate\Http\Request $request, \App\Services\PropertyService $propertyService) {
+    $properties = $propertyService->search($request->all(), 6);
+    return view('listings', ['properties' => $properties]);
 });
 
 // Route trang bản đồ tìm kiếm
-Route::get('/map', function () {
-    return view('map', ['properties' => getMockProperties()]);
+Route::get('/map', function (\Illuminate\Http\Request $request, \App\Services\PropertyService $propertyService) {
+    $properties = $propertyService->searchAllForMap($request->all());
+    return view('map', ['properties' => $properties]);
 });
 
 // Route trang đăng nhập (Giai đoạn 6)
