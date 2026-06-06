@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,10 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS scheme when running in production (Vercel)
-        if ($this->app->environment('production') || env('APP_ENV') === 'production') {
-            URL::forceScheme('https');
+        //
+         if (env('APP_ENV') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }
 }
-
