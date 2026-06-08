@@ -19,37 +19,38 @@
             </div>
 
             <!-- Desktop Navigation Menu -->
-            <nav class="hidden md:flex space-x-8 items-center">
-                <a href="/" :class="isScrolled ? 'text-primary' : 'text-white'" class="font-medium text-sm hover:text-primary transition duration-150">Trang chủ</a>
-                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-medium text-sm transition duration-150">Cho thuê Căn hộ</a>
-                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-medium text-sm transition duration-150">Cho thuê Nhà riêng</a>
-                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-medium text-sm transition duration-150">Thuê Văn phòng</a>
-                <a href="/map" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-medium text-sm transition duration-150">Bản đồ</a>
-                <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-medium text-sm transition duration-150">Tin tức</a>
-                <a href="#contact" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-medium text-sm transition duration-150">Liên hệ</a>
+            <nav class="hidden md:flex space-x-3 lg:space-x-5 items-center">
+                <a href="/" :class="isScrolled ? 'text-primary' : 'text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Trang chủ</a>
+                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Thuê Căn hộ</a>
+                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Thuê Nhà riêng</a>
+                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Thuê Văn phòng</a>
+                <a href="/map" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
+                <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
+                <a href="#contact" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Liên hệ</a>
             </nav>
 
             <!-- Actions (Profile & CTA) -->
-            <div class="hidden md:flex items-center space-x-4" x-data="{ userDropdownOpen: false }">
+            @auth
+            <div class="hidden md:flex items-center space-x-2.5 lg:space-x-4" x-data="{ userDropdownOpen: false }">
                 <!-- User Account Dropdown -->
-                <div class="relative">
+                <div class="relative flex-shrink-0">
                     <button 
                         @click="userDropdownOpen = !userDropdownOpen"
                         @click.away="userDropdownOpen = false"
                         type="button"
-                        class="flex items-center space-x-2.5 focus:outline-none cursor-pointer py-1.5 px-3 rounded-xl transition"
+                        class="flex items-center space-x-1.5 lg:space-x-2.5 focus:outline-none cursor-pointer py-1.5 px-2.5 rounded-xl transition whitespace-nowrap flex-shrink-0"
                         :class="isScrolled ? 'hover:bg-slate-50' : 'hover:bg-white/10'"
                     >
                         <img 
-                            src="https://ui-avatars.com/api/?name=Nguyen+Van+Hung&background=0077bb&color=fff" 
-                            alt="User avatar" 
+                            src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0077bb&color=fff' }}" 
+                            alt="{{ Auth::user()->name }}" 
                             class="w-7 h-7 rounded-full object-cover border border-primary/20 shadow-sm"
                         >
                         <span 
-                            class="text-xs font-bold transition-colors duration-250"
+                            class="text-sm font-black transition-colors duration-250 whitespace-nowrap"
                             :class="isScrolled ? 'text-slate-700' : 'text-slate-100'"
                         >
-                            Nguyễn Hùng
+                            {{ Auth::user()->name }}
                         </span>
                         <i 
                             class="fa-solid fa-chevron-down text-[10px] transition duration-200"
@@ -79,16 +80,40 @@
                             <i class="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin đăng đã lưu
                         </a>
                         <div class="border-t border-slate-100 my-1"></div>
-                        <a href="/" class="block px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition">
+                        <a 
+                            href="{{ route('logout') }}" 
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                            class="block px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition"
+                        >
                             <i class="fa-solid fa-right-from-bracket mr-2 text-sm text-red-400"></i> Đăng xuất
                         </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                            @csrf
+                        </form>
                     </div>
                 </div>
 
-                <a href="#" class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200">
-                    <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
+                <a href="#" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0">
+                    <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
                 </a>
             </div>
+            @endauth
+
+            @guest
+            <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5">
+                <a href="{{ route('login') }}" :class="isScrolled ? 'text-slate-700 hover:text-primary' : 'text-slate-100 hover:text-white'" class="font-bold text-sm transition duration-150 whitespace-nowrap">Đăng nhập</a>
+                <a 
+                    href="{{ route('register') }}" 
+                    :class="isScrolled ? 'border-primary text-primary hover:bg-primary hover:text-white' : 'border-white text-white hover:bg-white hover:text-slate-900'"
+                    class="inline-flex items-center justify-center px-4 py-2 border-2 text-xs lg:text-sm font-bold rounded-xl transition duration-200 whitespace-nowrap"
+                >
+                    Đăng ký
+                </a>
+                <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap">
+                    <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
+                </a>
+            </div>
+            @endguest
 
             <!-- Hamburger Button for Mobile -->
             <div class="flex items-center md:hidden">
@@ -126,22 +151,40 @@
     >
         <div class="px-4 pt-2 pb-6 space-y-2">
             <a href="/" class="block px-3 py-3 rounded-xl text-base font-semibold text-primary bg-primary-light">Trang chủ</a>
-            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Cho thuê Căn hộ</a>
-            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Cho thuê Nhà riêng</a>
+            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Thuê Căn hộ</a>
+            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Thuê Nhà riêng</a>
             <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Thuê Văn phòng</a>
             <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Bản đồ</a>
             <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
             <a href="#contact" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Liên hệ</a>
             
             <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
+                @auth
                 <a href="/profile" class="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
                     <img 
-                        src="https://ui-avatars.com/api/?name=Nguyen+Van+Hung&background=0077bb&color=fff" 
-                        alt="User avatar" 
+                        src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0077bb&color=fff' }}" 
+                        alt="{{ Auth::user()->name }}" 
                         class="w-6 h-6 rounded-full object-cover border border-primary/20"
                     >
-                    <span>Trang cá nhân của Hùng</span>
+                    <span>Trang cá nhân của {{ Auth::user()->name }}</span>
                 </a>
+                <a 
+                    href="{{ route('logout') }}" 
+                    onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"
+                    class="block px-3 py-3 rounded-xl text-base font-semibold text-red-500 hover:bg-red-50 transition"
+                >
+                    <i class="fa-solid fa-right-from-bracket mr-2"></i> Đăng xuất
+                </a>
+                <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
+                @endauth
+
+                @guest
+                <a href="{{ route('login') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng nhập</a>
+                <a href="{{ route('register') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng ký</a>
+                @endguest
+
                 <a href="#" class="inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition">
                     <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
                 </a>

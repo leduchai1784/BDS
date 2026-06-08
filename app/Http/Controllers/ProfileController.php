@@ -39,7 +39,7 @@ class ProfileController extends Controller
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'avatar' => $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0077bb&color=fff',
-                'role' => $user->role === 'agent' ? 'Chủ nhà / Môi giới' : 'Thành viên thuê nhà',
+                'role' => $user->role === 'owner' ? 'Chủ nhà / Môi giới' : ($user->role === 'admin' ? 'Quản trị viên' : 'Thành viên thuê nhà'),
                 'join_date' => $user->created_at ? $user->created_at->format('d/m/Y') : '06/01/2015'
             ],
             'properties' => $favorites, // Injecting wishlist properties

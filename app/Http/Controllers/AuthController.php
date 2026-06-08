@@ -71,13 +71,13 @@ class AuthController extends Controller
             'password.confirmed' => 'Xác nhận mật khẩu không trùng khớp.'
         ]);
 
-        // Create new user (defaults to 'renter' role)
+        // Create new user (defaults to 'tenant' role)
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => 'renter',
+            'role' => 'tenant',
         ]);
 
         Auth::login($user);

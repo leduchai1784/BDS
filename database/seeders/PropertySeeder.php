@@ -14,22 +14,22 @@ class PropertySeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Default Renter User (Nguyen Van Hung)
+        // 1. Create Default Tenant User (Nguyen Van Hung)
         $renter = User::create([
             'name' => 'Nguyễn Văn Hùng',
             'email' => 'hung.nguyen@nks.com.vn',
             'phone' => '0977758217',
             'password' => Hash::make('password'),
-            'role' => 'renter',
+            'role' => 'tenant',
         ]);
 
-        // 2. Create Agents
+        // 2. Create Owners (formerly Agents)
         $agentDang = User::create([
             'name' => 'Nguyễn Hải Đăng',
             'email' => 'dang.nguyen@nks.com.vn',
             'phone' => '0987654321',
             'password' => Hash::make('password'),
-            'role' => 'agent',
+            'role' => 'owner',
             'avatar' => 'https://ui-avatars.com/api/?name=Nguyen+Hai+Dang&background=0077bb&color=fff'
         ]);
 
@@ -38,7 +38,7 @@ class PropertySeeder extends Seeder
             'email' => 'tuyet.tran@nks.com.vn',
             'phone' => '0912345678',
             'password' => Hash::make('password'),
-            'role' => 'agent',
+            'role' => 'owner',
             'avatar' => 'https://ui-avatars.com/api/?name=Tran+Thi+Tuyet&background=0077bb&color=fff'
         ]);
 
@@ -47,7 +47,7 @@ class PropertySeeder extends Seeder
             'email' => 'long.le@nks.com.vn',
             'phone' => '0909123456',
             'password' => Hash::make('password'),
-            'role' => 'agent',
+            'role' => 'owner',
             'avatar' => 'https://ui-avatars.com/api/?name=Le+Hoang+Long&background=0077bb&color=fff'
         ]);
 
@@ -56,7 +56,7 @@ class PropertySeeder extends Seeder
             'email' => 'tuan.pham@nks.com.vn',
             'phone' => '0888777999',
             'password' => Hash::make('password'),
-            'role' => 'agent',
+            'role' => 'owner',
             'avatar' => 'https://ui-avatars.com/api/?name=Pham+Minh+Tuan&background=0077bb&color=fff'
         ]);
 
@@ -65,7 +65,7 @@ class PropertySeeder extends Seeder
             'email' => 'mai.hoang@nks.com.vn',
             'phone' => '0977888999',
             'password' => Hash::make('password'),
-            'role' => 'agent',
+            'role' => 'owner',
             'avatar' => 'https://ui-avatars.com/api/?name=Hoang+Thanh+Mai&background=0077bb&color=fff'
         ]);
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('role')->default('renter'); // renter, agent, admin
+            $table->string('role')->default('tenant'); // tenant, owner, admin
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

@@ -41,7 +41,8 @@
             </div>
 
             <!-- Login Form -->
-            <form action="/" method="GET" class="space-y-4">
+            <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                @csrf
                 <!-- Input Email -->
                 <div class="space-y-1">
                     <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ Email</label>
@@ -52,13 +53,17 @@
                             name="email" 
                             required 
                             placeholder="email@example.com"
+                            value="{{ old('email') }}"
                             class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                         >
                     </div>
+                    @error('email')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
                 </div>
-
+ 
                 <!-- Input Password -->
-                <div class="space-y-1">
+                <div class="space-y-1" x-data="{ show: false }">
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 px-1">Mật khẩu</label>
                         <a href="#" class="text-[10px] font-bold text-primary hover:underline">Quên mật khẩu?</a>
@@ -66,23 +71,33 @@
                     <div class="relative">
                         <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input 
-                            type="password" 
+                            :type="show ? 'text' : 'password'" 
                             name="password" 
                             required 
                             placeholder="Nhập mật khẩu..."
-                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                         >
+                        <button 
+                            type="button" 
+                            @click="show = !show"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition focus:outline-none cursor-pointer"
+                        >
+                            <i :class="show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="text-xs"></i>
+                        </button>
                     </div>
+                    @error('password')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
                 </div>
-
+ 
                 <!-- Remember Me & Submit -->
                 <div class="flex items-center justify-between pt-1">
                     <label class="inline-flex items-center cursor-pointer select-none">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded text-primary focus:ring-primary border-slate-200 cursor-pointer">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded text-primary focus:ring-primary border-slate-200 cursor-pointer" {{ old('remember') ? 'checked' : '' }}>
                         <span class="ml-2 text-xs font-bold text-slate-500">Ghi nhớ đăng nhập</span>
                     </label>
                 </div>
-
+ 
                 <button 
                     type="submit" 
                     class="w-full bg-primary hover:bg-primary-hover text-white text-xs font-bold py-3.5 px-4 rounded-xl shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 mt-2"

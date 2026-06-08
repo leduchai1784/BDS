@@ -41,7 +41,8 @@
             </div>
 
             <!-- Register Form -->
-            <form action="/login" method="GET" class="space-y-3.5">
+            <form action="{{ route('register') }}" method="POST" class="space-y-3.5">
+                @csrf
                 <!-- Input Full Name -->
                 <div class="space-y-1">
                     <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên</label>
@@ -52,9 +53,13 @@
                             name="name" 
                             required 
                             placeholder="Nhập họ và tên..."
+                            value="{{ old('name') }}"
                             class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                         >
                     </div>
+                    @error('name')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Input Email -->
@@ -67,9 +72,13 @@
                             name="email" 
                             required 
                             placeholder="email@example.com"
+                            value="{{ old('email') }}"
                             class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                         >
                     </div>
+                    @error('email')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Input Phone -->
@@ -82,37 +91,58 @@
                             name="phone" 
                             required 
                             placeholder="09xx.xxx.xxx"
+                            value="{{ old('phone') }}"
                             class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                         >
                     </div>
+                    @error('phone')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Input Password & Confirm -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div class="space-y-1">
+                    <div class="space-y-1" x-data="{ show: false }">
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu</label>
                         <div class="relative">
                             <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                             <input 
-                                type="password" 
+                                :type="show ? 'text' : 'password'" 
                                 name="password" 
                                 required 
-                                placeholder="Tối thiểu 6 ký tự..."
-                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                placeholder="Tối thiểu 8 ký tự..."
+                                class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                             >
+                            <button 
+                                type="button" 
+                                @click="show = !show"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition focus:outline-none cursor-pointer"
+                            >
+                                <i :class="show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="text-xs"></i>
+                            </button>
                         </div>
+                        @error('password')
+                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="space-y-1">
+                    <div class="space-y-1" x-data="{ showConfirm: false }">
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Xác nhận mật khẩu</label>
                         <div class="relative">
                             <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                             <input 
-                                type="password" 
+                                :type="showConfirm ? 'text' : 'password'" 
                                 name="password_confirmation" 
                                 required 
                                 placeholder="Nhập lại mật khẩu..."
-                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                             >
+                            <button 
+                                type="button" 
+                                @click="showConfirm = !showConfirm"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition focus:outline-none cursor-pointer"
+                            >
+                                <i :class="showConfirm ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="text-xs"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

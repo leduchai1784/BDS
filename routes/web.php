@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 
 // Dữ liệu giả lập (Mock Data) dùng chung cho trang chủ, trang chi tiết và trang bản đồ
-function getMockProperties() {
-    return [
+if (!function_exists('getMockProperties')) {
+    function getMockProperties() {
+        return [
         [
             'id' => 1,
             'title' => 'Căn hộ chung cư Vinhomes Ocean Park Studio Full Nội Thất',
@@ -199,6 +202,7 @@ function getMockProperties() {
         ],
     ];
 }
+}
 
 // Route trang chủ
 Route::get('/', function (\App\Services\PropertyService $propertyService) {
@@ -220,19 +224,12 @@ Route::get('/property/{id}', function ($id, \App\Services\PropertyService $prope
     ]);
 });
 
-// Route trang hồ sơ thành viên
-Route::get('/profile', function (\App\Services\PropertyService $propertyService) {
-    return view('profile', [
-        'user' => [
-            'name' => 'Nguyễn Văn Hùng',
-            'email' => 'hung.nguyen@nks.com.vn',
-            'phone' => '0977758217',
-            'avatar' => 'https://ui-avatars.com/api/?name=Nguyen+Van+Hung&background=0077bb&color=fff',
-            'role' => 'Chủ nhà / Môi giới',
-            'join_date' => '06/01/2015'
-        ],
-        'properties' => $propertyService->getFeaturedProperties(3) // mock favorite properties from API
-    ]);
+// Route trang hồ sơ thành viên (Bảo vệ bởi middleware auth)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 // Route trang danh sách bất động sản
@@ -247,12 +244,10 @@ Route::get('/map', function (\Illuminate\Http\Request $request, \App\Services\Pr
     return view('map', ['properties' => $properties]);
 });
 
-// Route trang đăng nhập (Giai đoạn 6)
-Route::get('/login', function () {
-    return view('auth.login');
-});
-
-// Route trang đăng ký (Giai đoạn 6)
-Route::get('/register', function () {
-    return view('auth.register');
+// Route đăng nhập / đăng ký (Bảo vệ bởi middleware guest)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });

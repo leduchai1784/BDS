@@ -6,9 +6,14 @@
 <!-- Dashboard Wrapper with AlpineJS -->
 <div 
     x-data="{ 
-        activeTab: 'profile', 
-        showToast: false, 
-        toastMessage: '',
+        activeTab: '{{ session('success') || $errors->has('current_password') || $errors->has('new_password') ? ($errors->any() ? 'password' : 'profile') : 'profile' }}', 
+        showToast: {{ session('success') ? 'true' : 'false' }}, 
+        toastMessage: '{{ session('success') }}',
+        init() {
+            if (this.showToast) {
+                setTimeout(() => this.showToast = false, 3500);
+            }
+        },
         triggerToast(msg) {
             this.toastMessage = msg;
             this.showToast = true;
@@ -111,12 +116,16 @@
                     </button>
 
                     <a 
-                        href="/" 
+                        href="{{ route('logout') }}" 
+                        onclick="event.preventDefault(); document.getElementById('logout-form-profile').submit();"
                         class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-red-500 hover:bg-red-50 hover:text-red-600 border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
                     >
                         <i class="fa-solid fa-right-from-bracket text-sm"></i>
                         <span>Đăng xuất</span>
                     </a>
+                    <form id="logout-form-profile" action="{{ route('logout') }}" method="POST" class="hidden">
+                        @csrf
+                    </form>
                 </nav>
             </div>
 
@@ -167,32 +176,23 @@
                         </div>
                     </div>
 
-                    <!-- Profile Form (AlpineJS managed) -->
+                    <!-- Profile Form (Real POST form) -->
                     <form 
+                        action="{{ route('profile.update') }}"
+                        method="POST"
+                        enctype="multipart/form-data"
                         x-data="{ 
-                            name: '{{ $user['name'] }}',
-                            phone: '{{ $user['phone'] }}',
-                            role: '{{ $user['role'] }}',
                             avatarUrl: '{{ $user['avatar'] }}',
-                            isSaving: false,
-                            
                             previewAvatar(event) {
                                 const file = event.target.files[0];
                                 if (file) {
                                     this.avatarUrl = URL.createObjectURL(file);
                                 }
-                            },
-                            saveProfile() {
-                                this.isSaving = true;
-                                setTimeout(() => {
-                                    this.isSaving = false;
-                                    triggerToast('Thông tin tài khoản đã được cập nhật thành công!');
-                                }, 1200);
                             }
                         }"
-                        @submit.prevent="saveProfile"
                         class="space-y-6 pt-2"
                     >
+                        @csrf
                         <!-- Avatar change row -->
                         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-slate-100">
                             <div class="w-20 h-20 rounded-full overflow-hidden border border-slate-200 shadow-sm bg-slate-150 flex-shrink-0">
@@ -203,8 +203,11 @@
                                 <p class="text-[10px] text-slate-400 max-w-sm leading-normal">Định dạng JPG, PNG tối đa 2MB. Tải ảnh lên và bấm Lưu thay đổi bên dưới.</p>
                                 <label class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 hover:border-primary text-xs font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
                                     <i class="fa-solid fa-camera mr-2 text-xs"></i> Chọn ảnh đại diện
-                                    <input type="file" accept="image/*" @change="previewAvatar($event)" class="hidden">
+                                    <input type="file" name="avatar" accept="image/*" @change="previewAvatar($event)" class="hidden">
                                 </label>
+                                @error('avatar')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -217,11 +220,15 @@
                                     <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <input 
                                         type="text" 
-                                        x-model="name"
+                                        name="name"
+                                        value="{{ old('name', $user['name']) }}"
                                         required
                                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                     >
                                 </div>
+                                @error('name')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- SĐT -->
@@ -231,16 +238,19 @@
                                     <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <input 
                                         type="tel" 
-                                        x-model="phone"
-                                        required
+                                        name="phone"
+                                        value="{{ old('phone', $user['phone']) }}"
                                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                     >
                                 </div>
+                                @error('phone')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            <!-- Email (Readonly) -->
+                            <!-- Email -->
                             <div class="space-y-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 px-1 flex justify-between items-center">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1 flex justify-between items-center">
                                     <span>Địa chỉ Email</span>
                                     <span class="text-[9px] text-amber-500 normal-case font-bold"><i class="fa-solid fa-lock mr-1"></i> Email đăng nhập</span>
                                 </label>
@@ -248,11 +258,15 @@
                                     <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <input 
                                         type="email" 
-                                        value="{{ $user['email'] }}"
-                                        disabled
-                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-100 text-slate-400 border border-slate-200 rounded-xl text-xs outline-none cursor-not-allowed"
+                                        name="email"
+                                        value="{{ old('email', $user['email']) }}"
+                                        required
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                     >
                                 </div>
+                                @error('email')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- Vai trò -->
@@ -261,11 +275,12 @@
                                 <div class="relative">
                                     <i class="fa-solid fa-users-gear absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <select 
-                                        x-model="role"
-                                        class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                                        name="role"
+                                        disabled
+                                        class="w-full pl-10 pr-8 py-2.5 bg-slate-100 text-slate-400 border border-slate-200 rounded-xl text-xs font-semibold outline-none appearance-none cursor-not-allowed transition"
                                     >
-                                        <option value="Chủ nhà / Môi giới">Chủ nhà / Môi giới</option>
-                                        <option value="Khách thuê nhà">Khách thuê nhà</option>
+                                        <option value="Chủ nhà / Môi giới" {{ $user['role'] == 'Chủ nhà / Môi giới' ? 'selected' : '' }}>Chủ nhà / Môi giới</option>
+                                        <option value="Thành viên thuê nhà" {{ $user['role'] == 'Thành viên thuê nhà' ? 'selected' : '' }}>Thành viên thuê nhà</option>
                                     </select>
                                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                                 </div>
@@ -276,14 +291,9 @@
                         <div class="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
                             <button 
                                 type="submit" 
-                                :disabled="isSaving"
                                 class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
                             >
-                                <svg x-show="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" x-cloak>
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                <span x-text="isSaving ? 'Đang lưu...' : 'Lưu thay đổi'">Lưu thay đổi</span>
+                                <span>Lưu thay đổi</span>
                             </button>
                         </div>
                     </form>
@@ -375,29 +385,11 @@
                     </div>
 
                     <form 
-                        x-data="{ 
-                            oldPassword: '', 
-                            newPassword: '', 
-                            confirmPassword: '', 
-                            isSaving: false,
-                            submitPassword() {
-                                if (this.newPassword !== this.confirmPassword) {
-                                    alert('Xác nhận mật khẩu mới không trùng khớp!');
-                                    return;
-                                }
-                                this.isSaving = true;
-                                setTimeout(() => {
-                                    this.isSaving = false;
-                                    this.oldPassword = '';
-                                    this.newPassword = '';
-                                    this.confirmPassword = '';
-                                    triggerToast('Mật khẩu tài khoản đã được thay đổi thành công!');
-                                }, 1200);
-                            }
-                        }"
-                        @submit.prevent="submitPassword"
+                        action="{{ route('profile.password') }}"
+                        method="POST"
                         class="max-w-md space-y-4"
                     >
+                        @csrf
                         <!-- Old Password -->
                         <div class="space-y-1">
                             <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu hiện tại</label>
@@ -405,12 +397,15 @@
                                 <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="password" 
-                                    x-model="oldPassword"
+                                    name="current_password"
                                     required
                                     placeholder="Nhập mật khẩu hiện tại..."
                                     class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                 >
                             </div>
+                            @error('current_password')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- New Password -->
@@ -420,12 +415,15 @@
                                 <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="password" 
-                                    x-model="newPassword"
+                                    name="new_password"
                                     required
-                                    placeholder="Tối thiểu 6 ký tự..."
+                                    placeholder="Tối thiểu 8 ký tự..."
                                     class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                 >
                             </div>
+                            @error('new_password')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Confirm Password -->
@@ -435,7 +433,7 @@
                                 <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="password" 
-                                    x-model="confirmPassword"
+                                    name="new_password_confirmation"
                                     required
                                     placeholder="Nhập lại mật khẩu mới..."
                                     class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
@@ -447,14 +445,9 @@
                         <div class="pt-4 flex justify-end">
                             <button 
                                 type="submit" 
-                                :disabled="isSaving"
                                 class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
                             >
-                                <svg x-show="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" x-cloak>
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                <span x-text="isSaving ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'">Cập nhật mật khẩu</span>
+                                <span>Cập nhật mật khẩu</span>
                             </button>
                         </div>
                     </form>
