@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Quản Lý Thành Viên | BSD Rental')
+@section('title', 'Dashboard Quản Lý Thành Viên | BDS Rental')
 
 @section('content')
 <!-- Dashboard Wrapper with AlpineJS -->

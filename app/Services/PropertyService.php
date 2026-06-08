@@ -179,7 +179,7 @@ class PropertyService
     protected function transformItem(array $item): array
     {
         $id = isset($item['id']) ? (int)$item['id'] : rand(100, 999);
-        $title = isset($item['title']) ? $item['title'] : 'Bất động sản BSD Rental';
+        $title = isset($item['title']) ? $item['title'] : 'Bất động sản BDS Rental';
         
         // Parse geolocation (lat,lng string)
         $lat = 10.7822; // Default to HCMC center
@@ -331,9 +331,9 @@ class PropertyService
         $images = array_unique($images);
         
         // Agent mapping
-        $agentName = 'Môi giới BSD';
+        $agentName = 'Môi giới BDS';
         $agentPhone = '0977.758.217';
-        $agentAvatar = 'https://ui-avatars.com/api/?name=BSD&background=0077bb&color=fff';
+        $agentAvatar = 'https://ui-avatars.com/api/?name=BDS&background=0077bb&color=fff';
         
         if (!empty($item['sale']) && is_array($item['sale'])) {
             $agentName = isset($item['sale']['name']) ? $item['sale']['name'] : $agentName;

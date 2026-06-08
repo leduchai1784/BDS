@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Danh Sách Bất Động Sản Cho Thuê Giá Tốt | BSD Rental')
+@section('title', 'Danh Sách Bất Động Sản Cho Thuê Giá Tốt | BDS Rental')
 
 @section('content')
 <div class="bg-slate-50 pt-28 pb-16 min-h-screen" x-data="{ mobileFiltersOpen: false }">

@@ -4,7 +4,7 @@
     $hideFooter = true;
 @endphp
 
-@section('title', 'Bản Đồ Bất Động Sản Cho Thuê | BSD Rental')
+@section('title', 'Bản Đồ Bất Động Sản Cho Thuê | BDS Rental')
 
 @section('content')
 <!-- MapLibre GL JS CSS -->
@@ -95,7 +95,7 @@
 
             <!-- Stats Label -->
             <div class="mt-3 flex items-center justify-between text-left">
-                <span class="text-[11px] font-semibold text-slate-400">BSD Rental Hà Nội</span>
+                <span class="text-[11px] font-semibold text-slate-400">BDS Rental Hà Nội</span>
                 <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg">
                     Tìm thấy <span class="text-primary font-black" x-text="filteredPropertiesCount()"></span> tin đăng
                 </span>
@@ -182,7 +182,7 @@
             <div class="flex items-center justify-between">
                 <span class="text-xs font-black text-slate-800 flex items-center gap-1.5">
                     <i class="fa-solid fa-map-location-dot text-primary"></i>
-                    <span>BSD Rental Bản đồ</span>
+                    <span>BDS Rental Bản đồ</span>
                 </span>
                 <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
                     Tìm thấy <span class="text-primary font-black" x-text="filteredPropertiesCount()"></span> căn

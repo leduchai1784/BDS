@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $property['title'] . ' | BSD Rental')
+@section('title', $property['title'] . ' | BDS Rental')
 @section('meta_description', Str::limit(strip_tags(str_replace('\n', ' ', $property['description'])), 150))
 
 @section('content')

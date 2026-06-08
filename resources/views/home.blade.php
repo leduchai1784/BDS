@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tìm Kiếm Bất Động Sản Cho Thuê Nhanh Chóng | BSD Rental')
+@section('title', 'Tìm Kiếm Bất Động Sản Cho Thuê Nhanh Chóng | BDS Rental')
 
 @section('content')
     <!-- Hero Banner Component (Tích hợp Thanh tìm kiếm) -->
@@ -256,7 +256,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-800 mb-3">Tin đăng được xác thực</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">
-                        Mọi tin đăng trên BSD Rental đều được kiểm duyệt chặt chẽ, đảm bảo thông tin hình ảnh, vị trí và giá thuê chính xác tuyệt đối.
+                        Mọi tin đăng trên BDS Rental đều được kiểm duyệt chặt chẽ, đảm bảo thông tin hình ảnh, vị trí và giá thuê chính xác tuyệt đối.
                     </p>
                 </div>
 

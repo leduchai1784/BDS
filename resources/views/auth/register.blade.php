@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng Ký Thành Viên Mới | BSD Rental')
+@section('title', 'Đăng Ký Thành Viên Mới | BDS Rental')
 
 @section('content')
 <div class="bg-slate-50 pt-24 min-h-[90vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -17,7 +17,7 @@
             
             <div class="absolute bottom-10 left-10 right-10 text-left text-white z-10 space-y-3">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-primary/20 backdrop-blur-md text-cyan-300 border border-primary/20">
-                    BSD Rental
+                    BDS Rental
                 </span>
                 <h2 class="text-2xl font-black leading-snug">Gia nhập cộng đồng cho thuê nhà lớn nhất Việt Nam</h2>
                 <p class="text-xs text-slate-300 font-medium">Bắt đầu đăng tin miễn phí hoặc lưu lại những ngôi nhà bạn quan tâm một cách dễ dàng.</p>
@@ -33,7 +33,7 @@
                         <i class="fa-solid fa-house-chimney text-sm"></i>
                     </div>
                     <span class="font-bold text-lg tracking-tight text-slate-800">
-                        BSD<span class="text-primary">Rental</span>
+                        BDS<span class="text-primary">Rental</span>
                     </span>
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 leading-tight">Đăng ký thành viên mới</h3>

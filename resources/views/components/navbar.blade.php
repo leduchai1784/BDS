@@ -13,7 +13,7 @@
                         <i class="fa-solid fa-house-chimney text-lg"></i>
                     </div>
                     <span :class="isScrolled ? 'text-slate-900' : 'text-white'" class="font-bold text-2xl tracking-tight transition-colors duration-300">
-                        BSD<span class="text-primary">Rental</span>
+                        BDS<span class="text-primary">Rental</span>
                     </span>
                 </a>
             </div>

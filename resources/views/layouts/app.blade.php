@@ -10,7 +10,7 @@
     <meta name="description" content="@yield('meta_description', 'Kênh tìm kiếm phòng trọ, căn hộ chung cư, nhà nguyên căn, mặt bằng kinh doanh cho thuê uy tín, cập nhật liên tục với bộ lọc giá, diện tích thông minh.')">
     <meta name="keywords" content="cho thuê nhà, thuê căn hộ, thuê phòng trọ, thuê mặt bằng, tìm nhà đất, bất động sản">
     <meta name="robots" content="index, follow">
-    <meta name="author" content="BSD Rental">
+    <meta name="author" content="BDS Rental">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">

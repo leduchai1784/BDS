@@ -8,11 +8,11 @@
                         <i class="fa-solid fa-house-chimney text-lg"></i>
                     </div>
                     <span class="font-bold text-2xl tracking-tight text-white">
-                        BSD<span class="text-primary">Rental</span>
+                        BDS<span class="text-primary">Rental</span>
                     </span>
                 </a>
                 <p class="text-sm text-slate-400 leading-relaxed max-w-sm">
-                    BSD Rental là kênh thông tin bất động sản cho thuê trực thuộc Công ty TNHH Giải pháp Công nghệ Tri Thức Mới. Giúp kết nối nhanh chóng, an toàn giữa người thuê và chủ nhà.
+                    BDS Rental là kênh thông tin bất động sản cho thuê trực thuộc Công ty TNHH Giải pháp Công nghệ Tri Thức Mới. Giúp kết nối nhanh chóng, an toàn giữa người thuê và chủ nhà.
                 </p>
                 <div class="flex space-x-3.5">
                     <a href="#" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-primary hover:text-white flex items-center justify-center text-sm transition duration-200">
@@ -82,7 +82,7 @@
         <!-- Bottom Copyright -->
         <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
             <div class="text-left space-y-1">
-                <p class="font-bold text-slate-350">&copy; {{ date('Y') }} BSD Rental - Thương hiệu thuộc Công ty TNHH Giải pháp Công nghệ Tri Thức Mới.</p>
+                <p class="font-bold text-slate-350">&copy; {{ date('Y') }} BDS Rental - Thương hiệu thuộc Công ty TNHH Giải pháp Công nghệ Tri Thức Mới.</p>
                 <p class="text-[11px] leading-relaxed text-slate-500">
                     <strong>Tên tiếng Anh:</strong> New Knowledge Technology Solution Ltd. Company<br>
                     <strong>Địa chỉ:</strong> 222 Lê Văn Sỹ, Phường 14, Quận 3, TP. Hồ Chí Minh<br>
