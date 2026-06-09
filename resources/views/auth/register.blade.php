@@ -100,6 +100,30 @@
                     @enderror
                 </div>
 
+                <!-- Choose Role -->
+                <div class="space-y-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 px-1">Loại tài khoản</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl cursor-pointer transition select-none">
+                            <div class="flex items-center space-x-2.5">
+                                <i class="fa-solid fa-house-user text-xs text-slate-500"></i>
+                                <span class="text-xs font-bold text-slate-700">Người thuê</span>
+                            </div>
+                            <input type="radio" name="role" value="tenant" {{ old('role', 'tenant') === 'tenant' ? 'checked' : '' }} class="w-4 h-4 text-primary focus:ring-primary border-slate-200 cursor-pointer">
+                        </label>
+                        <label class="flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl cursor-pointer transition select-none">
+                            <div class="flex items-center space-x-2.5">
+                                <i class="fa-solid fa-house-chimney-user text-xs text-slate-500"></i>
+                                <span class="text-xs font-bold text-slate-700">Chủ nhà</span>
+                            </div>
+                            <input type="radio" name="role" value="owner" {{ old('role') === 'owner' ? 'checked' : '' }} class="w-4 h-4 text-primary focus:ring-primary border-slate-200 cursor-pointer">
+                        </label>
+                    </div>
+                    @error('role')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Input Password & Confirm -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div class="space-y-1" x-data="{ show: false }">

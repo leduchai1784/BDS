@@ -115,6 +115,16 @@
                         <span>Đổi mật khẩu</span>
                     </button>
 
+                    @if(Auth::user()->role === 'admin')
+                    <a 
+                        href="{{ route('admin.dashboard') }}" 
+                        class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                    >
+                        <i class="fa-solid fa-shield-halved text-sm"></i>
+                        <span>Trang quản trị (Admin)</span>
+                    </a>
+                    @endif
+
                     <a 
                         href="{{ route('logout') }}" 
                         onclick="event.preventDefault(); document.getElementById('logout-form-profile').submit();"

@@ -26,11 +26,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     'is_vip', 
     'is_new', 
     'agent_id', 
+    'category_id',
+    'status',
+    'views',
     'description'
 ])]
 class Property extends Model
 {
     use HasFactory;
+
+    /**
+     * Get the category of the property.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     /**
      * Get the agent who posted this property.

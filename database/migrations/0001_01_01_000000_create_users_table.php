@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
             $table->enum('role', ['admin', 'owner', 'tenant'])->default('tenant');
+            $table->string('status')->default('active'); // active, locked
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

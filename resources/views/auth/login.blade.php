@@ -40,6 +40,16 @@
                 <p class="text-xs text-slate-400 mt-1 font-semibold">Đăng nhập tài khoản của bạn để tiếp tục sử dụng dịch vụ.</p>
             </div>
 
+            @if (session('success'))
+                <div class="mb-6 p-4 bg-emerald-50/70 border-l-4 border-emerald-500 rounded-2xl text-emerald-700 text-xs font-bold flex items-start space-x-3 shadow-sm border border-emerald-100">
+                    <i class="fa-solid fa-circle-check text-base text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <p class="font-black text-emerald-800">Thành công</p>
+                        <p class="text-[11px] font-semibold text-emerald-700/95 mt-0.5">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Login Form -->
             <form action="{{ route('login') }}" method="POST" class="space-y-4">
                 @csrf

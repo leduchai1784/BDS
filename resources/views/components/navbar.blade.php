@@ -5,7 +5,7 @@
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full"
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between">
+        <div class="w-full flex items-center justify-between gap-4">
             <!-- Logo -->
             <div class="flex-shrink-0 flex items-center">
                 <a href="/" class="flex items-center space-x-2">
@@ -70,6 +70,11 @@
                         class="absolute right-0 mt-2.5 w-48 rounded-2xl bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
                         x-cloak
                     >
+                        @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-b border-slate-50">
+                            <i class="fa-solid fa-shield-halved mr-2 text-sm text-slate-400"></i> Trang quản trị
+                        </a>
+                        @endif
                         <a href="/profile" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
                         </a>
@@ -160,6 +165,12 @@
             
             <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
                 @auth
+                @if(Auth::user()->role === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
+                    <i class="fa-solid fa-shield-halved text-slate-400 text-lg w-6 text-center"></i>
+                    <span>Trang quản trị (Admin)</span>
+                </a>
+                @endif
                 <a href="/profile" class="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
                     <img 
                         src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0077bb&color=fff' }}" 

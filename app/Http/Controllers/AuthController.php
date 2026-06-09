@@ -34,8 +34,19 @@ class AuthController extends Controller
         $remember = $request->has('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            if (Auth::user()->status === 'locked') {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+                ])->onlyInput('email');
+            }
             $request->session()->regenerate();
-            return redirect()->intended('/profile');
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -60,29 +71,30 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'nullable|string|max:20',
+            'role' => 'required|string|in:tenant,owner',
             'password' => 'required|string|min:8|confirmed',
         ], [
             'name.required' => 'Vui lòng nhập họ tên.',
             'email.required' => 'Vui lòng nhập email.',
             'email.email' => 'Định dạng email không hợp lệ.',
             'email.unique' => 'Email này đã được sử dụng.',
+            'role.required' => 'Vui lòng chọn loại tài khoản.',
+            'role.in' => 'Loại tài khoản không hợp lệ.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
             'password.min' => 'Mật khẩu phải có độ dài tối thiểu 8 ký tự.',
             'password.confirmed' => 'Xác nhận mật khẩu không trùng khớp.'
         ]);
 
-        // Create new user (defaults to 'tenant' role)
+        // Create new user with selected role
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => 'tenant',
+            'role' => $request->role,
         ]);
 
-        Auth::login($user);
-
-        return redirect('/profile')->with('success', 'Đăng ký tài khoản thành công!');
+        return redirect()->route('login')->with('success', 'Đăng ký tài khoản thành công! Vui lòng đăng nhập.');
     }
 
     /**

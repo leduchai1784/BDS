@@ -31,6 +31,9 @@ return new class extends Migration
             $table->string('legal')->nullable(); // Legal documents details
             $table->boolean('is_vip')->default(false);
             $table->boolean('is_new')->default(true);
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
+            $table->string('status')->default('pending'); // pending, approved, hidden, rejected
+            $table->unsignedInteger('views')->default(0);
             $table->foreignId('agent_id')->constrained('users')->onDelete('cascade');
             $table->text('description');
             $table->timestamps();

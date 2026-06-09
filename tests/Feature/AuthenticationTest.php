@@ -40,7 +40,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/profile');
+        $response->assertRedirect('/');
         $this->assertAuthenticatedAs($user);
     }
 
@@ -87,16 +87,18 @@ class AuthenticationTest extends TestCase
             'name' => 'New User',
             'email' => $email,
             'phone' => '0912345678',
+            'role' => 'tenant',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect('/profile');
+        $response->assertRedirect('/login');
         $this->assertDatabaseHas('users', [
             'email' => $email,
             'name' => 'New User',
+            'role' => 'tenant',
         ]);
-        $this->assertAuthenticated();
+        $this->assertGuest();
     }
 
     /**

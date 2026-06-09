@@ -232,6 +232,33 @@ Route::middleware('auth')->group(function () {
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
+// Route dành cho Admin (Bảo vệ bởi auth và admin middleware)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Quản lý người dùng
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+    Route::post('/users/{id}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+    
+    // Quản lý tin đăng
+    Route::get('/properties', [\App\Http\Controllers\Admin\PropertyController::class, 'index'])->name('properties.index');
+    Route::get('/properties/{id}', [\App\Http\Controllers\Admin\PropertyController::class, 'show'])->name('properties.show');
+    Route::post('/properties/{id}/status', [\App\Http\Controllers\Admin\PropertyController::class, 'updateStatus'])->name('properties.status');
+    Route::delete('/properties/{id}', [\App\Http\Controllers\Admin\PropertyController::class, 'destroy'])->name('properties.destroy');
+    
+    // Quản lý lịch hẹn
+    Route::get('/appointments', [\App\Http\Controllers\Admin\AppointmentController::class, 'index'])->name('appointments.index');
+    Route::post('/appointments/{id}/cancel', [\App\Http\Controllers\Admin\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    
+    // Quản lý danh mục (CRUD)
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+    
+    // Báo cáo thống kê
+    Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports');
+});
+
 // Route trang danh sách bất động sản
 Route::get('/listings', function (\Illuminate\Http\Request $request, \App\Services\PropertyService $propertyService) {
     $properties = $propertyService->search($request->all(), 6);
