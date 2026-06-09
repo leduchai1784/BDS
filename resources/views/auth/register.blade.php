@@ -101,24 +101,77 @@
                 </div>
 
                 <!-- Choose Role -->
-                <div class="space-y-1">
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 px-1">Loại tài khoản</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <label class="flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl cursor-pointer transition select-none">
-                            <div class="flex items-center space-x-2.5">
-                                <i class="fa-solid fa-house-user text-xs text-slate-500"></i>
-                                <span class="text-xs font-bold text-slate-700">Người thuê</span>
-                            </div>
-                            <input type="radio" name="role" value="tenant" {{ old('role', 'tenant') === 'tenant' ? 'checked' : '' }} class="w-4 h-4 text-primary focus:ring-primary border-slate-200 cursor-pointer">
-                        </label>
-                        <label class="flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl cursor-pointer transition select-none">
-                            <div class="flex items-center space-x-2.5">
-                                <i class="fa-solid fa-house-chimney-user text-xs text-slate-500"></i>
-                                <span class="text-xs font-bold text-slate-700">Chủ nhà</span>
-                            </div>
-                            <input type="radio" name="role" value="owner" {{ old('role') === 'owner' ? 'checked' : '' }} class="w-4 h-4 text-primary focus:ring-primary border-slate-200 cursor-pointer">
-                        </label>
+                <div class="space-y-1" x-data="{ 
+                    open: false, 
+                    role: '{{ old('role', 'tenant') }}',
+                    get label() {
+                        return this.role === 'owner' ? 'Chủ nhà' : 'Khách mua / thuê';
+                    },
+                    get icon() {
+                        return this.role === 'owner' ? 'fa-solid fa-house-chimney-user' : 'fa-solid fa-user-tag';
+                    }
+                }">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại tài khoản</label>
+                    <input type="hidden" name="role" :value="role">
+                    
+                    <div class="relative">
+                        <!-- Absolute Icon sibling to button -->
+                        <i :class="icon" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors duration-200 pointer-events-none z-10"></i>
+
+                        <!-- Select Trigger Button -->
+                        <button 
+                            type="button"
+                            @click="open = !open"
+                            @click.away="open = false"
+                            class="w-full flex items-center justify-between pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition text-left cursor-pointer select-none"
+                            :class="open ? 'border-primary bg-white shadow-sm ring-1 ring-primary/10' : ''"
+                        >
+                            <span class="text-slate-700" x-text="label"></span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition duration-200" :class="open ? 'rotate-180 text-primary' : ''"></i>
+                        </button>
+
+                        <!-- Custom Dropdown Menu -->
+                        <div 
+                            x-show="open"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute left-0 right-0 mt-2 rounded-2xl overflow-hidden bg-white border border-slate-150/70 shadow-xl py-1.5 z-50 text-left"
+                            x-cloak
+                        >
+                            <!-- Option 1: Tenant -->
+                            <button 
+                                type="button"
+                                @click="role = 'tenant'; open = false;"
+                                class="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer text-left"
+                                :class="role === 'tenant' ? 'text-primary bg-primary-light/30' : 'text-slate-700'"
+                            >
+                                <span class="flex items-center space-x-2.5">
+                                    <i class="fa-solid fa-user-tag text-slate-400 text-xs w-4"></i>
+                                    <span>Khách mua / thuê</span>
+                                </span>
+                                <i x-show="role === 'tenant'" class="fa-solid fa-check text-[10px] text-primary"></i>
+                            </button>
+
+                            <!-- Option 2: Owner -->
+                            <button 
+                                type="button"
+                                @click="role = 'owner'; open = false;"
+                                class="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer text-left"
+                                :class="role === 'owner' ? 'text-primary bg-primary-light/30' : 'text-slate-700'"
+                            >
+                                <span class="flex items-center space-x-2.5">
+                                    <i class="fa-solid fa-house-chimney-user text-slate-400 text-xs w-4"></i>
+                                    <span>Chủ nhà</span>
+                                </span>
+                                <i x-show="role === 'owner'" class="fa-solid fa-check text-[10px] text-primary"></i>
+                            </button>
+                        </div>
                     </div>
+
                     @error('role')
                         <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                     @enderror

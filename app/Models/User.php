@@ -42,6 +42,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the viewing appointments booked for this owner's properties.
+     */
+    public function ownerAppointments()
+    {
+        return $this->hasManyThrough(Appointment::class, Property::class, 'agent_id', 'property_id');
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

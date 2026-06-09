@@ -31,20 +31,76 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $favorites = $this->wishlistService->getUserFavorites($user->id);
-        $appointments = $this->appointmentService->getUserAppointments($user->id);
+        
+        // Check user role
+        if ($user->role === 'owner') {
+            // Owner stats
+            $totalProperties = $user->properties()->count();
+            $totalViews = $user->properties()->sum('views');
+            $totalAppointments = $user->ownerAppointments()->count();
+            
+            // Owner lists
+            $myProperties = $user->properties()->latest()->get();
+            $ownerAppointments = $user->ownerAppointments()
+                ->with(['property', 'user'])
+                ->latest()
+                ->get();
 
-        return view('profile', [
-            'user' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'avatar' => $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0077bb&color=fff',
-                'role' => $user->role === 'owner' ? 'Chủ nhà / Môi giới' : ($user->role === 'admin' ? 'Quản trị viên' : 'Thành viên thuê nhà'),
-                'join_date' => $user->created_at ? $user->created_at->format('d/m/Y') : '06/01/2015'
-            ],
-            'properties' => $favorites, // Injecting wishlist properties
-            'appointments' => $appointments // Injecting appointment list
-        ]);
+            // Load categories and edit target property
+            $categories = \App\Models\Category::all();
+            $editProperty = null;
+            if (request('tab') === 'edit_property' && request('property_id')) {
+                $editProperty = \App\Models\Property::find(request('property_id'));
+                if ($editProperty) {
+                    abort_if($editProperty->agent_id !== $user->id, 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
+                }
+            }
+                
+            return view('profile', [
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'avatar' => $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0077bb&color=fff',
+                    'role' => 'Chủ nhà / Môi giới',
+                    'join_date' => $user->created_at ? $user->created_at->format('d/m/Y') : '06/01/2015'
+                ],
+                'stats' => [
+                    'total_properties' => $totalProperties,
+                    'total_views' => $totalViews,
+                    'total_appointments' => $totalAppointments,
+                ],
+                'myProperties' => $myProperties,
+                'ownerAppointments' => $ownerAppointments,
+                'properties' => $favorites, // keep favorites just in case
+                'appointments' => [],
+                'categories' => $categories,
+                'property' => $editProperty
+            ]);
+        } else {
+            // Tenant stats
+            $totalFavorites = $favorites->count();
+            $tenantAppointments = $this->appointmentService->getUserAppointments($user->id);
+            $totalAppointments = $tenantAppointments->count();
+            
+            return view('profile', [
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'avatar' => $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0077bb&color=fff',
+                    'role' => $user->role === 'admin' ? 'Quản trị viên' : 'Thành viên thuê nhà',
+                    'join_date' => $user->created_at ? $user->created_at->format('d/m/Y') : '06/01/2015'
+                ],
+                'stats' => [
+                    'total_properties' => 0,
+                    'total_favorites' => $totalFavorites,
+                    'total_appointments' => $totalAppointments,
+                ],
+                'properties' => $favorites,
+                'appointments' => $tenantAppointments
+            ]);
+        }
     }
 
     /**

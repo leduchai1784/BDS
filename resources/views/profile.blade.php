@@ -6,7 +6,7 @@
 <!-- Dashboard Wrapper with AlpineJS -->
 <div 
     x-data="{ 
-        activeTab: '{{ session('success') || $errors->has('current_password') || $errors->has('new_password') ? ($errors->any() ? 'password' : 'profile') : 'profile' }}', 
+        activeTab: '{{ request('tab') ?? (session('success') || $errors->has('current_password') || $errors->has('new_password') ? ($errors->any() ? 'password' : 'profile') : 'profile') }}', 
         showToast: {{ session('success') ? 'true' : 'false' }}, 
         toastMessage: '{{ session('success') }}',
         init() {
@@ -44,99 +44,158 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <!-- Breadcrumbs -->
         <nav class="flex text-xs font-semibold text-slate-500 mb-6 space-x-2" aria-label="Breadcrumb">
             <a href="/" class="hover:text-primary transition">Trang chủ</a>
             <span>/</span>
             <span class="text-slate-800">Dashboard thành viên</span>
         </nav>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-6 lg:pt-0">
             
             <!-- LEFT COLUMN: Dashboard Sidebar Navigation (3/12 cols) -->
-            <div class="lg:col-span-3 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden text-left">
-                <!-- User Summary Header -->
-                <div class="p-6 text-center border-b border-slate-100 bg-slate-50/50">
-                    <div class="relative w-20 h-20 mx-auto mb-3.5">
-                        <img 
-                            src="{{ $user['avatar'] }}" 
-                            alt="{{ $user['name'] }}" 
-                            class="w-full h-full rounded-full object-cover border-2 border-primary/20 shadow-md"
-                        >
-                        <span class="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-green-500 border-2 border-white flex items-center justify-center" title="Đang trực tuyến"></span>
+            <div class="lg:col-span-3 lg:self-stretch">
+                <!-- Sticky Wrapper for Card -->
+                <div class="lg:sticky lg:top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none text-left flex flex-col">
+                    <!-- Sidebar Card -->
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden text-left flex-grow">
+                    <!-- User Summary Header -->
+                    <div class="relative text-center pb-6 border-b border-slate-100 bg-white">
+                        <!-- Banner Background -->
+                        <div class="h-24 bg-gradient-to-r from-primary/80 via-primary to-indigo-600/90 relative overflow-hidden">
+                            <div class="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-lg"></div>
+                            <div class="absolute -left-8 -bottom-8 w-24 h-24 rounded-full bg-white/10 blur-md"></div>
+                        </div>
+                        
+                        <!-- Avatar Overlay -->
+                        <div class="relative w-20 h-20 mx-auto -mt-10 mb-3 group">
+                            <img 
+                                src="{{ $user['avatar'] }}" 
+                                alt="{{ $user['name'] }}" 
+                                class="w-full h-full rounded-full object-cover border-4 border-white shadow-lg group-hover:scale-105 transition-all duration-300"
+                            >
+                            <span class="absolute bottom-0.5 right-0.5 w-4.5 h-4.5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-md" title="Đang trực tuyến">
+                                <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                            </span>
+                        </div>
+
+                        <!-- User Name & Role Badge -->
+                        <div class="px-5">
+                            <h4 class="text-base font-extrabold text-slate-800 leading-snug tracking-tight mb-2">{{ $user['name'] }}</h4>
+                            
+                            <div class="flex items-center justify-center mb-3">
+                                @if(Auth::user()->role === 'admin')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100/85 shadow-sm">
+                                        <i class="fa-solid fa-shield-halved mr-1.5 text-rose-500"></i>
+                                        Ban quản trị
+                                    </span>
+                                @elseif(Auth::user()->role === 'owner')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100/85 shadow-sm">
+                                        <i class="fa-solid fa-circle-check mr-1.5 text-emerald-500"></i>
+                                        Đối tác Chủ nhà
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-sky-50 text-sky-600 border border-sky-100/85 shadow-sm">
+                                        <i class="fa-solid fa-house-user mr-1.5 text-sky-500"></i>
+                                        Khách thuê nhà
+                                    </span>
+                                @endif
+                            </div>
+
+                            <div class="flex items-center justify-center text-[10px] text-slate-400 font-semibold space-x-1.5">
+                                <i class="fa-solid fa-calendar-days text-slate-355"></i>
+                                <span>Thành viên từ: {{ $user['join_date'] }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="text-base font-bold text-slate-800 leading-none mb-1.5">{{ $user['name'] }}</h4>
-                    <span class="text-[11px] font-semibold text-slate-400 block mb-0.5">{{ $user['role'] }}</span>
-                    <span class="text-[9px] text-slate-400 font-medium">Thành viên từ: {{ $user['join_date'] }}</span>
+
+                    <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible scrollbar-none border-b lg:border-b-0 border-slate-100">
+                        <button 
+                            @click="activeTab = 'profile'; window.history.pushState(null, '', '?tab=profile');" 
+                            :class="activeTab === 'profile' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <i class="fa-solid fa-user-gear text-sm"></i>
+                            <span>Thông tin cá nhân</span>
+                        </button>
+                        
+                        @if(Auth::user()->role === 'owner')
+                        <button 
+                            @click="activeTab = 'properties'; window.history.pushState(null, '', '?tab=properties');" 
+                            :class="activeTab === 'properties' || activeTab === 'create_property' || activeTab === 'edit_property' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-list-check text-sm"></i>
+                                <span>Quản lý tin đăng</span>
+                            </div>
+                            <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                {{ $stats['total_properties'] }}
+                            </span>
+                        </button>
+                        @else
+                        <button 
+                            @click="activeTab = 'favorites'; window.history.pushState(null, '', '?tab=favorites');" 
+                            :class="activeTab === 'favorites' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-heart text-sm"></i>
+                                <span>Tin yêu thích</span>
+                            </div>
+                            <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                {{ $stats['total_favorites'] }}
+                            </span>
+                        </button>
+                        @endif
+
+                        <button 
+                            @click="activeTab = 'appointments'; window.history.pushState(null, '', '?tab=appointments');" 
+                            :class="activeTab === 'appointments' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-calendar-days text-sm"></i>
+                                <span>{{ Auth::user()->role === 'owner' ? 'Lịch hẹn khách đặt' : 'Lịch hẹn xem nhà' }}</span>
+                            </div>
+                            <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                {{ $stats['total_appointments'] }}
+                            </span>
+                        </button>
+
+                        <button 
+                            @click="activeTab = 'password'; window.history.pushState(null, '', '?tab=password');" 
+                            :class="activeTab === 'password' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <i class="fa-solid fa-key text-sm"></i>
+                            <span>Đổi mật khẩu</span>
+                        </button>
+
+                        @if(Auth::user()->role === 'admin')
+                        <a 
+                            href="{{ route('admin.dashboard') }}" 
+                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                        >
+                            <i class="fa-solid fa-shield-halved text-sm"></i>
+                            <span>Trang quản trị (Admin)</span>
+                        </a>
+                        @endif
+
+                        <a 
+                            href="{{ route('logout') }}" 
+                            onclick="event.preventDefault(); document.getElementById('logout-form-profile').submit();"
+                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-red-500 hover:bg-red-50 hover:text-red-600 border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                        >
+                            <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                            <span>Đăng xuất</span>
+                        </a>
+                        <form id="logout-form-profile" action="{{ route('logout') }}" method="POST" class="hidden">
+                            @csrf
+                        </form>
+                    </nav>
                 </div>
-
-                <!-- Navigation List (AlpineJS Tab Switchers) -->
-                <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible scrollbar-none border-b lg:border-b-0 border-slate-100">
-                    <button 
-                        @click="activeTab = 'profile'" 
-                        :class="activeTab === 'profile' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                        class="flex items-center space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
-                    >
-                        <i class="fa-solid fa-user-gear text-sm"></i>
-                        <span>Thông tin cá nhân</span>
-                    </button>
-                    
-                    <button 
-                        @click="activeTab = 'favorites'" 
-                        :class="activeTab === 'favorites' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                        class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
-                    >
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-heart text-sm"></i>
-                            <span>Tin yêu thích</span>
-                        </div>
-                        <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">3</span>
-                    </button>
-
-                    <button 
-                        @click="activeTab = 'appointments'" 
-                        :class="activeTab === 'appointments' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                        class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
-                    >
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-calendar-days text-sm"></i>
-                            <span>Lịch hẹn xem nhà</span>
-                        </div>
-                        <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">2</span>
-                    </button>
-
-                    <button 
-                        @click="activeTab = 'password'" 
-                        :class="activeTab === 'password' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                        class="flex items-center space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
-                    >
-                        <i class="fa-solid fa-key text-sm"></i>
-                        <span>Đổi mật khẩu</span>
-                    </button>
-
-                    @if(Auth::user()->role === 'admin')
-                    <a 
-                        href="{{ route('admin.dashboard') }}" 
-                        class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
-                    >
-                        <i class="fa-solid fa-shield-halved text-sm"></i>
-                        <span>Trang quản trị (Admin)</span>
-                    </a>
-                    @endif
-
-                    <a 
-                        href="{{ route('logout') }}" 
-                        onclick="event.preventDefault(); document.getElementById('logout-form-profile').submit();"
-                        class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-red-500 hover:bg-red-50 hover:text-red-600 border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
-                    >
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                        <span>Đăng xuất</span>
-                    </a>
-                    <form id="logout-form-profile" action="{{ route('logout') }}" method="POST" class="hidden">
-                        @csrf
-                    </form>
-                </nav>
+                </div>
             </div>
 
             <!-- RIGHT COLUMN: Dashboard Tab Contents (9/12 cols) -->
@@ -151,6 +210,7 @@
                     </div>
 
                     <!-- Statistics Cards Grid (Giai đoạn 7) -->
+                    @if(Auth::user()->role === 'owner')
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <!-- Stat Item 1 -->
                         <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
@@ -159,18 +219,18 @@
                             </div>
                             <div>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin đã đăng</span>
-                                <span class="text-xl font-black text-slate-800">4 tin</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_properties'] }} tin</span>
                             </div>
                         </div>
 
                         <!-- Stat Item 2 -->
                         <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg">
-                                <i class="fa-solid fa-heart"></i>
+                            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-eye"></i>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin yêu thích</span>
-                                <span class="text-xl font-black text-slate-800">12 tin</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lượt xem tin</span>
+                                <span class="text-xl font-black text-slate-800">{{ number_format($stats['total_views']) }} lượt</span>
                             </div>
                         </div>
 
@@ -180,11 +240,36 @@
                                 <i class="fa-solid fa-calendar-days"></i>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn xem nhà</span>
-                                <span class="text-xl font-black text-slate-800">2 cuộc</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn khách đặt</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_appointments'] }} cuộc</span>
                             </div>
                         </div>
                     </div>
+                    @else
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Stat Item 1 -->
+                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin yêu thích</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_favorites'] }} tin</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 2 -->
+                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn xem nhà</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_appointments'] }} cuộc</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Profile Form (Real POST form) -->
                     <form 
@@ -309,81 +394,315 @@
                     </form>
                 </div>
 
-                <!-- TAB 2: Saved / Favorite Listings (Giai đoạn 7) -->
+                <!-- TAB 2: Saved / Favorite Listings OR Owner Properties -->
+                @if(Auth::user()->role === 'owner')
+                <div x-show="activeTab === 'properties'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    <div class="pb-5 border-b border-slate-100 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">Quản lý tin đăng</h2>
+                            <p class="text-xs text-slate-400 mt-1 font-semibold">Thêm, sửa, xóa và theo dõi trạng thái các bất động sản của bạn.</p>
+                        </div>
+                        <button 
+                            type="button" 
+                            @click="activeTab = 'create_property'; window.history.pushState(null, '', '?tab=create_property');" 
+                            class="inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98"
+                        >
+                            <i class="fa-solid fa-plus mr-2"></i> Đăng tin mới
+                        </button>
+                    </div>
+
+                    @if($myProperties->isEmpty())
+                        <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <p class="text-xs font-bold text-slate-500">Bạn chưa đăng bất kỳ bất động sản nào.</p>
+                            <p class="text-[10px] text-slate-400 mt-1">Bấm nút "Đăng tin mới" ở trên để bắt đầu.</p>
+                        </div>
+                    @else
+                        <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                            <table class="min-w-full divide-y divide-slate-100 text-left">
+                                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <tr>
+                                        <th scope="col" class="px-5 py-4">Bất động sản</th>
+                                        <th scope="col" class="px-5 py-4">Danh mục</th>
+                                        <th scope="col" class="px-5 py-4">Giá thuê</th>
+                                        <th scope="col" class="px-5 py-4">Diện tích</th>
+                                        <th scope="col" class="px-5 py-4">Trạng thái</th>
+                                        <th scope="col" class="px-5 py-4 text-right">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
+                                    @foreach($myProperties as $prop)
+                                        <tr>
+                                            <td class="px-5 py-4 flex items-center space-x-3 min-w-[250px]">
+                                                <img src="{{ asset($prop->image) }}" class="w-12 h-10 object-cover rounded-lg border border-slate-200 flex-shrink-0">
+                                                <div class="truncate">
+                                                    <a href="/property/{{ $prop->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $prop->title }}">{{ $prop->title }}</a>
+                                                    <span class="text-[10px] text-slate-400 block truncate"><i class="fa-solid fa-location-dot mr-1"></i>{{ $prop->location }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap">
+                                                <span class="block text-slate-800">{{ $prop->category->name ?? 'N/A' }}</span>
+                                                <span class="text-[10px] text-slate-400">{{ $prop->type }}</span>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap font-bold text-primary">{{ $prop->price_label }}</td>
+                                            <td class="px-5 py-4 whitespace-nowrap">{{ $prop->area }} m²</td>
+                                            <td class="px-5 py-4 whitespace-nowrap">
+                                                @if($prop->status === 'approved')
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Hiển thị</span>
+                                                @elseif($prop->status === 'pending')
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
+                                                @elseif($prop->status === 'rejected')
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Bị từ chối">Từ chối</span>
+                                                @else
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-50 text-slate-700 border border-slate-200">Đang ẩn</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-right">
+                                                <div class="inline-flex items-center space-x-2">
+                                                    <a href="{{ route('properties.edit', $prop->id) }}" class="p-1.5 text-slate-500 hover:text-primary transition" title="Chỉnh sửa">
+                                                        <i class="fa-solid fa-pen text-sm"></i>
+                                                    </a>
+                                                    <form action="{{ route('properties.destroy', $prop->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin đăng này không?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="p-1.5 text-slate-500 hover:text-red-650 transition" title="Xóa">
+                                                            <i class="fa-solid fa-trash text-sm"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- TAB 2.1: Create Property (Embedded) -->
+                @if(Auth::user()->role === 'owner')
+                <div x-show="activeTab === 'create_property'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    @include('owner.properties.create_form')
+                </div>
+                @endif
+
+                <!-- TAB 2.2: Edit Property (Embedded) -->
+                @if(Auth::user()->role === 'owner')
+                <div x-show="activeTab === 'edit_property'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    @if(isset($property) && $property)
+                        @include('owner.properties.edit_form')
+                    @else
+                        <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                            <p class="text-xs font-bold text-slate-500">Không tìm thấy thông tin bất động sản cần chỉnh sửa.</p>
+                        </div>
+                    @endif
+                </div>
+                @endif
+                @else
                 <div x-show="activeTab === 'favorites'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     <div class="pb-5 border-b border-slate-100 mb-6">
                         <h2 class="text-xl font-bold text-slate-800">Tin yêu thích đã lưu</h2>
                         <p class="text-xs text-slate-400 mt-1 font-semibold">Xem danh sách các căn hộ, biệt thự bạn đã lưu yêu thích để dễ dàng tham khảo lại.</p>
                     </div>
 
-                    <!-- Favorites Property Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @php
-                            // Simulating favorites by showing first 3 mock properties
-                            $favoriteProperties = collect($properties)->take(3);
-                        @endphp
-                        @foreach($favoriteProperties as $property)
-                            @include('components.property-card', ['property' => $property])
-                        @endforeach
+                        @if($properties->isEmpty())
+                            <div class="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
+                                    <i class="fa-solid fa-heart-crack"></i>
+                                </div>
+                                <p class="text-xs font-bold text-slate-500">Bạn chưa lưu tin yêu thích nào.</p>
+                            </div>
+                        @else
+                            @foreach($properties as $property)
+                                @include('components.property-card', ['property' => $property])
+                            @endforeach
+                        @endif
                     </div>
                 </div>
+                @endif
 
-                <!-- TAB 3: Viewing Appointments (Giai đoạn 7) -->
+                <!-- TAB 3: Appointments (Dynamic for Owner and Tenant) -->
                 <div x-show="activeTab === 'appointments'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     <div class="pb-5 border-b border-slate-100 mb-6">
-                        <h2 class="text-xl font-bold text-slate-800">Lịch hẹn xem nhà</h2>
-                        <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi danh sách và trạng thái lịch đi xem nhà trực tiếp của bạn.</p>
+                        <h2 class="text-xl font-bold text-slate-800">
+                            {{ Auth::user()->role === 'owner' ? 'Lịch hẹn khách đặt xem nhà' : 'Lịch hẹn xem nhà đã đặt' }}
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1 font-semibold">
+                            {{ Auth::user()->role === 'owner' ? 'Quản lý danh sách và phê duyệt lịch đi xem nhà của khách hàng.' : 'Theo dõi danh sách và trạng thái lịch đi xem nhà trực tiếp của bạn.' }}
+                        </p>
                     </div>
 
-                    <!-- Appointments Table -->
-                    <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
-                        <table class="min-w-full divide-y divide-slate-100 text-left">
-                            <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                <tr>
-                                    <th scope="col" class="px-5 py-4">Mã số</th>
-                                    <th scope="col" class="px-5 py-4">Ngày hẹn</th>
-                                    <th scope="col" class="px-5 py-4">Bất động sản</th>
-                                    <th scope="col" class="px-5 py-4">Môi giới</th>
-                                    <th scope="col" class="px-5 py-4">Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
-                                <!-- Row 1 -->
-                                <tr>
-                                    <td class="px-5 py-4 text-slate-900 font-bold">#BK-8302</td>
-                                    <td class="px-5 py-4 whitespace-nowrap">
-                                        <span class="block">10/06/2026</span>
-                                        <span class="text-[10px] text-slate-400">14:00 - 16:00</span>
-                                    </td>
-                                    <td class="px-5 py-4 max-w-[200px] truncate">
-                                        <a href="/property/1" class="hover:text-primary font-bold text-slate-800">Căn hộ Vinhomes Ocean Park Studio</a>
-                                    </td>
-                                    <td class="px-5 py-4 whitespace-nowrap">Nguyễn Hải Đăng</td>
-                                    <td class="px-5 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">
-                                            Đã xác nhận
-                                        </span>
-                                    </td>
-                                </tr>
-                                <!-- Row 2 -->
-                                <tr>
-                                    <td class="px-5 py-4 text-slate-900 font-bold">#BK-9271</td>
-                                    <td class="px-5 py-4 whitespace-nowrap">
-                                        <span class="block">15/06/2026</span>
-                                        <span class="text-[10px] text-slate-400">08:00 - 10:00</span>
-                                    </td>
-                                    <td class="px-5 py-4 max-w-[200px] truncate">
-                                        <a href="/property/3" class="hover:text-primary font-bold text-slate-800">Biệt thự sân vườn hiện đại Ciputra</a>
-                                    </td>
-                                    <td class="px-5 py-4 whitespace-nowrap">Lê Hoàng Long</td>
-                                    <td class="px-5 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                            Đang chờ duyệt
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div 
+                        x-data="{
+                            rejectOpen: false,
+                            rejectUrl: '',
+                            openRejectModal(actionUrl) {
+                                this.rejectUrl = actionUrl;
+                                this.rejectOpen = true;
+                            }
+                        }"
+                    >
+                        <!-- Reject Reason Modal (Only for Owner) -->
+                        @if(Auth::user()->role === 'owner')
+                        <div 
+                            x-show="rejectOpen" 
+                            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+                            x-transition
+                            x-cloak
+                        >
+                            <div @click.away="rejectOpen = false" class="bg-white rounded-3xl border border-slate-150 shadow-2xl p-6 w-full max-w-md text-left">
+                                <h3 class="text-base font-bold text-slate-800 mb-2">Từ chối lịch hẹn xem nhà</h3>
+                                <p class="text-xs text-slate-400 font-semibold mb-4 leading-normal">Vui lòng nhập lý do từ chối để thông báo cho khách hàng.</p>
+                                
+                                <form :action="rejectUrl" method="POST" class="space-y-4">
+                                    @csrf
+                                    <div>
+                                        <textarea 
+                                            name="reject_reason" 
+                                            required
+                                            rows="3" 
+                                            placeholder="Ví dụ: Căn hộ hiện tại đang được sửa chữa, Chủ nhà bận đột xuất..."
+                                            class="w-full p-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        ></textarea>
+                                    </div>
+                                    <div class="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
+                                        <button type="button" @click="rejectOpen = false" class="px-4 py-2 border border-slate-200 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">Hủy</button>
+                                        <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-650 text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer">Xác nhận từ chối</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- List Appointments -->
+                        @if(Auth::user()->role === 'owner')
+                            @if($ownerAppointments->isEmpty())
+                                <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
+                                        <i class="fa-solid fa-calendar-xmark"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-500">Chưa có khách đặt lịch hẹn xem nhà nào.</p>
+                                </div>
+                            @else
+                                <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                    <table class="min-w-full divide-y divide-slate-100 text-left">
+                                        <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                            <tr>
+                                                <th scope="col" class="px-5 py-4">Khách hàng</th>
+                                                <th scope="col" class="px-5 py-4">Ngày giờ hẹn</th>
+                                                <th scope="col" class="px-5 py-4">Bất động sản</th>
+                                                <th scope="col" class="px-5 py-4">Trạng thái</th>
+                                                <th scope="col" class="px-5 py-4 text-right">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
+                                            @foreach($ownerAppointments as $app)
+                                                <tr>
+                                                    <td class="px-5 py-4 whitespace-nowrap">
+                                                        <span class="block text-slate-800 font-bold">{{ $app->name }}</span>
+                                                        <span class="text-[10px] text-slate-400"><i class="fa-solid fa-phone mr-1"></i>{{ $app->phone }}</span>
+                                                    </td>
+                                                    <td class="px-5 py-4 whitespace-nowrap">
+                                                        <span class="block text-slate-800">{{ \Carbon\Carbon::parse($app->date)->format('d/m/Y') }}</span>
+                                                        <span class="text-[10px] text-slate-400"><i class="fa-solid fa-clock mr-1"></i>{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
+                                                    </td>
+                                                    <td class="px-5 py-4 max-w-[200px] truncate">
+                                                        <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $app->property->title }}">{{ $app->property->title }}</a>
+                                                    </td>
+                                                    <td class="px-5 py-4 whitespace-nowrap">
+                                                        @if($app->status === 'approved')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã duyệt</span>
+                                                        @elseif($app->status === 'pending')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
+                                                        @elseif($app->status === 'rejected')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Lý do: {{ $app->reject_reason }}">Từ chối</span>
+                                                        @elseif($app->status === 'completed')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-5 py-4 whitespace-nowrap text-right">
+                                                        @if($app->status === 'pending')
+                                                            <div class="inline-flex items-center space-x-2">
+                                                                <form action="{{ route('appointments.approve', $app->id) }}" method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <button type="submit" class="px-2.5 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                        Duyệt
+                                                                    </button>
+                                                                </form>
+                                                                <button type="button" @click="openRejectModal('{{ route('appointments.reject', $app->id) }}')" class="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                    Từ chối
+                                                                </button>
+                                                            </div>
+                                                        @elseif($app->status === 'approved')
+                                                            <form action="{{ route('appointments.complete', $app->id) }}" method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <button type="submit" class="px-2.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                        Đã xem nhà
+                                                                    </button>
+                                                            </form>
+                                                        @else
+                                                            <span class="text-[10px] text-slate-400">Không có thao tác</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        @else
+                            @if($appointments->isEmpty())
+                                <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
+                                        <i class="fa-solid fa-calendar-xmark"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-500">Bạn chưa đặt lịch hẹn xem nhà nào.</p>
+                                </div>
+                            @else
+                                <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                    <table class="min-w-full divide-y divide-slate-100 text-left">
+                                        <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                            <tr>
+                                                <th scope="col" class="px-5 py-4">Mã số</th>
+                                                <th scope="col" class="px-5 py-4">Ngày hẹn</th>
+                                                <th scope="col" class="px-5 py-4">Bất động sản</th>
+                                                <th scope="col" class="px-5 py-4">Chủ nhà</th>
+                                                <th scope="col" class="px-5 py-4">Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
+                                            @foreach($appointments as $app)
+                                                <tr>
+                                                    <td class="px-5 py-4 text-slate-900 font-bold">#BK-{{ $app->id }}</td>
+                                                    <td class="px-5 py-4 whitespace-nowrap">
+                                                        <span class="block">{{ \Carbon\Carbon::parse($app->date)->format('d/m/Y') }}</span>
+                                                        <span class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
+                                                    </td>
+                                                    <td class="px-5 py-4 max-w-[200px] truncate">
+                                                        <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800">{{ $app->property->title }}</a>
+                                                    </td>
+                                                    <td class="px-5 py-4 whitespace-nowrap">{{ $app->property->agent->name ?? 'N/A' }}</td>
+                                                    <td class="px-5 py-4 whitespace-nowrap">
+                                                        @if($app->status === 'approved')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã xác nhận</span>
+                                                        @elseif($app->status === 'pending')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
+                                                        @elseif($app->status === 'rejected')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Lý do từ chối: {{ $app->reject_reason }}">Đã từ chối</span>
+                                                        @elseif($app->status === 'completed')
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        @endif
                     </div>
                 </div>
 

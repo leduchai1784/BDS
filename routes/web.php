@@ -232,6 +232,21 @@ Route::middleware('auth')->group(function () {
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
+// Route dành cho Chủ nhà (Bảo vệ bởi auth và owner middleware)
+Route::middleware(['auth', 'owner'])->group(function () {
+    // Quản lý tin đăng (CRUD)
+    Route::get('/properties/create', [\App\Http\Controllers\Owner\PropertyController::class, 'create'])->name('properties.create');
+    Route::post('/properties', [\App\Http\Controllers\Owner\PropertyController::class, 'store'])->name('properties.store');
+    Route::get('/properties/{id}/edit', [\App\Http\Controllers\Owner\PropertyController::class, 'edit'])->name('properties.edit');
+    Route::put('/properties/{id}', [\App\Http\Controllers\Owner\PropertyController::class, 'update'])->name('properties.update');
+    Route::delete('/properties/{id}', [\App\Http\Controllers\Owner\PropertyController::class, 'destroy'])->name('properties.destroy');
+
+    // Quản lý lịch hẹn
+    Route::post('/appointments/{id}/approve', [\App\Http\Controllers\Owner\AppointmentController::class, 'approve'])->name('appointments.approve');
+    Route::post('/appointments/{id}/reject', [\App\Http\Controllers\Owner\AppointmentController::class, 'reject'])->name('appointments.reject');
+    Route::post('/appointments/{id}/complete', [\App\Http\Controllers\Owner\AppointmentController::class, 'complete'])->name('appointments.complete');
+});
+
 // Route dành cho Admin (Bảo vệ bởi auth và admin middleware)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');

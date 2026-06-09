@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\Model;
     'date', 
     'time', 
     'message', 
-    'status'
+    'status',
+    'reject_reason'
 ])]
 class Appointment extends Model
 {

@@ -32,6 +32,11 @@
             <!-- Actions (Profile & CTA) -->
             @auth
             <div class="hidden md:flex items-center space-x-2.5 lg:space-x-4" x-data="{ userDropdownOpen: false }">
+                <!-- Đăng tin miễn phí -->
+                <a href="{{ Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property']) : route('profile.index') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0">
+                    <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
+                </a>
+
                 <!-- User Account Dropdown -->
                 <div class="relative flex-shrink-0">
                     <button 
@@ -67,7 +72,7 @@
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-2.5 w-48 rounded-2xl bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
+                        class="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
                         x-cloak
                     >
                         @if(Auth::user()->role === 'admin')
@@ -78,12 +83,21 @@
                         <a href="/profile" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
                         </a>
-                        <a href="#" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        @if(Auth::user()->role === 'owner')
+                        <a href="{{ route('profile.index', ['tab' => 'properties']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-list-check mr-2 text-sm text-slate-400"></i> Quản lý tin đăng
                         </a>
-                        <a href="#" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <a href="{{ route('profile.index', ['tab' => 'appointments']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                            <i class="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn khách đặt
+                        </a>
+                        @else
+                        <a href="{{ route('profile.index', ['tab' => 'favorites']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin đăng đã lưu
                         </a>
+                        <a href="{{ route('profile.index', ['tab' => 'appointments']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                            <i class="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn xem nhà
+                        </a>
+                        @endif
                         <div class="border-t border-slate-100 my-1"></div>
                         <a 
                             href="{{ route('logout') }}" 
@@ -97,15 +111,14 @@
                         </form>
                     </div>
                 </div>
-
-                <a href="#" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0">
-                    <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
-                </a>
             </div>
             @endauth
 
             @guest
             <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5">
+                <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap">
+                    <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
+                </a>
                 <a href="{{ route('login') }}" :class="isScrolled ? 'text-slate-700 hover:text-primary' : 'text-slate-100 hover:text-white'" class="font-bold text-sm transition duration-150 whitespace-nowrap">Đăng nhập</a>
                 <a 
                     href="{{ route('register') }}" 
@@ -113,9 +126,6 @@
                     class="inline-flex items-center justify-center px-4 py-2 border-2 text-xs lg:text-sm font-bold rounded-xl transition duration-200 whitespace-nowrap"
                 >
                     Đăng ký
-                </a>
-                <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap">
-                    <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
                 </a>
             </div>
             @endguest
@@ -196,7 +206,7 @@
                 <a href="{{ route('register') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng ký</a>
                 @endguest
 
-                <a href="#" class="inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition">
+                <a href="{{ Auth::check() ? (Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property']) : route('profile.index')) : route('login') }}" class="inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition">
                     <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
                 </a>
             </div>
