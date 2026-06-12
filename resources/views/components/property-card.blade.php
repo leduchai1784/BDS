@@ -48,14 +48,51 @@
         </div>
 
         <!-- Wishlist Button -->
-        <div class="absolute top-4 right-4 z-10" x-data="{ liked: false }">
+        <div 
+            class="absolute top-4 right-4 z-10" 
+            x-data="{ 
+                liked: {{ Auth::check() && app(App\Services\WishlistService::class)->isFavorite(Auth::id(), $property['id']) ? 'true' : 'false' }},
+                isProcessing: false,
+                toggleLike() {
+                    @guest
+                        window.location.href = '{{ route('login') }}';
+                        return;
+                    @endguest
+
+                    if (this.isProcessing) return;
+                    this.isProcessing = true;
+
+                    fetch('{{ route('wishlist.toggle') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            property_id: {{ $property['id'] }}
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.isProcessing = false;
+                        if (data.success) {
+                            this.liked = data.is_favorite;
+                        }
+                    })
+                    .catch(error => {
+                        this.isProcessing = false;
+                        console.error('Error:', error);
+                    });
+                }
+            }"
+        >
             <button 
-                @click="liked = !liked"
+                @click="toggleLike()"
                 type="button" 
                 :class="liked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-white/80 hover:bg-white text-slate-600 border-slate-100'"
                 class="w-9 h-9 rounded-xl flex items-center justify-center border shadow-sm transition active:scale-90 cursor-pointer"
             >
-                <i class="fa-solid fa-heart transition" :class="liked ? 'text-red-500Scale' : 'text-slate-400'"></i>
+                <i class="fa-solid fa-heart transition" :class="liked ? 'text-red-500' : 'text-slate-400'"></i>
             </button>
         </div>
 
