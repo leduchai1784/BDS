@@ -149,7 +149,6 @@
                         </button>
                         @endif
 
-                        @if(Auth::user()->role === 'tenant')
                         <button 
                             @click="activeTab = 'favorites'; window.history.pushState(null, '', '?tab=favorites');" 
                             :class="activeTab === 'favorites' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
@@ -160,10 +159,11 @@
                                 <span>Tin yêu thích</span>
                             </div>
                             <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                                {{ $stats['total_favorites'] }}
+                                {{ $properties->count() }}
                             </span>
                         </button>
 
+                        @if(Auth::user()->role === 'tenant')
                         <button 
                             @click="activeTab = 'appointments'; window.history.pushState(null, '', '?tab=appointments');" 
                             :class="activeTab === 'appointments' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
@@ -516,7 +516,9 @@
                     @endif
                 </div>
                 @endif
-                @elseif(Auth::user()->role === 'tenant')
+                @endif
+
+                <!-- TAB 2.3: Favorites (All roles) -->
                 <div x-show="activeTab === 'favorites'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     <div class="pb-5 border-b border-slate-100 mb-6">
                         <h2 class="text-xl font-bold text-slate-800">Tin yêu thích đã lưu</h2>
@@ -538,7 +540,6 @@
                         @endif
                     </div>
                 </div>
-                @endif
 
                 @if(Auth::user()->role !== 'admin')
                 <!-- TAB 3: Appointments (Dynamic for Owner and Tenant) -->

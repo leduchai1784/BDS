@@ -269,11 +269,6 @@
                                 return;
                             @endguest
 
-                            @if(Auth::check() && Auth::user()->role !== 'tenant')
-                                alert('Chỉ tài khoản khách thuê mới có thể sử dụng chức năng yêu thích.');
-                                return;
-                            @endif
-
                             if (this.isProcessing) return;
                             this.isProcessing = true;
 

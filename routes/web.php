@@ -229,6 +229,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
@@ -288,9 +289,6 @@ Route::get('/map', function (\Illuminate\Http\Request $request, \App\Services\Pr
 
 // Route dành riêng cho Khách thuê (Tenant) (Bảo vệ bởi auth và tenant middleware)
 Route::middleware(['auth', 'tenant'])->group(function () {
-    // Yêu thích tin đăng
-    Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
     // Đặt lịch xem nhà
     Route::post('/appointments', [App\Http\Controllers\AppointmentController::class, 'book'])->name('appointments.book');
 

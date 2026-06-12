@@ -427,7 +427,6 @@ class AdminModuleTest extends TestCase
         $response->assertSee('Ban quản trị');
         $response->assertSee('Quay lại Admin Panel');
         // Admin should not see Tenant or Owner specific tabs
-        $response->assertDontSee('Tin yêu thích');
         $response->assertDontSee('Lịch hẹn xem nhà');
     }
 

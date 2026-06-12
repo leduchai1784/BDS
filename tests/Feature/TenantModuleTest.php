@@ -114,15 +114,54 @@ class TenantModuleTest extends TestCase
     }
 
     /**
-     * Test non-tenant cannot toggle wishlist.
+     * Test owner and admin can toggle wishlist.
      */
-    public function test_non_tenant_cannot_toggle_wishlist(): void
+    public function test_owner_and_admin_can_toggle_wishlist(): void
     {
+        // 1. Owner toggles wishlist (Add)
         $response = $this->actingAs($this->owner)->postJson(route('wishlist.toggle'), [
             'property_id' => $this->property->id,
         ]);
 
-        $response->assertStatus(403);
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'is_favorite' => true,
+        ]);
+        $this->assertTrue($this->owner->favoriteProperties()->where('property_id', $this->property->id)->exists());
+
+        // 2. Owner toggles wishlist again (Remove)
+        $response = $this->actingAs($this->owner)->postJson(route('wishlist.toggle'), [
+            'property_id' => $this->property->id,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'is_favorite' => false,
+        ]);
+        $this->assertFalse($this->owner->favoriteProperties()->where('property_id', $this->property->id)->exists());
+
+        // 3. Admin toggles wishlist (Add)
+        $admin = User::firstOrCreate(
+            ['email' => 'admin.test@nks.com.vn'],
+            [
+                'name' => 'Admin Test',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
+
+        $response = $this->actingAs($admin)->postJson(route('wishlist.toggle'), [
+            'property_id' => $this->property->id,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'is_favorite' => true,
+        ]);
+        $this->assertTrue($admin->favoriteProperties()->where('property_id', $this->property->id)->exists());
     }
 
     /**

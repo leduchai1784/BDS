@@ -30,6 +30,7 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $favorites = $this->wishlistService->getUserFavorites($user->id);
         
         // Handle admin profile view
         if ($user->role === 'admin') {
@@ -43,12 +44,10 @@ class ProfileController extends Controller
                     'join_date' => $user->created_at ? $user->created_at->format('d/m/Y') : '06/01/2015'
                 ],
                 'stats' => null,
-                'properties' => collect(),
+                'properties' => $favorites,
                 'appointments' => collect()
             ]);
         }
-
-        $favorites = $this->wishlistService->getUserFavorites($user->id);
         
         // Check user role
         if ($user->role === 'owner') {
