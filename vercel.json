@@ -45,7 +45,7 @@
     "VIEW_COMPILED_PATH": "/tmp",
     "CACHE_DRIVER": "array",
     "CACHE_STORE": "array",
-    "SESSION_DRIVER": "array",
+    "SESSION_DRIVER": "database",
     "LOG_CHANNEL": "stderr"
   }
 }
