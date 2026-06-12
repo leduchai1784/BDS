@@ -22,17 +22,9 @@
         'created_at' => '2 giờ trước'
     ];
 
-    $priceDisplay = $property['price'];
-    if (is_numeric($priceDisplay)) {
-        if ($priceDisplay >= 1000000000) {
-            $priceDisplay = number_format($priceDisplay / 1000000000, 1, ',', '.') . ' tỷ/tháng';
-            $priceDisplay = str_replace(',0', '', $priceDisplay);
-        } elseif ($priceDisplay >= 1000000) {
-            $priceDisplay = number_format($priceDisplay / 1000000, 1, ',', '.') . ' triệu/tháng';
-            $priceDisplay = str_replace(',0', '', $priceDisplay);
-        } elseif ($priceDisplay > 0) {
-            $priceDisplay = number_format($priceDisplay, 0, ',', '.') . ' đ/tháng';
-        }
+    $isFavorite = false;
+    if (Auth::check()) {
+        $isFavorite = app(App\Services\WishlistService::class)->isFavorite(Auth::id(), $property['id']);
     }
 @endphp
 
@@ -61,44 +53,42 @@
         </div>
 
         <!-- Wishlist Button -->
-        <div 
-            class="absolute top-4 right-4 z-10" 
-            x-data="{ 
-                liked: {{ Auth::check() && app(App\Services\WishlistService::class)->isFavorite(Auth::id(), $property['id']) ? 'true' : 'false' }},
-                isProcessing: false,
-                toggleLike() {
-                    @guest
-                        window.location.href = '{{ route('login') }}';
-                        return;
-                    @endguest
+        <div class="absolute top-4 right-4 z-10" x-data="{ 
+            liked: {{ $isFavorite ? 'true' : 'false' }},
+            isProcessing: false,
+            toggleLike() {
+                @guest
+                    window.location.href = '{{ route('login') }}';
+                    return;
+                @endguest
 
-                    if (this.isProcessing) return;
-                    this.isProcessing = true;
+                if (this.isProcessing) return;
+                this.isProcessing = true;
 
-                    fetch('{{ route('wishlist.toggle') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            property_id: {{ $property['id'] }}
-                        })
+                fetch('{{ route('wishlist.toggle') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        property_id: {{ $property['id'] }}
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        this.isProcessing = false;
-                        if (data.success) {
-                            this.liked = data.is_favorite;
-                        }
-                    })
-                    .catch(error => {
-                        this.isProcessing = false;
-                        console.error('Error:', error);
-                    });
-                }
-            }"
-        >
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.isProcessing = false;
+                    if (data.success) {
+                        this.liked = data.is_favorite;
+                    }
+                })
+                .catch(error => {
+                    this.isProcessing = false;
+                    console.error('Error:', error);
+                });
+            }
+        }">
             <button 
                 @click="toggleLike()"
                 type="button" 
@@ -122,7 +112,7 @@
         <!-- 2. Giá thuê (Price) -->
         <div class="flex items-center justify-between mb-2.5">
             <span class="text-xl font-extrabold text-primary tracking-tight">
-                {{ $priceDisplay }}
+                {{ $property['price'] }}
             </span>
             <!-- Kích thước/Diện tích nhỏ gọn (Trang trí phụ trợ) -->
             <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">
