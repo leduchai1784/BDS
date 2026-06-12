@@ -2,6 +2,24 @@
 
 use Illuminate\Support\Str;
 
+$getHost = function() {
+    $url = env('POSTGRES_URL') ?: env('DATABASE_URL') ?: env('DB_URL');
+    if ($url) {
+        $parsed = parse_url($url);
+        if (isset($parsed['host'])) {
+            return $parsed['host'];
+        }
+    }
+    return env('DB_HOST', '127.0.0.1');
+};
+
+$host = $getHost();
+$defaultPgOptions = env('DB_PG_OPTIONS');
+if (empty($defaultPgOptions) && $host && str_ends_with($host, '.neon.tech')) {
+    $parts = explode('.', $host);
+    $defaultPgOptions = 'endpoint=' . $parts[0];
+}
+
 return [
 
     /*
@@ -98,7 +116,7 @@ return [
             'sslmode' => env('DB_SSLMODE', 'require'),
 
             'options' => array_filter([
-                'options' => env('DB_PG_OPTIONS'),
+                'options' => $defaultPgOptions,
             ]),
         ],
 
