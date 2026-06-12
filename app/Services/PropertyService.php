@@ -19,6 +19,77 @@ class PropertyService
     protected int $cacheTtl = 3600;
 
     /**
+     * Ensure a property exists in the local database.
+     * If it does not exist, fetch it from the API/mock and save it.
+     */
+    public function ensurePropertyExists(int $id): void
+    {
+        // Check if already in database
+        if (\App\Models\Property::where('id', $id)->exists()) {
+            return;
+        }
+
+        // Fetch property details from API/mock
+        $properties = $this->getAllProperties();
+        $propertyData = collect($properties)->firstWhere('id', $id);
+
+        if (!$propertyData) {
+            return;
+        }
+
+        // Find or create category
+        $categorySlug = \Illuminate\Support\Str::slug($propertyData['type']);
+        $category = \App\Models\Category::where('slug', $categorySlug)->first();
+        if (!$category) {
+            $category = \App\Models\Category::first();
+        }
+
+        // Find or create agent (owner user)
+        $agentData = $propertyData['agent'];
+        $agentEmail = \Illuminate\Support\Str::slug($agentData['name']) . '@nks.com.vn';
+        $agent = \App\Models\User::where('email', $agentEmail)->first();
+        if (!$agent) {
+            $agent = \App\Models\User::create([
+                'name' => $agentData['name'],
+                'email' => $agentEmail,
+                'phone' => $agentData['phone'],
+                'avatar' => $agentData['avatar'],
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'owner',
+                'status' => 'active'
+            ]);
+        }
+
+        // Create the property with explicitly specified primary key ID (forceCreate to bypass mass-assignment fillable checks)
+        \App\Models\Property::forceCreate([
+            'id' => $id,
+            'title' => $propertyData['title'],
+            'type' => $propertyData['type'],
+            'price' => $propertyData['price_raw'] ?: 1000000,
+            'price_label' => $propertyData['price_label'],
+            'area' => $propertyData['area'],
+            'bedrooms' => $propertyData['bedrooms'],
+            'bathrooms' => $propertyData['bathrooms'],
+            'location' => $propertyData['location'],
+            'district' => $propertyData['district'],
+            'lat' => $propertyData['lat'],
+            'lng' => $propertyData['lng'],
+            'image' => $propertyData['image'],
+            'images' => $propertyData['images'],
+            'direction' => $propertyData['direction'],
+            'furniture' => $propertyData['furniture'],
+            'legal' => $propertyData['legal'],
+            'is_vip' => $propertyData['is_vip'],
+            'is_new' => $propertyData['is_new'],
+            'category_id' => $category ? $category->id : null,
+            'status' => 'approved',
+            'views' => $propertyData['views'] ?? 0,
+            'agent_id' => $agent->id,
+            'description' => $propertyData['description']
+        ]);
+    }
+
+    /**
      * Get all properties from the NKS API or cache, with local mock fallback.
      */
     public function getAllProperties(): array

@@ -21,6 +21,19 @@
         ],
         'created_at' => '2 giờ trước'
     ];
+
+    $priceDisplay = $property['price'];
+    if (is_numeric($priceDisplay)) {
+        if ($priceDisplay >= 1000000000) {
+            $priceDisplay = number_format($priceDisplay / 1000000000, 1, ',', '.') . ' tỷ/tháng';
+            $priceDisplay = str_replace(',0', '', $priceDisplay);
+        } elseif ($priceDisplay >= 1000000) {
+            $priceDisplay = number_format($priceDisplay / 1000000, 1, ',', '.') . ' triệu/tháng';
+            $priceDisplay = str_replace(',0', '', $priceDisplay);
+        } elseif ($priceDisplay > 0) {
+            $priceDisplay = number_format($priceDisplay, 0, ',', '.') . ' đ/tháng';
+        }
+    }
 @endphp
 
 <div class="group bg-white rounded-[24px] overflow-hidden border border-slate-100 hover:shadow-2xl hover:shadow-slate-200/80 transform hover:-translate-y-1.5 transition-all duration-350 flex flex-col h-full">
@@ -109,7 +122,7 @@
         <!-- 2. Giá thuê (Price) -->
         <div class="flex items-center justify-between mb-2.5">
             <span class="text-xl font-extrabold text-primary tracking-tight">
-                {{ $property['price'] }}
+                {{ $priceDisplay }}
             </span>
             <!-- Kích thước/Diện tích nhỏ gọn (Trang trí phụ trợ) -->
             <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">

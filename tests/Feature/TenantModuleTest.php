@@ -165,6 +165,31 @@ class TenantModuleTest extends TestCase
     }
 
     /**
+     * Test toggling wishlist for a remote property that does not exist in local database.
+     */
+    public function test_toggle_wishlist_for_remote_property(): void
+    {
+        // 1. Delete property 3 from the database (property 3 exists in the NKS API response)
+        Property::where('id', 3)->delete();
+        $this->assertDatabaseMissing('properties', ['id' => 3]);
+
+        // 2. Toggle wishlist for property 3
+        $response = $this->actingAs($this->tenant)->postJson(route('wishlist.toggle'), [
+            'property_id' => 3,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'is_favorite' => true,
+        ]);
+
+        // 3. Verify that property 3 was automatically created in the database and added to wishlist
+        $this->assertDatabaseHas('properties', ['id' => 3]);
+        $this->assertTrue($this->tenant->favoriteProperties()->where('property_id' , 3)->exists());
+    }
+
+    /**
      * Test tenant can book an appointment.
      */
     public function test_tenant_can_book_appointment(): void

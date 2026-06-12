@@ -20,6 +20,10 @@ class AppointmentController extends Controller
      */
     public function book(Request $request)
     {
+        if ($request->has('property_id')) {
+            app(\App\Services\PropertyService::class)->ensurePropertyExists((int)$request->property_id);
+        }
+
         $request->validate([
             'property_id' => 'required|integer|exists:properties,id',
             'name' => 'required|string|max:255',
