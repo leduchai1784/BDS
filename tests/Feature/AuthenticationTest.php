@@ -40,7 +40,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/');
+        $response->assertRedirect('/profile');
         $this->assertAuthenticatedAs($user);
     }
 
