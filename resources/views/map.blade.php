@@ -174,8 +174,14 @@
 
     <!-- 2. RIGHT AREA: MAP & MOBILE FLOATING LAYERS -->
     <main class="flex-grow h-full relative z-0">
-        <!-- Interactive Map Div -->
-        <div id="map" class="w-full h-full bg-slate-100"></div>
+        <!-- Interactive Map Div Container with Loader -->
+        <div class="w-full h-full bg-slate-100 relative">
+            <div id="map" class="w-full h-full"></div>
+            <div id="map-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-20 transition-opacity duration-300">
+                <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
+                <p class="text-xs font-bold text-slate-500">Đang xác định vị trí của bạn...</p>
+            </div>
+        </div>
 
         <!-- MOBILE ONLY: Floating Top Bar Filters -->
         <div class="absolute top-4 left-4 right-4 z-10 md:hidden bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-100/60 p-3.5 flex flex-col gap-2.5 text-left">
@@ -338,20 +344,93 @@
 
             // Map Initialization
             initMap() {
+                // Check if lat/lng query params exist in URL (deep linking from detail page)
+                const urlParams = new URLSearchParams(window.location.search);
+                const queryLat = urlParams.get('lat');
+                const queryLng = urlParams.get('lng');
+                const queryId = urlParams.get('id');
+
+                if (queryLat && queryLng) {
+                    const lat = parseFloat(queryLat);
+                    const lng = parseFloat(queryLng);
+                    
+                    this.createMapInstance([lng, lat], 14.5, false);
+
+                    if (queryId) {
+                        const propId = parseInt(queryId);
+                        this.map.on('load', () => {
+                            setTimeout(() => {
+                                this.selectProperty(propId, false);
+                            }, 500);
+                        });
+                    }
+                    return;
+                }
+
+                // Safety net: hide loader after 6 seconds anyway
+                setTimeout(() => {
+                    const loader = document.getElementById('map-loader');
+                    if (loader) {
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.remove(), 300);
+                    }
+                }, 6000);
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const userLng = position.coords.longitude;
+                            const userLat = position.coords.latitude;
+                            this.createMapInstance([userLng, userLat], 13.5, true);
+                        },
+                        (error) => {
+                            console.warn('Geolocation failed or permission denied:', error);
+                            this.createMapInstance([105.81, 21.03], 12.2, false);
+                        },
+                        { enableHighAccuracy: true, timeout: 3500 }
+                    );
+                } else {
+                    this.createMapInstance([105.81, 21.03], 12.2, false);
+                }
+            },
+
+            createMapInstance(centerCoords, zoomLevel, showUserMarker) {
+                if (this.map) return;
+
                 // Instantiating MapLibre
                 this.map = new maplibregl.Map({
                     container: 'map',
                     style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', // Vector style Positron
-                    center: [105.81, 21.03], // Đống Đa/Cầu Giấy Hanoi Center
-                    zoom: 12.2,
-                    cooperativeGestures: true // Better gesture control on mobile
+                    center: centerCoords,
+                    zoom: zoomLevel
                 });
 
                 // Zoom & Rotation control buttons
                 this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
+                // Geolocate control to track user location
+                const geolocate = new maplibregl.GeolocateControl({
+                    positionOptions: {
+                        enableHighAccuracy: true
+                    },
+                    trackUserLocation: true,
+                    showUserLocation: true
+                });
+                this.map.addControl(geolocate, 'top-right');
+
                 this.map.on('load', () => {
                     this.renderMarkers();
+                    
+                    if (showUserMarker) {
+                        geolocate.trigger();
+                    }
+
+                    // Smoothly remove loader
+                    const loader = document.getElementById('map-loader');
+                    if (loader) {
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.remove(), 300);
+                    }
                 });
 
                 // Watch filters to dynamically update markers and fit bounds
@@ -375,11 +454,15 @@
                     el.style.whiteSpace = 'nowrap';
                     el.innerHTML = p.price_label;
 
+                    const imgUrl = (p.image && (p.image.startsWith('http://') || p.image.startsWith('https://')))
+                        ? p.image
+                        : (p.image ? (p.image.startsWith('/') ? p.image : '/' + p.image) : '/images/apartment_1.png');
+
                     // Detail popup markup inside map
                     const popupHTML = `
                         <div class="p-1 min-w-[210px] text-left">
                             <a href="/property/${p.id}" class="block overflow-hidden rounded-xl mb-2 group">
-                                <img src="/${p.image}" class="w-full h-24 object-cover group-hover:scale-105 transition duration-300">
+                                <img src="${imgUrl}" class="w-full h-24 object-cover group-hover:scale-105 transition duration-300">
                             </a>
                             <div class="px-1.5 pb-1">
                                 <div class="flex items-center gap-1.5 mb-1.5">

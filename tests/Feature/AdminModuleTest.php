@@ -416,4 +416,60 @@ class AdminModuleTest extends TestCase
 
         $response->assertRedirect('/admin');
     }
+
+    /**
+     * Test admin can view profile page.
+     */
+    public function test_admin_can_view_profile_page(): void
+    {
+        $response = $this->actingAs($this->adminUser)->get('/profile');
+        $response->assertStatus(200);
+        $response->assertSee('Ban quản trị');
+        $response->assertSee('Quay lại Admin Panel');
+        // Admin should not see Tenant or Owner specific tabs
+        $response->assertDontSee('Tin yêu thích');
+        $response->assertDontSee('Lịch hẹn xem nhà');
+    }
+
+    /**
+     * Test admin can update profile details.
+     */
+    public function test_admin_can_update_profile_details(): void
+    {
+        $updatedName = 'Admin Updated Name';
+        $updatedEmail = 'admin.updated.' . time() . '@nks.com.vn';
+        $updatedPhone = '0987654321';
+
+        $response = $this->actingAs($this->adminUser)->post('/profile', [
+            'name' => $updatedName,
+            'email' => $updatedEmail,
+            'phone' => $updatedPhone,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->adminUser->refresh();
+        $this->assertEquals($updatedName, $this->adminUser->name);
+        $this->assertEquals($updatedEmail, $this->adminUser->email);
+        $this->assertEquals($updatedPhone, $this->adminUser->phone);
+    }
+
+    /**
+     * Test admin can change password.
+     */
+    public function test_admin_can_change_password(): void
+    {
+        $response = $this->actingAs($this->adminUser)->post('/profile/password', [
+            'current_password' => 'password',
+            'new_password' => 'newpassword123',
+            'new_password_confirmation' => 'newpassword123',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->adminUser->refresh();
+        $this->assertTrue(Hash::check('newpassword123', $this->adminUser->password));
+    }
 }

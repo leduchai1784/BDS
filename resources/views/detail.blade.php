@@ -211,27 +211,22 @@
                 </div>
             </div>
 
-            <!-- 5. Mock Map Section -->
+            <!-- 5. Real Interactive Map Section -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
                 <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
                     <i class="fa-solid fa-map-location-dot text-primary"></i>
                     <span>Bản đồ vị trí</span>
                 </h3>
-                <div class="relative h-[250px] sm:h-[320px] rounded-2xl overflow-hidden border border-slate-100 bg-slate-200">
-                    <img 
-                        src="{{ asset('images/hero_bg.png') }}" 
-                        alt="Location map" 
-                        class="w-full h-full object-cover opacity-60 filter blur-xs"
+                <div class="relative rounded-2xl overflow-hidden border border-slate-150 shadow-sm">
+                    <div id="property-detail-map" class="h-[250px] sm:h-[320px] bg-slate-100"></div>
+                    <!-- View on Large Map Floating Button -->
+                    <a 
+                        href="/map?lat={{ $property['lat'] }}&lng={{ $property['lng'] }}&id={{ $property['id'] }}" 
+                        class="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-xs px-4 py-2.5 rounded-xl text-[11px] font-extrabold text-slate-700 hover:text-white bg-white hover:bg-primary border border-slate-200/60 shadow-lg transition duration-200 flex items-center gap-2"
                     >
-                    <div class="absolute inset-0 bg-slate-900/10 flex items-center justify-center">
-                        <div class="flex flex-col items-center bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl border border-slate-100 max-w-sm text-center">
-                            <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-xl shadow-md mb-3">
-                                <i class="fa-solid fa-location-dot animate-bounce"></i>
-                            </div>
-                            <h4 class="text-sm font-bold text-slate-800 mb-1">Khu vực {{ $property['location'] }}</h4>
-                            <p class="text-[11px] text-slate-500 font-medium">Bản đồ đang được chuẩn bị. Hãy liên hệ với môi giới để được dẫn đi xem nhà trực tiếp.</p>
-                        </div>
-                    </div>
+                        <i class="fa-solid fa-expand text-xs"></i>
+                        <span>Xem bản đồ lớn</span>
+                    </a>
                 </div>
             </div>
 
@@ -440,3 +435,63 @@
     </a>
 </div>
 @endsection
+
+@push('scripts')
+<!-- MapLibre GL JS CSS & SDK -->
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.js"></script>
+<style>
+    /* Custom MapLibre Popups Style for Detail Map */
+    #property-detail-map .maplibregl-popup-content {
+        padding: 8px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    }
+    #property-detail-map .maplibregl-popup-close-button {
+        display: none !important;
+    }
+    #property-detail-map .maplibregl-popup-tip {
+        border-top-color: #ffffff !important;
+        border-bottom-color: #ffffff !important;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!document.getElementById('property-detail-map')) return;
+        
+        const lat = {{ $property['lat'] }};
+        const lng = {{ $property['lng'] }};
+        
+        const map = new maplibregl.Map({
+            container: 'property-detail-map',
+            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            center: [lng, lat],
+            zoom: 14.5,
+            scrollZoom: false
+        });
+
+        // Add controls
+        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+        // Custom HTML element for Marker (Price Bubble)
+        const el = document.createElement('div');
+        el.className = 'w-9 h-9 rounded-full bg-primary border-4 border-white shadow-xl flex items-center justify-center cursor-pointer hover:scale-110 transition duration-200';
+        el.innerHTML = '<i class="fa-solid fa-house-chimney text-xs text-white"></i>';
+
+        const popup = new maplibregl.Popup({ 
+            offset: 15,
+            closeOnClick: false
+        }).setHTML('<a href="/map?lat={{ $property['lat'] }}&lng={{ $property['lng'] }}&id={{ $property['id'] }}" class="text-[11px] font-extrabold text-slate-800 p-1 leading-snug hover:text-primary transition block text-left">{{ $property['title'] }}</a>');
+
+        // Add Marker
+        const marker = new maplibregl.Marker({ element: el })
+            .setLngLat([lng, lat])
+            .setPopup(popup)
+            .addTo(map);
+
+        // Auto open popup
+        marker.togglePopup();
+    });
+</script>
+@endpush

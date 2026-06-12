@@ -133,7 +133,23 @@
                                 {{ $stats['total_properties'] }}
                             </span>
                         </button>
-                        @else
+                        
+                        <button 
+                            @click="activeTab = 'appointments'; window.history.pushState(null, '', '?tab=appointments');" 
+                            :class="activeTab === 'appointments' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-calendar-days text-sm"></i>
+                                <span>Lịch hẹn khách đặt</span>
+                            </div>
+                            <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                {{ $stats['total_appointments'] }}
+                            </span>
+                        </button>
+                        @endif
+
+                        @if(Auth::user()->role === 'tenant')
                         <button 
                             @click="activeTab = 'favorites'; window.history.pushState(null, '', '?tab=favorites');" 
                             :class="activeTab === 'favorites' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
@@ -147,7 +163,6 @@
                                 {{ $stats['total_favorites'] }}
                             </span>
                         </button>
-                        @endif
 
                         <button 
                             @click="activeTab = 'appointments'; window.history.pushState(null, '', '?tab=appointments');" 
@@ -156,12 +171,13 @@
                         >
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-calendar-days text-sm"></i>
-                                <span>{{ Auth::user()->role === 'owner' ? 'Lịch hẹn khách đặt' : 'Lịch hẹn xem nhà' }}</span>
+                                <span>Lịch hẹn xem nhà</span>
                             </div>
                             <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
                                 {{ $stats['total_appointments'] }}
                             </span>
                         </button>
+                        @endif
 
                         <button 
                             @click="activeTab = 'password'; window.history.pushState(null, '', '?tab=password');" 
@@ -177,8 +193,8 @@
                             href="{{ route('admin.dashboard') }}" 
                             class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
                         >
-                            <i class="fa-solid fa-shield-halved text-sm"></i>
-                            <span>Trang quản trị (Admin)</span>
+                            <i class="fa-solid fa-circle-arrow-left text-sm"></i>
+                            <span>Quay lại Admin Panel</span>
                         </a>
                         @endif
 
@@ -245,7 +261,7 @@
                             </div>
                         </div>
                     </div>
-                    @else
+                    @elseif(Auth::user()->role === 'tenant')
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <!-- Stat Item 1 -->
                         <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
@@ -500,7 +516,7 @@
                     @endif
                 </div>
                 @endif
-                @else
+                @elseif(Auth::user()->role === 'tenant')
                 <div x-show="activeTab === 'favorites'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     <div class="pb-5 border-b border-slate-100 mb-6">
                         <h2 class="text-xl font-bold text-slate-800">Tin yêu thích đã lưu</h2>
@@ -524,6 +540,7 @@
                 </div>
                 @endif
 
+                @if(Auth::user()->role !== 'admin')
                 <!-- TAB 3: Appointments (Dynamic for Owner and Tenant) -->
                 <div x-show="activeTab === 'appointments'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     <div class="pb-5 border-b border-slate-100 mb-6">
@@ -705,6 +722,7 @@
                         @endif
                     </div>
                 </div>
+                @endif
 
                 <!-- TAB 4: Change Password (Giai đoạn 7) -->
                 <div x-show="activeTab === 'password'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>

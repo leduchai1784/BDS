@@ -30,6 +30,24 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Handle admin profile view
+        if ($user->role === 'admin') {
+            return view('profile', [
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'avatar' => $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0077bb&color=fff',
+                    'role' => 'Quản trị viên',
+                    'join_date' => $user->created_at ? $user->created_at->format('d/m/Y') : '06/01/2015'
+                ],
+                'stats' => null,
+                'properties' => collect(),
+                'appointments' => collect()
+            ]);
+        }
+
         $favorites = $this->wishlistService->getUserFavorites($user->id);
         
         // Check user role

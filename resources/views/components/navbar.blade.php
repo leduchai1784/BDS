@@ -90,7 +90,7 @@
                         <a href="{{ route('profile.index', ['tab' => 'appointments']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn khách đặt
                         </a>
-                        @else
+                        @elseif(Auth::user()->role === 'tenant')
                         <a href="{{ route('profile.index', ['tab' => 'favorites']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin đăng đã lưu
                         </a>
@@ -115,18 +115,57 @@
             @endauth
 
             @guest
-            <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5">
+            <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5" x-data="{ guestDropdownOpen: false }">
+                <!-- Đăng tin miễn phí -->
                 <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap">
                     <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
                 </a>
-                <a href="{{ route('login') }}" :class="isScrolled ? 'text-slate-700 hover:text-primary' : 'text-slate-100 hover:text-white'" class="font-bold text-sm transition duration-150 whitespace-nowrap">Đăng nhập</a>
-                <a 
-                    href="{{ route('register') }}" 
-                    :class="isScrolled ? 'border-primary text-primary hover:bg-primary hover:text-white' : 'border-white text-white hover:bg-white hover:text-slate-900'"
-                    class="inline-flex items-center justify-center px-4 py-2 border-2 text-xs lg:text-sm font-bold rounded-xl transition duration-200 whitespace-nowrap"
-                >
-                    Đăng ký
-                </a>
+
+                <!-- Guest Account Dropdown -->
+                <div class="relative flex-shrink-0">
+                    <button 
+                        @click="guestDropdownOpen = !guestDropdownOpen"
+                        @click.away="guestDropdownOpen = false"
+                        type="button"
+                        class="flex items-center space-x-2 focus:outline-none cursor-pointer py-1.5 px-3 rounded-xl transition whitespace-nowrap flex-shrink-0"
+                        :class="isScrolled ? 'hover:bg-slate-50' : 'hover:bg-white/10'"
+                    >
+                        <i 
+                            class="fa-regular fa-circle-user text-lg transition-colors"
+                            :class="isScrolled ? 'text-slate-600' : 'text-slate-200'"
+                        ></i>
+                        <span 
+                            class="text-sm font-bold transition-colors duration-250 whitespace-nowrap"
+                            :class="isScrolled ? 'text-slate-700' : 'text-slate-100'"
+                        >
+                            Tài khoản
+                        </span>
+                        <i 
+                            class="fa-solid fa-chevron-down text-[10px] transition duration-200"
+                            :class="[isScrolled ? 'text-slate-500' : 'text-slate-300', guestDropdownOpen ? 'rotate-180' : '']"
+                        ></i>
+                    </button>
+
+                    <!-- Dropdown Panel -->
+                    <div 
+                        x-show="guestDropdownOpen"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
+                        x-cloak
+                    >
+                        <a href="{{ route('login') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                            <i class="fa-solid fa-right-to-bracket mr-2 text-sm text-slate-400"></i> Đăng nhập
+                        </a>
+                        <a href="{{ route('register') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
+                            <i class="fa-solid fa-user-plus mr-2 text-sm text-slate-400"></i> Đăng ký
+                        </a>
+                    </div>
+                </div>
             </div>
             @endguest
 
