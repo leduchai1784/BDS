@@ -688,6 +688,7 @@
                                                 <th scope="col" class="px-5 py-4">Bất động sản</th>
                                                 <th scope="col" class="px-5 py-4">Chủ nhà</th>
                                                 <th scope="col" class="px-5 py-4">Trạng thái</th>
+                                                <th scope="col" class="px-5 py-4 text-right">Hành động</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
@@ -711,6 +712,18 @@
                                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Lý do từ chối: {{ $app->reject_reason }}">Đã từ chối</span>
                                                         @elseif($app->status === 'completed')
                                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-5 py-4 whitespace-nowrap text-right">
+                                                        @if($app->status === 'pending' || $app->status === 'approved')
+                                                            <form action="{{ route('appointments.cancel', $app->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn xem nhà này không?');">
+                                                                @csrf
+                                                                <button type="submit" class="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                    Hủy lịch
+                                                                </button>
+                                                            </form>
+                                                        @else
+                                                            <span class="text-[10px] text-slate-400">Không có thao tác</span>
                                                         @endif
                                                     </td>
                                                 </tr>

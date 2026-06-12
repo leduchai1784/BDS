@@ -259,7 +259,49 @@
                 </div>
 
                 <!-- Action Buttons: Phone & Zalo & Save -->
-                <div class="grid grid-cols-12 gap-3 mb-6" x-data="{ liked: false }">
+                <div 
+                    x-data="{ 
+                        liked: {{ Auth::check() && app(App\Services\WishlistService::class)->isFavorite(Auth::id(), $property['id']) ? 'true' : 'false' }},
+                        isProcessing: false,
+                        toggleLike() {
+                            @guest
+                                window.location.href = '{{ route('login') }}';
+                                return;
+                            @endguest
+
+                            @if(Auth::check() && Auth::user()->role !== 'tenant')
+                                alert('Chỉ tài khoản khách thuê mới có thể sử dụng chức năng yêu thích.');
+                                return;
+                            @endif
+
+                            if (this.isProcessing) return;
+                            this.isProcessing = true;
+
+                            fetch('{{ route('wishlist.toggle') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    property_id: {{ $property['id'] }}
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                this.isProcessing = false;
+                                if (data.success) {
+                                    this.liked = data.is_favorite;
+                                }
+                            })
+                            .catch(error => {
+                                this.isProcessing = false;
+                                console.error('Error:', error);
+                            });
+                        }
+                    }"
+                    class="grid grid-cols-12 gap-3 mb-6"
+                >
                     <!-- Call Button -->
                     <a 
                         href="tel:{{ $property['agent']['phone'] }}" 
@@ -279,24 +321,73 @@
 
                     <!-- Wishlist Save Button -->
                     <button 
-                        @click="liked = !liked"
+                        @click="toggleLike()"
                         type="button"
                         :class="liked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-slate-50 hover:bg-slate-100 text-slate-500 border-slate-200'"
                         class="col-span-2 rounded-2xl flex items-center justify-center border transition cursor-pointer active:scale-95 h-[48px]"
                         title="Lưu yêu thích"
                     >
-                        <i class="fa-solid fa-heart text-base transition" :class="liked ? 'text-red-500Scale' : 'text-slate-400'"></i>
+                        <i class="fa-solid fa-heart text-base transition" :class="liked ? 'text-red-500' : 'text-slate-400'"></i>
                     </button>
                 </div>
 
                 <!-- Booking Appointment Form ("Đặt lịch xem nhà") -->
                 <div 
                     x-data="{ 
-                        name: '', 
-                        phone: '', 
+                        name: '{{ Auth::check() ? Auth::user()->name : '' }}', 
+                        phone: '{{ Auth::check() ? Auth::user()->phone : '' }}', 
                         date: '', 
                         time: '', 
-                        submitted: false 
+                        message: '',
+                        submitted: false,
+                        errorMessage: '',
+                        isProcessing: false,
+                        submitForm() {
+                            @guest
+                                window.location.href = '{{ route('login') }}';
+                                return;
+                            @endguest
+
+                            @if(Auth::check() && Auth::user()->role !== 'tenant')
+                                alert('Chỉ tài khoản khách thuê mới có thể đặt lịch xem nhà.');
+                                return;
+                            @endif
+
+                            if (this.isProcessing) return;
+                            this.isProcessing = true;
+                            this.errorMessage = '';
+
+                            fetch('{{ route('appointments.book') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    property_id: {{ $property['id'] }},
+                                    name: this.name,
+                                    phone: this.phone,
+                                    date: this.date,
+                                    time: this.time,
+                                    message: this.message
+                                })
+                            })
+                            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                            .then(res => {
+                                this.isProcessing = false;
+                                if (res.status === 200 || res.status === 201 || res.body.success) {
+                                    this.submitted = true;
+                                } else {
+                                    this.errorMessage = res.body.message || 'Có lỗi xảy ra, vui lòng thử lại.';
+                                }
+                            })
+                            .catch(error => {
+                                this.isProcessing = false;
+                                this.errorMessage = 'Lỗi kết nối mạng, vui lòng thử lại.';
+                                console.error('Error:', error);
+                            });
+                        }
                     }"
                     class="border-t border-slate-100 pt-5"
                 >
@@ -321,7 +412,13 @@
                     </div>
 
                     <!-- Form State -->
-                    <form x-show="!submitted" @submit.prevent="submitted = true" class="space-y-3.5">
+                    <form x-show="!submitted" @submit.prevent="submitForm()" class="space-y-3.5">
+                        <!-- Error Message if any -->
+                        <div x-show="errorMessage" class="p-3 bg-red-50 text-red-500 rounded-xl text-[11px] font-bold" x-cloak>
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                            <span x-text="errorMessage"></span>
+                        </div>
+
                         <!-- Input Name -->
                         <div>
                             <input 
@@ -370,12 +467,24 @@
                             </div>
                         </div>
 
+                        <!-- Note / Message -->
+                        <div>
+                            <textarea 
+                                x-model="message"
+                                placeholder="Ghi chú thêm cho chủ nhà (nếu có)..." 
+                                rows="2"
+                                class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl px-4 py-2 text-xs font-medium outline-none transition resize-none"
+                            ></textarea>
+                        </div>
+
                         <!-- Form Submit Button -->
                         <button 
                             type="submit" 
-                            class="w-full bg-primary hover:bg-primary-hover text-white text-xs font-bold py-3.5 px-4 rounded-xl shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98"
+                            :disabled="isProcessing"
+                            class="w-full bg-primary hover:bg-primary-hover text-white text-xs font-bold py-3.5 px-4 rounded-xl shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 disabled:opacity-55"
                         >
-                            Gửi yêu cầu đặt lịch
+                            <span x-show="!isProcessing">Gửi yêu cầu đặt lịch</span>
+                            <span x-show="isProcessing"><i class="fa-solid fa-spinner animate-spin mr-1"></i> Đang xử lý...</span>
                         </button>
                     </form>
                 </div>

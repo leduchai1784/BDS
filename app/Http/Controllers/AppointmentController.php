@@ -53,4 +53,24 @@ class AppointmentController extends Controller
 
         return redirect()->back()->with('success', 'Yêu cầu đặt lịch hẹn xem nhà đã được gửi thành công! Người đại diện sẽ liên hệ sớm nhất.');
     }
+
+    /**
+     * Cancel the specified appointment by the tenant.
+     */
+    public function cancel($id)
+    {
+        $appointment = \App\Models\Appointment::findOrFail($id);
+
+        // Security Check: Only the owner of the appointment can cancel it
+        abort_if($appointment->user_id !== Auth::id(), 403, 'Bạn không có quyền hủy lịch hẹn này.');
+
+        // Update status to rejected
+        $appointment->update([
+            'status' => 'rejected',
+            'reject_reason' => 'Khách thuê hủy lịch hẹn'
+        ]);
+
+        return redirect()->route('profile.index', ['tab' => 'appointments'])
+            ->with('success', 'Hủy lịch hẹn thành công!');
+    }
 }

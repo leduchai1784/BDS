@@ -286,6 +286,18 @@ Route::get('/map', function (\Illuminate\Http\Request $request, \App\Services\Pr
     return view('map', ['properties' => $properties]);
 });
 
+// Route dành riêng cho Khách thuê (Tenant) (Bảo vệ bởi auth và tenant middleware)
+Route::middleware(['auth', 'tenant'])->group(function () {
+    // Yêu thích tin đăng
+    Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Đặt lịch xem nhà
+    Route::post('/appointments', [App\Http\Controllers\AppointmentController::class, 'book'])->name('appointments.book');
+
+    // Hủy lịch hẹn
+    Route::post('/appointments/{id}/cancel', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+});
+
 // Route đăng nhập / đăng ký (Bảo vệ bởi middleware guest)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
