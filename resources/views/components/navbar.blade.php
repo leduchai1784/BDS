@@ -21,9 +21,48 @@
             <!-- Desktop Navigation Menu -->
             <nav class="hidden md:flex space-x-3 lg:space-x-5 items-center">
                 <a href="/" :class="isScrolled ? 'text-primary' : 'text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Trang chủ</a>
-                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Thuê Căn hộ</a>
-                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Thuê Nhà riêng</a>
-                <a href="/listings" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Thuê Văn phòng</a>
+                <div 
+                    class="relative" 
+                    x-data="{ rentDropdownOpen: false }"
+                    @mouseenter="rentDropdownOpen = true"
+                    @mouseleave="rentDropdownOpen = false"
+                >
+                    <button 
+                        @click="rentDropdownOpen = !rentDropdownOpen"
+                        type="button"
+                        class="flex items-center space-x-1.5 font-bold text-sm lg:text-base cursor-pointer focus:outline-none transition duration-150 whitespace-nowrap"
+                        :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'"
+                    >
+                        <span>Thuê</span>
+                        <i 
+                            class="fa-solid fa-chevron-down text-[10px] transition duration-200" 
+                            :class="rentDropdownOpen ? 'rotate-180' : ''"
+                        ></i>
+                    </button>
+                    
+                    <!-- Dropdown Panel -->
+                    <div 
+                        x-show="rentDropdownOpen"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute left-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
+                        x-cloak
+                    >
+                        <a href="/listings?type=apartment" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                            Thuê Căn hộ
+                        </a>
+                        <a href="/listings?type=house" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
+                            Thuê Nhà riêng
+                        </a>
+                        <a href="/listings?type=office" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
+                            Thuê Văn phòng
+                        </a>
+                    </div>
+                </div>
                 <a href="/map" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
                 <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
                 <a href="#contact" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Liên hệ</a>
@@ -205,9 +244,28 @@
     >
         <div class="px-4 pt-2 pb-6 space-y-2">
             <a href="/" class="block px-3 py-3 rounded-xl text-base font-semibold text-primary bg-primary-light">Trang chủ</a>
-            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Thuê Căn hộ</a>
-            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Thuê Nhà riêng</a>
-            <a href="/listings" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Thuê Văn phòng</a>
+            <div x-data="{ mobileRentOpen: false }" class="space-y-1">
+                <button 
+                    @click="mobileRentOpen = !mobileRentOpen"
+                    type="button"
+                    class="w-full flex items-center justify-between px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:outline-none"
+                >
+                    <span>Thuê</span>
+                    <i class="fa-solid fa-chevron-down text-xs transition duration-200" :class="mobileRentOpen ? 'rotate-180' : ''"></i>
+                </button>
+                <div 
+                    x-show="mobileRentOpen" 
+                    x-transition:enter="transition ease-out duration-100" 
+                    x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                    x-transition:enter-end="opacity-100 transform translate-y-0" 
+                    class="pl-4 space-y-1" 
+                    x-cloak
+                >
+                    <a href="/listings?type=apartment" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">Thuê Căn hộ</a>
+                    <a href="/listings?type=house" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">Thuê Nhà riêng</a>
+                    <a href="/listings?type=office" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">Thuê Văn phòng</a>
+                </div>
+            </div>
             <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Bản đồ</a>
             <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
             <a href="#contact" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Liên hệ</a>
