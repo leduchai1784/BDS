@@ -241,7 +241,8 @@
                 type="text" 
                 name="location" 
                 id="location-input-create"
-                value="{{ old('location') }}"
+                x-model="locationText"
+                @input.debounce.800ms="geocodeAddress()"
                 required 
                 placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân, Cầu Giấy, Hà Nội" 
                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
@@ -372,6 +373,7 @@
             lat: {{ old('lat', 21.03) }},
             lng: {{ old('lng', 105.81) }},
             coordsInput: '{{ old('lat', 21.03) }}, {{ old('lng', 105.81) }}',
+            locationText: '{{ old('location') }}',
             mainPreview: '',
             galleryPreviews: [],
             map: null,
@@ -382,12 +384,14 @@
                     if (value === 'create_property' && !this.map) {
                         this.$nextTick(() => {
                             this.initMap();
+                            this.detectCurrentLocation();
                         });
                     }
                 });
                 if (this.$parent.activeTab === 'create_property') {
                     this.$nextTick(() => {
                         this.initMap();
+                        this.detectCurrentLocation();
                     });
                 }
             },
@@ -425,6 +429,43 @@
                     this.marker.setLngLat(lngLat);
                     this.coordsInput = `${this.lat}, ${this.lng}`;
                 });
+            },
+
+            detectCurrentLocation() {
+                @if(!old('lat') && !old('lng'))
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        this.lat = parseFloat(position.coords.latitude.toFixed(6));
+                        this.lng = parseFloat(position.coords.longitude.toFixed(6));
+                        this.coordsInput = `${this.lat}, ${this.lng}`;
+                        if (this.marker && this.map) {
+                            this.marker.setLngLat([this.lng, this.lat]);
+                            this.map.setCenter([this.lng, this.lat]);
+                        }
+                    }, err => {
+                        console.log("Geolocation error or permission denied:", err);
+                    });
+                }
+                @endif
+            },
+
+            geocodeAddress() {
+                if (!this.locationText || this.locationText.trim().length < 5) return;
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.locationText)}&limit=1`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const result = data[0];
+                            this.lat = parseFloat(parseFloat(result.lat).toFixed(6));
+                            this.lng = parseFloat(parseFloat(result.lon).toFixed(6));
+                            this.coordsInput = `${this.lat}, ${this.lng}`;
+                            if (this.marker && this.map) {
+                                this.marker.setLngLat([this.lng, this.lat]);
+                                this.map.setCenter([this.lng, this.lat]);
+                            }
+                        }
+                    })
+                    .catch(err => console.error("Geocoding error:", err));
             },
 
             parseCoords() {
