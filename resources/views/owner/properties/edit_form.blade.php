@@ -252,32 +252,22 @@
             @enderror
         </div>
 
-        <!-- Visible Inputs for Lat / Lng -->
-        <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Vĩ độ (Latitude) <span class="text-red-500">*</span></label>
-                <input 
-                    type="number" 
-                    step="any"
-                    name="lat" 
-                    x-model.number="lat"
-                    @input="if (marker && map) { marker.setLngLat([parseFloat(lng) || 0, parseFloat(lat) || 0]); map.setCenter([parseFloat(lng) || 0, parseFloat(lat) || 0]); }"
-                    required 
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                >
-            </div>
-            <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Kinh độ (Longitude) <span class="text-red-500">*</span></label>
-                <input 
-                    type="number" 
-                    step="any"
-                    name="lng" 
-                    x-model.number="lng"
-                    @input="if (marker && map) { marker.setLngLat([parseFloat(lng) || 0, parseFloat(lat) || 0]); map.setCenter([parseFloat(lng) || 0, parseFloat(lat) || 0]); }"
-                    required 
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                >
-            </div>
+        <!-- Hidden Inputs for Form Submission -->
+        <input type="hidden" name="lat" :value="lat">
+        <input type="hidden" name="lng" :value="lng">
+
+        <!-- Single Coordinates Input Box -->
+        <div class="space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tọa độ bản đồ (Vĩ độ, Kinh độ) <span class="text-red-500">*</span></label>
+            <input 
+                type="text" 
+                x-model="coordsInput"
+                @input="parseCoords()"
+                required
+                placeholder="Ví dụ: 21.03, 105.81" 
+                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            >
+            <p class="text-[9px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Định dạng: vĩ_độ, kinh_độ (Ví dụ copy từ Google Maps: 21.0285, 105.8521)</p>
         </div>
 
         <!-- Map Selector Section -->
@@ -404,6 +394,7 @@
         return {
             lat: {{ old('lat', $property->lat ?? 21.03) }},
             lng: {{ old('lng', $property->lng ?? 105.81) }},
+            coordsInput: '{{ old('lat', $property->lat ?? 21.03) }}, {{ old('lng', $property->lng ?? 105.81) }}',
             mainPreview: '',
             galleryPreviews: [],
             deletedImages: [], // Holds paths of images to be deleted
@@ -447,6 +438,7 @@
                     const lngLat = this.marker.getLngLat();
                     this.lat = parseFloat(lngLat.lat.toFixed(6));
                     this.lng = parseFloat(lngLat.lng.toFixed(6));
+                    this.coordsInput = `${this.lat}, ${this.lng}`;
                 });
 
                 // Update marker position on click
@@ -455,7 +447,25 @@
                     this.lat = parseFloat(lngLat.lat.toFixed(6));
                     this.lng = parseFloat(lngLat.lng.toFixed(6));
                     this.marker.setLngLat(lngLat);
+                    this.coordsInput = `${this.lat}, ${this.lng}`;
                 });
+            },
+
+            parseCoords() {
+                const input = this.coordsInput.trim();
+                const parts = input.split(/[\s,]+/);
+                if (parts.length >= 2) {
+                    const latVal = parseFloat(parts[0]);
+                    const lngVal = parseFloat(parts[1]);
+                    if (!isNaN(latVal) && !isNaN(lngVal)) {
+                        this.lat = latVal;
+                        this.lng = lngVal;
+                        if (this.marker && this.map) {
+                            this.marker.setLngLat([lngVal, latVal]);
+                            this.map.setCenter([lngVal, latVal]);
+                        }
+                    }
+                }
             },
 
             previewMainImage(event) {
