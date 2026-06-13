@@ -211,46 +211,56 @@
             <!-- Tỉnh/Thành phố -->
             <div class="space-y-1">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
-                <input 
-                    type="text" 
-                    name="city" 
-                    x-model="cityText"
-                    @input.debounce.800ms="geocodeAddress()"
-                    @change="geocodeAddress()"
-                    required 
-                    placeholder="Ví dụ: Hà Nội" 
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                >
+                <div class="relative">
+                    <select 
+                        x-model="selectedProvince"
+                        @change="
+                            cityText = selectedProvince;
+                            selectedDistrict = '';
+                            districtText = '';
+                            selectedWard = '';
+                            wardText = '';
+                            geocodeAddress();
+                        "
+                        required 
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition text-left"
+                    >
+                        <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                        <template x-for="p in provinces" :key="p.Id">
+                            <option :value="p.Name" x-text="p.Name"></option>
+                        </template>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+                <input type="hidden" name="city" :value="cityText">
                 @error('city')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Quận/Khu vực -->
+            <!-- Quận/Huyện -->
             <div class="space-y-1">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện <span class="text-red-500">*</span></label>
                 <div class="relative">
                     <select 
-                        name="district" 
-                        x-model="districtText"
-                        @change="geocodeAddress()"
+                        x-model="selectedDistrict"
+                        @change="
+                            districtText = selectedDistrict;
+                            selectedWard = '';
+                            wardText = '';
+                            geocodeAddress();
+                        "
                         required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition text-left"
                     >
                         <option value="">-- Chọn Quận/Huyện --</option>
-                        <option value="GL">Gia Lâm (GL)</option>
-                        <option value="BD">Ba Đình (BD)</option>
-                        <option value="TH">Tây Hồ (TH)</option>
-                        <option value="CG">Cầu Giấy (CG)</option>
-                        <option value="DD">Đống Đa (DD)</option>
-                        <option value="HK">Hoàn Kiếm (HK)</option>
-                        <option value="HBT">Hai Bà Trưng (HBT)</option>
-                        <option value="TX">Thanh Xuân (TX)</option>
-                        <option value="NTL">Nam Từ Liêm (NTL)</option>
-                        <option value="BTL">Bắc Từ Liêm (BTL)</option>
+                        <template x-for="d in (provinces.find(p => p.Name === selectedProvince)?.Districts || [])" :key="d.Id">
+                            <option :value="d.Name" x-text="d.Name"></option>
+                        </template>
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                 </div>
+                <input type="hidden" name="district" :value="getDistrictCode(districtText)">
                 @error('district')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
@@ -259,16 +269,24 @@
             <!-- Phường/Xã -->
             <div class="space-y-1">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span class="text-red-500">*</span></label>
-                <input 
-                    type="text" 
-                    name="ward" 
-                    x-model="wardText"
-                    @input.debounce.800ms="geocodeAddress()"
-                    @change="geocodeAddress()"
-                    required 
-                    placeholder="Ví dụ: Dịch Vọng Hậu" 
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                >
+                <div class="relative">
+                    <select 
+                        x-model="selectedWard"
+                        @change="
+                            wardText = selectedWard;
+                            geocodeAddress();
+                        "
+                        required 
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition text-left"
+                    >
+                        <option value="">-- Chọn Phường/Xã --</option>
+                        <template x-for="w in (provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || [])" :key="w.Id">
+                            <option :value="w.Name" x-text="w.Name"></option>
+                        </template>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+                <input type="hidden" name="ward" :value="wardText">
                 @error('ward')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
@@ -286,7 +304,7 @@
                     @change="geocodeAddress()"
                     required 
                     placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân" 
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition text-left"
                 >
                 @error('address')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
@@ -459,13 +477,25 @@
             locationText: '{{ old('address') }}',
             wardText: '{{ old('ward') }}',
             districtText: '{{ old('district') }}',
-            cityText: '{{ old('city', 'Hà Nội') }}',
+            cityText: '{{ old('city', 'Thành phố Hà Nội') }}',
+            provinces: [],
+            selectedProvince: '',
+            selectedDistrict: '',
+            selectedWard: '',
             mainPreview: '',
             galleryPreviews: [],
             map: null,
             marker: null,
 
             init() {
+                fetch('/vietnam_provinces.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        this.provinces = data;
+                        this.initializeDropdowns();
+                    })
+                    .catch(err => console.error("Error loading provinces:", err));
+
                 this.$watch(() => this.activeTab, value => {
                     if (value === 'create_property' && !this.map) {
                         this.$nextTick(() => {
@@ -550,18 +580,9 @@
                 if (this.wardText && this.wardText.trim().length >= 3) {
                     parts.push(this.wardText.trim());
                 }
-                
-                const selectEl = this.$el.querySelector('select[name="district"]');
-                let districtLabel = '';
-                if (selectEl && selectEl.selectedIndex > 0) {
-                    districtLabel = selectEl.options[selectEl.selectedIndex].text;
-                    // Clean up the (XX) abbreviation from district option label
-                    districtLabel = districtLabel.replace(/\(.*\)/, '').trim();
-                    parts.push(districtLabel);
-                } else if (this.districtText) {
-                    parts.push(this.districtText);
+                if (this.districtText && this.districtText.trim().length >= 3) {
+                    parts.push(this.districtText.trim());
                 }
-
                 if (this.cityText && this.cityText.trim().length >= 3) {
                     parts.push(this.cityText.trim());
                 }
@@ -570,6 +591,87 @@
 
                 const query = parts.join(', ');
                 this.geocodeQuery(query);
+            },
+
+            initializeDropdowns() {
+                if (!this.provinces || !this.provinces.length) return;
+                
+                // 1. Match city
+                if (this.cityText) {
+                    const matchCity = this.provinces.find(p => 
+                        p.Name.toLowerCase() === this.cityText.toLowerCase() ||
+                        p.Name.toLowerCase().replace(/^(thành phố|tỉnh)\s+/i, '') === this.cityText.toLowerCase()
+                    );
+                    if (matchCity) {
+                        this.selectedProvince = matchCity.Name;
+                    }
+                }
+                
+                // 2. Match district
+                if (this.districtText && this.selectedProvince) {
+                    const prov = this.provinces.find(p => p.Name === this.selectedProvince);
+                    if (prov) {
+                        const codeMap = {
+                            'GL': 'Gia Lâm', 'BD': 'Ba Đình', 'TH': 'Tây Hồ', 'CG': 'Cầu Giấy',
+                            'DD': 'Đống Đa', 'HK': 'Hoàn Kiếm', 'HBT': 'Hai Bà Trưng', 'TX': 'Thanh Xuân',
+                            'NTL': 'Nam Từ Liêm', 'BTL': 'Bắc Từ Liêm', 'Q1': 'Quận 1', 'Q3': 'Quận 3',
+                            'BT': 'Bình Thạnh', 'TD': 'Thủ Đức', 'Q10': 'Quận 10'
+                        };
+                        const searchDistrictName = codeMap[this.districtText] || this.districtText;
+                        
+                        const matchDist = prov.Districts.find(d => 
+                            d.Name.toLowerCase() === searchDistrictName.toLowerCase() ||
+                            d.Name.toLowerCase().replace(/^(quận|huyện|thị xã|thành phố)\s+/i, '') === searchDistrictName.toLowerCase()
+                        );
+                        if (matchDist) {
+                            this.selectedDistrict = matchDist.Name;
+                        }
+                    }
+                }
+                
+                // 3. Match ward
+                if (this.wardText && this.selectedDistrict && this.selectedProvince) {
+                    const prov = this.provinces.find(p => p.Name === this.selectedProvince);
+                    const dist = prov ? prov.Districts.find(d => d.Name === this.selectedDistrict) : null;
+                    if (dist) {
+                        const matchWard = dist.Wards.find(w => 
+                            w.Name.toLowerCase() === this.wardText.toLowerCase() ||
+                            w.Name.toLowerCase().replace(/^(phường|xã|thị trấn)\s+/i, '') === this.wardText.toLowerCase()
+                        );
+                        if (matchWard) {
+                            this.selectedWard = matchWard.Name;
+                        }
+                    }
+                }
+            },
+
+            getDistrictCode(name) {
+                if (!name) return '';
+                const cleanName = name.replace(/^(Quận|Huyện|Thị xã|Thành phố)\s+/i, '').trim();
+                const mapping = {
+                    'Gia Lâm': 'GL',
+                    'Ba Đình': 'BD',
+                    'Tây Hồ': 'TH',
+                    'Cầu Giấy': 'CG',
+                    'Đống Đa': 'DD',
+                    'Hoàn Kiếm': 'HK',
+                    'Hai Bà Trưng': 'HBT',
+                    'Thanh Xuân': 'TX',
+                    'Nam Từ Liêm': 'NTL',
+                    'Bắc Từ Liêm': 'BTL',
+                    'Quận 1': 'Q1',
+                    'Quận 3': 'Q3',
+                    'Bình Thạnh': 'BT',
+                    'Thủ Đức': 'TD',
+                    'Quận 10': 'Q10'
+                };
+                if (mapping[cleanName]) return mapping[cleanName];
+                for (const key in mapping) {
+                    if (cleanName.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
+                        return mapping[key];
+                    }
+                }
+                return cleanName.substring(0, 10);
             },
 
             geocodeQuery(query) {
