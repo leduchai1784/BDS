@@ -124,7 +124,7 @@ class OwnerModuleTest extends TestCase
             'title' => 'New Villa with Pool',
             'price' => 15000000,
             'agent_id' => $this->owner1->id,
-            'status' => 'pending'
+            'status' => 'approved'
         ]);
 
         $property = Property::where('title', 'New Villa with Pool')->first();

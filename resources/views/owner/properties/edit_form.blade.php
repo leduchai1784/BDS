@@ -252,9 +252,33 @@
             @enderror
         </div>
 
-        <!-- Hidden Inputs for Lat / Lng -->
-        <input type="hidden" name="lat" :value="lat">
-        <input type="hidden" name="lng" :value="lng">
+        <!-- Visible Inputs for Lat / Lng -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Vĩ độ (Latitude) <span class="text-red-500">*</span></label>
+                <input 
+                    type="number" 
+                    step="any"
+                    name="lat" 
+                    x-model.number="lat"
+                    @input="if (marker && map) { marker.setLngLat([parseFloat(lng) || 0, parseFloat(lat) || 0]); map.setCenter([parseFloat(lng) || 0, parseFloat(lat) || 0]); }"
+                    required 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+            </div>
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Kinh độ (Longitude) <span class="text-red-500">*</span></label>
+                <input 
+                    type="number" 
+                    step="any"
+                    name="lng" 
+                    x-model.number="lng"
+                    @input="if (marker && map) { marker.setLngLat([parseFloat(lng) || 0, parseFloat(lat) || 0]); map.setCenter([parseFloat(lng) || 0, parseFloat(lat) || 0]); }"
+                    required 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+            </div>
+        </div>
 
         <!-- Map Selector Section -->
         <div class="space-y-2">
@@ -263,11 +287,6 @@
             
             <!-- Map View Container -->
             <div id="picker-map-edit" class="h-[300px] w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
-            
-            <div class="flex items-center gap-4 text-[10px] font-bold text-slate-500 px-1">
-                <span>Vĩ độ (Lat): <span class="text-slate-800" x-text="lat"></span></span>
-                <span>Kinh độ (Lng): <span class="text-slate-800" x-text="lng"></span></span>
-            </div>
         </div>
     </div>
 

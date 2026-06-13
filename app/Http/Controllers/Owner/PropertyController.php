@@ -102,14 +102,14 @@ class PropertyController extends Controller
             'furniture' => $request->furniture,
             'legal' => $request->legal,
             'agent_id' => Auth::id(),
-            'status' => 'pending', // Waiting for admin approval
+            'status' => 'approved', // Automatically approved
             'is_vip' => false,
             'is_new' => true,
             'views' => 0,
         ]);
 
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Đăng tin mới thành công! Tin của bạn đang chờ phê duyệt từ quản trị viên.');
+            ->with('success', 'Đăng tin mới thành công! Tin của bạn đã được hiển thị trên trang chủ.');
     }
 
     /**
@@ -235,13 +235,13 @@ class PropertyController extends Controller
 
         $data['images'] = $currentGallery;
 
-        // Reset status to pending so admin re-approves after edit (optional, but standard for security)
-        $data['status'] = 'pending';
+        // Reset status to approved so it remains visible on homepage
+        $data['status'] = 'approved';
 
         $property->update($data);
 
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Cập nhật tin đăng thành công! Tin đăng đang chờ kiểm duyệt lại.');
+            ->with('success', 'Cập nhật tin đăng thành công! Tin đăng đã được cập nhật.');
     }
 
     /**
