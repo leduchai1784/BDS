@@ -318,7 +318,7 @@
             <p class="text-[10px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Kéo thả điểm đánh dấu (Marker) màu đỏ hoặc bấm trực tiếp lên bản đồ để chọn tọa độ chính xác.</p>
             
             <!-- Map View Container -->
-            <div id="picker-map-create" class="h-[300px] w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
+            <div id="picker-map-create" style="height: 300px; min-height: 300px;" class="w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
         </div>
     </div>
 
@@ -466,7 +466,7 @@
             marker: null,
 
             init() {
-                this.$watch('$parent.activeTab', value => {
+                this.$watch(() => this.activeTab, value => {
                     if (value === 'create_property' && !this.map) {
                         this.$nextTick(() => {
                             this.initMap();
@@ -474,7 +474,7 @@
                         });
                     }
                 });
-                if (this.$parent.activeTab === 'create_property') {
+                if (this.activeTab === 'create_property') {
                     this.$nextTick(() => {
                         this.initMap();
                         this.detectCurrentLocation();
