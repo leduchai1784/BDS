@@ -416,15 +416,8 @@
                     <div class="pb-5 border-b border-slate-100 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <h2 class="text-xl font-bold text-slate-800">Quản lý tin đăng</h2>
-                            <p class="text-xs text-slate-400 mt-1 font-semibold">Thêm, sửa, xóa và theo dõi trạng thái các bất động sản của bạn.</p>
+                            <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và quản lý các bất động sản đã đăng của bạn.</p>
                         </div>
-                        <button 
-                            type="button" 
-                            @click="activeTab = 'create_property'; window.history.pushState(null, '', '?tab=create_property');" 
-                            class="inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98"
-                        >
-                            <i class="fa-solid fa-plus mr-2"></i> Đăng tin mới
-                        </button>
                     </div>
 
                     @if($myProperties->isEmpty())
@@ -433,7 +426,7 @@
                                 <i class="fa-solid fa-folder-open"></i>
                             </div>
                             <p class="text-xs font-bold text-slate-500">Bạn chưa đăng bất kỳ bất động sản nào.</p>
-                            <p class="text-[10px] text-slate-400 mt-1">Bấm nút "Đăng tin mới" ở trên để bắt đầu.</p>
+                            <p class="text-[10px] text-slate-400 mt-1">Bấm nút "Đăng tin miễn phí" trên thanh điều hướng để bắt đầu.</p>
                         </div>
                     @else
                         <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
