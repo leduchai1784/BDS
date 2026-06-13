@@ -477,13 +477,12 @@
 
     <!-- Submit buttons -->
     <div class="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-8">
-        <button 
-            type="button"
-            @click="activeTab = 'properties'; window.history.pushState(null, '', '?tab=properties');" 
+        <a 
+            href="/profile?tab=properties"
             class="inline-flex items-center justify-center px-5 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer"
         >
             Hủy bỏ
-        </button>
+        </a>
         <button 
             type="submit" 
             class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"

@@ -85,11 +85,8 @@ class OwnerModuleTest extends TestCase
     public function test_owner_can_access_property_create(): void
     {
         $response = $this->actingAs($this->owner1)->get(route('properties.create'));
-        $response->assertRedirect(route('profile.index', ['tab' => 'create_property']));
-
-        $response2 = $this->actingAs($this->owner1)->get(route('profile.index', ['tab' => 'create_property']));
-        $response2->assertStatus(200);
-        $response2->assertSee('Đăng tin cho thuê mới');
+        $response->assertStatus(200);
+        $response->assertSee('Đăng tin cho thuê mới');
     }
 
     /**
@@ -169,18 +166,9 @@ class OwnerModuleTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->owner1)->get(route('properties.edit', $property->id));
-        $response->assertRedirect(route('profile.index', [
-            'tab' => 'edit_property',
-            'property_id' => $property->id
-        ]));
-
-        $response2 = $this->actingAs($this->owner1)->get(route('profile.index', [
-            'tab' => 'edit_property',
-            'property_id' => $property->id
-        ]));
-        $response2->assertStatus(200);
-        $response2->assertSee('Chỉnh sửa tin đăng');
-        $response2->assertSee('My Old Property');
+        $response->assertStatus(200);
+        $response->assertSee('Chỉnh sửa tin đăng');
+        $response->assertSee('My Old Property');
     }
 
     /**

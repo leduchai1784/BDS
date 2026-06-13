@@ -122,7 +122,7 @@
                         @if(Auth::user()->role === 'owner')
                         <button 
                             @click="activeTab = 'properties'; window.history.pushState(null, '', '?tab=properties');" 
-                            :class="activeTab === 'properties' || activeTab === 'create_property' || activeTab === 'edit_property' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            :class="activeTab === 'properties' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
                             class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                         >
                             <div class="flex items-center space-x-3">
@@ -505,26 +505,6 @@
                         </div>
                     @endif
                 </div>
-
-                <!-- TAB 2.1: Create Property (Embedded) -->
-                @if(Auth::user()->role === 'owner')
-                <div x-show="activeTab === 'create_property'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
-                    @include('owner.properties.create_form')
-                </div>
-                @endif
-
-                <!-- TAB 2.2: Edit Property (Embedded) -->
-                @if(Auth::user()->role === 'owner')
-                <div x-show="activeTab === 'edit_property'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
-                    @if(isset($property) && $property)
-                        @include('owner.properties.edit_form')
-                    @else
-                        <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
-                            <p class="text-xs font-bold text-slate-500">Không tìm thấy thông tin bất động sản cần chỉnh sửa.</p>
-                        </div>
-                    @endif
-                </div>
-                @endif
                 @endif
 
                 <!-- TAB 2.3: Favorites (All roles) -->
