@@ -207,46 +207,27 @@
     <div class="space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider text-primary">2. Vị trí bất động sản</h3>
         
-        <!-- Grid: Địa chỉ chính xác, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố -->
+        <!-- Grid: Tỉnh/Thành phố, Quận/Huyện, Phường/Xã, Địa chỉ chính xác -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Địa chỉ chi tiết -->
+            <!-- Tỉnh/Thành phố -->
             <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
                 <input 
                     type="text" 
-                    name="address" 
-                    id="location-input-edit"
-                    x-model="locationText"
+                    name="city" 
+                    x-model="cityText"
                     @input.debounce.800ms="geocodeAddress()"
                     @change="geocodeAddress()"
                     required 
-                    placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân" 
+                    placeholder="Ví dụ: Hà Nội" 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                 >
-                @error('address')
+                @error('city')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Phường/Xã -->
-            <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span class="text-red-500">*</span></label>
-                <input 
-                    type="text" 
-                    name="ward" 
-                    x-model="wardText"
-                    @input.debounce.800ms="geocodeAddress()"
-                    @change="geocodeAddress()"
-                    required 
-                    placeholder="Ví dụ: Dịch Vọng Hậu" 
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                >
-                @error('ward')
-                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Quận/Khu vực -->
+            <!-- Quận/Huyện -->
             <div class="space-y-1">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện <span class="text-red-500">*</span></label>
                 <div class="relative">
@@ -276,20 +257,39 @@
                 @enderror
             </div>
 
-            <!-- Tỉnh/Thành phố -->
+            <!-- Phường/Xã -->
             <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span class="text-red-500">*</span></label>
                 <input 
                     type="text" 
-                    name="city" 
-                    x-model="cityText"
+                    name="ward" 
+                    x-model="wardText"
                     @input.debounce.800ms="geocodeAddress()"
                     @change="geocodeAddress()"
                     required 
-                    placeholder="Ví dụ: Hà Nội" 
+                    placeholder="Ví dụ: Dịch Vọng Hậu" 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                 >
-                @error('city')
+                @error('ward')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Địa chỉ chi tiết -->
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
+                <input 
+                    type="text" 
+                    name="address" 
+                    id="location-input-edit"
+                    x-model="locationText"
+                    @input.debounce.800ms="geocodeAddress()"
+                    @change="geocodeAddress()"
+                    required 
+                    placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân" 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+                @error('address')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
             </div>
@@ -548,7 +548,7 @@
                     parts.push(this.wardText.trim());
                 }
                 
-                const selectEl = document.querySelector('select[name="district"]');
+                const selectEl = this.$el.querySelector('select[name="district"]');
                 let districtLabel = '';
                 if (selectEl && selectEl.selectedIndex > 0) {
                     districtLabel = selectEl.options[selectEl.selectedIndex].text;
