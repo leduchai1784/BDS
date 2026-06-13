@@ -1,9 +1,14 @@
+@php
+    $purpose = request()->query('purpose', 'rent');
+    $isSale = $purpose === 'sale';
+@endphp
+
 <!-- MapLibre GL JS CSS -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.css">
 
 <div class="pb-5 border-b border-slate-100 mb-8">
-    <h1 class="text-xl font-bold text-slate-800">Đăng tin cho thuê mới</h1>
-    <p class="text-xs text-slate-400 mt-1 font-semibold">Nhập đầy đủ thông tin chi tiết về bất động sản để thu hút người thuê phù hợp.</p>
+    <h1 class="text-xl font-bold text-slate-800">{{ $isSale ? 'Đăng tin bán mới' : 'Đăng tin cho thuê mới' }}</h1>
+    <p class="text-xs text-slate-400 mt-1 font-semibold">{{ $isSale ? 'Nhập đầy đủ thông tin chi tiết về bất động sản để thu hút người mua phù hợp.' : 'Nhập đầy đủ thông tin chi tiết về bất động sản để thu hút người thuê phù hợp.' }}</p>
 </div>
 
 <form 
@@ -14,6 +19,7 @@
     class="space-y-6 text-left"
 >
     @csrf
+    <input type="hidden" name="purpose" value="{{ $purpose }}">
 
     <!-- Section 1: Thông tin cơ bản -->
     <div class="space-y-4">
@@ -84,9 +90,9 @@
 
         <!-- Grid: Giá & Diện tích & Phòng ngủ/tắm -->
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <!-- Giá thuê -->
+            <!-- Giá thuê / Giá bán -->
             <div class="space-y-1 sm:col-span-2">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giá thuê (VND / Tháng) <span class="text-red-500">*</span></label>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">{{ $isSale ? 'Giá bán (VND)' : 'Giá thuê (VND / Tháng)' }} <span class="text-red-500">*</span></label>
                 <input 
                     type="number" 
                     name="price" 

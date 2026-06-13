@@ -245,18 +245,18 @@ class PropertyController extends Controller
             ->with('success', $msg);
     }
 
-    /**
-     * Helper to format price label (VND -> Million / Month)
-     */
     private function formatPriceLabel($price)
     {
+        $purpose = request()->input('purpose', 'rent');
+        $suffix = $purpose === 'sale' ? '' : '/tháng';
+
         if ($price >= 1000000000) {
             $value = $price / 1000000000;
-            return round($value, 1) . ' tỷ/tháng';
+            return round($value, 1) . ' tỷ' . $suffix;
         } elseif ($price >= 1000000) {
             $value = $price / 1000000;
-            return round($value, 1) . ' triệu/tháng';
+            return round($value, 1) . ' triệu' . $suffix;
         }
-        return number_format($price) . 'đ/tháng';
+        return number_format($price) . 'đ' . $suffix;
     }
 }
