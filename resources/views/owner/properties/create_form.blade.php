@@ -294,6 +294,40 @@
             </div>
         </div>
 
+        <!-- Hidden Inputs for Form Submission -->
+        <input type="hidden" name="latitude" :value="lat">
+        <input type="hidden" name="longitude" :value="lng">
+
+        <!-- Single Coordinates Input Box -->
+        <div class="space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tọa độ bản đồ (Vĩ độ, Kinh độ) <span class="text-red-500">*</span></label>
+            <input 
+                type="text" 
+                x-model="coordsInput"
+                @input="parseCoords()"
+                required
+                placeholder="Ví dụ: 21.03, 105.81" 
+                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            >
+            <p class="text-[9px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Định dạng: vĩ_độ, kinh_độ (Ví dụ copy từ Google Maps: 21.0285, 105.8521)</p>
+        </div>
+
+        <!-- Map Selector Section -->
+        <div class="space-y-2">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Chọn vị trí trên bản đồ <span class="text-red-500">*</span></label>
+            <p class="text-[10px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Kéo thả điểm đánh dấu (Marker) màu đỏ hoặc bấm trực tiếp lên bản đồ để chọn tọa độ chính xác.</p>
+            
+            <!-- Map View Container -->
+            <div id="picker-map-create" class="h-[300px] w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
+        </div>
+    </div>
+
+    <div class="border-t border-slate-100 my-6"></div>
+
+    <!-- Section 3: Thông tin liên hệ -->
+    <div class="space-y-4">
+        <h3 class="text-xs font-black uppercase tracking-wider text-primary">3. Thông tin liên hệ</h3>
+        
         <!-- Grid: Số điện thoại & Zalo -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Số điện thoại -->
@@ -327,40 +361,13 @@
                 @enderror
             </div>
         </div>
-
-        <!-- Hidden Inputs for Form Submission -->
-        <input type="hidden" name="latitude" :value="lat">
-        <input type="hidden" name="longitude" :value="lng">
-
-        <!-- Single Coordinates Input Box -->
-        <div class="space-y-1">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tọa độ bản đồ (Vĩ độ, Kinh độ) <span class="text-red-500">*</span></label>
-            <input 
-                type="text" 
-                x-model="coordsInput"
-                @input="parseCoords()"
-                required
-                placeholder="Ví dụ: 21.03, 105.81" 
-                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-            >
-            <p class="text-[9px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Định dạng: vĩ_độ, kinh_độ (Ví dụ copy từ Google Maps: 21.0285, 105.8521)</p>
-        </div>
-
-        <!-- Map Selector Section -->
-        <div class="space-y-2">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Chọn vị trí trên bản đồ <span class="text-red-500">*</span></label>
-            <p class="text-[10px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Kéo thả điểm đánh dấu (Marker) màu đỏ hoặc bấm trực tiếp lên bản đồ để chọn tọa độ chính xác.</p>
-            
-            <!-- Map View Container -->
-            <div id="picker-map-create" class="h-[300px] w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
-        </div>
     </div>
 
     <div class="border-t border-slate-100 my-6"></div>
 
-    <!-- Section 3: Tải ảnh bất động sản -->
+    <!-- Section 4: Hình ảnh bất động sản -->
     <div class="space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider text-primary">3. Hình ảnh bất động sản</h3>
+        <h3 class="text-xs font-black uppercase tracking-wider text-primary">4. Hình ảnh bất động sản</h3>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <!-- Ảnh đại diện chính -->
