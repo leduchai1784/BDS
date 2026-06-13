@@ -36,8 +36,8 @@
             @enderror
         </div>
 
-        <!-- Grid: Danh mục & Loại hình & Khu vực -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Grid: Danh mục & Loại hình -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Danh mục -->
             <div class="space-y-1">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Danh mục <span class="text-red-500">*</span></label>
@@ -78,34 +78,6 @@
                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                 </div>
                 @error('type')
-                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Quận/Khu vực -->
-            <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện viết tắt <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <select 
-                        name="district" 
-                        required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
-                    >
-                        <option value="">-- Chọn Quận/Huyện --</option>
-                        <option value="GL" {{ old('district', $property->district) == 'GL' ? 'selected' : '' }}>Gia Lâm (GL)</option>
-                        <option value="BD" {{ old('district', $property->district) == 'BD' ? 'selected' : '' }}>Ba Đình (BD)</option>
-                        <option value="TH" {{ old('district', $property->district) == 'TH' ? 'selected' : '' }}>Tây Hồ (TH)</option>
-                        <option value="CG" {{ old('district', $property->district) == 'CG' ? 'selected' : '' }}>Cầu Giấy (CG)</option>
-                        <option value="DD" {{ old('district', $property->district) == 'DD' ? 'selected' : '' }}>Đống Đa (DD)</option>
-                        <option value="HK" {{ old('district', $property->district) == 'HK' ? 'selected' : '' }}>Hoàn Kiếm (HK)</option>
-                        <option value="HBT" {{ old('district', $property->district) == 'HBT' ? 'selected' : '' }}>Hai Bà Trưng (HBT)</option>
-                        <option value="TX" {{ old('district', $property->district) == 'TX' ? 'selected' : '' }}>Thanh Xuân (TX)</option>
-                        <option value="NTL" {{ old('district', $property->district) == 'NTL' ? 'selected' : '' }}>Nam Từ Liêm (NTL)</option>
-                        <option value="BTL" {{ old('district', $property->district) == 'BTL' ? 'selected' : '' }}>Bắc Từ Liêm (BTL)</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                </div>
-                @error('district')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
             </div>
@@ -235,22 +207,53 @@
     <div class="space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider text-primary">2. Vị trí bất động sản</h3>
         
-        <!-- Địa chỉ chính xác -->
-        <div class="space-y-1">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
-            <input 
-                type="text" 
-                name="location" 
-                id="location-input-edit"
-                x-model="locationText"
-                @input.debounce.800ms="geocodeAddress()"
-                required 
-                placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân, Cầu Giấy, Hà Nội" 
-                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-            >
-            @error('location')
-                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-            @enderror
+        <!-- Grid: Địa chỉ chính xác & Quận/Huyện -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Địa chỉ chính xác -->
+            <div class="space-y-1 sm:col-span-2">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
+                <input 
+                    type="text" 
+                    name="location" 
+                    id="location-input-edit"
+                    x-model="locationText"
+                    @input.debounce.800ms="geocodeAddress()"
+                    required 
+                    placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân, Cầu Giấy, Hà Nội" 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+                @error('location')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Quận/Khu vực -->
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện viết tắt <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <select 
+                        name="district" 
+                        required 
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                    >
+                        <option value="">-- Chọn Quận/Huyện --</option>
+                        <option value="GL" {{ old('district', $property->district) == 'GL' ? 'selected' : '' }}>Gia Lâm (GL)</option>
+                        <option value="BD" {{ old('district', $property->district) == 'BD' ? 'selected' : '' }}>Ba Đình (BD)</option>
+                        <option value="TH" {{ old('district', $property->district) == 'TH' ? 'selected' : '' }}>Tây Hồ (TH)</option>
+                        <option value="CG" {{ old('district', $property->district) == 'CG' ? 'selected' : '' }}>Cầu Giấy (CG)</option>
+                        <option value="DD" {{ old('district', $property->district) == 'DD' ? 'selected' : '' }}>Đống Đa (DD)</option>
+                        <option value="HK" {{ old('district', $property->district) == 'HK' ? 'selected' : '' }}>Hoàn Kiếm (HK)</option>
+                        <option value="HBT" {{ old('district', $property->district) == 'HBT' ? 'selected' : '' }}>Hai Bà Trưng (HBT)</option>
+                        <option value="TX" {{ old('district', $property->district) == 'TX' ? 'selected' : '' }}>Thanh Xuân (TX)</option>
+                        <option value="NTL" {{ old('district', $property->district) == 'NTL' ? 'selected' : '' }}>Nam Từ Liêm (NTL)</option>
+                        <option value="BTL" {{ old('district', $property->district) == 'BTL' ? 'selected' : '' }}>Bắc Từ Liêm (BTL)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+                @error('district')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
         <!-- Hidden Inputs for Form Submission -->
@@ -418,8 +421,15 @@
                 }
             },
 
-            initMap() {
-                if (this.map || !document.getElementById('picker-map-edit')) return;
+            initMap(retryCount = 0) {
+                const el = document.getElementById('picker-map-edit');
+                if (!el) {
+                    if (retryCount < 10) {
+                        setTimeout(() => this.initMap(retryCount + 1), 100);
+                    }
+                    return;
+                }
+                if (this.map) return;
                 this.map = new maplibregl.Map({
                     container: 'picker-map-edit',
                     style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -454,8 +464,13 @@
             },
 
             geocodeAddress() {
-                if (!this.locationText || this.locationText.trim().length < 5) return;
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.locationText)}&limit=1`)
+                if (!this.locationText || this.locationText.trim().length < 3) return;
+                const query = this.locationText.trim();
+                this.geocodeQuery(query);
+            },
+
+            geocodeQuery(query) {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.length > 0) {
@@ -466,6 +481,16 @@
                             if (this.marker && this.map) {
                                 this.marker.setLngLat([this.lng, this.lat]);
                                 this.map.setCenter([this.lng, this.lat]);
+                            }
+                        } else {
+                            // Fallback: strip the first part of the address and try again (e.g. remove house number)
+                            const parts = query.split(',');
+                            if (parts.length > 1) {
+                                parts.shift();
+                                const fallbackQuery = parts.join(',').trim();
+                                if (fallbackQuery.length >= 3) {
+                                    this.geocodeQuery(fallbackQuery);
+                                }
                             }
                         }
                     })
