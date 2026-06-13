@@ -12,10 +12,12 @@ use Illuminate\Support\Facades\Storage;
 
 class PropertyController extends Controller
 {
+    /**
+     * Show the form for creating a new property.
+     */
     public function create()
     {
-        $categories = Category::all();
-        return view('owner.properties.create', compact('categories'));
+        return redirect()->route('profile.index', ['tab' => 'create_property']);
     }
 
     /**
@@ -75,6 +77,9 @@ class PropertyController extends Controller
             ->with('success', 'Đăng tin mới thành công! Tin của bạn đang chờ kiểm duyệt từ Admin.');
     }
 
+    /**
+     * Show the form for editing the specified property.
+     */
     public function edit($id)
     {
         $property = Property::findOrFail($id);
@@ -82,8 +87,10 @@ class PropertyController extends Controller
         // Authorization check
         abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
 
-        $categories = Category::all();
-        return view('owner.properties.edit', compact('property', 'categories'));
+        return redirect()->route('profile.index', [
+            'tab' => 'edit_property',
+            'property_id' => $id
+        ]);
     }
 
     /**

@@ -1,22 +1,448 @@
 @extends('layouts.app')
 
-@section('title', request()->query('purpose') === 'sale' ? 'Đăng Tin Bán Bất Động Sản | BDS Rental' : 'Đăng Tin Cho Thuê Bất Động Sản | BDS Rental')
+@section('title', 'Đăng Tin Cho Thuê Bất Động Sản | BDS Rental')
 
 @section('content')
+<!-- MapLibre GL JS CSS -->
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.css">
+
 <div class="bg-slate-50 pt-28 pb-16 min-h-screen">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        
         <!-- Breadcrumbs -->
-        <nav class="flex text-xs font-semibold text-slate-500 mb-6 space-x-2 text-left" aria-label="Breadcrumb">
+        <nav class="flex text-xs font-semibold text-slate-500 mb-6 space-x-2" aria-label="Breadcrumb">
             <a href="/" class="hover:text-primary transition">Trang chủ</a>
             <span>/</span>
-            <a href="/profile" class="hover:text-primary transition">Trang cá nhân</a>
+            <a href="{{ route('profile.index', ['tab' => 'properties']) }}" class="hover:text-primary transition">Quản lý tin đăng</a>
             <span>/</span>
-            <span class="text-slate-800">{{ request()->query('purpose') === 'sale' ? 'Đăng tin bán mới' : 'Đăng tin cho thuê mới' }}</span>
+            <span class="text-slate-800">Đăng tin mới</span>
         </nav>
 
-        <div class="bg-white rounded-[24px] border border-slate-100 shadow-xl shadow-slate-100/50 p-6 sm:p-8">
-            @include('owner.properties.create_form')
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden p-6 sm:p-8 text-left">
+            <div class="pb-5 border-b border-slate-100 mb-8">
+                <h1 class="text-xl font-bold text-slate-800">Đăng tin cho thuê mới</h1>
+                <p class="text-xs text-slate-400 mt-1 font-semibold">Nhập đầy đủ thông tin chi tiết về bất động sản để thu hút người thuê phù hợp.</p>
+            </div>
+
+            <form 
+                action="{{ route('properties.store') }}" 
+                method="POST" 
+                enctype="multipart/form-data"
+                x-data="propertyForm()"
+                class="space-y-6"
+            >
+                @csrf
+
+                <!-- Section 1: Thông tin cơ bản -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-primary">1. Thông tin cơ bản</h3>
+                    
+                    <!-- Tiêu đề -->
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tiêu đề tin đăng <span class="text-red-500">*</span></label>
+                        <input 
+                            type="text" 
+                            name="title" 
+                            value="{{ old('title') }}"
+                            required 
+                            placeholder="Ví dụ: Căn hộ Studio Vinhomes Ocean Park Full Nội Thất..." 
+                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                        >
+                        @error('title')
+                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Grid: Danh mục & Loại hình & Khu vực -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Danh mục -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Danh mục <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select 
+                                    name="category_id" 
+                                    required 
+                                    class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                                >
+                                    <option value="">-- Chọn danh mục --</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                    @endforeach
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                            @error('category_id')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Loại hình -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select 
+                                    name="type" 
+                                    required 
+                                    class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                                >
+                                    <option value="">-- Chọn loại hình --</option>
+                                    <option value="Căn hộ chung cư" {{ old('type') == 'Căn hộ chung cư' ? 'selected' : '' }}>Căn hộ chung cư</option>
+                                    <option value="Nhà nguyên căn" {{ old('type') == 'Nhà nguyên căn' ? 'selected' : '' }}>Nhà nguyên căn</option>
+                                    <option value="Biệt thự / Villa" {{ old('type') == 'Biệt thự / Villa' ? 'selected' : '' }}>Biệt thự / Villa</option>
+                                    <option value="Văn phòng cho thuê" {{ old('type') == 'Văn phòng cho thuê' ? 'selected' : '' }}>Văn phòng cho thuê</option>
+                                    <option value="Phòng trọ cho thuê" {{ old('type') == 'Phòng trọ cho thuê' ? 'selected' : '' }}>Phòng trọ cho thuê</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                            @error('type')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Quận/Khu vực -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện viết tắt <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select 
+                                    name="district" 
+                                    required 
+                                    class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                                >
+                                    <option value="">-- Chọn Quận/Huyện --</option>
+                                    <option value="GL" {{ old('district') == 'GL' ? 'selected' : '' }}>Gia Lâm (GL)</option>
+                                    <option value="BD" {{ old('district') == 'BD' ? 'selected' : '' }}>Ba Đình (BD)</option>
+                                    <option value="TH" {{ old('district') == 'TH' ? 'selected' : '' }}>Tây Hồ (TH)</option>
+                                    <option value="CG" {{ old('district') == 'CG' ? 'selected' : '' }}>Cầu Giấy (CG)</option>
+                                    <option value="DD" {{ old('district') == 'DD' ? 'selected' : '' }}>Đống Đa (DD)</option>
+                                    <option value="HK" {{ old('district') == 'HK' ? 'selected' : '' }}>Hoàn Kiếm (HK)</option>
+                                    <option value="HBT" {{ old('district') == 'HBT' ? 'selected' : '' }}>Hai Bà Trưng (HBT)</option>
+                                    <option value="TX" {{ old('district') == 'TX' ? 'selected' : '' }}>Thanh Xuân (TX)</option>
+                                    <option value="NTL" {{ old('district') == 'NTL' ? 'selected' : '' }}>Nam Từ Liêm (NTL)</option>
+                                    <option value="BTL" {{ old('district') == 'BTL' ? 'selected' : '' }}>Bắc Từ Liêm (BTL)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                            @error('district')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Grid: Giá & Diện tích & Phòng ngủ/tắm -->
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <!-- Giá thuê -->
+                        <div class="space-y-1 sm:col-span-2">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giá thuê (VND / Tháng) <span class="text-red-500">*</span></label>
+                            <input 
+                                type="number" 
+                                name="price" 
+                                value="{{ old('price') }}"
+                                required 
+                                min="0" 
+                                placeholder="Ví dụ: 6500000" 
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                            @error('price')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Diện tích -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Diện tích (m²) <span class="text-red-500">*</span></label>
+                            <input 
+                                type="number" 
+                                name="area" 
+                                value="{{ old('area') }}"
+                                required 
+                                min="0" 
+                                placeholder="Ví dụ: 35" 
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                            @error('area')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Phòng ngủ -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số phòng ngủ</label>
+                            <input 
+                                type="number" 
+                                name="bedrooms" 
+                                value="{{ old('bedrooms', 0) }}"
+                                min="0" 
+                                placeholder="Ví dụ: 1" 
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Grid: Hướng & Phòng tắm & Pháp lý -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Phòng tắm -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số phòng tắm</label>
+                            <input 
+                                type="number" 
+                                name="bathrooms" 
+                                value="{{ old('bathrooms', 0) }}"
+                                min="0" 
+                                placeholder="Ví dụ: 1" 
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                        </div>
+
+                        <!-- Hướng nhà -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Hướng nhà</label>
+                            <input 
+                                type="text" 
+                                name="direction" 
+                                value="{{ old('direction') }}"
+                                placeholder="Ví dụ: Đông Nam, Tây Bắc..." 
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                        </div>
+
+                        <!-- Pháp lý -->
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Pháp lý</label>
+                            <input 
+                                type="text" 
+                                name="legal" 
+                                value="{{ old('legal') }}"
+                                placeholder="Ví dụ: Sổ hồng, cọc 2 tháng..." 
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Nội thất -->
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tình trạng nội thất</label>
+                        <input 
+                            type="text" 
+                            name="furniture" 
+                            value="{{ old('furniture') }}"
+                            placeholder="Ví dụ: Full nội thất (Tivi, Tủ lạnh, Sofa...)" 
+                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                        >
+                    </div>
+
+                    <!-- Mô tả chi tiết -->
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mô tả chi tiết <span class="text-red-500">*</span></label>
+                        <textarea 
+                            name="description" 
+                            required 
+                            rows="5" 
+                            placeholder="Nhập thông tin chi tiết về tiện ích căn hộ, khu dân cư, giao thông, ưu đãi..." 
+                            class="w-full p-4 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                        >{{ old('description') }}</textarea>
+                        @error('description')
+                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 my-6"></div>
+
+                <!-- Section 2: Địa chỉ & Tọa độ -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-primary">2. Vị trí bất động sản</h3>
+                    
+                    <!-- Địa chỉ chính xác -->
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
+                        <input 
+                            type="text" 
+                            name="location" 
+                            id="location-input"
+                            value="{{ old('location') }}"
+                            required 
+                            placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân, Cầu Giấy, Hà Nội" 
+                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                        >
+                        @error('location')
+                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Hidden Inputs for Lat / Lng -->
+                    <input type="hidden" name="lat" id="lat-input" :value="lat">
+                    <input type="hidden" name="lng" id="lng-input" :value="lng">
+
+                    <!-- Map Selector Section -->
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Chọn vị trí trên bản đồ <span class="text-red-500">*</span></label>
+                        <p class="text-[10px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Kéo thả điểm đánh dấu (Marker) màu đỏ hoặc bấm trực tiếp lên bản đồ để chọn tọa độ chính xác.</p>
+                        
+                        <!-- Map View Container -->
+                        <div id="picker-map" class="h-[300px] w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
+                        
+                        <div class="flex items-center gap-4 text-[10px] font-bold text-slate-500 px-1">
+                            <span>Vĩ độ (Lat): <span class="text-slate-800" x-text="lat"></span></span>
+                            <span>Kinh độ (Lng): <span class="text-slate-800" x-text="lng"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 my-6"></div>
+
+                <!-- Section 3: Tải ảnh bất động sản -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-primary">3. Hình ảnh bất động sản</h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Ảnh đại diện chính -->
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh đại diện chính <span class="text-red-500">*</span></label>
+                            
+                            <div class="flex items-start space-x-4">
+                                <div class="w-24 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center flex-shrink-0">
+                                    <template x-if="mainPreview">
+                                        <img :src="mainPreview" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!mainPreview">
+                                        <i class="fa-regular fa-image text-slate-300 text-2xl"></i>
+                                    </template>
+                                </div>
+                                <div class="space-y-2">
+                                    <p class="text-[9px] text-slate-400 leading-normal">Ảnh đại diện sẽ hiển thị làm ảnh bìa chính trên trang danh sách tìm kiếm.</p>
+                                    <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
+                                        <i class="fa-solid fa-camera mr-1.5"></i> Chọn ảnh chính
+                                        <input type="file" name="image" required accept="image/*" @change="previewMainImage($event)" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+                            @error('image')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Nhiều ảnh phụ (Gallery) -->
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Thư viện ảnh phụ (Gallery)</label>
+                            
+                            <div class="space-y-2">
+                                <p class="text-[9px] text-slate-400 leading-normal">Tải lên tối đa 6 ảnh phụ mô tả chi tiết phòng khách, phòng ngủ, nhà bếp, ban công...</p>
+                                <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
+                                    <i class="fa-solid fa-images mr-1.5"></i> Chọn nhiều ảnh phụ
+                                    <input type="file" name="images[]" multiple accept="image/*" @change="previewGalleryImages($event)" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery previews list -->
+                    <template x-if="galleryPreviews.length > 0">
+                        <div class="space-y-2 pt-2">
+                            <p class="text-[10px] font-bold text-slate-500 px-1">Ảnh phụ đã chọn (<span x-text="galleryPreviews.length"></span> ảnh):</p>
+                            <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                                <template x-for="(src, index) in galleryPreviews" :key="index">
+                                    <div class="aspect-video bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm relative group">
+                                        <img :src="src" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                            <span class="text-[9px] text-white font-bold">Xem trước</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Submit buttons -->
+                <div class="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-8">
+                    <a 
+                        href="{{ route('profile.index', ['tab' => 'properties']) }}" 
+                        class="inline-flex items-center justify-center px-5 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+                    >
+                        Hủy bỏ
+                    </a>
+                    <button 
+                        type="submit" 
+                        class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+                    >
+                        <span>Đăng tin ngay</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<!-- MapLibre GL JS SDK -->
+<script src="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.js"></script>
+
+<script>
+    function propertyForm() {
+        return {
+            lat: {{ old('lat', 21.03) }},
+            lng: {{ old('lng', 105.81) }},
+            mainPreview: '',
+            galleryPreviews: [],
+            map: null,
+            marker: null,
+
+            init() {
+                // Initialize map
+                this.$nextTick(() => {
+                    this.initMap();
+                });
+            },
+
+            initMap() {
+                this.map = new maplibregl.Map({
+                    container: 'picker-map',
+                    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+                    center: [this.lng, this.lat],
+                    zoom: 13
+                });
+
+                // Create draggable marker
+                this.marker = new maplibregl.Marker({
+                    draggable: true,
+                    color: '#ff4433' // Red marker
+                })
+                .setLngLat([this.lng, this.lat])
+                .addTo(this.map);
+
+                // Update inputs on drag end
+                this.marker.on('dragend', () => {
+                    const lngLat = this.marker.getLngLat();
+                    this.lat = parseFloat(lngLat.lat.toFixed(6));
+                    this.lng = parseFloat(lngLat.lng.toFixed(6));
+                });
+
+                // Update marker position and inputs on map click
+                this.map.on('click', (e) => {
+                    const lngLat = e.lngLat;
+                    this.lat = parseFloat(lngLat.lat.toFixed(6));
+                    this.lng = parseFloat(lngLat.lng.toFixed(6));
+                    this.marker.setLngLat(lngLat);
+                });
+            },
+
+            previewMainImage(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    this.mainPreview = URL.createObjectURL(file);
+                }
+            },
+
+            previewGalleryImages(event) {
+                const files = event.target.files;
+                this.galleryPreviews = [];
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    this.galleryPreviews.push(URL.createObjectURL(file));
+                }
+            }
+        }
+    }
+</script>
+@endpush
