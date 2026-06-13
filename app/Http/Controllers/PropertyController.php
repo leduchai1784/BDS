@@ -32,7 +32,7 @@ class PropertyController extends Controller
     /**
      * Display the specified property detail page.
      */
-    public function show(int $id)
+    public function show(string $id)
     {
         $property = $this->propertyService->getPropertyById($id);
         $allProperties = $this->propertyService->searchAllForMap(); // For showing related/other listings

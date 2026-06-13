@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\Owner\StorePropertyRequest;
+use App\Http\Requests\Owner\UpdatePropertyRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class PropertyController extends Controller
 {
@@ -22,94 +23,58 @@ class PropertyController extends Controller
     /**
      * Store a newly created property.
      */
-    public function store(Request $request)
+    public function store(StorePropertyRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'area' => 'required|numeric|min:0',
-            'location' => 'required|string|max:255',
-            'type' => 'required|string',
-            'district' => 'required|string|max:10',
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:3072',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
-            'bedrooms' => 'nullable|integer|min:0',
-            'bathrooms' => 'nullable|integer|min:0',
-            'direction' => 'nullable|string|max:50',
-            'furniture' => 'nullable|string',
-            'legal' => 'nullable|string|max:255',
-        ], [
-            'title.required' => 'Tiêu đề không được để trống.',
-            'description.required' => 'Mô tả không được để trống.',
-            'price.required' => 'Giá thuê không được để trống.',
-            'price.numeric' => 'Giá thuê phải là số.',
-            'area.required' => 'Diện tích không được để trống.',
-            'area.numeric' => 'Diện tích phải là số.',
-            'location.required' => 'Địa chỉ không được để trống.',
-            'type.required' => 'Loại hình không được để trống.',
-            'district.required' => 'Khu vực/Quận không được để trống.',
-            'lat.required' => 'Vĩ độ (Latitude) không được để trống.',
-            'lng.required' => 'Kinh độ (Longitude) không được để trống.',
-            'category_id.required' => 'Danh mục không được để trống.',
-            'category_id.exists' => 'Danh mục chọn không hợp lệ.',
-            'image.required' => 'Ảnh đại diện tin đăng là bắt buộc.',
-            'image.image' => 'Ảnh đại diện phải là tệp hình ảnh.',
-            'image.max' => 'Ảnh đại diện tối đa 3MB.',
-            'images.*.image' => 'Ảnh phụ phải là tệp hình ảnh.',
-            'images.*.max' => 'Ảnh phụ tối đa 3MB.',
-        ]);
-
-        // Helper to format price label
+        // Format price label
         $priceLabel = $this->formatPriceLabel($request->price);
 
-        // Upload main image
-        $mainImage = $request->file('image');
-        $mainFilename = 'prop_' . time() . '_' . uniqid() . '.' . $mainImage->getClientOriginalExtension();
-        $mainImage->move(public_path('uploads/properties'), $mainFilename);
-        $mainPath = 'uploads/properties/' . $mainFilename;
-
-        // Upload extra gallery images
-        $galleryPaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $img) {
-                $filename = 'prop_gallery_' . time() . '_' . uniqid() . '.' . $img->getClientOriginalExtension();
-                $img->move(public_path('uploads/properties'), $filename);
-                $galleryPaths[] = 'uploads/properties/' . $filename;
-            }
-        }
-
-        Property::create([
+        // Create Property
+        $property = Property::create([
+            'owner_id' => Auth::id(),
+            'category_id' => $request->category_id,
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
             'price_label' => $priceLabel,
             'area' => $request->area,
-            'location' => $request->location,
-            'type' => $request->type,
+            'bedroom' => $request->bedroom ?? 0,
+            'bathroom' => $request->bathroom ?? 0,
+            'address' => $request->address,
+            'ward' => $request->ward,
             'district' => $request->district,
-            'lat' => $request->lat,
-            'lng' => $request->lng,
-            'category_id' => $request->category_id,
-            'image' => $mainPath,
-            'images' => $galleryPaths,
-            'bedrooms' => $request->bedrooms ?? 0,
-            'bathrooms' => $request->bathrooms ?? 0,
-            'direction' => $request->direction,
-            'furniture' => $request->furniture,
-            'legal' => $request->legal,
-            'agent_id' => Auth::id(),
-            'status' => 'approved', // Automatically approved
+            'city' => $request->city,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'phone' => $request->phone,
+            'zalo' => $request->zalo,
+            'status' => 'pending', // Default is pending
             'is_vip' => false,
             'is_new' => true,
-            'views' => 0,
+            'views_count' => 0,
         ]);
 
+        // Upload main image
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('properties', 'public');
+            $property->propertyImages()->create([
+                'image_path' => $path,
+                'is_primary' => true,
+            ]);
+        }
+
+        // Upload gallery images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $path = $img->store('properties', 'public');
+                $property->propertyImages()->create([
+                    'image_path' => $path,
+                    'is_primary' => false,
+                ]);
+            }
+        }
+
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Đăng tin mới thành công! Tin của bạn đã được hiển thị trên trang chủ.');
+            ->with('success', 'Đăng tin mới thành công! Tin của bạn đang chờ kiểm duyệt từ Admin.');
     }
 
     /**
@@ -120,7 +85,7 @@ class PropertyController extends Controller
         $property = Property::findOrFail($id);
         
         // Authorization check
-        abort_if($property->agent_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
+        abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
 
         return redirect()->route('profile.index', [
             'tab' => 'edit_property',
@@ -131,117 +96,94 @@ class PropertyController extends Controller
     /**
      * Update the specified property.
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePropertyRequest $request, $id)
     {
         $property = Property::findOrFail($id);
         
         // Authorization check
-        abort_if($property->agent_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
+        abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'area' => 'required|numeric|min:0',
-            'location' => 'required|string|max:255',
-            'type' => 'required|string',
-            'district' => 'required|string|max:10',
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
-            'bedrooms' => 'nullable|integer|min:0',
-            'bathrooms' => 'nullable|integer|min:0',
-            'direction' => 'nullable|string|max:50',
-            'furniture' => 'nullable|string',
-            'legal' => 'nullable|string|max:255',
-            'delete_images' => 'nullable|array', // List of gallery image paths to delete
-        ], [
-            'title.required' => 'Tiêu đề không được để trống.',
-            'description.required' => 'Mô tả không được để trống.',
-            'price.required' => 'Giá thuê không được để trống.',
-            'price.numeric' => 'Giá thuê phải là số.',
-            'area.required' => 'Diện tích không được để trống.',
-            'area.numeric' => 'Diện tích phải là số.',
-            'location.required' => 'Địa chỉ không được để trống.',
-            'type.required' => 'Loại hình không được để trống.',
-            'district.required' => 'Khu vực/Quận không được để trống.',
-            'lat.required' => 'Vĩ độ không được để trống.',
-            'lng.required' => 'Kinh độ không được để trống.',
-            'category_id.required' => 'Danh mục không được để trống.',
-            'category_id.exists' => 'Danh mục chọn không hợp lệ.',
-            'image.image' => 'Ảnh đại diện phải là hình ảnh.',
-            'image.max' => 'Ảnh đại diện tối đa 3MB.',
-            'images.*.image' => 'Ảnh phụ phải là hình ảnh.',
-            'images.*.max' => 'Ảnh phụ tối đa 3MB.',
-        ]);
+        // Validate total images count <= 10
+        $existingCount = $property->propertyImages()->count();
+        $newCount = $request->hasFile('images') ? count($request->file('images')) : 0;
+        $deletedCount = $request->filled('delete_images') ? count($request->delete_images) : 0;
+        $totalCount = $existingCount + $newCount - $deletedCount;
 
-        $data = [
+        if ($totalCount > 10) {
+            return back()->withErrors(['images' => 'Tổng số hình ảnh của tin đăng không được vượt quá 10.'])->withInput();
+        }
+
+        // Ensure at least 1 image remains
+        $newPrimaryUploaded = $request->hasFile('image');
+        $hasPrimaryRemaining = $property->propertyImages()->where('is_primary', true)->exists();
+        if (!$newPrimaryUploaded && !$hasPrimaryRemaining) {
+            return back()->withErrors(['image' => 'Tin đăng phải có ít nhất 1 ảnh đại diện.'])->withInput();
+        }
+
+        // Update basic details
+        $property->update([
+            'category_id' => $request->category_id,
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
             'price_label' => $this->formatPriceLabel($request->price),
             'area' => $request->area,
-            'location' => $request->location,
-            'type' => $request->type,
+            'bedroom' => $request->bedroom ?? 0,
+            'bathroom' => $request->bathroom ?? 0,
+            'address' => $request->address,
+            'ward' => $request->ward,
             'district' => $request->district,
-            'lat' => $request->lat,
-            'lng' => $request->lng,
-            'category_id' => $request->category_id,
-            'bedrooms' => $request->bedrooms ?? 0,
-            'bathrooms' => $request->bathrooms ?? 0,
-            'direction' => $request->direction,
-            'furniture' => $request->furniture,
-            'legal' => $request->legal,
-        ];
+            'city' => $request->city,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'phone' => $request->phone,
+            'zalo' => $request->zalo,
+            'status' => 'pending', // Updates reset status to pending for re-approval
+        ]);
 
-        // Handle main image update
+        // Update main image if new one is uploaded
         if ($request->hasFile('image')) {
-            // Delete old file
-            if ($property->image && File::exists(public_path($property->image))) {
-                @unlink(public_path($property->image));
+            $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
+            if ($oldPrimary) {
+                Storage::disk('public')->delete($oldPrimary->image_path);
+                $oldPrimary->delete();
             }
-            // Upload new file
-            $mainImage = $request->file('image');
-            $mainFilename = 'prop_' . time() . '_' . uniqid() . '.' . $mainImage->getClientOriginalExtension();
-            $mainImage->move(public_path('uploads/properties'), $mainFilename);
-            $data['image'] = 'uploads/properties/' . $mainFilename;
+
+            $path = $request->file('image')->store('properties', 'public');
+            $property->propertyImages()->create([
+                'image_path' => $path,
+                'is_primary' => true,
+            ]);
         }
 
-        // Get existing gallery paths
-        $currentGallery = $property->images ?? [];
-
-        // Handle deleted gallery images
+        // Delete requested gallery images
         if ($request->filled('delete_images')) {
             foreach ($request->delete_images as $delPath) {
-                if (in_array($delPath, $currentGallery)) {
-                    if (File::exists(public_path($delPath))) {
-                        @unlink(public_path($delPath));
-                    }
-                    $currentGallery = array_values(array_diff($currentGallery, [$delPath]));
+                $cleanPath = str_replace('storage/', '', $delPath);
+                $imgRecord = $property->propertyImages()
+                    ->where('image_path', $cleanPath)
+                    ->orWhere('image_path', $delPath)
+                    ->first();
+                if ($imgRecord) {
+                    Storage::disk('public')->delete($imgRecord->image_path);
+                    $imgRecord->delete();
                 }
             }
         }
 
-        // Handle newly uploaded gallery images
+        // Upload new gallery images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $filename = 'prop_gallery_' . time() . '_' . uniqid() . '.' . $img->getClientOriginalExtension();
-                $img->move(public_path('uploads/properties'), $filename);
-                $currentGallery[] = 'uploads/properties/' . $filename;
+                $path = $img->store('properties', 'public');
+                $property->propertyImages()->create([
+                    'image_path' => $path,
+                    'is_primary' => false,
+                ]);
             }
         }
 
-        $data['images'] = $currentGallery;
-
-        // Reset status to approved so it remains visible on homepage
-        $data['status'] = 'approved';
-
-        $property->update($data);
-
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Cập nhật tin đăng thành công! Tin đăng đã được cập nhật.');
+            ->with('success', 'Cập nhật tin đăng thành công! Tin đăng của bạn đang chờ kiểm duyệt lại.');
     }
 
     /**
@@ -252,26 +194,55 @@ class PropertyController extends Controller
         $property = Property::findOrFail($id);
 
         // Authorization check
-        abort_if($property->agent_id !== Auth::id(), 403, 'Bạn không có quyền xóa tin đăng này.');
+        abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền xóa tin đăng này.');
 
-        // Delete main image file
-        if ($property->image && File::exists(public_path($property->image))) {
-            @unlink(public_path($property->image));
+        // Delete image files physically
+        foreach ($property->propertyImages as $img) {
+            Storage::disk('public')->delete($img->image_path);
         }
 
-        // Delete gallery image files
-        if (!empty($property->images)) {
-            foreach ($property->images as $img) {
-                if (File::exists(public_path($img))) {
-                    @unlink(public_path($img));
-                }
-            }
-        }
-
+        // Delete from database (SoftDeletes is configured, so this will soft delete)
         $property->delete();
 
         return redirect()->route('profile.index', ['tab' => 'properties'])
             ->with('success', 'Xóa tin đăng thành công!');
+    }
+
+    /**
+     * Extend property listing duration (push to top).
+     */
+    public function extend($id)
+    {
+        $property = Property::findOrFail($id);
+        abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền gia hạn tin đăng này.');
+
+        $property->update([
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('profile.index', ['tab' => 'properties'])
+            ->with('success', 'Gia hạn tin đăng thành công! Tin đăng đã được đẩy lên đầu.');
+    }
+
+    /**
+     * Hide/Show property listing (toggle rented status).
+     */
+    public function hide($id)
+    {
+        $property = Property::findOrFail($id);
+        abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền ẩn/hiện tin đăng này.');
+
+        if ($property->status === 'rented') {
+            $property->update(['status' => 'pending']);
+            $msg = 'Đã hiện tin đăng! Tin của bạn đang chờ kiểm duyệt lại.';
+        } else {
+            $property->update(['status' => 'rented']);
+            $msg = 'Đã ẩn tin đăng thành công!';
+        }
+
+        return redirect()->route('profile.index', ['tab' => 'properties'])
+            ->with('success', $msg);
     }
 
     /**

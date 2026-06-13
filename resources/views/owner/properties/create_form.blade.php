@@ -123,8 +123,8 @@
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số phòng ngủ</label>
                 <input 
                     type="number" 
-                    name="bedrooms" 
-                    value="{{ old('bedrooms', 0) }}"
+                    name="bedroom" 
+                    value="{{ old('bedroom', 0) }}"
                     min="0" 
                     placeholder="Ví dụ: 1" 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
@@ -139,8 +139,8 @@
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số phòng tắm</label>
                 <input 
                     type="number" 
-                    name="bathrooms" 
-                    value="{{ old('bathrooms', 0) }}"
+                    name="bathroom" 
+                    value="{{ old('bathroom', 0) }}"
                     min="0" 
                     placeholder="Ví dụ: 1" 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
@@ -206,46 +206,67 @@
     <div class="space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider text-primary">2. Vị trí bất động sản</h3>
         
-        <!-- Grid: Địa chỉ chính xác & Quận/Huyện -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <!-- Địa chỉ chính xác -->
-            <div class="space-y-1 sm:col-span-2">
+        <!-- Grid: Địa chỉ chính xác, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Địa chỉ chi tiết -->
+            <div class="space-y-1">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ chi tiết <span class="text-red-500">*</span></label>
                 <input 
                     type="text" 
-                    name="location" 
+                    name="address" 
                     id="location-input-create"
                     x-model="locationText"
                     @input.debounce.800ms="geocodeAddress()"
+                    @change="geocodeAddress()"
                     required 
-                    placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân, Cầu Giấy, Hà Nội" 
+                    placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân" 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                 >
-                @error('location')
+                @error('address')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Phường/Xã -->
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span class="text-red-500">*</span></label>
+                <input 
+                    type="text" 
+                    name="ward" 
+                    x-model="wardText"
+                    @input.debounce.800ms="geocodeAddress()"
+                    @change="geocodeAddress()"
+                    required 
+                    placeholder="Ví dụ: Dịch Vọng Hậu" 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+                @error('ward')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Quận/Khu vực -->
             <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện viết tắt <span class="text-red-500">*</span></label>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện <span class="text-red-500">*</span></label>
                 <div class="relative">
                     <select 
                         name="district" 
+                        x-model="districtText"
+                        @change="geocodeAddress()"
                         required 
                         class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
                     >
                         <option value="">-- Chọn Quận/Huyện --</option>
-                        <option value="GL" {{ old('district') == 'GL' ? 'selected' : '' }}>Gia Lâm (GL)</option>
-                        <option value="BD" {{ old('district') == 'BD' ? 'selected' : '' }}>Ba Đình (BD)</option>
-                        <option value="TH" {{ old('district') == 'TH' ? 'selected' : '' }}>Tây Hồ (TH)</option>
-                        <option value="CG" {{ old('district') == 'CG' ? 'selected' : '' }}>Cầu Giấy (CG)</option>
-                        <option value="DD" {{ old('district') == 'DD' ? 'selected' : '' }}>Đống Đa (DD)</option>
-                        <option value="HK" {{ old('district') == 'HK' ? 'selected' : '' }}>Hoàn Kiếm (HK)</option>
-                        <option value="HBT" {{ old('district') == 'HBT' ? 'selected' : '' }}>Hai Bà Trưng (HBT)</option>
-                        <option value="TX" {{ old('district') == 'TX' ? 'selected' : '' }}>Thanh Xuân (TX)</option>
-                        <option value="NTL" {{ old('district') == 'NTL' ? 'selected' : '' }}>Nam Từ Liêm (NTL)</option>
-                        <option value="BTL" {{ old('district') == 'BTL' ? 'selected' : '' }}>Bắc Từ Liêm (BTL)</option>
+                        <option value="GL">Gia Lâm (GL)</option>
+                        <option value="BD">Ba Đình (BD)</option>
+                        <option value="TH">Tây Hồ (TH)</option>
+                        <option value="CG">Cầu Giấy (CG)</option>
+                        <option value="DD">Đống Đa (DD)</option>
+                        <option value="HK">Hoàn Kiếm (HK)</option>
+                        <option value="HBT">Hai Bà Trưng (HBT)</option>
+                        <option value="TX">Thanh Xuân (TX)</option>
+                        <option value="NTL">Nam Từ Liêm (NTL)</option>
+                        <option value="BTL">Bắc Từ Liêm (BTL)</option>
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                 </div>
@@ -253,11 +274,63 @@
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
             </div>
+
+            <!-- Tỉnh/Thành phố -->
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
+                <input 
+                    type="text" 
+                    name="city" 
+                    x-model="cityText"
+                    @input.debounce.800ms="geocodeAddress()"
+                    @change="geocodeAddress()"
+                    required 
+                    placeholder="Ví dụ: Hà Nội" 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+                @error('city')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Grid: Số điện thoại & Zalo -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Số điện thoại -->
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại liên hệ <span class="text-red-500">*</span></label>
+                <input 
+                    type="text" 
+                    name="phone" 
+                    value="{{ old('phone', Auth::user()->phone) }}"
+                    required 
+                    placeholder="Ví dụ: 0987654321" 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+                @error('phone')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Zalo -->
+            <div class="space-y-1">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Link Zalo (Tùy chọn)</label>
+                <input 
+                    type="text" 
+                    name="zalo" 
+                    value="{{ old('zalo') }}"
+                    placeholder="Ví dụ: https://zalo.me/0987654321" 
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                >
+                @error('zalo')
+                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
         <!-- Hidden Inputs for Form Submission -->
-        <input type="hidden" name="lat" :value="lat">
-        <input type="hidden" name="lng" :value="lng">
+        <input type="hidden" name="latitude" :value="lat">
+        <input type="hidden" name="longitude" :value="lng">
 
         <!-- Single Coordinates Input Box -->
         <div class="space-y-1">
@@ -321,7 +394,7 @@
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Thư viện ảnh phụ (Gallery)</label>
                 
                 <div class="space-y-2">
-                    <p class="text-[9px] text-slate-400 leading-normal">Tải lên tối đa 6 ảnh phụ mô tả chi tiết phòng khách, phòng ngủ, nhà bếp, ban công...</p>
+                    <p class="text-[9px] text-slate-400 leading-normal">Tải lên tối đa 9 ảnh phụ mô tả chi tiết phòng khách, phòng ngủ, nhà bếp, ban công...</p>
                     <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
                         <i class="fa-solid fa-images mr-1.5"></i> Chọn nhiều ảnh phụ
                         <input type="file" name="images[]" multiple accept="image/*" @change="previewGalleryImages($event)" class="hidden">
@@ -373,10 +446,13 @@
 <script>
     function propertyCreateForm() {
         return {
-            lat: {{ old('lat', 21.03) }},
-            lng: {{ old('lng', 105.81) }},
-            coordsInput: '{{ old('lat', 21.03) }}, {{ old('lng', 105.81) }}',
-            locationText: '{{ old('location') }}',
+            lat: {{ old('latitude', 21.0285) }},
+            lng: {{ old('longitude', 105.8521) }},
+            coordsInput: '{{ old('latitude', 21.0285) }}, {{ old('longitude', 105.8521) }}',
+            locationText: '{{ old('address') }}',
+            wardText: '{{ old('ward') }}',
+            districtText: '{{ old('district') }}',
+            cityText: '{{ old('city', 'Hà Nội') }}',
             mainPreview: '',
             galleryPreviews: [],
             map: null,
@@ -442,7 +518,7 @@
             },
 
             detectCurrentLocation() {
-                @if(!old('lat') && !old('lng'))
+                @if(!old('latitude') && !old('longitude'))
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(position => {
                         this.lat = parseFloat(position.coords.latitude.toFixed(6));
@@ -460,8 +536,32 @@
             },
 
             geocodeAddress() {
-                if (!this.locationText || this.locationText.trim().length < 3) return;
-                const query = this.locationText.trim();
+                let parts = [];
+                if (this.locationText && this.locationText.trim().length >= 3) {
+                    parts.push(this.locationText.trim());
+                }
+                if (this.wardText && this.wardText.trim().length >= 3) {
+                    parts.push(this.wardText.trim());
+                }
+                
+                const selectEl = document.querySelector('select[name="district"]');
+                let districtLabel = '';
+                if (selectEl && selectEl.selectedIndex > 0) {
+                    districtLabel = selectEl.options[selectEl.selectedIndex].text;
+                    // Clean up the (XX) abbreviation from district option label
+                    districtLabel = districtLabel.replace(/\(.*\)/, '').trim();
+                    parts.push(districtLabel);
+                } else if (this.districtText) {
+                    parts.push(this.districtText);
+                }
+
+                if (this.cityText && this.cityText.trim().length >= 3) {
+                    parts.push(this.cityText.trim());
+                }
+
+                if (parts.length === 0) return;
+
+                const query = parts.join(', ');
                 this.geocodeQuery(query);
             },
 
@@ -479,7 +579,7 @@
                                 this.map.setCenter([this.lng, this.lat]);
                             }
                         } else {
-                            // Fallback: strip the first part of the address and try again (e.g. remove house number)
+                            // Fallback: strip the first part of the query (e.g. detailed street address) and try again
                             const parts = query.split(',');
                             if (parts.length > 1) {
                                 parts.shift();

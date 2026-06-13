@@ -51,7 +51,7 @@ class UserController extends Controller
         // Fetch properties posted by this user if they are an owner
         $properties = [];
         if ($user->role === 'owner') {
-            $properties = \App\Models\Property::where('agent_id', $user->id)
+            $properties = \App\Models\Property::where('owner_id', $user->id)
                 ->with('category')
                 ->latest()
                 ->get();

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
+            $table->uuid('property_id');
+            $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->string('name'); // Name of person viewing
             $table->string('phone'); // Contact phone
             $table->date('date'); // Date of viewing

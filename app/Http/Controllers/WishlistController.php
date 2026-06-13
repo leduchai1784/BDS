@@ -21,7 +21,7 @@ class WishlistController extends Controller
     public function toggle(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|integer|exists:properties,id'
+            'property_id' => 'required|uuid|exists:properties,id'
         ]);
 
         $userId = Auth::id();

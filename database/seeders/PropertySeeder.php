@@ -9,6 +9,7 @@ use App\Models\Appointment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class PropertySeeder extends Seeder
@@ -21,6 +22,7 @@ class PropertySeeder extends Seeder
         // Disable foreign key checks for clean seeding
         DB::statement('TRUNCATE TABLE appointments CASCADE');
         DB::statement('TRUNCATE TABLE wishlists CASCADE');
+        DB::statement('TRUNCATE TABLE property_images CASCADE');
         DB::statement('TRUNCATE TABLE properties CASCADE');
         DB::statement('TRUNCATE TABLE categories CASCADE');
         DB::statement('TRUNCATE TABLE users CASCADE');
@@ -89,7 +91,7 @@ class PropertySeeder extends Seeder
             'created_at' => Carbon::now()->subMonths(3)
         ]);
 
-        // 4. Create Owners (formerly Agents)
+        // 4. Create Owners
         $agentDang = User::create([
             'name' => 'Nguyễn Hải Đăng',
             'email' => 'dang.nguyen@nks.com.vn',
@@ -145,281 +147,295 @@ class PropertySeeder extends Seeder
             'created_at' => Carbon::now()->subMonths(3)
         ]);
 
+        // Helper to generate property data array
+        $makeProp = function($title, $desc, $price, $priceLabel, $area, $bed, $bath, $addr, $ward, $dist, $city, $lat, $lng, $vip, $new, $catId, $status, $views, $ownerId, $phone, $zalo, $createdAt) {
+            return [
+                'title' => $title,
+                'slug' => Str::slug($title) . '-' . substr(uniqid(), -5),
+                'description' => $desc,
+                'price' => $price,
+                'price_label' => $priceLabel,
+                'area' => $area,
+                'bedroom' => $bed,
+                'bathroom' => $bath,
+                'address' => $addr,
+                'ward' => $ward,
+                'district' => $dist,
+                'city' => $city,
+                'latitude' => $lat,
+                'longitude' => $lng,
+                'direction' => 'Đông Nam',
+                'furniture' => 'Đầy đủ nội thất, sẵn sàng dọn vào ở',
+                'legal' => 'Sổ hồng chính chủ, hợp đồng tối thiểu 1 năm',
+                'is_vip' => $vip,
+                'is_new' => $new,
+                'category_id' => $catId,
+                'status' => $status,
+                'views_count' => $views,
+                'owner_id' => $ownerId,
+                'phone' => $phone,
+                'zalo' => $zalo,
+                'meta_title' => $title,
+                'meta_description' => Str::limit(strip_tags($desc), 160),
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt
+            ];
+        };
+
         // 5. Create Properties (Linked to Categories)
-        $p1 = Property::create([
-            'title' => 'Căn hộ chung cư Vinhomes Ocean Park Studio Full Nội Thất',
-            'type' => 'Căn hộ chung cư',
-            'price' => 6500000,
-            'price_label' => '6.5tr',
-            'area' => 35,
-            'bedrooms' => 1,
-            'bathrooms' => 1,
-            'location' => 'Gia Lâm, Hà Nội',
-            'district' => 'GL',
-            'lat' => 20.9944,
-            'lng' => 105.9567,
-            'image' => 'images/apartment_3.png',
-            'images' => [
-                'images/apartment_3.png',
-                'images/apartment_1.png',
-                'images/apartment_2.png',
-                'images/hero_bg.png'
-            ],
-            'direction' => 'Đông Nam',
-            'furniture' => 'Đầy đủ nội thất (Tivi, Tủ lạnh, Máy giặt, Điều hòa, Sofa, Giường nệm)',
-            'legal' => 'Sổ hồng, Hợp đồng cho thuê tối thiểu 1 năm',
-            'is_vip' => true,
-            'is_new' => false,
-            'category_id' => $catChungCu->id,
-            'status' => 'approved',
-            'views' => 452,
-            'agent_id' => $agentDang->id,
-            'description' => 'Căn hộ Studio Vinhomes Ocean Park với thiết kế tối ưu, thoáng đãng, tận dụng tối đa ánh sáng tự nhiên. Căn hộ đã trang bị đầy đủ nội thất cao cấp chỉ việc xách vali vào ở.',
-            'created_at' => Carbon::now()->subMonths(2)
-        ]);
+        $p1 = Property::create($makeProp(
+            'Căn hộ chung cư Vinhomes Ocean Park Studio Full Nội Thất',
+            'Căn hộ Studio Vinhomes Ocean Park với thiết kế tối ưu, thoáng đãng, tận dụng tối đa ánh sáng tự nhiên. Căn hộ đã trang bị đầy đủ nội thất cao cấp chỉ việc xách vali vào ở.',
+            6500000,
+            '6.5tr',
+            35,
+            1,
+            1,
+            'Vinhomes Ocean Park, Gia Lâm',
+            'Đa Tốn',
+            'GL',
+            'Hà Nội',
+            20.9944,
+            105.9567,
+            true,
+            false,
+            $catChungCu->id,
+            'approved',
+            452,
+            $agentDang->id,
+            $agentDang->phone,
+            'https://zalo.me/' . $agentDang->phone,
+            Carbon::now()->subMonths(2)
+        ));
+        $p1->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => true]);
+        $p1->propertyImages()->create(['image_path' => 'images/apartment_1.png', 'is_primary' => false]);
+        $p1->propertyImages()->create(['image_path' => 'images/apartment_2.png', 'is_primary' => false]);
+        $p1->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
 
-        $p2 = Property::create([
-            'title' => 'Căn hộ Duplex Vinhomes Metropolis Liễu Giai view hồ cực đẹp',
-            'type' => 'Căn hộ chung cư',
-            'price' => 18000000,
-            'price_label' => '18tr',
-            'area' => 85,
-            'bedrooms' => 2,
-            'bathrooms' => 2,
-            'location' => 'Ba Đình, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0315,
-            'lng' => 105.8152,
-            'image' => 'images/apartment_2.png',
-            'images' => [
-                'images/apartment_2.png',
-                'images/apartment_1.png',
-                'images/apartment_3.png',
-                'images/hero_bg.png'
-            ],
-            'direction' => 'Tây Nam',
-            'furniture' => 'Full nội thất sang trọng nhập khẩu Châu Âu',
-            'legal' => 'Hợp đồng công chứng, cọc 2 tháng',
-            'is_vip' => true,
-            'is_new' => true,
-            'category_id' => $catChungCu->id,
-            'status' => 'approved',
-            'views' => 295,
-            'agent_id' => $agentTuyet->id,
-            'description' => 'Căn hộ thông tầng Duplex độc bản tại Vinhomes Metropolis Liễu Giai, sở hữu tầm nhìn panorama triệu đô hướng trực diện hồ Ngọc Khánh và hồ Tây lộng gió. Căn hộ được thiết kế thông tầng thoáng đãng.',
-            'created_at' => Carbon::now()->subMonths(1)
-        ]);
+        $p2 = Property::create($makeProp(
+            'Căn hộ Duplex Vinhomes Metropolis Liễu Giai view hồ cực đẹp',
+            'Căn hộ thông tầng Duplex độc bản tại Vinhomes Metropolis Liễu Giai, sở hữu tầm nhìn panorama triệu đô hướng trực diện hồ Ngọc Khánh và hồ Tây lộng gió. Căn hộ được thiết kế thông tầng thoáng đãng.',
+            18000000,
+            '18tr',
+            85,
+            2,
+            2,
+            '29 Liễu Giai, Ba Đình',
+            'Liễu Giai',
+            'BD',
+            'Hà Nội',
+            21.0315,
+            105.8152,
+            true,
+            true,
+            $catChungCu->id,
+            'approved',
+            295,
+            $agentTuyet->id,
+            $agentTuyet->phone,
+            'https://zalo.me/' . $agentTuyet->phone,
+            Carbon::now()->subMonths(1)
+        ));
+        $p2->propertyImages()->create(['image_path' => 'images/apartment_2.png', 'is_primary' => true]);
+        $p2->propertyImages()->create(['image_path' => 'images/apartment_1.png', 'is_primary' => false]);
+        $p2->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => false]);
+        $p2->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
 
-        $p3 = Property::create([
-            'title' => 'Biệt thự sân vườn Ciputra hiện đại có hồ bơi riêng biệt lập',
-            'type' => 'Biệt thự / Villa',
-            'price' => 45000000,
-            'price_label' => '45tr',
-            'area' => 250,
-            'bedrooms' => 4,
-            'bathrooms' => 4,
-            'location' => 'Tây Hồ, Hà Nội',
-            'district' => 'TH',
-            'lat' => 21.0722,
-            'lng' => 105.7984,
-            'image' => 'images/house_2.png',
-            'images' => [
-                'images/house_2.png',
-                'images/house_1.png',
-                'images/hero_bg.png',
-                'images/apartment_1.png'
-            ],
-            'direction' => 'Nam',
-            'furniture' => 'Nội thất liền tường cao cấp, khách thuê tự trang bị đồ rời',
-            'legal' => 'Hợp đồng dài hạn từ 2 năm trở lên',
-            'is_vip' => true,
-            'is_new' => false,
-            'category_id' => $catNhaNguyenCan->id,
-            'status' => 'approved',
-            'views' => 610,
-            'agent_id' => $agentLong->id,
-            'description' => 'Biệt thự đơn lập sân vườn tuyệt đẹp tọa lạc tại vị trí đắc địa quận Tây Hồ. Biệt thự có khuôn viên rộng rãi với sân cỏ xanh mướt, hồ bơi riêng biệt ngoài trời cực mát mẻ.',
-            'created_at' => Carbon::now()->subMonths(2)
-        ]);
+        $p3 = Property::create($makeProp(
+            'Biệt thự sân vườn Ciputra hiện đại có hồ bơi riêng biệt lập',
+            'Biệt thự đơn lập sân vườn tuyệt đẹp tọa lạc tại vị trí đắc địa quận Tây Hồ. Biệt thự có khuôn viên rộng rãi với sân cỏ xanh mướt, hồ bơi riêng biệt ngoài trời cực mát mẻ.',
+            45000000,
+            '45tr',
+            250,
+            4,
+            4,
+            'Khu đô thị Ciputra, Tây Hồ',
+            'Phú Thượng',
+            'TH',
+            'Hà Nội',
+            21.0722,
+            105.7984,
+            true,
+            false,
+            $catNhaNguyenCan->id,
+            'approved',
+            610,
+            $agentLong->id,
+            $agentLong->phone,
+            'https://zalo.me/' . $agentLong->phone,
+            Carbon::now()->subMonths(2)
+        ));
+        $p3->propertyImages()->create(['image_path' => 'images/house_2.png', 'is_primary' => true]);
+        $p3->propertyImages()->create(['image_path' => 'images/house_1.png', 'is_primary' => false]);
+        $p3->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
+        $p3->propertyImages()->create(['image_path' => 'images/apartment_1.png', 'is_primary' => false]);
 
-        $p4 = Property::create([
-            'title' => 'Nhà nguyên căn 3 tầng ngõ xe hơi Duy Tân thích hợp làm văn phòng',
-            'type' => 'Nhà nguyên căn',
-            'price' => 22000000,
-            'price_label' => '22tr',
-            'area' => 120,
-            'bedrooms' => 3,
-            'bathrooms' => 3,
-            'location' => 'Cầu Giấy, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0362,
-            'lng' => 105.7865,
-            'image' => 'images/house_1.png',
-            'images' => [
-                'images/house_1.png',
-                'images/house_2.png',
-                'images/hero_bg.png',
-                'images/apartment_3.png'
-            ],
-            'direction' => 'Đông Bắc',
-            'furniture' => 'Cơ bản (Thiết bị vệ sinh, hệ thống đèn chiếu sáng, điều hòa các phòng)',
-            'legal' => 'Chính chủ cho thuê, hợp đồng lâu dài',
-            'is_vip' => false,
-            'is_new' => true,
-            'category_id' => $catNhaNguyenCan->id,
-            'status' => 'approved',
-            'views' => 180,
-            'agent_id' => $agentTuan->id,
-            'description' => 'Nhà nguyên căn mặt tiền ngõ lớn xe hơi tránh nhau tại trung tâm Cầu Giấy. Nhà xây dựng kiên cố 1 trệt 2 lầu sân thượng thoáng mát. Mặt tiền rộng 6m đỗ xe thoải mái.',
-            'created_at' => Carbon::now()->subMonths(1)
-        ]);
+        $p4 = Property::create($makeProp(
+            'Nhà nguyên căn 3 tầng ngõ xe hơi Duy Tân thích hợp làm văn phòng',
+            'Nhà nguyên căn mặt tiền ngõ lớn xe hơi tránh nhau tại trung tâm Cầu Giấy. Nhà xây dựng kiên cố 1 trệt 2 lầu sân thượng thoáng mát. Mặt tiền rộng 6m đỗ xe thoải mái.',
+            22000000,
+            '22tr',
+            120,
+            3,
+            3,
+            'Ngõ 86 Duy Tân, Cầu Giấy',
+            'Dịch Vọng Hậu',
+            'CG',
+            'Hà Nội',
+            21.0362,
+            105.7865,
+            false,
+            true,
+            $catNhaNguyenCan->id,
+            'approved',
+            180,
+            $agentTuan->id,
+            $agentTuan->phone,
+            'https://zalo.me/' . $agentTuan->phone,
+            Carbon::now()->subMonths(1)
+        ));
+        $p4->propertyImages()->create(['image_path' => 'images/house_1.png', 'is_primary' => true]);
+        $p4->propertyImages()->create(['image_path' => 'images/house_2.png', 'is_primary' => false]);
+        $p4->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
+        $p4->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => false]);
 
-        $p5 = Property::create([
-            'title' => 'Căn hộ chung cư Sky City Láng Hạ nội thất tối giản hiện đại',
-            'type' => 'Căn hộ chung cư',
-            'price' => 12000000,
-            'price_label' => '12tr',
-            'area' => 72,
-            'bedrooms' => 2,
-            'bathrooms' => 1,
-            'location' => 'Đống Đa, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0185,
-            'lng' => 105.8159,
-            'image' => 'images/apartment_1.png',
-            'images' => [
-                'images/apartment_1.png',
-                'images/apartment_2.png',
-                'images/apartment_3.png',
-                'images/hero_bg.png'
-            ],
-            'direction' => 'Bắc',
-            'furniture' => 'Đầy đủ nội thất thông minh tối giản diện tích',
-            'legal' => 'Hợp đồng thuê 1 năm, cọc 1 tháng',
-            'is_vip' => false,
-            'is_new' => false,
-            'category_id' => $catChungCu->id,
-            'status' => 'approved',
-            'views' => 340,
-            'agent_id' => $agentMai->id,
-            'description' => 'Căn hộ chung cư 2 phòng ngủ nằm trong tổ hợp chung cư cao cấp Sky City Láng Hạ. Căn hộ được decor theo phong cách Bắc Âu (Scandinavian) tối giản và hiện đại.',
-            'created_at' => Carbon::now()->subMonths(2)
-        ]);
+        $p5 = Property::create($makeProp(
+            'Căn hộ chung cư Sky City Láng Hạ nội thất tối giản hiện đại',
+            'Căn hộ chung cư 2 phòng ngủ nằm trong tổ hợp chung cư cao cấp Sky City Láng Hạ. Căn hộ được decor theo phong cách Bắc Âu (Scandinavian) tối giản và hiện đại.',
+            12000000,
+            '12tr',
+            72,
+            2,
+            1,
+            '88 Láng Hạ, Đống Đa',
+            'Láng Hạ',
+            'DD',
+            'Hà Nội',
+            21.0185,
+            105.8159,
+            false,
+            false,
+            $catChungCu->id,
+            'approved',
+            340,
+            $agentMai->id,
+            $agentMai->phone,
+            'https://zalo.me/' . $agentMai->phone,
+            Carbon::now()->subMonths(2)
+        ));
+        $p5->propertyImages()->create(['image_path' => 'images/apartment_1.png', 'is_primary' => true]);
+        $p5->propertyImages()->create(['image_path' => 'images/apartment_2.png', 'is_primary' => false]);
+        $p5->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => false]);
+        $p5->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
 
-        $p6 = Property::create([
-            'title' => 'Văn phòng hiện đại sẵn bàn ghế làm việc tại trung tâm Hoàn Kiếm',
-            'type' => 'Văn phòng cho thuê',
-            'price' => 35000000,
-            'price_label' => '35tr',
-            'area' => 110,
-            'bedrooms' => 0,
-            'bathrooms' => 2,
-            'location' => 'Hoàn Kiếm, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0285,
-            'lng' => 105.8521,
-            'image' => 'images/apartment_2.png',
-            'images' => [
-                'images/apartment_2.png',
-                'images/apartment_3.png',
-                'images/hero_bg.png',
-                'images/house_1.png'
-            ],
-            'direction' => 'Đông',
-            'furniture' => 'Bàn ghế làm việc cao cấp, tủ tài liệu, máy chiếu, bảng viết',
-            'legal' => 'Hợp đồng xuất hóa đơn đỏ VAT đầy đủ',
-            'is_vip' => false,
-            'is_new' => false,
-            'category_id' => $catVanPhong->id,
-            'status' => 'approved',
-            'views' => 210,
-            'agent_id' => $agentDang->id,
-            'description' => 'Văn phòng cho thuê cao cấp nằm tại tầng cao trung tâm sầm uất quận Hoàn Kiếm. Không gian văn phòng được thiết kế theo tiêu chuẩn quốc tế, trang bị sẵn đầy đủ hệ thống.',
-            'created_at' => Carbon::now()->subMonths(3)
-        ]);
+        $p6 = Property::create($makeProp(
+            'Văn phòng hiện đại sẵn bàn ghế làm việc tại trung tâm Hoàn Kiếm',
+            'Văn phòng cho thuê cao cấp nằm tại tầng cao trung tâm sầm uất quận Hoàn Kiếm. Không gian văn phòng được thiết kế theo tiêu chuẩn quốc tế, trang bị sẵn đầy đủ hệ thống.',
+            35000000,
+            '35tr',
+            110,
+            0,
+            2,
+            'Tràng Tiền, Hoàn Kiếm',
+            'Tràng Tiền',
+            'HK',
+            'Hà Nội',
+            21.0285,
+            105.8521,
+            false,
+            false,
+            $catVanPhong->id,
+            'approved',
+            210,
+            $agentDang->id,
+            $agentDang->phone,
+            'https://zalo.me/' . $agentDang->phone,
+            Carbon::now()->subMonths(3)
+        ));
+        $p6->propertyImages()->create(['image_path' => 'images/apartment_2.png', 'is_primary' => true]);
+        $p6->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => false]);
+        $p6->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
+        $p6->propertyImages()->create(['image_path' => 'images/house_1.png', 'is_primary' => false]);
 
         // Properties awaiting approval (pending)
-        $pPending1 = Property::create([
-            'title' => 'Phòng trọ khép kín Cầu Giấy giá rẻ cho sinh viên',
-            'type' => 'Phòng trọ',
-            'price' => 2500000,
-            'price_label' => '2.5tr',
-            'area' => 20,
-            'bedrooms' => 1,
-            'bathrooms' => 1,
-            'location' => 'Cầu Giấy, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0362,
-            'lng' => 105.7865,
-            'image' => 'images/apartment_1.png',
-            'images' => ['images/apartment_1.png'],
-            'direction' => 'Đông',
-            'furniture' => 'Giường tủ, bình nóng lạnh, kệ bếp nấu ăn',
-            'legal' => 'Hợp đồng cọc 1 tháng, đóng tiền 1 tháng',
-            'is_vip' => false,
-            'is_new' => true,
-            'category_id' => $catPhongTro->id,
-            'status' => 'pending',
-            'views' => 15,
-            'agent_id' => $agentMai->id,
-            'description' => 'Cho thuê phòng trọ khép kín diện tích 20m2 ở ngõ 165 Cầu Giấy, an ninh tốt, giờ giấc tự do, không chung chủ, có sẵn internet tốc độ cao.',
-            'created_at' => Carbon::now()->subDays(5)
-        ]);
+        $pPending1 = Property::create($makeProp(
+            'Phòng trọ khép kín Cầu Giấy giá rẻ cho sinh viên',
+            'Cho thuê phòng trọ khép kín diện tích 20m2 ở ngõ 165 Cầu Giấy, an ninh tốt, giờ giấc tự do, không chung chủ, có sẵn internet tốc độ cao.',
+            2500000,
+            '2.5tr',
+            20,
+            1,
+            1,
+            'Ngõ 165 Cầu Giấy',
+            'Dịch Vọng',
+            'CG',
+            'Hà Nội',
+            21.0362,
+            105.7865,
+            false,
+            true,
+            $catPhongTro->id,
+            'pending',
+            15,
+            $agentMai->id,
+            $agentMai->phone,
+            'https://zalo.me/' . $agentMai->phone,
+            Carbon::now()->subDays(5)
+        ));
+        $pPending1->propertyImages()->create(['image_path' => 'images/apartment_1.png', 'is_primary' => true]);
 
-        $pPending2 = Property::create([
-            'title' => 'Mặt bằng kinh doanh đắc địa quận Đống Đa mặt đường rộng',
-            'type' => 'Mặt bằng',
-            'price' => 25000000,
-            'price_label' => '25tr',
-            'area' => 60,
-            'bedrooms' => 0,
-            'bathrooms' => 1,
-            'location' => 'Xã Đàn, Đống Đa, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0185,
-            'lng' => 105.8159,
-            'image' => 'images/house_2.png',
-            'images' => ['images/house_2.png'],
-            'direction' => 'Nam',
-            'furniture' => 'Sàn gạch, cửa kính cường lực sẵn có',
-            'legal' => 'Sổ hồng riêng, ký hợp đồng tối thiểu 2 năm',
-            'is_vip' => false,
-            'is_new' => true,
-            'category_id' => $catMatBang->id,
-            'status' => 'pending',
-            'views' => 24,
-            'agent_id' => $agentLong->id,
-            'description' => 'Mặt bằng cho thuê làm showroom cửa hàng thời trang, mỹ phẩm, tiệm thuốc, văn phòng đại diện trên đường Xã Đàn sầm uất.',
-            'created_at' => Carbon::now()->subDays(3)
-        ]);
+        $pPending2 = Property::create($makeProp(
+            'Mặt bằng kinh doanh đắc địa quận Đống Đa mặt đường rộng',
+            'Mặt bằng cho thuê làm showroom cửa hàng thời trang, mỹ phẩm, tiệm thuốc, văn phòng đại diện trên đường Xã Đàn sầm uất.',
+            25000000,
+            '25tr',
+            60,
+            0,
+            1,
+            'Xã Đàn, Đống Đa',
+            'Nam Đồng',
+            'DD',
+            'Hà Nội',
+            21.0185,
+            105.8159,
+            false,
+            true,
+            $catMatBang->id,
+            'pending',
+            24,
+            $agentLong->id,
+            $agentLong->phone,
+            'https://zalo.me/' . $agentLong->phone,
+            Carbon::now()->subDays(3)
+        ));
+        $pPending2->propertyImages()->create(['image_path' => 'images/house_2.png', 'is_primary' => true]);
 
         // Hidden Properties
-        $pHidden = Property::create([
-            'title' => 'Căn hộ dịch vụ Studio Đống Đa full đồ tiện nghi',
-            'type' => 'Phòng trọ',
-            'price' => 5000000,
-            'price_label' => '5tr',
-            'area' => 30,
-            'bedrooms' => 1,
-            'bathrooms' => 1,
-            'location' => 'Đống Đa, Hà Nội',
-            'district' => 'CG',
-            'lat' => 21.0185,
-            'lng' => 105.8159,
-            'image' => 'images/apartment_3.png',
-            'images' => ['images/apartment_3.png'],
-            'direction' => 'Tây',
-            'furniture' => 'Full đồ nội thất sang trọng giường tủ, tivi, sofa, bếp từ',
-            'legal' => 'Cọc 1 tháng, thanh toán 1 tháng',
-            'is_vip' => false,
-            'is_new' => false,
-            'category_id' => $catPhongTro->id,
-            'status' => 'hidden',
-            'views' => 89,
-            'agent_id' => $agentTuan->id,
-            'description' => 'Căn hộ dịch vụ Studio cao cấp thiết kế hiện đại thoáng mát, thang máy, máy giặt dùng chung sân thượng, bảo vệ 24/24.',
-            'created_at' => Carbon::now()->subMonths(1)
-        ]);
+        $pHidden = Property::create($makeProp(
+            'Căn hộ dịch vụ Studio Đống Đa full đồ tiện nghi',
+            'Căn hộ dịch vụ Studio cao cấp thiết kế hiện đại thoáng mát, thang máy, máy giặt dùng chung sân thượng, bảo vệ 24/24.',
+            5000000,
+            '5tr',
+            30,
+            1,
+            1,
+            'Chùa Bộc, Đống Đa',
+            'Trung Tự',
+            'DD',
+            'Hà Nội',
+            21.0185,
+            105.8159,
+            false,
+            false,
+            $catPhongTro->id,
+            'hidden',
+            89,
+            $agentTuan->id,
+            $agentTuan->phone,
+            'https://zalo.me/' . $agentTuan->phone,
+            Carbon::now()->subMonths(1)
+        ));
+        $pHidden->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => true]);
 
         // 6. Create viewing appointments
         Appointment::create([

@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $totalTenants = User::where('role', 'tenant')->count();
         $totalProperties = Property::count();
         $totalAppointments = Appointment::count();
-        $totalViews = Property::sum('views');
+        $totalViews = Property::sum('views_count');
 
         // Fetch recent pending properties awaiting approval
         $pendingProperties = Property::where('status', 'pending')

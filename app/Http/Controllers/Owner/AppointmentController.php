@@ -17,7 +17,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::with('property')->findOrFail($id);
 
         // Security Check
-        abort_if($appointment->property->agent_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
+        abort_if($appointment->property->owner_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
 
         $appointment->update([
             'status' => 'approved',
@@ -36,7 +36,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::with('property')->findOrFail($id);
 
         // Security Check
-        abort_if($appointment->property->agent_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
+        abort_if($appointment->property->owner_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
 
         $request->validate([
             'reject_reason' => 'required|string|max:255'
@@ -61,7 +61,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::with('property')->findOrFail($id);
 
         // Security Check
-        abort_if($appointment->property->agent_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
+        abort_if($appointment->property->owner_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
 
         $appointment->update([
             'status' => 'completed'

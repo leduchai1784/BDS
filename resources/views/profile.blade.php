@@ -480,6 +480,22 @@
                                                     <a href="{{ route('properties.edit', $prop->id) }}" class="p-1.5 text-slate-500 hover:text-primary transition" title="Chỉnh sửa">
                                                         <i class="fa-solid fa-pen text-sm"></i>
                                                     </a>
+                                                    <form action="{{ route('properties.extend', $prop->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn gia hạn tin đăng này để đưa lên đầu trang?');">
+                                                        @csrf
+                                                        <button type="submit" class="p-1.5 text-slate-500 hover:text-green-600 transition" title="Gia hạn (Đẩy lên đầu)">
+                                                            <i class="fa-solid fa-arrow-up-from-bracket text-sm"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('properties.hide', $prop->id) }}" method="POST" class="inline-block">
+                                                        @csrf
+                                                        <button type="submit" class="p-1.5 text-slate-500 hover:text-amber-500 transition" title="{{ $prop->status === 'rented' ? 'Hiện tin đăng' : 'Ẩn tin đăng' }}">
+                                                            @if($prop->status === 'rented')
+                                                                <i class="fa-solid fa-eye text-sm"></i>
+                                                            @else
+                                                                <i class="fa-solid fa-eye-slash text-sm"></i>
+                                                            @endif
+                                                        </button>
+                                                    </form>
                                                     <form action="{{ route('properties.destroy', $prop->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin đăng này không?');">
                                                         @csrf
                                                         @method('DELETE')

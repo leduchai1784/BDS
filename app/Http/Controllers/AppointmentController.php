@@ -21,7 +21,7 @@ class AppointmentController extends Controller
     public function book(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|integer|exists:properties,id',
+            'property_id' => 'required|uuid|exists:properties,id',
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'date' => 'required|date|after_or_equal:today',

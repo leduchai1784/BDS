@@ -18,11 +18,11 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Get the properties posted by the user (as agent).
+     * Get the properties posted by the user (as owner).
      */
     public function properties()
     {
-        return $this->hasMany(Property::class, 'agent_id');
+        return $this->hasMany(Property::class, 'owner_id');
     }
 
     /**
@@ -46,7 +46,7 @@ class User extends Authenticatable
      */
     public function ownerAppointments()
     {
-        return $this->hasManyThrough(Appointment::class, Property::class, 'agent_id', 'property_id');
+        return $this->hasManyThrough(Appointment::class, Property::class, 'owner_id', 'property_id');
     }
 
     /**

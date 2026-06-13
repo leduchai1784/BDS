@@ -53,7 +53,7 @@ class ProfileController extends Controller
         if ($user->role === 'owner') {
             // Owner stats
             $totalProperties = $user->properties()->count();
-            $totalViews = $user->properties()->sum('views');
+            $totalViews = $user->properties()->sum('views_count');
             $totalAppointments = $user->ownerAppointments()->count();
             
             // Owner lists
@@ -69,7 +69,7 @@ class ProfileController extends Controller
             if (request('tab') === 'edit_property' && request('property_id')) {
                 $editProperty = \App\Models\Property::find(request('property_id'));
                 if ($editProperty) {
-                    abort_if($editProperty->agent_id !== $user->id, 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
+                    abort_if($editProperty->owner_id !== $user->id, 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
                 }
             }
                 

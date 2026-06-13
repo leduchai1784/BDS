@@ -23,7 +23,21 @@ class PropertyService
      */
     public function getAllProperties(): array
     {
-        return Cache::remember('nks_api_properties', $this->cacheTtl, function () {
+        $dbProperties = [];
+        try {
+            $dbProperties = Property::with(['propertyImages', 'owner', 'category'])
+                ->where('status', 'approved')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($property) {
+                    return $this->transformDbProperty($property);
+                })
+                ->toArray();
+        } catch (\Exception $e) {
+            Log::error('Failed to load properties from DB in PropertyService: ' . $e->getMessage());
+        }
+
+        $apiProperties = Cache::remember('nks_api_properties', $this->cacheTtl, function () {
             try {
                 // Fetch from NKS API with timeout and no SSL verification for safety on local machines
                 $response = Http::withoutVerifying()
@@ -43,6 +57,8 @@ class PropertyService
             // Fallback to local mock data if the API request fails
             return $this->getLocalMockProperties();
         });
+
+        return array_merge($dbProperties, $apiProperties);
     }
 
     /**
@@ -105,10 +121,12 @@ class PropertyService
     /**
      * Get single property details by ID.
      */
-    public function getPropertyById(int $id): array
+    public function getPropertyById(string $id): array
     {
         $properties = $this->getAllProperties();
-        $property = collect($properties)->firstWhere('id', $id);
+        $property = collect($properties)->first(function ($p) use ($id) {
+            return (string)$p['id'] === (string)$id;
+        });
         
         if (!$property) {
             abort(404, 'Không tìm thấy bất động sản yêu cầu.');
@@ -687,5 +705,84 @@ class PropertyService
                 'description' => 'Văn phòng cho thuê cao cấp nằm tại tầng cao trung tâm sầm uất quận Hoàn Kiếm. Không gian văn phòng được thiết kế theo tiêu chuẩn quốc tế, trang bị sẵn đầy đủ hệ thống bàn ghế làm việc, tủ hồ sơ, thiết bị phòng họp hiện đại.\n\nGiá thuê đã bao gồm phí quản lý tòa nhà, nước sinh hoạt và dịch vụ dọn dẹp vệ sinh hàng ngày. Thích hợp cho doanh nghiệp start-up, văn phòng đại diện quy mô 15-20 nhân viên.'
             ]
         ];
+    }
+
+    /**
+     * Transform database Property model into array structure.
+     */
+    protected function transformDbProperty($property): array
+    {
+        $primaryImg = $property->propertyImages()->where('is_primary', true)->first();
+        $featureImg = $primaryImg ? $primaryImg->image_path : 'images/default-property.png';
+        if ($featureImg !== 'images/default-property.png' && stripos($featureImg, 'http') !== 0 && stripos($featureImg, 'storage/') !== 0) {
+            $featureImg = 'storage/' . $featureImg;
+        }
+
+        $galleryImages = [$featureImg];
+        foreach ($property->propertyImages as $img) {
+            $path = $img->image_path;
+            if (stripos($path, 'http') !== 0 && stripos($path, 'storage/') !== 0) {
+                $path = 'storage/' . $path;
+            }
+            $galleryImages[] = $path;
+        }
+        $galleryImages = array_values(array_unique($galleryImages));
+
+        $priceRaw = $property->price;
+        $priceFormatted = $property->price_label;
+        if (empty($priceFormatted)) {
+            $priceFormatted = $this->formatPriceLabel($priceRaw);
+        }
+
+        $type = $property->category ? $property->category->name : 'Căn hộ chung cư';
+
+        $agentName = $property->owner ? $property->owner->name : 'Chủ nhà';
+        $agentPhone = $property->phone ?: ($property->owner ? $property->owner->phone : '0977.758.217');
+        $agentAvatar = $property->owner && $property->owner->avatar ? $property->owner->avatar : 'https://ui-avatars.com/api/?name=' . urlencode($agentName) . '&background=0077bb&color=fff';
+
+        return [
+            'id' => $property->id,
+            'title' => $property->title,
+            'type' => $type,
+            'price' => $priceFormatted,
+            'price_label' => $property->price_label ?: 'Liên hệ',
+            'price_raw' => $priceRaw,
+            'area' => $property->area,
+            'bedrooms' => $property->bedroom,
+            'bathrooms' => $property->bathroom,
+            'location' => $property->address,
+            'district' => $property->district,
+            'lat' => $property->latitude,
+            'lng' => $property->longitude,
+            'image' => $featureImg,
+            'images' => $galleryImages,
+            'direction' => $property->direction ?: 'Đông Nam',
+            'furniture' => $property->furniture ?: 'Bàn giao cơ bản, nội thất đầy đủ',
+            'legal' => $property->legal ?: 'Sổ hồng chính chủ, hợp đồng cho thuê tối thiểu 1 năm',
+            'is_vip' => (bool)$property->is_vip,
+            'is_new' => (bool)$property->is_new,
+            'agent' => [
+                'name' => $agentName,
+                'phone' => $agentPhone,
+                'avatar' => $agentAvatar
+            ],
+            'created_at' => $property->created_at ? $property->created_at->diffForHumans() : 'Vừa cập nhật',
+            'description' => $property->description
+        ];
+    }
+
+    /**
+     * Format raw price into millions/billions/VND label.
+     */
+    protected function formatPriceLabel(int $price): string
+    {
+        if ($price >= 1000000000) {
+            $value = $price / 1000000000;
+            return round($value, 1) . ' tỷ/tháng';
+        } elseif ($price >= 1000000) {
+            $value = $price / 1000000;
+            return round($value, 1) . ' triệu/tháng';
+        }
+        return number_format($price) . 'đ/tháng';
     }
 }

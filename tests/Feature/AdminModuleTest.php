@@ -194,18 +194,17 @@ class AdminModuleTest extends TestCase
 
         $property = Property::create([
             'title' => 'House Test ' . time(),
-            'type' => 'House',
             'price' => 10000000,
             'price_label' => '10tr',
             'area' => 50,
-            'bedrooms' => 2,
-            'bathrooms' => 2,
-            'location' => 'Hanoi',
+            'bedroom' => 2,
+            'bathroom' => 2,
+            'address' => 'Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.0,
-            'lng' => 105.0,
-            'image' => 'images/house.png',
-            'images' => ['images/house.png'],
+            'city' => 'Hà Nội',
+            'latitude' => 21.0,
+            'longitude' => 105.0,
             'direction' => 'South',
             'furniture' => 'Full',
             'legal' => 'Sổ đỏ',
@@ -213,8 +212,9 @@ class AdminModuleTest extends TestCase
             'is_new' => true,
             'category_id' => $category->id,
             'status' => 'pending',
-            'views' => 0,
-            'agent_id' => $this->ownerUser->id,
+            'views_count' => 0,
+            'owner_id' => $this->ownerUser->id,
+            'phone' => '0987654321',
             'description' => 'Test description',
         ]);
 
@@ -240,21 +240,21 @@ class AdminModuleTest extends TestCase
 
         $property = Property::create([
             'title' => 'House Test ' . time(),
-            'type' => 'House',
             'price' => 10000000,
             'price_label' => '10tr',
             'area' => 50,
-            'bedrooms' => 2,
-            'bathrooms' => 2,
-            'location' => 'Hanoi',
+            'bedroom' => 2,
+            'bathroom' => 2,
+            'address' => 'Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.0,
-            'lng' => 105.0,
-            'image' => 'images/house.png',
-            'images' => ['images/house.png'],
+            'city' => 'Hà Nội',
+            'latitude' => 21.0,
+            'longitude' => 105.0,
             'category_id' => $category->id,
             'status' => 'pending',
-            'agent_id' => $this->ownerUser->id,
+            'owner_id' => $this->ownerUser->id,
+            'phone' => '0987654321',
             'description' => 'Test description',
         ]);
 
@@ -280,27 +280,27 @@ class AdminModuleTest extends TestCase
 
         $property = Property::create([
             'title' => 'House Test ' . time(),
-            'type' => 'House',
             'price' => 10000000,
             'price_label' => '10tr',
             'area' => 50,
-            'bedrooms' => 2,
-            'bathrooms' => 2,
-            'location' => 'Hanoi',
+            'bedroom' => 2,
+            'bathroom' => 2,
+            'address' => 'Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.0,
-            'lng' => 105.0,
-            'image' => 'images/house.png',
-            'images' => ['images/house.png'],
+            'city' => 'Hà Nội',
+            'latitude' => 21.0,
+            'longitude' => 105.0,
             'category_id' => $category->id,
             'status' => 'pending',
-            'agent_id' => $this->ownerUser->id,
+            'owner_id' => $this->ownerUser->id,
+            'phone' => '0987654321',
             'description' => 'Test description',
         ]);
 
         $response = $this->actingAs($this->adminUser)->delete('/admin/properties/' . $property->id);
         $response->assertRedirect();
-        $this->assertDatabaseMissing('properties', ['id' => $property->id]);
+        $this->assertSoftDeleted('properties', ['id' => $property->id]);
     }
 
     /**
@@ -316,21 +316,21 @@ class AdminModuleTest extends TestCase
 
         $property = Property::create([
             'title' => 'House Test ' . time(),
-            'type' => 'House',
             'price' => 10000000,
             'price_label' => '10tr',
             'area' => 50,
-            'bedrooms' => 2,
-            'bathrooms' => 2,
-            'location' => 'Hanoi',
+            'bedroom' => 2,
+            'bathroom' => 2,
+            'address' => 'Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.0,
-            'lng' => 105.0,
-            'image' => 'images/house.png',
-            'images' => ['images/house.png'],
+            'city' => 'Hà Nội',
+            'latitude' => 21.0,
+            'longitude' => 105.0,
             'category_id' => $category->id,
             'status' => 'approved',
-            'agent_id' => $this->ownerUser->id,
+            'owner_id' => $this->ownerUser->id,
+            'phone' => '0987654321',
             'description' => 'Test description',
         ]);
 

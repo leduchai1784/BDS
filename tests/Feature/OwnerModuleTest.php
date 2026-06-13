@@ -106,16 +106,19 @@ class OwnerModuleTest extends TestCase
             'description' => 'Luxury villa description text here.',
             'price' => 15000000,
             'area' => 150,
-            'location' => 'District 2, HCMC',
+            'address' => 'District 2, HCMC',
+            'ward' => 'An Phú',
             'type' => 'Biệt thự / Villa',
             'district' => 'D2',
-            'lat' => 10.7891,
-            'lng' => 106.6983,
+            'city' => 'Hồ Chí Minh',
+            'latitude' => 10.7891,
+            'longitude' => 106.6983,
+            'phone' => '0987654321',
             'category_id' => $this->category->id,
             'image' => $mainImage,
             'images' => [$extraImage1, $extraImage2],
-            'bedrooms' => 3,
-            'bathrooms' => 3,
+            'bedroom' => 3,
+            'bathroom' => 3,
         ]);
 
         $response->assertRedirect(route('profile.index', ['tab' => 'properties']));
@@ -123,8 +126,8 @@ class OwnerModuleTest extends TestCase
         $this->assertDatabaseHas('properties', [
             'title' => 'New Villa with Pool',
             'price' => 15000000,
-            'agent_id' => $this->owner1->id,
-            'status' => 'approved'
+            'owner_id' => $this->owner1->id,
+            'status' => 'pending'
         ]);
 
         $property = Property::where('title', 'New Villa with Pool')->first();
@@ -153,15 +156,15 @@ class OwnerModuleTest extends TestCase
             'price' => 5000000,
             'price_label' => '5tr',
             'area' => 40,
-            'location' => 'Cau Giay, Hanoi',
-            'type' => 'Căn hộ chung cư',
+            'address' => 'Cau Giay, Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.036,
-            'lng' => 105.78,
+            'city' => 'Hà Nội',
+            'latitude' => 21.036,
+            'longitude' => 105.78,
             'category_id' => $this->category->id,
-            'image' => 'images/apartment_1.png',
-            'images' => [],
-            'agent_id' => $this->owner1->id,
+            'owner_id' => $this->owner1->id,
+            'phone' => '0987654321',
             'status' => 'approved',
         ]);
 
@@ -191,15 +194,15 @@ class OwnerModuleTest extends TestCase
             'price' => 5000000,
             'price_label' => '5tr',
             'area' => 40,
-            'location' => 'Cau Giay, Hanoi',
-            'type' => 'Căn hộ chung cư',
+            'address' => 'Cau Giay, Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.036,
-            'lng' => 105.78,
+            'city' => 'Hà Nội',
+            'latitude' => 21.036,
+            'longitude' => 105.78,
             'category_id' => $this->category->id,
-            'image' => 'images/apartment_1.png',
-            'images' => [],
-            'agent_id' => $this->owner2->id,
+            'owner_id' => $this->owner2->id,
+            'phone' => '0987654321',
             'status' => 'approved',
         ]);
 
@@ -218,22 +221,22 @@ class OwnerModuleTest extends TestCase
             'price' => 5000000,
             'price_label' => '5tr',
             'area' => 40,
-            'location' => 'Cau Giay, Hanoi',
-            'type' => 'Căn hộ chung cư',
+            'address' => 'Cau Giay, Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.036,
-            'lng' => 105.78,
+            'city' => 'Hà Nội',
+            'latitude' => 21.036,
+            'longitude' => 105.78,
             'category_id' => $this->category->id,
-            'image' => 'images/apartment_1.png',
-            'images' => [],
-            'agent_id' => $this->owner1->id,
+            'owner_id' => $this->owner1->id,
+            'phone' => '0987654321',
             'status' => 'approved',
         ]);
 
         $response = $this->actingAs($this->owner1)->delete(route('properties.destroy', $property->id));
         $response->assertRedirect(route('profile.index', ['tab' => 'properties']));
         
-        $this->assertDatabaseMissing('properties', [
+        $this->assertSoftDeleted('properties', [
             'id' => $property->id
         ]);
     }
@@ -249,15 +252,15 @@ class OwnerModuleTest extends TestCase
             'price' => 5000000,
             'price_label' => '5tr',
             'area' => 40,
-            'location' => 'Cau Giay, Hanoi',
-            'type' => 'Căn hộ chung cư',
+            'address' => 'Cau Giay, Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.036,
-            'lng' => 105.78,
+            'city' => 'Hà Nội',
+            'latitude' => 21.036,
+            'longitude' => 105.78,
             'category_id' => $this->category->id,
-            'image' => 'images/apartment_1.png',
-            'images' => [],
-            'agent_id' => $this->owner1->id,
+            'owner_id' => $this->owner1->id,
+            'phone' => '0987654321',
             'status' => 'approved',
         ]);
 
@@ -303,15 +306,15 @@ class OwnerModuleTest extends TestCase
             'price' => 5000000,
             'price_label' => '5tr',
             'area' => 40,
-            'location' => 'Cau Giay, Hanoi',
-            'type' => 'Căn hộ chung cư',
+            'address' => 'Cau Giay, Hanoi',
+            'ward' => 'Dịch Vọng',
             'district' => 'CG',
-            'lat' => 21.036,
-            'lng' => 105.78,
+            'city' => 'Hà Nội',
+            'latitude' => 21.036,
+            'longitude' => 105.78,
             'category_id' => $this->category->id,
-            'image' => 'images/apartment_1.png',
-            'images' => [],
-            'agent_id' => $this->owner2->id,
+            'owner_id' => $this->owner2->id,
+            'phone' => '0987654321',
             'status' => 'approved',
         ]);
 

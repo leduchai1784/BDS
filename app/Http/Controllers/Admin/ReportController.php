@@ -62,7 +62,7 @@ class ReportController extends Controller
 
         // Fetch top 10 most viewed properties
         $topProperties = Property::with(['agent', 'category'])
-            ->orderBy('views', 'desc')
+            ->orderBy('views_count', 'desc')
             ->take(10)
             ->get();
 

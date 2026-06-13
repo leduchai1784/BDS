@@ -12,7 +12,7 @@ class WishlistService
      * Toggle a property's favorite status for a user.
      * Returns true if added, false if removed.
      */
-    public function toggleFavorite(int $userId, int $propertyId): bool
+    public function toggleFavorite(int $userId, string $propertyId): bool
     {
         $user = User::findOrFail($userId);
         
@@ -34,7 +34,7 @@ class WishlistService
     /**
      * Check if a property is favorited by a user.
      */
-    public function isFavorite(int $userId, int $propertyId): bool
+    public function isFavorite(int $userId, string $propertyId): bool
     {
         $user = User::find($userId);
         if (!$user) {

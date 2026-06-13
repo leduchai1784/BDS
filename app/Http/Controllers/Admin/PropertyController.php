@@ -16,12 +16,12 @@ class PropertyController extends Controller
     {
         $query = Property::query()->with(['agent', 'category']);
 
-        // Search by keyword in title or location
+        // Search by keyword in title or address
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
+                  ->orWhere('address', 'like', "%{$search}%");
             });
         }
 

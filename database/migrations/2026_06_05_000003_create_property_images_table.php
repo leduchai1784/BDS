@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wishlists', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+        Schema::create('property_images', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->uuid('property_id');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
+            $table->string('image_path');
+            $table->boolean('is_primary')->default(false);
             $table->timestamps();
-
-            $table->unique(['user_id', 'property_id']);
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wishlists');
+        Schema::dropIfExists('property_images');
     }
 };

@@ -215,7 +215,7 @@ Route::get('/', function (\App\Services\PropertyService $propertyService) {
 
 // Route trang chi tiết bất động sản
 Route::get('/property/{id}', function ($id, \App\Services\PropertyService $propertyService) {
-    $property = $propertyService->getPropertyById((int)$id);
+    $property = $propertyService->getPropertyById($id);
     $properties = $propertyService->getAllProperties();
     
     return view('detail', [
@@ -241,6 +241,8 @@ Route::middleware(['auth', 'owner'])->group(function () {
     Route::get('/properties/{id}/edit', [\App\Http\Controllers\Owner\PropertyController::class, 'edit'])->name('properties.edit');
     Route::put('/properties/{id}', [\App\Http\Controllers\Owner\PropertyController::class, 'update'])->name('properties.update');
     Route::delete('/properties/{id}', [\App\Http\Controllers\Owner\PropertyController::class, 'destroy'])->name('properties.destroy');
+    Route::post('/properties/{id}/extend', [\App\Http\Controllers\Owner\PropertyController::class, 'extend'])->name('properties.extend');
+    Route::post('/properties/{id}/hide', [\App\Http\Controllers\Owner\PropertyController::class, 'hide'])->name('properties.hide');
 
     // Quản lý lịch hẹn
     Route::post('/appointments/{id}/approve', [\App\Http\Controllers\Owner\AppointmentController::class, 'approve'])->name('appointments.approve');
