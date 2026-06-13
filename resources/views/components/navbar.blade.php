@@ -5,9 +5,9 @@
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full"
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="w-full flex items-center justify-between gap-4 relative">
+        <div class="w-full flex items-center justify-between gap-4">
             <!-- Logo -->
-            <div class="flex-shrink-0 flex items-center justify-center mx-auto md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
+            <div class="flex-shrink-0 flex items-center">
                 <a href="/" class="flex items-center space-x-2">
                     <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
                         <i class="fa-solid fa-house-chimney text-lg"></i>
@@ -19,7 +19,7 @@
             </div>
 
             <!-- Desktop Navigation Menu -->
-            <nav class="hidden md:flex flex-1 items-center justify-start space-x-3 lg:space-x-5">
+            <nav class="hidden md:flex space-x-3 lg:space-x-5 items-center">
                 <a href="/" :class="isScrolled ? 'text-primary' : 'text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Trang chủ</a>
                 <div 
                     class="relative" 
@@ -70,7 +70,7 @@
 
             <!-- Actions (Profile & CTA) -->
             @auth
-            <div class="hidden md:flex flex-1 items-center justify-end space-x-2.5 lg:space-x-4" x-data="{ userDropdownOpen: false }">
+            <div class="hidden md:flex items-center space-x-2.5 lg:space-x-4" x-data="{ userDropdownOpen: false }">
                 <!-- Đăng tin miễn phí -->
                 <a href="{{ Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property']) : route('profile.index') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0">
                     <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
@@ -154,7 +154,7 @@
             @endauth
 
             @guest
-            <div class="hidden md:flex flex-1 items-center justify-end space-x-3.5 lg:space-x-5" x-data="{ guestDropdownOpen: false }">
+            <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5" x-data="{ guestDropdownOpen: false }">
                 <!-- Đăng tin miễn phí -->
                 <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap">
                     <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
@@ -209,7 +209,7 @@
             @endguest
 
             <!-- Hamburger Button for Mobile -->
-            <div class="flex items-center md:hidden absolute right-0">
+            <div class="flex items-center md:hidden">
                 <button 
                     @click="mobileMenuOpen = !mobileMenuOpen" 
                     type="button" 
