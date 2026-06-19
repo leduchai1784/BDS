@@ -155,7 +155,7 @@
                                         <input type="hidden" name="status" value="approved">
                                         <button 
                                             type="button" 
-                                            @click="$root.triggerConfirm('Duyệt tin đăng', 'Bạn có chắc muốn phê duyệt tin đăng: {{ addslashes($p->title) }}?', 'Phê duyệt', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('approve-form-{{ $p->id }}').submit(); })"
+                                            @click="triggerConfirm('Duyệt tin đăng', 'Bạn có chắc muốn phê duyệt tin đăng: {{ addslashes($p->title) }}?', 'Phê duyệt', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('approve-form-{{ $p->id }}').submit(); })"
                                             class="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950/45 flex items-center justify-center transition border border-green-200 dark:border-green-900/40 cursor-pointer" 
                                             title="Phê duyệt đăng tin"
                                         >
@@ -168,7 +168,7 @@
                                         <input type="hidden" name="status" value="rejected">
                                         <button 
                                             type="button" 
-                                            @click="$root.triggerConfirm('Từ chối tin đăng', 'Bạn có chắc muốn từ chối tin đăng: {{ addslashes($p->title) }}?', 'Từ chối', 'bg-red-500 hover:bg-red-600', () => { document.getElementById('reject-form-{{ $p->id }}').submit(); })"
+                                            @click="triggerConfirm('Từ chối tin đăng', 'Bạn có chắc muốn từ chối tin đăng: {{ addslashes($p->title) }}?', 'Từ chối', 'bg-red-500 hover:bg-red-600', () => { document.getElementById('reject-form-{{ $p->id }}').submit(); })"
                                             class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/45 flex items-center justify-center transition border border-red-200 dark:border-red-900/40 cursor-pointer" 
                                             title="Từ chối tin đăng"
                                         >

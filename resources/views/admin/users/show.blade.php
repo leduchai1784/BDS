@@ -69,7 +69,7 @@
                         @if($user->status === 'locked')
                             <button 
                                 type="button" 
-                                @click="$root.triggerConfirm('Mở khóa tài khoản', 'Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.', 'Mở khóa', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('detail-toggle-status-form').submit(); })"
+                                @click="triggerConfirm('Mở khóa tài khoản', 'Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.', 'Mở khóa', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('detail-toggle-status-form').submit(); })"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-md shadow-green-500/20 transition cursor-pointer"
                             >
                                 <i class="fa-solid fa-unlock-keyhole mr-1.5"></i> Mở khóa tài khoản
@@ -77,7 +77,7 @@
                         @else
                             <button 
                                 type="button" 
-                                @click="$root.triggerConfirm('Khóa tài khoản', 'Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.', 'Khóa lại', 'bg-red-500 hover:bg-red-650', () => { document.getElementById('detail-toggle-status-form').submit(); })"
+                                @click="triggerConfirm('Khóa tài khoản', 'Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.', 'Khóa lại', 'bg-red-500 hover:bg-red-650', () => { document.getElementById('detail-toggle-status-form').submit(); })"
                                 class="w-full bg-red-500 hover:bg-red-650 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-md shadow-red-500/20 transition cursor-pointer"
                             >
                                 <i class="fa-solid fa-user-slash mr-1.5"></i> Khóa tài khoản này
@@ -90,7 +90,7 @@
                         @method('DELETE')
                         <button 
                             type="button" 
-                            @click="$root.triggerConfirm('Xóa tài khoản', 'Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của {{ addslashes($user->name) }}? Hành động này sẽ loại bỏ tài khoản, tin đăng và lịch hẹn liên quan, không thể khôi phục.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-700', () => { document.getElementById('detail-delete-user-form').submit(); })"
+                            @click="triggerConfirm('Xóa tài khoản', 'Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của {{ addslashes($user->name) }}? Hành động này sẽ loại bỏ tài khoản, tin đăng và lịch hẹn liên quan, không thể khôi phục.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-700', () => { document.getElementById('detail-delete-user-form').submit(); })"
                             class="w-full bg-rose-50 dark:bg-red-950/20 border border-rose-200 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-red-950/45 text-xs font-bold py-2.5 px-4 rounded-xl transition cursor-pointer"
                         >
                             <i class="fa-solid fa-trash-can mr-1.5"></i> Xóa tài khoản này

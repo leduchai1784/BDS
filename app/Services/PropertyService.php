@@ -21,13 +21,15 @@ class PropertyService
     /**
      * Get all properties from the NKS API or cache, with local mock fallback.
      */
-    public function getAllProperties(): array
+    public function getAllProperties(bool $ignoreStatus = false): array
     {
         $dbProperties = [];
         try {
-            $dbProperties = Property::with(['propertyImages', 'owner', 'category'])
-                ->where('status', 'approved')
-                ->orderBy('created_at', 'desc')
+            $query = Property::with(['propertyImages', 'owner', 'category']);
+            if (!$ignoreStatus) {
+                $query->where('status', 'approved');
+            }
+            $dbProperties = $query->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($property) {
                     return $this->transformDbProperty($property);
@@ -140,23 +142,40 @@ class PropertyService
      */
     public function search(array $filters = [], int $perPage = 6): LengthAwarePaginator
     {
-        $properties = collect($this->getAllProperties());
+        $allProperties = $this->getAllProperties(isset($filters['ignore_status']));
 
-        // Apply filters
-        $properties = $this->applyFilters($properties, $filters);
+        $properties = collect($allProperties)->filter(function ($item) use ($filters) {
+            return $this->filterItem($item, $filters);
+        });
 
-        // Apply sorting
-        $properties = $this->applySorting($properties, $filters['sort'] ?? 'latest');
+        $sortBy = $filters['sort'] ?? 'latest';
+        if ($sortBy === 'price_asc') {
+            $properties = $properties->sortBy('price_raw');
+        } elseif ($sortBy === 'price_desc') {
+            $properties = $properties->sortByDesc('price_raw');
+        } elseif ($sortBy === 'area_asc') {
+            $properties = $properties->sortBy('area');
+        } elseif ($sortBy === 'area_desc') {
+            $properties = $properties->sortByDesc('area');
+        } else { // latest
+            $properties = $properties->sort(function ($a, $b) {
+                $aVip = ($a['is_vip'] ?? false) ? 1 : 0;
+                $bVip = ($b['is_vip'] ?? false) ? 1 : 0;
+                if ($aVip !== $bVip) {
+                    return $bVip <=> $aVip;
+                }
+                return strval($b['id']) <=> strval($a['id']);
+            });
+        }
 
-        // Paginate collection manually
-        $page = Paginator::resolveCurrentPage() ?: 1;
-        $items = $properties->forPage($page, $perPage)->values();
+        $currentPage = Paginator::resolveCurrentPage() ?: 1;
+        $itemsForCurrentPage = $properties->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
         return new LengthAwarePaginator(
-            $items,
+            $itemsForCurrentPage,
             $properties->count(),
             $perPage,
-            $page,
+            $currentPage,
             [
                 'path' => Paginator::resolveCurrentPath(),
                 'query' => request()->query()
@@ -169,10 +188,11 @@ class PropertyService
      */
     public function searchAllForMap(array $filters = []): array
     {
-        $properties = collect($this->getAllProperties());
+        $allProperties = $this->getAllProperties(isset($filters['ignore_status']));
 
-        // Apply filters
-        $properties = $this->applyFilters($properties, $filters);
+        $properties = collect($allProperties)->filter(function ($item) use ($filters) {
+            return $this->filterItem($item, $filters);
+        });
 
         return $properties->values()->toArray();
     }
@@ -407,29 +427,116 @@ class PropertyService
      */
     protected function applyFilters($properties, array $filters)
     {
-        // 1. Filter by District
-        if (!empty($filters['district'])) {
-            $properties = $properties->where('district', $filters['district']);
-        }
+        // 1. Filter by Purpose (Rent vs Sale)
+        if (!empty($filters['purpose'])) {
+            $purpose = $filters['purpose'];
+            $properties = $properties->filter(function ($item) use ($purpose) {
+                $isRent = (isset($item['price_label']) && stripos($item['price_label'], 'tháng') !== false) || 
+                          (isset($item['price']) && stripos($item['price'], 'tháng') !== false) ||
+                          ($item['price_raw'] <= 150000000); // threshold of 150M for rental
 
-        // 2. Filter by Property Type
-        if (!empty($filters['type'])) {
-            $type = $filters['type'];
-            $properties = $properties->filter(function ($item) use ($type) {
-                if ($type === 'apartment') {
-                    return stripos($item['type'], 'Căn hộ') !== false;
-                } elseif ($type === 'house') {
-                    return stripos($item['type'], 'Nhà') !== false;
-                } elseif ($type === 'villa') {
-                    return stripos($item['type'], 'Biệt thự') !== false;
-                } elseif ($type === 'office') {
-                    return stripos($item['type'], 'Văn phòng') !== false;
+                if ($purpose === 'rent') {
+                    return $isRent;
+                } elseif ($purpose === 'sale') {
+                    return !$isRent;
                 }
-                return stripos($item['type'], $type) !== false;
+                return true;
             });
         }
 
-        // 3. Filter by Price Range
+        // 2. Filter by District
+        if (!empty($filters['district'])) {
+            $districts = is_array($filters['district']) ? $filters['district'] : [$filters['district']];
+            $districts = array_filter($districts);
+            if (!empty($districts)) {
+                $properties = $properties->filter(function ($item) use ($districts) {
+                    return in_array($item['district'], $districts);
+                });
+            }
+        }
+
+        // 3. Filter by Province/City (location parameter from Hero Search)
+        if (!empty($filters['location'])) {
+            $locCode = $filters['location'];
+            $locName = '';
+            if ($locCode === 'HN') {
+                $locName = 'Hà Nội';
+            } elseif ($locCode === 'HCM') {
+                $locName = 'Hồ Chí Minh';
+            } elseif ($locCode === 'DN') {
+                $locName = 'Đà Nẵng';
+            } elseif ($locCode === 'BD') {
+                $locName = 'Bình Dương';
+            } elseif ($locCode === 'DNai') {
+                $locName = 'Đồng Nai';
+            }
+
+            if (!empty($locName)) {
+                $properties = $properties->filter(function ($item) use ($locName) {
+                    return (isset($item['location']) && stripos($item['location'], $locName) !== false) ||
+                           (isset($item['address']) && stripos($item['address'], $locName) !== false) ||
+                           (isset($item['province']) && stripos($item['province'], $locName) !== false);
+                });
+            }
+        }
+
+        // 4. Filter by Keyword (search text)
+        if (!empty($filters['keyword']) || !empty($filters['search'])) {
+            $keyword = !empty($filters['keyword']) ? $filters['keyword'] : $filters['search'];
+            $properties = $properties->filter(function ($item) use ($keyword) {
+                return (isset($item['title']) && stripos($item['title'], $keyword) !== false) ||
+                       (isset($item['location']) && stripos($item['location'], $keyword) !== false) ||
+                       (isset($item['description']) && stripos($item['description'], $keyword) !== false);
+            });
+        }
+
+        // 5. Filter by Property Type
+        if (!empty($filters['type'])) {
+            $types = is_array($filters['type']) ? $filters['type'] : [$filters['type']];
+            $types = array_filter($types);
+            if (!empty($types)) {
+                $properties = $properties->filter(function ($item) use ($types) {
+                    foreach ($types as $type) {
+                        if ($type === 'apartment') {
+                            if (stripos($item['type'], 'Căn hộ') !== false || stripos($item['type'], 'Chung cư') !== false) {
+                                return true;
+                            }
+                        } elseif ($type === 'house') {
+                            if ((stripos($item['type'], 'Nhà') !== false && stripos($item['type'], 'nhà xưởng') === false && stripos($item['type'], 'nhà trọ') === false) || stripos($item['type'], 'Biệt thự') !== false || stripos($item['type'], 'Villa') !== false) {
+                                return true;
+                            }
+                        } elseif ($type === 'room') {
+                            if (stripos($item['type'], 'Phòng trọ') !== false || stripos($item['type'], 'Nhà trọ') !== false) {
+                                return true;
+                            }
+                        } elseif ($type === 'land') {
+                            if (stripos($item['type'], 'Đất') !== false) {
+                                return true;
+                            }
+                        } elseif ($type === 'premises') {
+                            if (stripos($item['type'], 'Mặt bằng') !== false) {
+                                return true;
+                            }
+                        } elseif ($type === 'office') {
+                            if (stripos($item['type'], 'Văn phòng') !== false) {
+                                return true;
+                            }
+                        } elseif ($type === 'warehouse') {
+                            if (stripos($item['type'], 'Kho') !== false || stripos($item['type'], 'Nhà xưởng') !== false || stripos($item['type'], 'Xưởng') !== false) {
+                                return true;
+                            }
+                        } else {
+                            if (stripos($item['type'], $type) !== false) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                });
+            }
+        }
+
+        // 6. Filter by Price Range
         if (!empty($filters['price'])) {
             $price = $filters['price'];
             $properties = $properties->filter(function ($item) use ($price) {
@@ -451,11 +558,21 @@ class PropertyService
                 } elseif ($price === 'above_25') {
                     return $priceRaw > 25000000;
                 }
+                // Sale price ranges (in Billions)
+                elseif ($price === 'under_2b') {
+                    return $priceRaw < 2000000000;
+                } elseif ($price === '2b_5b') {
+                    return $priceRaw >= 2000000000 && $priceRaw <= 5000000000;
+                } elseif ($price === '5b_10b') {
+                    return $priceRaw >= 5000000000 && $priceRaw <= 10000000000;
+                } elseif ($price === 'above_10b') {
+                    return $priceRaw > 10000000000;
+                }
                 return true;
             });
         }
 
-        // 4. Filter by Area Range
+        // 7. Filter by Area Range
         if (!empty($filters['area'])) {
             $area = $filters['area'];
             $properties = $properties->filter(function ($item) use ($area) {
@@ -473,8 +590,59 @@ class PropertyService
             });
         }
 
+        // 8. Filter by Bedrooms
+        if (!empty($filters['bedrooms'])) {
+            $bedrooms = $filters['bedrooms'];
+            $properties = $properties->filter(function ($item) use ($bedrooms) {
+                $itemBedrooms = isset($item['bedrooms']) ? (int)$item['bedrooms'] : 0;
+                if ($bedrooms === '1') {
+                    return $itemBedrooms === 1;
+                } elseif ($bedrooms === '2') {
+                    return $itemBedrooms === 2;
+                } elseif ($bedrooms === '3') {
+                    return $itemBedrooms >= 3;
+                }
+                return true;
+            });
+        }
+
+        // 9. Filter by Bathrooms
+        if (!empty($filters['bathrooms'])) {
+            $bathrooms = $filters['bathrooms'];
+            $properties = $properties->filter(function ($item) use ($bathrooms) {
+                $itemBathrooms = isset($item['bathrooms']) ? (int)$item['bathrooms'] : 0;
+                if ($bathrooms === '1') {
+                    return $itemBathrooms === 1;
+                } elseif ($bathrooms === '2') {
+                    return $itemBathrooms >= 2;
+                }
+                return true;
+            });
+        }
+
+        // 10. Filter by Direction
+        if (!empty($filters['direction'])) {
+            $direction = $filters['direction'];
+            // Map direction value (English code) to Vietnamese text
+            $dirMap = [
+                'east' => 'Đông',
+                'west' => 'Tây',
+                'south' => 'Nam',
+                'north' => 'Bắc',
+                'southeast' => 'Đông Nam',
+                'southwest' => 'Tây Nam',
+                'northeast' => 'Đông Bắc',
+                'northwest' => 'Tây Bắc',
+            ];
+            $dirText = isset($dirMap[$direction]) ? $dirMap[$direction] : $direction;
+            $properties = $properties->filter(function ($item) use ($dirText) {
+                return isset($item['direction']) && stripos($item['direction'], $dirText) !== false;
+            });
+        }
+
         return $properties;
     }
+
 
     /**
      * Apply sorting to the collection.
@@ -744,6 +912,10 @@ class PropertyService
             'id' => $property->id,
             'title' => $property->title,
             'type' => $type,
+            'transaction_type' => $property->transaction_type,
+            'property_type' => $property->property_type,
+            'province' => $property->province,
+            'ward' => $property->ward,
             'price' => $priceFormatted,
             'price_label' => $property->price_label ?: 'Liên hệ',
             'price_raw' => $priceRaw,
@@ -784,5 +956,156 @@ class PropertyService
             return round($value, 1) . ' triệu/tháng';
         }
         return number_format($price) . 'đ/tháng';
+    }
+
+    /**
+     * Helper to filter a single transformed property item in-memory.
+     */
+    protected function filterItem(array $item, array $filters): bool
+    {
+        // 1. Keyword search
+        if (!empty($filters['keyword']) || !empty($filters['search'])) {
+            $keyword = !empty($filters['keyword']) ? $filters['keyword'] : $filters['search'];
+            $keyword = mb_strtolower(trim($keyword), 'UTF-8');
+            
+            $title = mb_strtolower($item['title'] ?? '', 'UTF-8');
+            $location = mb_strtolower($item['location'] ?? '', 'UTF-8');
+            $description = mb_strtolower($item['description'] ?? '', 'UTF-8');
+            $district = mb_strtolower($item['district'] ?? '', 'UTF-8');
+            $province = mb_strtolower($item['province'] ?? '', 'UTF-8');
+            
+            if (strpos($title, $keyword) === false && 
+                strpos($location, $keyword) === false && 
+                strpos($description, $keyword) === false && 
+                strpos($district, $keyword) === false && 
+                strpos($province, $keyword) === false) {
+                return false;
+            }
+        }
+
+        // 2. Transaction type
+        $purpose = !empty($filters['transaction_type']) ? $filters['transaction_type'] : (!empty($filters['purpose']) ? $filters['purpose'] : null);
+        if (!empty($purpose)) {
+            if (($item['transaction_type'] ?? '') !== $purpose) {
+                return false;
+            }
+        }
+
+        // 3. Property type
+        $propType = !empty($filters['property_type']) ? $filters['property_type'] : (!empty($filters['type']) ? $filters['type'] : null);
+        if (!empty($propType)) {
+            $types = is_array($propType) ? $propType : [$propType];
+            $types = array_filter($types);
+            if (!empty($types)) {
+                if (!in_array($item['property_type'] ?? '', $types)) {
+                    return false;
+                }
+            }
+        }
+
+        // 4. Province
+        $provinceFilter = !empty($filters['province']) ? $filters['province'] : (!empty($filters['city']) ? $filters['city'] : null);
+        if (!empty($provinceFilter)) {
+            $cleanP = mb_strtolower(str_replace(['Thành phố ', 'Tỉnh '], '', $provinceFilter), 'UTF-8');
+            $provinceVal = mb_strtolower($item['province'] ?? '', 'UTF-8');
+            if (strpos($provinceVal, $cleanP) === false) {
+                return false;
+            }
+        }
+
+        // 5. District
+        if (!empty($filters['district'])) {
+            $districts = is_array($filters['district']) ? $filters['district'] : [$filters['district']];
+            $districts = array_filter($districts);
+            if (!empty($districts)) {
+                $matched = false;
+                foreach ($districts as $d) {
+                    $cleanD = mb_strtolower(str_replace(['Quận ', 'Huyện ', 'Thị xã ', 'Thành phố '], '', $d), 'UTF-8');
+                    $districtVal = mb_strtolower($item['district'] ?? '', 'UTF-8');
+                    $locationVal = mb_strtolower($item['location'] ?? '', 'UTF-8');
+                    if (strpos($districtVal, $cleanD) !== false || strpos($locationVal, $cleanD) !== false) {
+                        $matched = true;
+                        break;
+                    }
+                }
+                if (!$matched) {
+                    return false;
+                }
+            }
+        }
+
+        // 6. Ward
+        if (!empty($filters['ward'])) {
+            $cleanW = mb_strtolower(str_replace(['Phường ', 'Xã ', 'Thị trấn '], '', $filters['ward']), 'UTF-8');
+            $wardVal = mb_strtolower($item['ward'] ?? '', 'UTF-8');
+            $locationVal = mb_strtolower($item['location'] ?? '', 'UTF-8');
+            if (strpos($wardVal, $cleanW) === false && strpos($locationVal, $cleanW) === false) {
+                return false;
+            }
+        }
+
+        // 7. Price
+        if (!empty($filters['price'])) {
+            $priceFilter = $filters['price'];
+            $priceRaw = $item['price_raw'] ?? 0;
+            if ($priceFilter === 'under_3' && $priceRaw >= 3000000) return false;
+            if ($priceFilter === '3_5' && ($priceRaw < 3000000 || $priceRaw > 5000000)) return false;
+            if ($priceFilter === '5_10' && ($priceRaw < 5000000 || $priceRaw > 10000000)) return false;
+            if ($priceFilter === '10_20' && ($priceRaw < 10000000 || $priceRaw > 20000000)) return false;
+            if ($priceFilter === 'above_20' && $priceRaw <= 20000000) return false;
+            if ($priceFilter === 'under_1b' && $priceRaw >= 1000000000) return false;
+            if ($priceFilter === '1b_3b' && ($priceRaw < 1000000000 || $priceRaw > 3000000000)) return false;
+            if ($priceFilter === '3b_5b' && ($priceRaw < 3000000000 || $priceRaw > 5000000000)) return false;
+            if ($priceFilter === '5b_10b' && ($priceRaw < 5000000000 || $priceRaw > 10000000000)) return false;
+            if ($priceFilter === 'above_10b' && $priceRaw <= 10000000000) return false;
+        }
+
+        // 8. Area
+        if (!empty($filters['area'])) {
+            $areaFilter = $filters['area'];
+            $areaRaw = $item['area'] ?? 0;
+            if ($areaFilter === 'under_30' && $areaRaw >= 30) return false;
+            if ($areaFilter === '30_50' && ($areaRaw < 30 || $areaRaw > 50)) return false;
+            if ($areaFilter === '50_80' && ($areaRaw < 50 || $areaRaw > 80)) return false;
+            if ($areaFilter === '80_120' && ($areaRaw < 80 || $areaRaw > 120)) return false;
+            if ($areaFilter === 'above_120' && $areaRaw <= 120) return false;
+        }
+
+        // 9. Bedrooms
+        $bedroomsFilter = !empty($filters['bedrooms']) ? $filters['bedrooms'] : (!empty($filters['bedroom']) ? $filters['bedroom'] : null);
+        if (!empty($bedroomsFilter)) {
+            if (($item['bedrooms'] ?? 0) < intval($bedroomsFilter)) {
+                return false;
+            }
+        }
+
+        // 10. Bathrooms
+        $bathroomsFilter = !empty($filters['bathrooms']) ? $filters['bathrooms'] : (!empty($filters['bathroom']) ? $filters['bathroom'] : null);
+        if (!empty($bathroomsFilter)) {
+            if (($item['bathrooms'] ?? 0) < intval($bathroomsFilter)) {
+                return false;
+            }
+        }
+
+        // 11. Furniture
+        if (!empty($filters['furniture'])) {
+            $furnitureFilter = $filters['furniture'];
+            $furnitureVal = mb_strtolower($item['furniture'] ?? '', 'UTF-8');
+            if ($furnitureFilter === 'full') {
+                if (strpos($furnitureVal, 'đầy đủ') === false && strpos($furnitureVal, 'full') === false) {
+                    return false;
+                }
+            } elseif ($furnitureFilter === 'basic') {
+                if (strpos($furnitureVal, 'cơ bản') === false) {
+                    return false;
+                }
+            } elseif ($furnitureFilter === 'none') {
+                if (strpos($furnitureVal, 'không') === false && strpos($furnitureVal, 'trống') === false && !empty($furnitureVal)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

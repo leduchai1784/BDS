@@ -57,7 +57,7 @@
                                     @method('DELETE')
                                     <button 
                                         type="button" 
-                                        @click="$root.triggerConfirm('Xóa danh mục', 'Bạn có chắc chắn muốn xóa danh mục {{ addslashes($cat->name) }}? Bất động sản trong danh mục này sẽ tạm thời chuyển thành chưa phân loại.', 'Xóa danh mục', 'bg-red-650 hover:bg-red-750', () => { document.getElementById('delete-cat-form-{{ $cat->id }}').submit(); })"
+                                        @click="triggerConfirm('Xóa danh mục', 'Bạn có chắc chắn muốn xóa danh mục {{ addslashes($cat->name) }}? Bất động sản trong danh mục này sẽ tạm thời chuyển thành chưa phân loại.', 'Xóa danh mục', 'bg-red-650 hover:bg-red-750', () => { document.getElementById('delete-cat-form-{{ $cat->id }}').submit(); })"
                                         class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/45 border border-red-200 dark:border-red-900/40 flex items-center justify-center transition cursor-pointer" 
                                         title="Xóa danh mục"
                                     >

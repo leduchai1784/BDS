@@ -145,7 +145,7 @@
                                         <input type="hidden" name="status" value="approved">
                                         <button 
                                             type="button" 
-                                            @click="$root.triggerConfirm('Phê duyệt tin đăng', 'Phê duyệt tin đăng này để hiển thị công khai trên website?', 'Phê duyệt', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('quick-approve-form-{{ $property->id }}').submit(); })"
+                                            @click="triggerConfirm('Phê duyệt tin đăng', 'Phê duyệt tin đăng này để hiển thị công khai trên website?', 'Phê duyệt', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('quick-approve-form-{{ $property->id }}').submit(); })"
                                             class="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950/45 border border-green-200 dark:border-green-900/40 flex items-center justify-center transition cursor-pointer" 
                                             title="Duyệt bài đăng"
                                         >
@@ -161,7 +161,7 @@
                                         <input type="hidden" name="status" value="hidden">
                                         <button 
                                             type="button" 
-                                            @click="$root.triggerConfirm('Ẩn tin đăng', 'Ẩn tin đăng này khỏi danh sách công khai trên trang chủ và tìm kiếm?', 'Ẩn tin đăng', 'bg-slate-500 hover:bg-slate-600', () => { document.getElementById('quick-hide-form-{{ $property->id }}').submit(); })"
+                                            @click="triggerConfirm('Ẩn tin đăng', 'Ẩn tin đăng này khỏi danh sách công khai trên trang chủ và tìm kiếm?', 'Ẩn tin đăng', 'bg-slate-500 hover:bg-slate-600', () => { document.getElementById('quick-hide-form-{{ $property->id }}').submit(); })"
                                             class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 flex items-center justify-center transition cursor-pointer" 
                                             title="Ẩn tin đăng"
                                         >
@@ -181,7 +181,7 @@
                                     @method('DELETE')
                                     <button 
                                         type="button" 
-                                        @click="$root.triggerConfirm('Xóa tin đăng', 'Bạn có chắc chắn muốn xóa tin đăng bất động sản này vĩnh viễn không? Hành động này không thể hoàn tác.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-755', () => { document.getElementById('quick-delete-form-{{ $property->id }}').submit(); })"
+                                        @click="triggerConfirm('Xóa tin đăng', 'Bạn có chắc chắn muốn xóa tin đăng bất động sản này vĩnh viễn không? Hành động này không thể hoàn tác.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-755', () => { document.getElementById('quick-delete-form-{{ $property->id }}').submit(); })"
                                         class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/45 border border-red-200 dark:border-red-900/40 flex items-center justify-center transition cursor-pointer" 
                                         title="Xóa tin đăng"
                                     >

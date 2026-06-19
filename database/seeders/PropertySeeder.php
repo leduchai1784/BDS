@@ -58,6 +58,18 @@ class PropertySeeder extends Seeder
             'description' => 'Mặt bằng kinh doanh, cửa hàng bán lẻ đường lớn'
         ]);
 
+        $catDat = Category::create([
+            'name' => 'Đất',
+            'slug' => 'dat',
+            'description' => 'Đất thổ cư, đất nền dự án, đất nông nghiệp cho thuê'
+        ]);
+
+        $catKhoNhaXuong = Category::create([
+            'name' => 'Kho, nhà xưởng',
+            'slug' => 'kho-nha-xuong',
+            'description' => 'Kho bãi, nhà xưởng, mặt bằng sản xuất cho thuê'
+        ]);
+
         // 2. Create Default Renter User (tenant role)
         $renter = User::create([
             'name' => 'Nguyễn Văn Hùng',
@@ -356,6 +368,60 @@ class PropertySeeder extends Seeder
         $p6->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => false]);
         $p6->propertyImages()->create(['image_path' => 'images/hero_bg.png', 'is_primary' => false]);
         $p6->propertyImages()->create(['image_path' => 'images/house_1.png', 'is_primary' => false]);
+
+        // Approved Land Property
+        $p7 = Property::create($makeProp(
+            'Cho thuê đất làm kho bãi mặt đường lớn Nam Từ Liêm',
+            'Cho thuê diện tích đất thổ cư rộng rãi 500m2 thích hợp làm kho bãi tập kết vật liệu xây dựng, bãi đậu xe, vị trí thuận tiện di chuyển xe container.',
+            15000000,
+            '15tr',
+            500,
+            0,
+            0,
+            'Đường Lê Quang Đạo, Nam Từ Liêm',
+            'Mễ Trì',
+            'NTL',
+            'Hà Nội',
+            21.0112,
+            105.7725,
+            false,
+            true,
+            $catDat->id,
+            'approved',
+            142,
+            $agentLong->id,
+            $agentLong->phone,
+            'https://zalo.me/' . $agentLong->phone,
+            Carbon::now()->subDays(12)
+        ));
+        $p7->propertyImages()->create(['image_path' => 'images/house_2.png', 'is_primary' => true]);
+
+        // Approved Warehouse Property
+        $p8 = Property::create($makeProp(
+            'Cho thuê kho xưởng tiêu chuẩn công nghiệp Hoài Đức',
+            'Kho xưởng tiêu chuẩn khung thép zamil, cao 8m, hệ thống pccc cơ bản đầy đủ, điện 3 pha, nước sạch đầy đủ. Mặt đường rộng xe container ra vào dễ dàng.',
+            35000000,
+            '35tr',
+            1000,
+            0,
+            1,
+            'Khu công nghiệp Lai Xá, Hoài Đức',
+            'Kim Chung',
+            'HD',
+            'Hà Nội',
+            21.0625,
+            105.7285,
+            true,
+            true,
+            $catKhoNhaXuong->id,
+            'approved',
+            280,
+            $agentTuyet->id,
+            $agentTuyet->phone,
+            'https://zalo.me/' . $agentTuyet->phone,
+            Carbon::now()->subDays(8)
+        ));
+        $p8->propertyImages()->create(['image_path' => 'images/house_1.png', 'is_primary' => true]);
 
         // Properties awaiting approval (pending)
         $pPending1 = Property::create($makeProp(

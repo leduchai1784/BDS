@@ -141,7 +141,7 @@
                         <input type="hidden" name="status" value="approved">
                         <button 
                             type="button" 
-                            @click="$root.triggerConfirm('Phê duyệt tin đăng', 'Duyệt bài đăng này để hiển thị công khai trên website?', 'Phê duyệt', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('approve-property-form').submit(); })"
+                            @click="triggerConfirm('Phê duyệt tin đăng', 'Duyệt bài đăng này để hiển thị công khai trên website?', 'Phê duyệt', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('approve-property-form').submit(); })"
                             class="w-full bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-md shadow-green-500/20 transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                             <i class="fa-solid fa-circle-check"></i> Phê duyệt tin đăng
@@ -155,7 +155,7 @@
                         <input type="hidden" name="status" value="hidden">
                         <button 
                             type="button" 
-                            @click="$root.triggerConfirm('Ẩn tin đăng', 'Ẩn tin đăng này khỏi trang tìm kiếm công cộng?', 'Ẩn tin', 'bg-slate-500 hover:bg-slate-600', () => { document.getElementById('hide-property-form').submit(); })"
+                            @click="triggerConfirm('Ẩn tin đăng', 'Ẩn tin đăng này khỏi trang tìm kiếm công cộng?', 'Ẩn tin', 'bg-slate-500 hover:bg-slate-600', () => { document.getElementById('hide-property-form').submit(); })"
                             class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-bold py-2.5 px-4 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
                         >
                             <i class="fa-solid fa-eye-slash"></i> Ẩn tin đăng này
@@ -169,7 +169,7 @@
                         <input type="hidden" name="status" value="rejected">
                         <button 
                             type="button" 
-                            @click="$root.triggerConfirm('Từ chối tin đăng', 'Từ chối tin đăng này? Tin sẽ không được hiển thị và chủ nhà sẽ nhận được thông báo.', 'Từ chối', 'bg-amber-500 hover:bg-amber-600', () => { document.getElementById('reject-property-form').submit(); })"
+                            @click="triggerConfirm('Từ chối tin đăng', 'Từ chối tin đăng này? Tin sẽ không được hiển thị và chủ nhà sẽ nhận được thông báo.', 'Từ chối', 'bg-amber-500 hover:bg-amber-600', () => { document.getElementById('reject-property-form').submit(); })"
                             class="w-full bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-955/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40 text-xs font-bold py-2.5 px-4 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                             <i class="fa-solid fa-ban"></i> Từ chối tin đăng
@@ -183,7 +183,7 @@
                         <input type="hidden" name="status" value="pending">
                         <button 
                             type="button" 
-                            @click="$root.triggerConfirm('Yêu cầu duyệt lại', 'Chuyển tin đăng này trở lại hàng đợi chờ kiểm duyệt?', 'Chuyển về', 'bg-slate-500 hover:bg-slate-600', () => { document.getElementById('pending-property-form').submit(); })"
+                            @click="triggerConfirm('Yêu cầu duyệt lại', 'Chuyển tin đăng này trở lại hàng đợi chờ kiểm duyệt?', 'Chuyển về', 'bg-slate-500 hover:bg-slate-600', () => { document.getElementById('pending-property-form').submit(); })"
                             class="w-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-650 dark:text-slate-350 border border-slate-200 dark:border-slate-700 text-xs font-bold py-2.5 px-4 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
                         >
                             <i class="fa-solid fa-clock-rotate-left"></i> Chuyển về chờ duyệt
@@ -198,7 +198,7 @@
                         @method('DELETE')
                         <button 
                             type="button" 
-                            @click="$root.triggerConfirm('Xóa tin đăng', 'Bạn có chắc chắn muốn xóa tin đăng bất động sản này vĩnh viễn không? Thao tác không thể hoàn tác.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-700', () => { document.getElementById('destroy-property-form').submit(); })"
+                            @click="triggerConfirm('Xóa tin đăng', 'Bạn có chắc chắn muốn xóa tin đăng bất động sản này vĩnh viễn không? Thao tác không thể hoàn tác.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-700', () => { document.getElementById('destroy-property-form').submit(); })"
                             class="w-full bg-red-500 hover:bg-red-650 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-md shadow-red-500/20 transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                             <i class="fa-solid fa-trash-can"></i> Xóa tin đăng vĩnh viễn

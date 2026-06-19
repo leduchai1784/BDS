@@ -122,7 +122,7 @@
                         @if(Auth::user()->role === 'owner')
                         <button 
                             @click="activeTab = 'properties'; window.history.pushState(null, '', '?tab=properties');" 
-                            :class="activeTab === 'properties' || activeTab === 'create_property' || activeTab === 'edit_property' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            :class="activeTab === 'properties' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
                             class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                         >
                             <div class="flex items-center space-x-3">
@@ -198,17 +198,7 @@
                         </a>
                         @endif
 
-                        <a 
-                            href="{{ route('logout') }}" 
-                            onclick="event.preventDefault(); document.getElementById('logout-form-profile').submit();"
-                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-red-500 hover:bg-red-50 hover:text-red-600 border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
-                        >
-                            <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                            <span>Đăng xuất</span>
-                        </a>
-                        <form id="logout-form-profile" action="{{ route('logout') }}" method="POST" class="hidden">
-                            @csrf
-                        </form>
+
                     </nav>
                 </div>
                 </div>
@@ -412,13 +402,44 @@
 
                 <!-- TAB 2: Saved / Favorite Listings OR Owner Properties -->
                 @if(Auth::user()->role === 'owner')
-                <div x-show="activeTab === 'properties'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                @php
+                    $saleProperties = $myProperties->filter(fn($p) => $p->price_label && stripos($p->price_label, 'tháng') === false);
+                    $rentProperties = $myProperties->filter(fn($p) => !$p->price_label || stripos($p->price_label, 'tháng') !== false);
+                @endphp
+                <div x-show="activeTab === 'properties'" x-data="{ subTab: 'all' }" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     <div class="pb-5 border-b border-slate-100 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <h2 class="text-xl font-bold text-slate-800">Quản lý tin đăng</h2>
                             <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và quản lý các bất động sản đã đăng của bạn.</p>
                         </div>
                     </div>
+
+                    @if(!$myProperties->isEmpty())
+                    <!-- Sub-tabs for Sale / Rent -->
+                    <div class="flex border-b border-slate-150/80 mb-6 gap-6">
+                        <button 
+                            @click="subTab = 'all'" 
+                            :class="subTab === 'all' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                            class="px-2 py-2.5 text-xs border-b-2 transition focus:outline-none cursor-pointer"
+                        >
+                            Tất cả ({{ $myProperties->count() }})
+                        </button>
+                        <button 
+                            @click="subTab = 'sale'" 
+                            :class="subTab === 'sale' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                            class="px-2 py-2.5 text-xs border-b-2 transition focus:outline-none cursor-pointer"
+                        >
+                            Tin bán ({{ $saleProperties->count() }})
+                        </button>
+                        <button 
+                            @click="subTab = 'rent'" 
+                            :class="subTab === 'rent' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                            class="px-2 py-2.5 text-xs border-b-2 transition focus:outline-none cursor-pointer"
+                        >
+                            Tin cho thuê ({{ $rentProperties->count() }})
+                        </button>
+                    </div>
+                    @endif
 
                     @if($myProperties->isEmpty())
                         <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
@@ -435,7 +456,7 @@
                                     <tr>
                                         <th scope="col" class="px-5 py-4">Bất động sản</th>
                                         <th scope="col" class="px-5 py-4">Danh mục</th>
-                                        <th scope="col" class="px-5 py-4">Giá thuê</th>
+                                        <th scope="col" class="px-5 py-4">Giá</th>
                                         <th scope="col" class="px-5 py-4">Diện tích</th>
                                         <th scope="col" class="px-5 py-4">Trạng thái</th>
                                         <th scope="col" class="px-5 py-4 text-right">Hành động</th>
@@ -443,7 +464,14 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
                                     @foreach($myProperties as $prop)
-                                        <tr>
+                                        @php
+                                            $isPropSale = $prop->price_label && stripos($prop->price_label, 'tháng') === false;
+                                        @endphp
+                                        <tr 
+                                            x-show="subTab === 'all' || 
+                                                    (subTab === 'sale' && {{ $isPropSale ? 'true' : 'false' }}) || 
+                                                    (subTab === 'rent' && {{ !$isPropSale ? 'true' : 'false' }})"
+                                        >
                                             <td class="px-5 py-4 flex items-center space-x-3 min-w-[250px]">
                                                 <img src="{{ asset($prop->image) }}" class="w-12 h-10 object-cover rounded-lg border border-slate-200 flex-shrink-0">
                                                 <div class="truncate">
@@ -500,31 +528,30 @@
                                             </td>
                                         </tr>
                                     @endforeach
+
+                                    <!-- Empty states for sub-tabs -->
+                                    <tr x-show="subTab === 'sale' && {{ $saleProperties->isEmpty() ? 'true' : 'false' }}" x-cloak>
+                                        <td colspan="6" class="px-5 py-12 text-center text-slate-500 bg-slate-50 border-t border-slate-100">
+                                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-base">
+                                                <i class="fa-solid fa-folder-open"></i>
+                                            </div>
+                                            <p class="text-xs font-bold">Bạn chưa đăng tin bán nào.</p>
+                                        </td>
+                                    </tr>
+                                    <tr x-show="subTab === 'rent' && {{ $rentProperties->isEmpty() ? 'true' : 'false' }}" x-cloak>
+                                        <td colspan="6" class="px-5 py-12 text-center text-slate-500 bg-slate-50 border-t border-slate-100">
+                                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-base">
+                                                <i class="fa-solid fa-folder-open"></i>
+                                            </div>
+                                            <p class="text-xs font-bold">Bạn chưa đăng tin cho thuê nào.</p>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     @endif
                 </div>
 
-                <!-- TAB 2.1: Create Property (Embedded) -->
-                @if(Auth::user()->role === 'owner')
-                <div x-show="activeTab === 'create_property'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
-                    @include('owner.properties.create_form')
-                </div>
-                @endif
-
-                <!-- TAB 2.2: Edit Property (Embedded) -->
-                @if(Auth::user()->role === 'owner')
-                <div x-show="activeTab === 'edit_property'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
-                    @if(isset($property) && $property)
-                        @include('owner.properties.edit_form')
-                    @else
-                        <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
-                            <p class="text-xs font-bold text-slate-500">Không tìm thấy thông tin bất động sản cần chỉnh sửa.</p>
-                        </div>
-                    @endif
-                </div>
-                @endif
                 @endif
 
                 <!-- TAB 2.3: Favorites (All roles) -->

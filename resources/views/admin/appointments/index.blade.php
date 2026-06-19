@@ -142,7 +142,7 @@
                                         @csrf
                                         <button 
                                             type="button" 
-                                            @click="$root.triggerConfirm('Hủy lịch hẹn', 'Bạn có chắc chắn muốn hủy lịch hẹn xem nhà #BK-{{ $app->id }} của khách {{ addslashes($app->name) }} không?', 'Hủy lịch', 'bg-red-500 hover:bg-red-650', () => { document.getElementById('cancel-app-form-{{ $app->id }}').submit(); })"
+                                            @click="triggerConfirm('Hủy lịch hẹn', 'Bạn có chắc chắn muốn hủy lịch hẹn xem nhà #BK-{{ $app->id }} của khách {{ addslashes($app->name) }} không?', 'Hủy lịch', 'bg-red-500 hover:bg-red-650', () => { document.getElementById('cancel-app-form-{{ $app->id }}').submit(); })"
                                             class="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/45 border border-red-200 dark:border-red-900/40 text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1 leading-none shadow-sm"
                                         >
                                             <i class="fa-solid fa-calendar-minus text-[9px]"></i> Hủy lịch

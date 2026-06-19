@@ -38,8 +38,20 @@
             class="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500 ease-out"
         >
 
-        <!-- VIP/NEW Badges Overlay (Trang trí cao cấp) -->
+        <!-- VIP/NEW/Sale/Rent Badges Overlay (Trang trí cao cấp) -->
         <div class="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
+            @php
+                $isSale = isset($property['price_label']) && stripos($property['price_label'], 'tháng') === false;
+            @endphp
+            @if($isSale)
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-orange-500 text-white shadow-md shadow-orange-500/20">
+                    <i class="fa-solid fa-tags mr-1"></i> BÁN
+                </span>
+            @else
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-[#0077bb] text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-key mr-1"></i> THUÊ
+                </span>
+            @endif
             @if($property['is_vip'] ?? false)
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-red-500 text-white shadow-md shadow-red-500/20">
                     <i class="fa-solid fa-crown mr-1"></i> VIP

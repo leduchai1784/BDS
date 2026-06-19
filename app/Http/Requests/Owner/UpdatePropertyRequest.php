@@ -24,7 +24,7 @@ class UpdatePropertyRequest extends FormRequest
             'city' => 'required|string|max:255',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'phone' => 'required|string|max:20',
             'zalo' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
@@ -35,6 +35,11 @@ class UpdatePropertyRequest extends FormRequest
             'direction' => 'nullable|string|max:50',
             'furniture' => 'nullable|string',
             'legal' => 'nullable|string|max:255',
+            'deposit' => 'nullable|numeric|min:0',
+            'lease_term' => 'nullable|string|max:255',
+            'frontage' => 'nullable|numeric|min:0',
+            'road_width' => 'nullable|numeric|min:0',
+            'floors' => 'nullable|integer|min:0',
             'delete_images' => 'nullable|array',
         ];
     }

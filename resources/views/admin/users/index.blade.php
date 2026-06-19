@@ -133,7 +133,7 @@
                                         @if($user->status === 'locked')
                                             <button 
                                                 type="button" 
-                                                @click="$root.triggerConfirm('Mở khóa tài khoản', 'Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.', 'Mở khóa', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('toggle-status-form-{{ $user->id }}').submit(); })"
+                                                @click="triggerConfirm('Mở khóa tài khoản', 'Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.', 'Mở khóa', 'bg-green-500 hover:bg-green-600', () => { document.getElementById('toggle-status-form-{{ $user->id }}').submit(); })"
                                                 class="px-2.5 py-1.5 rounded-xl bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950/45 border border-green-200 dark:border-green-900/40 text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1 leading-none shadow-sm"
                                             >
                                                 <i class="fa-solid fa-unlock-keyhole text-[9px]"></i> Mở khóa
@@ -141,14 +141,14 @@
                                         @else
                                             <button 
                                                 type="button" 
-                                                @click="$root.triggerConfirm('Khóa tài khoản', 'Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.', 'Khóa lại', 'bg-red-500 hover:bg-red-650', () => { document.getElementById('toggle-status-form-{{ $user->id }}').submit(); })"
+                                                @click="triggerConfirm('Khóa tài khoản', 'Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.', 'Khóa lại', 'bg-red-500 hover:bg-red-650', () => { document.getElementById('toggle-status-form-{{ $user->id }}').submit(); })"
                                                 class="px-2.5 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/45 border border-red-200 dark:border-red-900/40 text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1 leading-none shadow-sm"
                                             >
                                                 <i class="fa-solid fa-user-slash text-[9px]"></i> Khóa tài khoản
                                             </button>
                                         @endif
                                     </form>
-                                @endif
+                                  @endif
 
                                 <!-- Delete Button -->
                                 @if($user->id !== Auth::id())
@@ -157,7 +157,7 @@
                                         @method('DELETE')
                                         <button 
                                             type="button" 
-                                            @click="$root.triggerConfirm('Xóa tài khoản', 'Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của {{ addslashes($user->name) }}? Hành động này sẽ loại bỏ tài khoản, tin đăng và lịch hẹn liên quan, không thể khôi phục.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-700', () => { document.getElementById('delete-user-form-{{ $user->id }}').submit(); })"
+                                            @click="triggerConfirm('Xóa tài khoản', 'Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của {{ addslashes($user->name) }}? Hành động này sẽ loại bỏ tài khoản, tin đăng và lịch hẹn liên quan, không thể khôi phục.', 'Xóa vĩnh viễn', 'bg-red-650 hover:bg-red-700', () => { document.getElementById('delete-user-form-{{ $user->id }}').submit(); })"
                                             class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-red-950/20 text-rose-600 dark:text-rose-450 hover:bg-rose-100 dark:hover:bg-red-950/45 border border-rose-200 dark:border-rose-900/40 flex items-center justify-center transition cursor-pointer" 
                                             title="Xóa tài khoản"
                                         >

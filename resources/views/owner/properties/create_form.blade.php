@@ -41,51 +41,29 @@
             @enderror
         </div>
 
-        <!-- Grid: Danh mục & Loại hình -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Danh mục -->
-            <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Danh mục <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <select 
-                        name="category_id" 
-                        required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
-                    >
-                        <option value="">-- Chọn danh mục --</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
-                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                </div>
-                @error('category_id')
-                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                @enderror
+        <!-- Loại hình -->
+        <div class="space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <select 
+                    name="type" 
+                    required 
+                    class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                >
+                    <option value="">-- Chọn loại hình --</option>
+                    <option value="Căn hộ chung cư" {{ old('type') == 'Căn hộ chung cư' ? 'selected' : '' }}>Căn hộ chung cư</option>
+                    <option value="Nhà nguyên căn" {{ old('type') == 'Nhà nguyên căn' ? 'selected' : '' }}>Nhà nguyên căn</option>
+                    <option value="Phòng trọ" {{ old('type') == 'Phòng trọ' ? 'selected' : '' }}>Phòng trọ</option>
+                    <option value="Đất" {{ old('type') == 'Đất' ? 'selected' : '' }}>Đất</option>
+                    <option value="Mặt bằng" {{ old('type') == 'Mặt bằng' ? 'selected' : '' }}>Mặt bằng</option>
+                    <option value="Văn phòng" {{ old('type') == 'Văn phòng' ? 'selected' : '' }}>Văn phòng</option>
+                    <option value="Kho, nhà xưởng" {{ old('type') == 'Kho, nhà xưởng' ? 'selected' : '' }}>Kho, nhà xưởng</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
             </div>
-
-            <!-- Loại hình -->
-            <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <select 
-                        name="type" 
-                        required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
-                    >
-                        <option value="">-- Chọn loại hình --</option>
-                        <option value="Căn hộ chung cư" {{ old('type') == 'Căn hộ chung cư' ? 'selected' : '' }}>Căn hộ chung cư</option>
-                        <option value="Nhà nguyên căn" {{ old('type') == 'Nhà nguyên căn' ? 'selected' : '' }}>Nhà nguyên căn</option>
-                        <option value="Biệt thự / Villa" {{ old('type') == 'Biệt thự / Villa' ? 'selected' : '' }}>Biệt thự / Villa</option>
-                        <option value="Văn phòng cho thuê" {{ old('type') == 'Văn phòng cho thuê' ? 'selected' : '' }}>Văn phòng cho thuê</option>
-                        <option value="Phòng trọ cho thuê" {{ old('type') == 'Phòng trọ cho thuê' ? 'selected' : '' }}>Phòng trọ cho thuê</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                </div>
-                @error('type')
-                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                @enderror
-            </div>
+            @error('type')
+                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+            @enderror
         </div>
 
         <!-- Grid: Giá & Diện tích & Phòng ngủ/tắm -->
@@ -138,6 +116,94 @@
             </div>
         </div>
 
+        <!-- Dynamic Fields for Sale vs Rent -->
+        @if($isSale)
+            <!-- Grid: Thông số nhà đất (Chỉ cho tin Bán) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Mặt tiền -->
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mặt tiền (m)</label>
+                    <input 
+                        type="number" 
+                        step="0.01"
+                        name="frontage" 
+                        value="{{ old('frontage') }}"
+                        placeholder="Ví dụ: 5.5" 
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    >
+                    @error('frontage')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Đường vào -->
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Đường rộng (m)</label>
+                    <input 
+                        type="number" 
+                        step="0.01"
+                        name="road_width" 
+                        value="{{ old('road_width') }}"
+                        placeholder="Ví dụ: 12.0" 
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    >
+                    @error('road_width')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Số tầng -->
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số tầng</label>
+                    <input 
+                        type="number" 
+                        name="floors" 
+                        value="{{ old('floors') }}"
+                        min="0"
+                        placeholder="Ví dụ: 3" 
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    >
+                    @error('floors')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        @else
+            <!-- Grid: Thông số thuê (Chỉ cho tin Thuê) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Tiền đặt cọc -->
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tiền đặt cọc (VND)</label>
+                    <input 
+                        type="number" 
+                        name="deposit" 
+                        value="{{ old('deposit') }}"
+                        min="0"
+                        placeholder="Ví dụ: 10000000 (10 triệu)" 
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    >
+                    @error('deposit')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Thời hạn thuê tối thiểu -->
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Thời hạn hợp đồng tối thiểu</label>
+                    <input 
+                        type="text" 
+                        name="lease_term" 
+                        value="{{ old('lease_term') }}"
+                        placeholder="Ví dụ: Tối thiểu 1 năm, 6 tháng..." 
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    >
+                    @error('lease_term')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        @endif
+
         <!-- Grid: Hướng & Phòng tắm & Pháp lý -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Phòng tắm -->
@@ -167,12 +233,12 @@
 
             <!-- Pháp lý -->
             <div class="space-y-1">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Pháp lý</label>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Pháp lý / Giấy tờ</label>
                 <input 
                     type="text" 
                     name="legal" 
                     value="{{ old('legal') }}"
-                    placeholder="Ví dụ: Sổ hồng, cọc 2 tháng..." 
+                    placeholder="Ví dụ: Sổ đỏ chính chủ, Sổ hồng riêng, Hợp đồng công chứng..." 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                 >
             </div>
@@ -454,13 +520,12 @@
 
     <!-- Submit buttons -->
     <div class="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-8">
-        <button 
-            type="button"
-            @click="activeTab = 'properties'; window.history.pushState(null, '', '?tab=properties');" 
+        <a 
+            href="{{ route('properties.choose-type') }}" 
             class="inline-flex items-center justify-center px-5 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer"
         >
             Hủy bỏ
-        </button>
+        </a>
         <button 
             type="submit" 
             class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"

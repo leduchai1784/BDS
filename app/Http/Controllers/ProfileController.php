@@ -66,7 +66,7 @@ class ProfileController extends Controller
             // Load categories and edit target property
             $categories = \App\Models\Category::all();
             $editProperty = null;
-            if (request('tab') === 'edit_property' && request('property_id')) {
+            if (request('tab') === 'edit_property' && request('property_id') && \Illuminate\Support\Str::isUuid(request('property_id'))) {
                 $editProperty = \App\Models\Property::find(request('property_id'));
                 if ($editProperty) {
                     abort_if($editProperty->owner_id !== $user->id, 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');

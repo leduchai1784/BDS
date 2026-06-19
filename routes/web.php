@@ -289,6 +289,12 @@ Route::get('/map', function (\Illuminate\Http\Request $request, \App\Services\Pr
     return view('map', ['properties' => $properties]);
 });
 
+// Route lựa chọn loại tin đăng (Bán / Cho thuê)
+Route::get('/properties/choose-type', function () {
+    return view('properties.choose_type');
+})->name('properties.choose-type');
+
+
 // Route dành riêng cho Khách thuê (Tenant) (Bảo vệ bởi auth và tenant middleware)
 Route::middleware(['auth', 'tenant'])->group(function () {
     // Đặt lịch xem nhà

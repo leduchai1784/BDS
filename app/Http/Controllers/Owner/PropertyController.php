@@ -17,7 +17,8 @@ class PropertyController extends Controller
      */
     public function create()
     {
-        return redirect()->route('profile.index', ['tab' => 'create_property']);
+        $categories = Category::all();
+        return view('owner.properties.create', compact('categories'));
     }
 
     /**
@@ -28,14 +29,38 @@ class PropertyController extends Controller
         // Format price label
         $priceLabel = $this->formatPriceLabel($request->price);
 
+        // Resolve category_id based on type
+        $categoryId = $request->category_id;
+        if (empty($categoryId) && !empty($request->type)) {
+            $categorySlug = match($request->type) {
+                'Căn hộ chung cư' => 'chung-cu',
+                'Nhà nguyên căn' => 'nha-nguyen-can',
+                'Phòng trọ' => 'phong-tro',
+                'Đất' => 'dat',
+                'Mặt bằng' => 'mat-bang',
+                'Văn phòng' => 'van-phong',
+                'Kho, nhà xưởng' => 'kho-nha-xuong',
+                default => 'chung-cu',
+            };
+            $category = Category::where('slug', $categorySlug)->first();
+            if ($category) {
+                $categoryId = $category->id;
+            }
+        }
+
         // Create Property
         $property = Property::create([
             'owner_id' => Auth::id(),
-            'category_id' => $request->category_id,
+            'category_id' => $categoryId,
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
             'price_label' => $priceLabel,
+            'deposit' => $request->deposit,
+            'lease_term' => $request->lease_term,
+            'frontage' => $request->frontage,
+            'road_width' => $request->road_width,
+            'floors' => $request->floors,
             'area' => $request->area,
             'bedroom' => $request->bedroom ?? 0,
             'bathroom' => $request->bathroom ?? 0,
@@ -87,10 +112,8 @@ class PropertyController extends Controller
         // Authorization check
         abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
 
-        return redirect()->route('profile.index', [
-            'tab' => 'edit_property',
-            'property_id' => $id
-        ]);
+        $categories = Category::all();
+        return view('owner.properties.edit', compact('property', 'categories'));
     }
 
     /**
@@ -120,13 +143,37 @@ class PropertyController extends Controller
             return back()->withErrors(['image' => 'Tin đăng phải có ít nhất 1 ảnh đại diện.'])->withInput();
         }
 
+        // Resolve category_id based on type
+        $categoryId = $request->category_id;
+        if (empty($categoryId) && !empty($request->type)) {
+            $categorySlug = match($request->type) {
+                'Căn hộ chung cư' => 'chung-cu',
+                'Nhà nguyên căn' => 'nha-nguyen-can',
+                'Phòng trọ' => 'phong-tro',
+                'Đất' => 'dat',
+                'Mặt bằng' => 'mat-bang',
+                'Văn phòng' => 'van-phong',
+                'Kho, nhà xưởng' => 'kho-nha-xuong',
+                default => 'chung-cu',
+            };
+            $category = Category::where('slug', $categorySlug)->first();
+            if ($category) {
+                $categoryId = $category->id;
+            }
+        }
+
         // Update basic details
         $property->update([
-            'category_id' => $request->category_id,
+            'category_id' => $categoryId,
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
             'price_label' => $this->formatPriceLabel($request->price),
+            'deposit' => $request->deposit,
+            'lease_term' => $request->lease_term,
+            'frontage' => $request->frontage,
+            'road_width' => $request->road_width,
+            'floors' => $request->floors,
             'area' => $request->area,
             'bedroom' => $request->bedroom ?? 0,
             'bathroom' => $request->bathroom ?? 0,

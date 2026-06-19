@@ -1,0 +1,301 @@
+﻿@extends('layouts.app')
+
+@section('title', 'Danh SĂ¡ch Báº¥t Äá»™ng Sáº£n Cho ThuĂª GiĂ¡ Tá»‘t | BDS Rental')
+
+@section('content')
+<div class="bg-slate-50 pt-28 pb-16 min-h-screen" x-data="{ mobileFiltersOpen: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Breadcrumbs -->
+        <nav class="flex text-xs font-semibold text-slate-500 mb-6 space-x-2" aria-label="Breadcrumb">
+            <a href="/" class="hover:text-primary transition">Trang chá»§</a>
+            <span>/</span>
+            <span class="text-slate-800">Danh sĂ¡ch cho thuĂª</span>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-left">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">TĂ¬m kiáº¿m báº¥t Ä‘á»™ng sáº£n cho thuĂª</h1>
+                <p class="text-xs text-slate-500 mt-1">TĂ¬m tháº¥y <span class="font-bold text-primary">{{ count($properties) }}</span> tin Ä‘Äƒng phĂ¹ há»£p trĂªn toĂ n quá»‘c</p>
+            </div>
+            
+            <!-- Mobile Filter Toggle Button -->
+            <button 
+                @click="mobileFiltersOpen = true"
+                type="button" 
+                class="lg:hidden inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 cursor-pointer"
+            >
+                <i class="fa-solid fa-sliders"></i>
+                <span>Bá»™ lá»c & TĂ¬m kiáº¿m</span>
+            </button>
+        </div>
+
+        <!-- Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- 1. LEFT FILTER COLUMN: Desktop view (Sticky sidebar, 3/12 cols) -->
+            <aside class="hidden lg:block lg:col-span-3 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm sticky top-24 text-left">
+                <form action="/listings" method="GET" class="space-y-6">
+                    <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider pb-3 border-b border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-primary"></i>
+                        <span>Bá»™ lá»c tĂ¬m kiáº¿m</span>
+                    </h3>
+
+                    <!-- Filter: Location (Quáº­n/Huyá»‡n) -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Khu vá»±c / Quáº­n Huyá»‡n</label>
+                        <div class="relative">
+                            <select 
+                                name="district" 
+                                class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                            >
+                                <option value="">Táº¥t cáº£ Quáº­n/Huyá»‡n</option>
+                                <option value="Q1">Quáº­n 1, TP. HCM</option>
+                                <option value="Q3">Quáº­n 3, TP. HCM</option>
+                                <option value="BT">BĂ¬nh Tháº¡nh, TP. HCM</option>
+                                <option value="CG">Cáº§u Giáº¥y, HĂ  Ná»™i</option>
+                                <option value="GL">Gia LĂ¢m, HĂ  Ná»™i</option>
+                                <option value="TH">TĂ¢y Há»“, HĂ  Ná»™i</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Property Type -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Loáº¡i báº¥t Ä‘á»™ng sáº£n</label>
+                        <div class="relative">
+                            <select 
+                                name="type" 
+                                class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                            >
+                                <option value="">Táº¥t cáº£ loáº¡i nhĂ </option>
+                                <option value="apartment">CÄƒn há»™ chung cÆ°</option>
+                                <option value="house">NhĂ  nguyĂªn cÄƒn</option>
+                                <option value="room">PhĂ²ng trá» giĂ¡ ráº»</option>
+                                <option value="office">VÄƒn phĂ²ng cho thuĂª</option>
+                                <option value="store">Máº·t báº±ng kinh doanh</option>
+                                <option value="villa">Biá»‡t thá»± / Villa</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Price Range -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Khoáº£ng giĂ¡ thuĂª</label>
+                        <div class="relative">
+                            <select 
+                                name="price" 
+                                class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                            >
+                                <option value="">Táº¥t cáº£ má»©c giĂ¡</option>
+                                <option value="under_5">DÆ°á»›i 5 triá»‡u</option>
+                                <option value="5_10">5 - 10 triá»‡u</option>
+                                <option value="10_20">10 - 20 triá»‡u</option>
+                                <option value="above_20">TrĂªn 20 triá»‡u</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Area Range -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Diá»‡n tĂ­ch sá»­ dá»¥ng</label>
+                        <div class="relative">
+                            <select 
+                                name="area" 
+                                class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                            >
+                                <option value="">Táº¥t cáº£ diá»‡n tĂ­ch</option>
+                                <option value="under_30">DÆ°á»›i 30 mÂ²</option>
+                                <option value="30_50">30 - 50 mÂ²</option>
+                                <option value="50_80">50 - 80 mÂ²</option>
+                                <option value="above_80">TrĂªn 80 mÂ²</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter Action Buttons -->
+                    <div class="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
+                        <button 
+                            type="submit" 
+                            class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer"
+                        >
+                            Ăp dá»¥ng bá»™ lá»c
+                        </button>
+                        <a 
+                            href="/listings" 
+                            class="w-full py-3 border border-slate-200 hover:border-slate-355 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold rounded-xl text-xs text-center transition"
+                        >
+                            Äáº·t láº¡i bá»™ lá»c
+                        </a>
+                    </div>
+                </form>
+            </aside>
+
+            <!-- 2. RIGHT CARD LIST COLUMN: (9/12 cols) -->
+            <main class="col-span-1 lg:col-span-9">
+                <!-- Sorting & Quick actions -->
+                <div class="bg-white rounded-2xl px-5 py-3.5 border border-slate-100 shadow-sm flex items-center justify-between mb-8">
+                    <span class="text-xs text-slate-400 font-bold hidden sm:inline">Xem dáº¡ng lÆ°á»›i</span>
+                    
+                    <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
+                        <label class="text-xs font-bold text-slate-500 whitespace-nowrap">Sáº¯p xáº¿p theo:</label>
+                        <div class="relative min-w-[150px]">
+                            <select 
+                                name="sort" 
+                                class="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-lg text-xs font-semibold outline-none appearance-none cursor-pointer transition"
+                            >
+                                <option value="latest">Má»›i nháº¥t</option>
+                                <option value="price_asc">GiĂ¡ tÄƒng dáº§n</option>
+                                <option value="price_desc">GiĂ¡ giáº£m dáº§n</option>
+                                <option value="area_desc">Diá»‡n tĂ­ch lá»›n nháº¥t</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid of Listings -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                    @foreach($properties as $property)
+                        @include('components.property-card', ['property' => $property])
+                    @endforeach
+                </div>
+
+                <!-- Pagination Section -->
+                <div class="flex justify-center">
+                    <nav class="inline-flex space-x-1 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm" aria-label="Pagination">
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </a>
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-white font-bold shadow-md shadow-primary/20">1</a>
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition font-bold">2</a>
+                        <span class="inline-flex items-center justify-center w-10 h-10 text-slate-400">...</span>
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition font-bold">5</a>
+                        <a href="#" class="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </a>
+                    </nav>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- 3. MOBILE FILTER SLIDE-OVER (AlpineJS controlled) -->
+    <div 
+        x-show="mobileFiltersOpen" 
+        class="fixed inset-0 z-50 overflow-hidden lg:hidden" 
+        x-cloak
+    >
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="mobileFiltersOpen = false"></div>
+        
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div 
+                x-show="mobileFiltersOpen"
+                x-transition:enter="transform transition ease-in-out duration-300"
+                x-transition:enter-start="translate-x-full"
+                x-transition:enter-end="translate-x-0"
+                x-transition:leave="transform transition ease-in-out duration-300"
+                x-transition:leave-start="translate-x-0"
+                x-transition:leave-end="translate-x-full"
+                class="w-screen max-w-xs bg-white h-full shadow-2xl flex flex-col p-6 text-left"
+            >
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                    <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-primary"></i>
+                        <span>Bá»™ lá»c tĂ¬m kiáº¿m</span>
+                    </h3>
+                    <button @click="mobileFiltersOpen = false" class="text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Scrollable filter form -->
+                <form action="/listings" method="GET" class="flex-grow overflow-y-auto space-y-6 pr-1">
+                    <!-- Filter: District -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Khu vá»±c / Quáº­n Huyá»‡n</label>
+                        <div class="relative">
+                            <select name="district" class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition">
+                                <option value="">Táº¥t cáº£ Quáº­n/Huyá»‡n</option>
+                                <option value="Q1">Quáº­n 1, TP. HCM</option>
+                                <option value="Q3">Quáº­n 3, TP. HCM</option>
+                                <option value="BT">BĂ¬nh Tháº¡nh, TP. HCM</option>
+                                <option value="CG">Cáº§u Giáº¥y, HĂ  Ná»™i</option>
+                                <option value="GL">Gia LĂ¢m, HĂ  Ná»™i</option>
+                                <option value="TH">TĂ¢y Há»“, HĂ  Ná»™i</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Type -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Loáº¡i báº¥t Ä‘á»™ng sáº£n</label>
+                        <div class="relative">
+                            <select name="type" class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition">
+                                <option value="">Táº¥t cáº£ loáº¡i nhĂ </option>
+                                <option value="apartment">CÄƒn há»™ chung cÆ°</option>
+                                <option value="house">NhĂ  nguyĂªn cÄƒn</option>
+                                <option value="room">PhĂ²ng trá» giĂ¡ ráº»</option>
+                                <option value="office">VÄƒn phĂ²ng cho thuĂª</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Price -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Khoáº£ng giĂ¡ thuĂª</label>
+                        <div class="relative">
+                            <select name="price" class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition">
+                                <option value="">Táº¥t cáº£ má»©c giĂ¡</option>
+                                <option value="under_5">DÆ°á»›i 5 triá»‡u</option>
+                                <option value="5_10">5 - 10 triá»‡u</option>
+                                <option value="10_20">10 - 20 triá»‡u</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filter: Area -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Diá»‡n tĂ­ch sá»­ dá»¥ng</label>
+                        <div class="relative">
+                            <select name="area" class="w-full pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition">
+                                <option value="">Táº¥t cáº£ diá»‡n tĂ­ch</option>
+                                <option value="under_30">DÆ°á»›i 30 mÂ²</option>
+                                <option value="30_50">30 - 50 mÂ²</option>
+                                <option value="50_80">50 - 80 mÂ²</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Actions at bottom of mobile menu -->
+                <div class="pt-4 border-t border-slate-100 flex flex-col gap-2 mb-2">
+                    <button 
+                        @click="mobileFiltersOpen = false"
+                        type="submit" 
+                        class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 px-4 rounded-xl text-xs shadow-md transition cursor-pointer"
+                    >
+                        Ăp dá»¥ng bá»™ lá»c
+                    </button>
+                    <a 
+                        href="/listings" 
+                        class="w-full py-3.5 border border-slate-250 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold rounded-xl text-xs text-center transition"
+                    >
+                        Äáº·t láº¡i
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

@@ -38,7 +38,6 @@
         confirmOpen: false,
         confirmTitle: 'Xác nhận',
         confirmMessage: 'Bạn có chắc chắn muốn thực hiện hành động này không?',
-        confirmAction: null,
         confirmButtonText: 'Đồng ý',
         confirmButtonColor: 'bg-red-500 hover:bg-red-650',
         triggerConfirm(title, message, btnText, btnColor, actionCallback) {
@@ -46,13 +45,14 @@
             this.confirmMessage = message;
             this.confirmButtonText = btnText || 'Đồng ý';
             this.confirmButtonColor = btnColor || 'bg-red-500 hover:bg-red-650';
-            this.confirmAction = actionCallback;
+            window.confirmActionCallback = actionCallback;
             this.confirmOpen = true;
         },
         executeConfirm() {
-            if (this.confirmAction) {
-                this.confirmAction();
+            if (typeof window.confirmActionCallback === 'function') {
+                window.confirmActionCallback();
             }
+            window.confirmActionCallback = null;
             this.confirmOpen = false;
         }
     }" 
@@ -216,5 +216,7 @@
             </div>
         </div>
     </div>
+
+    @stack('scripts')
 </body>
 </html>

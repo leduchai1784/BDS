@@ -20,25 +20,24 @@
 
             <!-- Desktop Navigation Menu -->
             <nav class="hidden md:flex space-x-3 lg:space-x-5 items-center">
-                <a href="/" :class="isScrolled ? 'text-primary' : 'text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Trang chủ</a>
+                <a href="/" :class="isScrolled ? '{{ request()->is('/') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('/') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base transition duration-150 whitespace-nowrap">Trang chủ</a>
                 <div 
                     class="relative" 
                     x-data="{ rentDropdownOpen: false }"
                     @mouseenter="rentDropdownOpen = true"
                     @mouseleave="rentDropdownOpen = false"
                 >
-                    <button 
-                        @click="rentDropdownOpen = !rentDropdownOpen"
-                        type="button"
+                    <a 
+                        href="/listings"
                         class="flex items-center space-x-1.5 font-bold text-sm lg:text-base cursor-pointer focus:outline-none transition duration-150 whitespace-nowrap"
-                        :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'"
+                        :class="isScrolled ? '{{ request()->is('listings*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('listings*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'"
                     >
-                        <span>Thuê</span>
+                        <span>Kho dự án</span>
                         <i 
                             class="fa-solid fa-chevron-down text-[10px] transition duration-200" 
                             :class="rentDropdownOpen ? 'rotate-180' : ''"
                         ></i>
-                    </button>
+                    </a>
                     
                     <!-- Dropdown Panel -->
                     <div 
@@ -49,21 +48,18 @@
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute left-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
+                        class="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left"
                         x-cloak
                     >
-                        <a href="/listings?type=apartment" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
-                            Thuê Căn hộ
+                        <a href="/listings?purpose=rent" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap {{ request('purpose') === 'rent' ? 'bg-slate-100 text-orange-500' : 'text-slate-800 hover:bg-slate-100 hover:text-orange-500' }}">
+                            Cho thuê
                         </a>
-                        <a href="/listings?type=house" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
-                            Thuê Nhà riêng
-                        </a>
-                        <a href="/listings?type=office" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
-                            Thuê Văn phòng
+                        <a href="/listings?purpose=sale" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap {{ request('purpose') === 'sale' ? 'bg-slate-100 text-orange-500' : 'text-slate-800 hover:bg-slate-100 hover:text-orange-500' }}">
+                            Mua bán
                         </a>
                     </div>
                 </div>
-                <a href="/map" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
+                <a href="/map" :class="isScrolled ? '{{ request()->is('map*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('map*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
                 <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
                 <a href="#contact" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Liên hệ</a>
             </nav>
@@ -71,35 +67,14 @@
             <!-- Actions (Profile & CTA) -->
             @auth
             <div class="hidden md:flex items-center space-x-2.5 lg:space-x-4" x-data="{ userDropdownOpen: false }">
-                <!-- Đăng tin miễn phí Dropdown -->
-                <div class="relative flex-shrink-0" x-data="{ postDropdownOpen: false }">
-                    <button 
-                        @click="postDropdownOpen = !postDropdownOpen"
-                        @click.away="postDropdownOpen = false"
-                        type="button"
+                <!-- Đăng tin miễn phí Button -->
+                <div class="relative flex-shrink-0">
+                    <a 
+                        href="{{ route('properties.choose-type') }}"
                         class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0 cursor-pointer"
                     >
                         <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
-                        <i class="fa-solid fa-chevron-down ml-1.5 text-[10px] opacity-80 transition duration-150" :class="postDropdownOpen ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div 
-                        x-show="postDropdownOpen"
-                        x-transition:enter="transition ease-out duration-100"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
-                        x-cloak
-                    >
-                        <a href="{{ Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property', 'purpose' => 'sale']) : route('profile.index') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
-                            Đăng tin bán
-                        </a>
-                        <a href="{{ Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property', 'purpose' => 'rent']) : route('profile.index') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
-                            Đăng tin cho thuê
-                        </a>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- User Account Dropdown -->
@@ -181,35 +156,14 @@
 
             @guest
             <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5" x-data="{ guestDropdownOpen: false }">
-                <!-- Đăng tin miễn phí Dropdown -->
-                <div class="relative flex-shrink-0" x-data="{ postDropdownOpen: false }">
-                    <button 
-                        @click="postDropdownOpen = !postDropdownOpen"
-                        @click.away="postDropdownOpen = false"
-                        type="button"
+                <!-- Đăng tin miễn phí Button -->
+                <div class="relative flex-shrink-0">
+                    <a 
+                        href="{{ route('properties.choose-type') }}"
                         class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
-                        <i class="fa-solid fa-chevron-down ml-1.5 text-[10px] opacity-80 transition duration-150" :class="postDropdownOpen ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div 
-                        x-show="postDropdownOpen"
-                        x-transition:enter="transition ease-out duration-100"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
-                        x-cloak
-                    >
-                        <a href="{{ route('login') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
-                            Đăng tin bán
-                        </a>
-                        <a href="{{ route('login') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
-                            Đăng tin cho thuê
-                        </a>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Guest Account Dropdown -->
@@ -295,16 +249,24 @@
         x-cloak
     >
         <div class="px-4 pt-2 pb-6 space-y-2">
-            <a href="/" class="block px-3 py-3 rounded-xl text-base font-semibold text-primary bg-primary-light">Trang chủ</a>
-            <div x-data="{ mobileRentOpen: false }" class="space-y-1">
-                <button 
-                    @click="mobileRentOpen = !mobileRentOpen"
-                    type="button"
-                    class="w-full flex items-center justify-between px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:outline-none"
-                >
-                    <span>Thuê</span>
-                    <i class="fa-solid fa-chevron-down text-xs transition duration-200" :class="mobileRentOpen ? 'rotate-180' : ''"></i>
-                </button>
+            <a href="/" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('/') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Trang chủ</a>
+            <div x-data="{ mobileRentOpen: {{ request()->is('listings*') ? 'true' : 'false' }} }" class="space-y-1">
+                <div class="flex items-center justify-between w-full rounded-xl {{ request()->is('listings*') ? 'bg-primary-light' : 'hover:bg-slate-50' }} transition group">
+                    <a 
+                        href="/listings" 
+                        @click="mobileMenuOpen = false"
+                        class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('listings*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition"
+                    >
+                        Kho dự án
+                    </a>
+                    <button 
+                        @click="mobileRentOpen = !mobileRentOpen"
+                        type="button"
+                        class="px-4 py-3 text-slate-500 hover:text-primary transition focus:outline-none cursor-pointer"
+                    >
+                        <i class="fa-solid fa-chevron-down text-xs transition duration-200" :class="mobileRentOpen ? 'rotate-180' : ''"></i>
+                    </button>
+                </div>
                 <div 
                     x-show="mobileRentOpen" 
                     x-transition:enter="transition ease-out duration-100" 
@@ -313,12 +275,11 @@
                     class="pl-4 space-y-1" 
                     x-cloak
                 >
-                    <a href="/listings?type=apartment" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">Thuê Căn hộ</a>
-                    <a href="/listings?type=house" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">Thuê Nhà riêng</a>
-                    <a href="/listings?type=office" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">Thuê Văn phòng</a>
+                    <a href="/listings?purpose=rent" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'rent' ? 'text-orange-500 font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-orange-500' }} transition">Cho thuê</a>
+                    <a href="/listings?purpose=sale" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'sale' ? 'text-orange-500 font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-orange-500' }} transition">Mua bán</a>
                 </div>
             </div>
-            <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Bản đồ</a>
+            <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('map*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Bản đồ</a>
             <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
             <a href="#contact" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Liên hệ</a>
             
@@ -355,33 +316,15 @@
                 <a href="{{ route('register') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng ký</a>
                 @endguest
 
-                <!-- Đăng tin miễn phí Accordion -->
-                <div x-data="{ mobilePostOpen: false }" class="w-full">
-                    <button 
-                        @click="mobilePostOpen = !mobilePostOpen"
-                        type="button"
-                        class="w-full inline-flex items-center justify-between px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
+                <!-- Đăng tin miễn phí Button (Mobile) -->
+                <div class="w-full">
+                    <a 
+                        href="{{ route('properties.choose-type') }}"
+                        @click="mobileMenuOpen = false"
+                        class="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
                     >
-                        <span class="inline-flex items-center">
-                            <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
-                        </span>
-                        <i class="fa-solid fa-chevron-down text-xs transition duration-200" :class="mobilePostOpen ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div 
-                        x-show="mobilePostOpen" 
-                        x-transition:enter="transition ease-out duration-100" 
-                        x-transition:enter-start="opacity-0 transform -translate-y-2" 
-                        x-transition:enter-end="opacity-100 transform translate-y-0" 
-                        class="pl-4 mt-2 space-y-1" 
-                        x-cloak
-                    >
-                        <a href="{{ Auth::check() ? (Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property', 'purpose' => 'sale']) : route('profile.index')) : route('login') }}" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition">
-                            Đăng tin bán
-                        </a>
-                        <a href="{{ Auth::check() ? (Auth::user()->role === 'owner' ? route('profile.index', ['tab' => 'create_property', 'purpose' => 'rent']) : route('profile.index')) : route('login') }}" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
-                            Đăng tin cho thuê
-                        </a>
-                    </div>
+                        <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
+                    </a>
                 </div>
             </div>
         </div>

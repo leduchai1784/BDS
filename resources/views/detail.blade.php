@@ -20,6 +20,14 @@
         <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div class="max-w-4xl text-left">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug mb-3">
+                    @php
+                        $isSale = $property['price_label'] && stripos($property['price_label'], 'tháng') === false;
+                    @endphp
+                    @if($isSale)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-black bg-orange-500 text-white mr-2 align-middle"><i class="fa-solid fa-tags mr-1"></i> BÁN</span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-black bg-blue-500 text-white mr-2 align-middle"><i class="fa-solid fa-key mr-1"></i> THUÊ</span>
+                    @endif
                     {{ $property['title'] }}
                 </h1>
                 <div class="flex items-center text-slate-500 text-sm font-medium">
@@ -144,16 +152,89 @@
                         </div>
                     </div>
 
-                    <!-- Legal -->
+                    <!-- Legal / Deposit -->
                     <div class="flex items-start space-x-3.5">
                         <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
                             <i class="fa-solid fa-file-contract text-base"></i>
                         </div>
                         <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Pháp lý</span>
+                            @php
+                                $isSaleLocal = $property['price_label'] && stripos($property['price_label'], 'tháng') === false;
+                            @endphp
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">{{ $isSaleLocal ? 'Pháp lý' : 'Đặt cọc & HĐ' }}</span>
                             <span class="text-sm font-extrabold text-slate-800 truncate block max-w-[150px]" title="{{ $property['legal'] }}">{{ $property['legal'] }}</span>
                         </div>
                     </div>
+
+                    <!-- Additional Details for Sale -->
+                    @if(isset($property['floors']) && $property['floors'] > 0)
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="fa-solid fa-layer-group text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Số tầng</span>
+                            <span class="text-sm font-extrabold text-slate-800">{{ $property['floors'] }} tầng</span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(isset($property['frontage']) && $property['frontage'] > 0)
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="fa-solid fa-arrows-left-right text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Mặt tiền</span>
+                            <span class="text-sm font-extrabold text-slate-800">{{ floatval($property['frontage']) }} m</span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(isset($property['road_width']) && $property['road_width'] > 0)
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="fa-solid fa-road text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Đường rộng</span>
+                            <span class="text-sm font-extrabold text-slate-800">{{ floatval($property['road_width']) }} m</span>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Additional Details for Rent -->
+                    @if(isset($property['deposit']) && $property['deposit'] > 0)
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Tiền đặt cọc</span>
+                            <span class="text-sm font-extrabold text-slate-800">
+                                @if($property['deposit'] >= 1000000000)
+                                    {{ round($property['deposit'] / 1000000000, 1) }} tỷ
+                                @elseif($property['deposit'] >= 1000000)
+                                    {{ round($property['deposit'] / 1000000, 1) }} triệu
+                                @else
+                                    {{ number_format($property['deposit']) }} đ
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(isset($property['lease_term']) && $property['lease_term'])
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="fa-solid fa-clock text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Thời hạn HĐ</span>
+                            <span class="text-sm font-extrabold text-slate-800">{{ $property['lease_term'] }}</span>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
 

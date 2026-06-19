@@ -14,6 +14,10 @@ class WishlistService
      */
     public function toggleFavorite(int $userId, string $propertyId): bool
     {
+        if (!\Illuminate\Support\Str::isUuid($propertyId)) {
+            throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(Property::class, [$propertyId]);
+        }
+
         $user = User::findOrFail($userId);
         
         // Check if property exists
@@ -36,6 +40,10 @@ class WishlistService
      */
     public function isFavorite(int $userId, string $propertyId): bool
     {
+        if (!\Illuminate\Support\Str::isUuid($propertyId)) {
+            return false;
+        }
+
         $user = User::find($userId);
         if (!$user) {
             return false;

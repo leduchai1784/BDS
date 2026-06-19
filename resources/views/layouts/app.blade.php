@@ -37,7 +37,9 @@
 <body class="flex flex-col min-h-full font-sans antialiased text-slate-800">
 
     <!-- Header / Navbar Component -->
-    @include('components.navbar')
+    @if(!isset($hideNavbar) || !$hideNavbar)
+        @include('components.navbar')
+    @endif
 
     <!-- Main Content Area -->
     <main class="flex-grow">

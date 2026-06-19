@@ -56,39 +56,177 @@
                 <span>Tìm kiếm qua bản đồ</span>
             </h1>
 
-            <div class="grid grid-cols-2 gap-3 text-left">
+            <div class="grid grid-cols-2 gap-3 text-left relative">
                 <!-- Filter: Property Type -->
-                <div class="space-y-1">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Loại nhà đất</label>
-                    <div class="relative">
-                        <select 
-                            x-model="filterType"
-                            class="w-full pl-2.5 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
-                        >
-                            <option value="">Tất cả loại hình</option>
-                            <option value="apartment">Chung cư / Căn hộ</option>
-                            <option value="house">Nhà riêng / Căn</option>
-                            <option value="villa">Biệt thự / Villa</option>
-                            <option value="office">Văn phòng cho thuê</option>
-                        </select>
-                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]"></i>
+                <div class="space-y-1 relative">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Loại nhà đất</label>
+                    <button 
+                        type="button"
+                        @click.prevent="activeDropdown = (activeDropdown === 'type' ? null : 'type')"
+                        :class="filterType ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'"
+                        class="w-full flex items-center justify-between px-3 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer h-[36px]"
+                    >
+                        <span x-text="typeLabel()"></span>
+                        <i class="fa-solid fa-chevron-down text-[9px] transition duration-200" :class="activeDropdown === 'type' ? 'rotate-180 text-primary' : 'text-slate-400'"></i>
+                    </button>
+                    
+                    <div 
+                        x-show="activeDropdown === 'type'" 
+                        @click.outside="activeDropdown = null"
+                        class="absolute left-0 mt-2 w-80 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4 z-50 text-left"
+                        x-cloak
+                    >
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 px-0.5">Chọn loại bất động sản</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button 
+                                type="button" 
+                                @click="filterType = ''"
+                                :class="filterType === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-house-chimney text-xs"></i>
+                                <span>Tất cả</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'apartment'"
+                                :class="filterType === 'apartment' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-building text-xs"></i>
+                                <span>Căn hộ</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'house'"
+                                :class="filterType === 'house' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-house text-xs"></i>
+                                <span>Nhà riêng</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'room'"
+                                :class="filterType === 'room' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-door-open text-xs"></i>
+                                <span>Phòng trọ</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'land'"
+                                :class="filterType === 'land' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-map text-xs"></i>
+                                <span>Đất nền</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'premises'"
+                                :class="filterType === 'premises' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-store text-xs"></i>
+                                <span>Mặt bằng</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'office'"
+                                :class="filterType === 'office' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-briefcase text-xs"></i>
+                                <span>Văn phòng</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="filterType = 'warehouse'"
+                                :class="filterType === 'warehouse' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'"
+                                class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer"
+                            >
+                                <i class="fa-solid fa-warehouse text-xs"></i>
+                                <span>Kho xưởng</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-3.5">
+                            <button type="button" @click="filterType = ''; activeDropdown = null;" class="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer">Xóa</button>
+                            <button type="button" @click="activeDropdown = null;" class="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer">Áp dụng</button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Filter: Price Range -->
-                <div class="space-y-1">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Khoảng giá thuê</label>
-                    <div class="relative">
-                        <select 
-                            x-model="filterPrice"
-                            class="w-full pl-2.5 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition"
-                        >
-                            <option value="">Tất cả mức giá</option>
-                            <option value="under_10">Dưới 10 triệu</option>
-                            <option value="10_25">10 - 25 triệu</option>
-                            <option value="above_25">Trên 25 triệu</option>
-                        </select>
-                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]"></i>
+                <div class="space-y-1 relative">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Khoảng giá</label>
+                    <button 
+                        type="button"
+                        @click.prevent="activeDropdown = (activeDropdown === 'price' ? null : 'price')"
+                        :class="filterPrice ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'"
+                        class="w-full flex items-center justify-between px-3 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer h-[36px]"
+                    >
+                        <span x-text="priceLabel()"></span>
+                        <i class="fa-solid fa-chevron-down text-[9px] transition duration-200" :class="activeDropdown === 'price' ? 'rotate-180 text-primary' : 'text-slate-400'"></i>
+                    </button>
+                    
+                    <div 
+                        x-show="activeDropdown === 'price'" 
+                        @click.outside="activeDropdown = null"
+                        class="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4 z-50 text-left"
+                        x-cloak
+                    >
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Chọn khoảng giá</span>
+                        
+                        <!-- Rent Options -->
+                        <div x-show="!isSale()" class="grid grid-cols-2 gap-2">
+                            <button type="button" @click="filterPrice = ''" :class="filterPrice === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer col-span-2">
+                                Tất cả mức giá
+                            </button>
+                            <button type="button" @click="filterPrice = 'under_3'" :class="filterPrice === 'under_3' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                Dưới 3 triệu
+                            </button>
+                            <button type="button" @click="filterPrice = '3_5'" :class="filterPrice === '3_5' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                3 - 5 triệu
+                            </button>
+                            <button type="button" @click="filterPrice = '5_10'" :class="filterPrice === '5_10' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                5 - 10 triệu
+                            </button>
+                            <button type="button" @click="filterPrice = '10_20'" :class="filterPrice === '10_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                10 - 20 triệu
+                            </button>
+                            <button type="button" @click="filterPrice = 'above_20'" :class="filterPrice === 'above_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2">
+                                Trên 20 triệu
+                            </button>
+                        </div>
+                        
+                        <!-- Sale Options -->
+                        <div x-show="isSale()" class="grid grid-cols-2 gap-2">
+                            <button type="button" @click="filterPrice = ''" :class="filterPrice === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer col-span-2">
+                                Tất cả mức giá
+                            </button>
+                            <button type="button" @click="filterPrice = 'under_1b'" :class="filterPrice === 'under_1b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                Dưới 1 tỷ
+                            </button>
+                            <button type="button" @click="filterPrice = '1b_3b'" :class="filterPrice === '1b_3b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                1 - 3 tỷ
+                            </button>
+                            <button type="button" @click="filterPrice = '3b_5b'" :class="filterPrice === '3b_5b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                3 - 5 tỷ
+                            </button>
+                            <button type="button" @click="filterPrice = '5b_10b'" :class="filterPrice === '5b_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer">
+                                5 - 10 tỷ
+                            </button>
+                            <button type="button" @click="filterPrice = 'above_10b'" :class="filterPrice === 'above_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2">
+                                Trên 10 tỷ
+                            </button>
+                        </div>
+                        
+                        <div class="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-3.5">
+                            <button type="button" @click="filterPrice = ''; activeDropdown = null;" class="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer">Xóa</button>
+                            <button type="button" @click="activeDropdown = null;" class="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer">Áp dụng</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -302,32 +440,74 @@
             activeId: null,
             filterType: '',
             filterPrice: '',
+            activeDropdown: null,
             map: null,
             markers: {},
             ignoreMobileScroll: false,
             mobileScrollTimeout: null,
 
+            isSale() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const purpose = urlParams.get('purpose') || '';
+                return purpose === 'sale' || this.properties.some(p => p.transaction_type === 'sale');
+            },
+
+            typeLabel() {
+                if (!this.filterType) return 'Loại hình';
+                const labels = {
+                    'apartment': 'Căn hộ',
+                    'house': 'Nhà riêng',
+                    'room': 'Phòng trọ',
+                    'land': 'Đất nền',
+                    'premises': 'Mặt bằng',
+                    'office': 'Văn phòng',
+                    'warehouse': 'Kho xưởng'
+                };
+                return labels[this.filterType] || 'Loại hình';
+            },
+
+            priceLabel() {
+                if (!this.filterPrice) return 'Mức giá';
+                const labels = {
+                    'under_3': 'Dưới 3 triệu',
+                    '3_5': '3 - 5 triệu',
+                    '5_10': '5 - 10 triệu',
+                    '10_20': '10 - 20 triệu',
+                    'above_20': 'Trên 20 triệu',
+                    'under_1b': 'Dưới 1 tỷ',
+                    '1b_3b': '1 - 3 tỷ',
+                    '3b_5b': '3 - 5 tỷ',
+                    '5b_10b': '5 - 10 tỷ',
+                    'above_10b': 'Trên 10 tỷ'
+                };
+                return labels[this.filterPrice] || 'Mức giá';
+            },
+
             // Filter properties based on select criteria
             filteredProperties() {
                 return this.properties.filter(p => {
                     // 1. Match Property Type
-                    const matchType = !this.filterType || 
-                        (this.filterType === 'apartment' && p.type.includes('Căn hộ')) ||
-                        (this.filterType === 'house' && p.type.includes('Nhà')) ||
-                        (this.filterType === 'villa' && p.type.includes('Biệt thự')) ||
-                        (this.filterType === 'office' && p.type.includes('Văn phòng'));
+                    const matchType = !this.filterType || p.property_type === this.filterType;
 
                     // 2. Match Price Range
-                    const priceMap = { 1: 6.5, 2: 18, 3: 45, 4: 22, 5: 12, 6: 35 };
-                    const value = priceMap[p.id] || 0;
-
                     let matchPrice = true;
-                    if (this.filterPrice === 'under_10') {
-                        matchPrice = value < 10;
-                    } else if (this.filterPrice === '10_25') {
-                        matchPrice = value >= 10 && value <= 25;
-                    } else if (this.filterPrice === 'above_25') {
-                        matchPrice = value > 25;
+                    if (this.filterPrice) {
+                        const priceRaw = p.price_raw || 0;
+                        const isRent = p.transaction_type === 'rent';
+                        
+                        if (isRent) {
+                            if (this.filterPrice === 'under_3') matchPrice = priceRaw < 3000000;
+                            else if (this.filterPrice === '3_5') matchPrice = priceRaw >= 3000000 && priceRaw <= 5000000;
+                            else if (this.filterPrice === '5_10') matchPrice = priceRaw >= 5000000 && priceRaw <= 10000000;
+                            else if (this.filterPrice === '10_20') matchPrice = priceRaw >= 10000000 && priceRaw <= 20000000;
+                            else if (this.filterPrice === 'above_20') matchPrice = priceRaw > 20000000;
+                        } else { // sale
+                            if (this.filterPrice === 'under_1b') matchPrice = priceRaw < 1000000000;
+                            else if (this.filterPrice === '1b_3b') matchPrice = priceRaw >= 1000000000 && priceRaw <= 3000000000;
+                            else if (this.filterPrice === '3b_5b') matchPrice = priceRaw >= 3000000000 && priceRaw <= 5000000000;
+                            else if (this.filterPrice === '5b_10b') matchPrice = priceRaw >= 5000000000 && priceRaw <= 10000000000;
+                            else if (this.filterPrice === 'above_10b') matchPrice = priceRaw > 10000000000;
+                        }
                     }
 
                     return matchType && matchPrice;
