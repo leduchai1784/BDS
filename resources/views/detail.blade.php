@@ -11,7 +11,7 @@
         <nav class="flex text-xs font-semibold text-slate-500 mb-4 space-x-2" aria-label="Breadcrumb">
             <a href="/" class="hover:text-primary transition">Trang chủ</a>
             <span>/</span>
-            <a href="#listings" class="hover:text-primary transition">{{ $property['type'] }}</a>
+            <a href="/listings{{ !empty($property['property_type']) ? '?property_type=' . $property['property_type'] : '' }}" class="hover:text-primary transition">{{ $property['type'] }}</a>
             <span>/</span>
             <span class="text-slate-800 truncate max-w-[200px] sm:max-w-none">{{ $property['title'] }}</span>
         </nav>

@@ -401,6 +401,8 @@ class PropertyService
             'area' => $area,
             'bedrooms' => isset($item['bed']) ? (int)$item['bed'] : 0,
             'bathrooms' => isset($item['bath']) ? (int)$item['bath'] : 0,
+            'floors' => isset($item['floors']) ? (int)$item['floors'] : (isset($item['floor']) ? (int)$item['floor'] : 0),
+            'property_type' => $this->resolvePropertyTypeCode($type),
             'location' => $location,
             'district' => $district,
             'lat' => $lat,
@@ -654,6 +656,8 @@ class PropertyService
                 return $properties->sortBy('price_raw');
             case 'price_desc':
                 return $properties->sortByDesc('price_raw');
+            case 'area_asc':
+                return $properties->sortBy('area');
             case 'area_desc':
                 return $properties->sortByDesc('area');
             case 'latest':
@@ -667,7 +671,7 @@ class PropertyService
      */
     protected function getLocalMockProperties(): array
     {
-        return [
+        $mock = [
             [
                 'id' => 1,
                 'title' => 'Căn hộ chung cư Vinhomes Ocean Park Studio Full Nội Thất',
@@ -873,6 +877,22 @@ class PropertyService
                 'description' => 'Văn phòng cho thuê cao cấp nằm tại tầng cao trung tâm sầm uất quận Hoàn Kiếm. Không gian văn phòng được thiết kế theo tiêu chuẩn quốc tế, trang bị sẵn đầy đủ hệ thống bàn ghế làm việc, tủ hồ sơ, thiết bị phòng họp hiện đại.\n\nGiá thuê đã bao gồm phí quản lý tòa nhà, nước sinh hoạt và dịch vụ dọn dẹp vệ sinh hàng ngày. Thích hợp cho doanh nghiệp start-up, văn phòng đại diện quy mô 15-20 nhân viên.'
             ]
         ];
+
+        return array_map(function ($item) {
+            if (!isset($item['floors'])) {
+                if (stripos($item['type'], 'chung cư') !== false || stripos($item['type'], 'căn hộ') !== false) {
+                    $item['floors'] = 1;
+                } else if (stripos($item['type'], 'nhà') !== false || stripos($item['type'], 'biệt thự') !== false) {
+                    $item['floors'] = ($item['id'] % 2) + 2;
+                } else {
+                    $item['floors'] = 0;
+                }
+            }
+            if (!isset($item['property_type'])) {
+                $item['property_type'] = $this->resolvePropertyTypeCode($item['type']);
+            }
+            return $item;
+        }, $mock);
     }
 
     /**
@@ -922,6 +942,7 @@ class PropertyService
             'area' => $property->area,
             'bedrooms' => $property->bedroom,
             'bathrooms' => $property->bathroom,
+            'floors' => $property->floors,
             'location' => $property->address,
             'district' => $property->district,
             'lat' => $property->latitude,
@@ -1107,5 +1128,35 @@ class PropertyService
         }
 
         return true;
+    }
+
+    /**
+     * Resolve string property type label into frontend filter code.
+     */
+    protected function resolvePropertyTypeCode(string $typeLabel): string
+    {
+        $label = mb_strtolower($typeLabel, 'UTF-8');
+        if (strpos($label, 'căn hộ') !== false || strpos($label, 'chung cư') !== false) {
+            return 'apartment';
+        }
+        if (strpos($label, 'nhà') !== false || strpos($label, 'biệt thự') !== false || strpos($label, 'villa') !== false) {
+            return 'house';
+        }
+        if (strpos($label, 'phòng trọ') !== false || strpos($label, 'nhà trọ') !== false) {
+            return 'room';
+        }
+        if (strpos($label, 'đất') !== false) {
+            return 'land';
+        }
+        if (strpos($label, 'mặt bằng') !== false || strpos($label, 'cửa hàng') !== false) {
+            return 'premises';
+        }
+        if (strpos($label, 'văn phòng') !== false) {
+            return 'office';
+        }
+        if (strpos($label, 'kho') !== false || strpos($label, 'xưởng') !== false) {
+            return 'warehouse';
+        }
+        return '';
     }
 }

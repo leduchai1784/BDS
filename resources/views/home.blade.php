@@ -10,7 +10,7 @@
     <section class="py-12 bg-white border-b border-slate-100 relative z-10 -mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 rounded-3xl shadow-lg shadow-slate-100">
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
             <!-- Cat 1 -->
-            <a href="/listings" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
+            <a href="/listings?property_type=apartment" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
                     <i class="fa-solid fa-building text-2xl"></i>
                 </div>
@@ -19,7 +19,7 @@
             </a>
 
             <!-- Cat 2 -->
-            <a href="/listings" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
+            <a href="/listings?property_type=house" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
                     <i class="fa-solid fa-house text-2xl"></i>
                 </div>
@@ -28,7 +28,7 @@
             </a>
 
             <!-- Cat 3 -->
-            <a href="/listings" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
+            <a href="/listings?property_type=room" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
                     <i class="fa-solid fa-hotel text-2xl"></i>
                 </div>
@@ -37,7 +37,7 @@
             </a>
 
             <!-- Cat 4 -->
-            <a href="/listings" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
+            <a href="/listings?property_type=office" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
                     <i class="fa-solid fa-briefcase text-2xl"></i>
                 </div>
@@ -46,7 +46,7 @@
             </a>
 
             <!-- Cat 5 -->
-            <a href="/listings" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
+            <a href="/listings?property_type=premises" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
                     <i class="fa-solid fa-store text-2xl"></i>
                 </div>
@@ -55,7 +55,7 @@
             </a>
 
             <!-- Cat 6 -->
-            <a href="/listings" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
+            <a href="/listings?property_type=house" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
                     <i class="fa-solid fa-tree-city text-2xl"></i>
                 </div>
@@ -190,7 +190,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- City 1 -->
-                <a href="/listings" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
+                <a href="/listings?province=Hà Nội" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
                         <img src="{{ asset('images/hero_bg.png') }}" alt="Hà Nội" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
@@ -202,7 +202,7 @@
                 </a>
 
                 <!-- City 2 -->
-                <a href="/listings" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
+                <a href="/listings?province=Thành phố Hồ Chí Minh" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
                         <img src="{{ asset('images/apartment_2.png') }}" alt="TP. Hồ Chí Minh" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
@@ -214,7 +214,7 @@
                 </a>
 
                 <!-- City 3 -->
-                <a href="/listings" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
+                <a href="/listings?province=Đà Nẵng" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
                         <img src="{{ asset('images/house_2.png') }}" alt="Đà Nẵng" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
@@ -226,7 +226,7 @@
                 </a>
 
                 <!-- City 4 -->
-                <a href="/listings" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
+                <a href="/listings?province=Bình Dương" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
                         <img src="{{ asset('images/house_1.png') }}" alt="Bình Dương" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>

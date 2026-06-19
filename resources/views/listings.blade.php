@@ -191,15 +191,6 @@
                         <div class="flex flex-col space-y-0.5">
                             <button 
                                 type="button" 
-                                @click="purpose = ''; price = ''; activeDropdown = null;"
-                                :class="purpose === '' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'"
-                                class="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer text-left focus:outline-none"
-                            >
-                                <i class="fa-solid fa-house-chimney text-[11px]" :class="purpose === '' ? 'text-primary' : 'text-slate-400'"></i>
-                                <span>Tất cả</span>
-                            </button>
-                            <button 
-                                type="button" 
                                 @click="purpose = 'rent'; price = ''; activeDropdown = null;"
                                 :class="purpose === 'rent' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'"
                                 class="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer text-left focus:outline-none"
@@ -240,10 +231,6 @@
                     >
                         <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Chọn loại hình bất động sản</span>
                         <div class="grid grid-cols-2 gap-2">
-                            <button type="button" @click="property_type = ''; activeDropdown = null;" :class="property_type === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer">
-                                <i class="fa-solid fa-house-chimney text-xs"></i>
-                                <span>Tất cả</span>
-                            </button>
                             <button type="button" @click="property_type = 'apartment'; activeDropdown = null;" :class="property_type === 'apartment' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'" class="flex items-center space-x-2 px-3 py-2 border rounded-xl text-xs font-bold transition cursor-pointer">
                                 <i class="fa-solid fa-building text-xs"></i>
                                 <span>Căn hộ</span>
@@ -323,14 +310,13 @@
                                 <select 
                                     x-model="selectedProvince"
                                     @change="updateDistricts()"
-                                    class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer appearance-none"
+                                    class="w-full pl-3.5 pr-2.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer appearance-none"
                                 >
                                     <option value="">Chọn Tỉnh/Thành phố</option>
                                     <template x-for="p in provinces" :key="p.Id">
                                         <option :value="p.Name" x-text="p.Name"></option>
                                     </template>
                                 </select>
-                                <i class="fa-solid fa-map-location-dot absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
                             </div>
 
@@ -339,7 +325,7 @@
                                 <select 
                                     x-model="selectedDistrict"
                                     @change="updateWards()"
-                                    class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer appearance-none"
+                                    class="w-full pl-3.5 pr-2.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer appearance-none"
                                     :disabled="!selectedProvince"
                                 >
                                     <option value="">Chọn Quận/Huyện</option>
@@ -347,7 +333,6 @@
                                         <option :value="d.Name" x-text="d.Name"></option>
                                     </template>
                                 </select>
-                                <i class="fa-solid fa-location-crosshairs absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
                             </div>
 
@@ -355,7 +340,7 @@
                             <div class="relative">
                                 <select 
                                     x-model="selectedWard"
-                                    class="w-full pl-8 pr-2.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer appearance-none"
+                                    class="w-full pl-3.5 pr-2.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer appearance-none"
                                     :disabled="!selectedDistrict"
                                 >
                                     <option value="">Chọn Phường/Xã</option>
@@ -363,7 +348,6 @@
                                         <option :value="w.Name" x-text="w.Name"></option>
                                     </template>
                                 </select>
-                                <i class="fa-solid fa-location-dot absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
                             </div>
                         </div>
@@ -376,7 +360,6 @@
                             <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-0.5">Khoảng giá</span>
                             <!-- Rent Price Options -->
                             <div x-show="purpose === 'rent' || purpose === ''" class="grid grid-cols-3 gap-1.5">
-                                <button type="button" @click="price = ''" :class="price === '' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Tất cả</button>
                                 <button type="button" @click="price = 'under_3'" :class="price === 'under_3' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Dưới 3tr</button>
                                 <button type="button" @click="price = '3_5'" :class="price === '3_5' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">3 - 5tr</button>
                                 <button type="button" @click="price = '5_10'" :class="price === '5_10' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">5 - 10tr</button>
@@ -385,7 +368,6 @@
                             </div>
                             <!-- Sale Price Options -->
                             <div x-show="purpose === 'sale'" class="grid grid-cols-3 gap-1.5">
-                                <button type="button" @click="price = ''" :class="price === '' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Tất cả</button>
                                 <button type="button" @click="price = 'under_1b'" :class="price === 'under_1b' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Dưới 1 tỷ</button>
                                 <button type="button" @click="price = '1b_3b'" :class="price === '1b_3b' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">1 - 3 tỷ</button>
                                 <button type="button" @click="price = '3b_5b'" :class="price === '3b_5b' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">3 - 5 tỷ</button>
@@ -398,7 +380,6 @@
                         <div class="space-y-1.5">
                             <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-0.5">Diện tích</span>
                             <div class="grid grid-cols-3 gap-1.5">
-                                <button type="button" @click="area = ''" :class="area === '' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Tất cả</button>
                                 <button type="button" @click="area = 'under_30'" :class="area === 'under_30' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Dưới 30m²</button>
                                 <button type="button" @click="area = '30_50'" :class="area === '30_50' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">30 - 50m²</button>
                                 <button type="button" @click="area = '50_80'" :class="area === '50_80' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">50 - 80m²</button>
@@ -415,7 +396,6 @@
                             <div class="space-y-1.5">
                                 <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-0.5">Phòng ngủ</span>
                                 <div class="bg-slate-50 p-0.5 rounded-lg flex space-x-0.5 border border-slate-200">
-                                    <button type="button" @click="bedrooms = ''" :class="bedrooms === '' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">Tất cả</button>
                                     <button type="button" @click="bedrooms = '1'" :class="bedrooms === '1' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">1+</button>
                                     <button type="button" @click="bedrooms = '2'" :class="bedrooms === '2' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">2+</button>
                                     <button type="button" @click="bedrooms = '3'" :class="bedrooms === '3' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">3+</button>
@@ -425,7 +405,6 @@
                             <div class="space-y-1.5">
                                 <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-0.5">Phòng vệ sinh</span>
                                 <div class="bg-slate-50 p-0.5 rounded-lg flex space-x-0.5 border border-slate-200">
-                                    <button type="button" @click="bathrooms = ''" :class="bathrooms === '' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">Tất cả</button>
                                     <button type="button" @click="bathrooms = '1'" :class="bathrooms === '1' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">1+</button>
                                     <button type="button" @click="bathrooms = '2'" :class="bathrooms === '2' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">2+</button>
                                     <button type="button" @click="bathrooms = '3'" :class="bathrooms === '3' ? 'bg-white text-primary shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'" class="flex-1 py-1 rounded-md text-[10px] text-center transition cursor-pointer">3+</button>
@@ -436,8 +415,7 @@
                         <!-- Furniture -->
                         <div class="space-y-1.5">
                             <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-0.5">Nội thất</span>
-                            <div class="grid grid-cols-3 gap-1.5">
-                                <button type="button" @click="furniture = ''" :class="furniture === '' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Tất cả</button>
+                            <div class="grid grid-cols-2 gap-1.5">
                                 <button type="button" @click="furniture = 'full'" :class="furniture === 'full' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Đầy đủ</button>
                                 <button type="button" @click="furniture = 'basic'" :class="furniture === 'basic' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-2 py-1.5 border rounded-lg text-center text-[10px] transition cursor-pointer">Cơ bản</button>
                             </div>
@@ -447,7 +425,6 @@
                         <div class="space-y-1.5">
                             <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-0.5">Hướng</span>
                             <div class="grid grid-cols-4 gap-1">
-                                <button type="button" @click="direction = ''" :class="direction === '' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm col-span-4' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-1 py-1 border rounded-lg text-center text-[9px] transition cursor-pointer">Tất cả hướng</button>
                                 <button type="button" @click="direction = 'east'" :class="direction === 'east' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-1 py-1 border rounded-lg text-center text-[9px] transition cursor-pointer">Đông</button>
                                 <button type="button" @click="direction = 'west'" :class="direction === 'west' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-1 py-1 border rounded-lg text-center text-[9px] transition cursor-pointer">Tây</button>
                                 <button type="button" @click="direction = 'south'" :class="direction === 'south' ? 'border-primary bg-primary/5 text-primary font-bold shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-650 hover:bg-slate-100'" class="px-1 py-1 border rounded-lg text-center text-[9px] transition cursor-pointer">Nam</button>
@@ -465,7 +442,7 @@
                         class="text-xs text-slate-450 hover:text-slate-700 font-bold flex items-center gap-1 cursor-pointer"
                     >
                         <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
-                        <span>Đặt lại tất cả bộ lọc</span>
+                        <span>Đặt lại bộ lọc</span>
                     </button>
                     <div class="flex gap-2">
                         <button 
@@ -508,7 +485,8 @@
                                 <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Mới nhất</option>
                                 <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Giá tăng dần</option>
                                 <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Giá giảm dần</option>
-                                <option value="area_desc" {{ request('sort') === 'area_desc' ? 'selected' : '' }}>Diện tích lớn nhất</option>
+                                <option value="area_asc" {{ request('sort') === 'area_asc' ? 'selected' : '' }}>Diện tích tăng dần</option>
+                                <option value="area_desc" {{ request('sort') === 'area_desc' ? 'selected' : '' }}>Diện tích giảm dần</option>
                             </select>
                             <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]"></i>
                         </div>
@@ -635,7 +613,6 @@
                     <div class="space-y-1.5">
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Loại giao dịch</label>
                         <div class="bg-slate-100 p-1 rounded-xl flex space-x-1 border border-slate-200">
-                            <button type="button" @click="purpose = ''; price = '';" :class="purpose === '' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1.5 rounded-lg text-xs font-bold text-center transition cursor-pointer">Tất cả</button>
                             <button type="button" @click="purpose = 'rent'; price = '';" :class="purpose === 'rent' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1.5 rounded-lg text-xs font-bold text-center transition cursor-pointer flex items-center justify-center space-x-1">
                                 <i class="fa-solid fa-key text-[10px]"></i>
                                 <span>Thuê</span>
@@ -654,10 +631,6 @@
                             <i class="fa-solid fa-chevron-down text-slate-400 text-[8px] transition duration-200" :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         <div x-show="open" class="grid grid-cols-2 gap-2 pt-1">
-                            <button type="button" @click="property_type = ''" :class="property_type === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="flex items-center space-x-2 px-2.5 py-2 border rounded-xl text-[10px] font-bold transition cursor-pointer">
-                                <i class="fa-solid fa-house-chimney text-xs"></i>
-                                <span>Tất cả</span>
-                            </button>
                             <button type="button" @click="property_type = 'apartment'" :class="property_type === 'apartment' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="flex items-center space-x-2 px-2.5 py-2 border rounded-xl text-[10px] font-bold transition cursor-pointer">
                                 <i class="fa-solid fa-building text-xs"></i>
                                 <span>Căn hộ</span>
@@ -762,9 +735,6 @@
                         <div x-show="open" class="pt-1">
                             <!-- Rent Options -->
                             <div x-show="purpose === 'rent' || purpose === ''" class="grid grid-cols-2 gap-2">
-                                <button type="button" @click="price = ''" :class="price === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer col-span-2">
-                                    Tất cả mức giá
-                                </button>
                                 <button type="button" @click="price = 'under_3'" :class="price === 'under_3' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[10px] font-bold transition cursor-pointer">
                                     Dưới 3 triệu
                                 </button>
@@ -783,9 +753,6 @@
                             </div>
                             <!-- Sale Options -->
                             <div x-show="purpose === 'sale'" class="grid grid-cols-2 gap-2">
-                                <button type="button" @click="price = ''" :class="price === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer col-span-2">
-                                    Tất cả mức giá
-                                </button>
                                 <button type="button" @click="price = 'under_1b'" :class="price === 'under_1b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[10px] font-bold transition cursor-pointer">
                                     Dưới 1 tỷ
                                 </button>
@@ -812,9 +779,6 @@
                             <i class="fa-solid fa-chevron-down text-slate-400 text-[8px] transition duration-200" :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         <div x-show="open" class="grid grid-cols-2 gap-2 pt-1">
-                            <button type="button" @click="area = ''" :class="area === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer col-span-2">
-                                Tất cả diện tích
-                            </button>
                             <button type="button" @click="area = 'under_30'" :class="area === 'under_30' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-[10px] font-bold transition cursor-pointer">
                                 Dưới 30 m²
                             </button>
@@ -844,7 +808,6 @@
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Phòng ngủ</label>
                                 <div class="bg-slate-100 p-1 rounded-xl flex space-x-1 border border-slate-200">
-                                    <button type="button" @click="bedrooms = ''" :class="bedrooms === '' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">Tất cả</button>
                                     <button type="button" @click="bedrooms = '1'" :class="bedrooms === '1' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">1+</button>
                                     <button type="button" @click="bedrooms = '2'" :class="bedrooms === '2' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">2+</button>
                                     <button type="button" @click="bedrooms = '3'" :class="bedrooms === '3' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">3+</button>
@@ -856,7 +819,6 @@
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Phòng vệ sinh</label>
                                 <div class="bg-slate-100 p-1 rounded-xl flex space-x-1 border border-slate-200">
-                                    <button type="button" @click="bathrooms = ''" :class="bathrooms === '' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">Tất cả</button>
                                     <button type="button" @click="bathrooms = '1'" :class="bathrooms === '1' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">1+</button>
                                     <button type="button" @click="bathrooms = '2'" :class="bathrooms === '2' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">2+</button>
                                     <button type="button" @click="bathrooms = '3'" :class="bathrooms === '3' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="flex-1 py-1 rounded-lg text-xs font-bold text-center transition cursor-pointer">3+</button>
@@ -867,7 +829,6 @@
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Nội thất</label>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <button type="button" @click="furniture = ''" :class="furniture === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer col-span-2">Tất cả</button>
                                     <button type="button" @click="furniture = 'full'" :class="furniture === 'full' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer">Đầy đủ nội thất</button>
                                     <button type="button" @click="furniture = 'basic'" :class="furniture === 'basic' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-2 py-1.5 border rounded-xl text-center text-xs font-bold transition cursor-pointer">Nội thất cơ bản</button>
                                 </div>
@@ -877,7 +838,6 @@
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-0.5">Hướng</label>
                                 <div class="grid grid-cols-3 gap-1.5">
-                                    <button type="button" @click="direction = ''" :class="direction === '' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-1 py-1 border rounded-lg text-center text-[9px] font-bold transition cursor-pointer col-span-3">Tất cả hướng</button>
                                     <button type="button" @click="direction = 'east'" :class="direction === 'east' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-1 py-1 border rounded-lg text-center text-[9px] font-bold transition cursor-pointer">Đông</button>
                                     <button type="button" @click="direction = 'west'" :class="direction === 'west' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-1 py-1 border rounded-lg text-center text-[9px] font-bold transition cursor-pointer">Tây</button>
                                     <button type="button" @click="direction = 'south'" :class="direction === 'south' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700'" class="px-1 py-1 border rounded-lg text-center text-[9px] font-bold transition cursor-pointer">Nam</button>

@@ -32,11 +32,13 @@
     <!-- 1. Hình ảnh (Image) -->
     <div class="relative h-56 w-full overflow-hidden bg-slate-100 flex-shrink-0">
         <!-- Image with hover zoom effect -->
-        <img 
-            src="{{ asset($property['image']) }}" 
-            alt="{{ $property['title'] }}" 
-            class="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500 ease-out"
-        >
+        <a href="/property/{{ $property['id'] }}" class="absolute inset-0 block">
+            <img 
+                src="{{ asset($property['image']) }}" 
+                alt="{{ $property['title'] }}" 
+                class="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500 ease-out"
+            >
+        </a>
 
         <!-- VIP/NEW/Sale/Rent Badges Overlay (Trang trí cao cấp) -->
         <div class="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
@@ -64,10 +66,11 @@
             @endif
         </div>
 
-        <!-- Wishlist Button -->
-        <div class="absolute top-4 right-4 z-10" x-data="{ 
+        <!-- Buttons Overlay (Wishlist & Share) -->
+        <div class="absolute top-4 right-4 z-10 flex items-center gap-2" x-data="{ 
             liked: {{ $isFavorite ? 'true' : 'false' }},
             isProcessing: false,
+            showToast: false,
             toggleLike() {
                 @guest
                     window.location.href = '{{ route('login') }}';
@@ -99,8 +102,37 @@
                     this.isProcessing = false;
                     console.error('Error:', error);
                 });
+            },
+            shareLink() {
+                const url = window.location.origin + '/property/{{ $property['id'] }}';
+                navigator.clipboard.writeText(url).then(() => {
+                    this.showToast = true;
+                    setTimeout(() => this.showToast = false, 2000);
+                });
             }
         }">
+            <!-- Share Button -->
+            <div class="relative">
+                <button 
+                    @click="shareLink()"
+                    type="button" 
+                    class="w-9 h-9 rounded-xl flex items-center justify-center border border-slate-100 bg-white/80 hover:bg-white text-slate-600 hover:text-primary shadow-sm transition active:scale-90 cursor-pointer"
+                    title="Chia sẻ tin đăng"
+                >
+                    <i class="fa-solid fa-share-nodes text-xs"></i>
+                </button>
+                <!-- Tooltip Alert -->
+                <div 
+                    x-show="showToast" 
+                    x-transition
+                    class="absolute bottom-full right-0 mb-2 whitespace-nowrap bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-md z-20"
+                    style="display: none;"
+                >
+                    Đã sao chép liên kết!
+                </div>
+            </div>
+
+            <!-- Wishlist Button -->
             <button 
                 @click="toggleLike()"
                 type="button" 
@@ -143,15 +175,37 @@
             <span class="truncate">{{ $property['location'] }}</span>
         </div>
 
-        <!-- 5. Nút xem chi tiết (View Details Button) -->
+        <!-- 5. Thông tin chi tiết thu gọn (Property Specs) -->
         <div class="pt-4 border-t border-slate-100/80 mt-auto flex-shrink-0">
-            <a 
-                href="/property/{{ $property['id'] }}" 
-                class="w-full inline-flex items-center justify-center px-5 py-3 border border-slate-200 hover:border-primary text-sm font-bold rounded-2xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm hover:shadow-lg hover:shadow-primary/20 transform hover:-translate-y-0.5 active:scale-98 transition-all duration-200 cursor-pointer"
-            >
-                <span>Xem chi tiết</span>
-                <i class="fa-solid fa-arrow-right ml-2 text-xs transition-transform group-hover:translate-x-1"></i>
-            </a>
+            <div class="flex items-center justify-between text-slate-600 text-xs px-1">
+                @if(isset($property['bedrooms']) && $property['bedrooms'] > 0)
+                    <div class="flex items-center space-x-1.5" title="{{ $property['bedrooms'] }} phòng ngủ">
+                        <i class="fa-solid fa-bed text-[15px] text-slate-400"></i>
+                        <span class="font-extrabold text-slate-700">{{ $property['bedrooms'] }}</span>
+                    </div>
+                @endif
+                
+                @if(isset($property['bathrooms']) && $property['bathrooms'] > 0)
+                    <div class="flex items-center space-x-1.5" title="{{ $property['bathrooms'] }} phòng tắm">
+                        <i class="fa-solid fa-bath text-[15px] text-slate-400"></i>
+                        <span class="font-extrabold text-slate-700">{{ $property['bathrooms'] }}</span>
+                    </div>
+                @endif
+
+                @if(isset($property['floors']) && $property['floors'] > 0)
+                    <div class="flex items-center space-x-1.5" title="{{ $property['floors'] }} tầng">
+                        <i class="fa-solid fa-layer-group text-[15px] text-slate-400"></i>
+                        <span class="font-extrabold text-slate-700">{{ $property['floors'] }}</span>
+                    </div>
+                @endif
+
+                @if(isset($property['area']) && $property['area'] > 0)
+                    <div class="flex items-center space-x-1.5" title="Diện tích {{ $property['area'] }} m²">
+                        <i class="fa-solid fa-crop-simple text-[15px] text-slate-400"></i>
+                        <span class="font-extrabold text-slate-700">{{ $property['area'] }}m²</span>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>
