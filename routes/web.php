@@ -205,24 +205,10 @@ if (!function_exists('getMockProperties')) {
 }
 
 // Route trang chủ
-Route::get('/', function (\App\Services\PropertyService $propertyService) {
-    return view('home', [
-        'properties' => $propertyService->getFeaturedProperties(6),
-        'latestProperties' => $propertyService->getLatestProperties(3),
-        'stats' => $propertyService->getSystemStats()
-    ]);
-});
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Route trang chi tiết bất động sản
-Route::get('/property/{id}', function ($id, \App\Services\PropertyService $propertyService) {
-    $property = $propertyService->getPropertyById($id);
-    $properties = $propertyService->getAllProperties();
-    
-    return view('detail', [
-        'property' => $property,
-        'properties' => $properties // Truyền toàn bộ để hiển thị tin đăng liên quan
-    ]);
-});
+Route::get('/property/{id}', [App\Http\Controllers\PropertyController::class, 'show'])->name('properties.show');
 
 // Route trang hồ sơ thành viên (Bảo vệ bởi middleware auth)
 Route::middleware('auth')->group(function () {
@@ -278,16 +264,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Route trang danh sách bất động sản
-Route::get('/listings', function (\Illuminate\Http\Request $request, \App\Services\PropertyService $propertyService) {
-    $properties = $propertyService->search($request->all(), 6);
-    return view('listings', ['properties' => $properties]);
-});
+Route::get('/listings', [App\Http\Controllers\PropertyController::class, 'index'])->name('listings.index');
 
 // Route trang bản đồ tìm kiếm
-Route::get('/map', function (\Illuminate\Http\Request $request, \App\Services\PropertyService $propertyService) {
-    $properties = $propertyService->searchAllForMap($request->all());
-    return view('map', ['properties' => $properties]);
-});
+Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->name('properties.map');
+
+// Route API gợi ý tìm kiếm (Autocomplete)
+Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyController::class, 'autocomplete'])->name('properties.autocomplete');
+
 
 // Route lựa chọn loại tin đăng (Bán / Cho thuê)
 Route::get('/properties/choose-type', function () {

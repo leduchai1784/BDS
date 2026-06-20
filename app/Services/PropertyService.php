@@ -13,10 +13,56 @@ use Illuminate\Pagination\Paginator;
 
 class PropertyService
 {
+    public const DISTRICT_MAP = [
+        'GL' => 'Gia Lâm',
+        'BD' => 'Ba Đình',
+        'TH' => 'Tây Hồ',
+        'CG' => 'Cầu Giấy',
+        'DD' => 'Đống Đa',
+        'HK' => 'Hoàn Kiếm',
+        'NTL' => 'Nam Từ Liêm',
+        'HD' => 'Hà Đông',
+        'Q1' => 'Quận 1',
+        'Q3' => 'Quận 3',
+        'Q10' => 'Quận 10',
+        'BT' => 'Bình Thạnh',
+        'TD' => 'Thủ Đức',
+    ];
+
     /**
      * Cache TTL in seconds (1 hour).
      */
     protected int $cacheTtl = 3600;
+
+    /**
+     * Get all properties from the NKS API or cache, with local mock fallback.
+     */
+    /**
+     * Fetch only NKS API properties (cached / with local mock fallback).
+     */
+    public function getApiOnlyProperties(): array
+    {
+        return Cache::remember('nks_api_only_properties', $this->cacheTtl, function () {
+            try {
+                // Fetch from NKS API with timeout and no SSL verification for safety on local machines
+                $response = Http::withoutVerifying()
+                    ->timeout(10)
+                    ->post('https://online.nks.vn/api/nks/rsitems', []);
+
+                if ($response->successful()) {
+                    $json = $response->json();
+                    if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
+                        return $this->transformApiData($json['data']);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to fetch properties from NKS API: ' . $e->getMessage());
+            }
+
+            // Fallback to local mock data if the API request fails
+            return $this->getLocalMockProperties();
+        });
+    }
 
     /**
      * Get all properties from the NKS API or cache, with local mock fallback.
@@ -39,28 +85,57 @@ class PropertyService
             Log::error('Failed to load properties from DB in PropertyService: ' . $e->getMessage());
         }
 
-        $apiProperties = Cache::remember('nks_api_properties', $this->cacheTtl, function () {
+        $apiProperties = $this->getApiOnlyProperties();
+
+        return array_merge($dbProperties, $apiProperties);
+    }
+
+    /**
+     * Fetch and cache provinces from NKS API.
+     */
+    public function getNksProvinces(): array
+    {
+        return Cache::remember('nks_provinces', 86400, function () {
             try {
-                // Fetch from NKS API with timeout and no SSL verification for safety on local machines
                 $response = Http::withoutVerifying()
-                    ->timeout(10)
-                    ->post('https://online.nks.vn/api/nks/rsitems', []);
+                    ->timeout(15)
+                    ->post('https://online.nks.vn/api/nks/provinces', []);
 
                 if ($response->successful()) {
                     $json = $response->json();
                     if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
-                        return $this->transformApiData($json['data']);
+                        return $json['data'];
                     }
                 }
             } catch (\Exception $e) {
-                Log::warning('Failed to fetch properties from NKS API: ' . $e->getMessage());
+                Log::warning('Failed to fetch provinces from NKS API: ' . $e->getMessage());
             }
-
-            // Fallback to local mock data if the API request fails
-            return $this->getLocalMockProperties();
+            return [];
         });
+    }
 
-        return array_merge($dbProperties, $apiProperties);
+    /**
+     * Fetch and cache wards/administratives from NKS API.
+     */
+    public function getNksWards(): array
+    {
+        return Cache::remember('nks_wards', 86400, function () {
+            try {
+                $response = Http::withoutVerifying()
+                    ->timeout(15)
+                    ->post('https://online.nks.vn/api/nks/administratives', []);
+
+                if ($response->successful()) {
+                    $json = $response->json();
+                    if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
+                        return $json['data'];
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to fetch administratives from NKS API: ' . $e->getMessage());
+            }
+            return [];
+        });
     }
 
     /**
@@ -138,49 +213,64 @@ class PropertyService
     }
 
     /**
-     * Search and filter properties with pagination and sorting.
+     * Search and filter properties with database query.
      */
     public function search(array $filters = [], int $perPage = 6): LengthAwarePaginator
     {
-        $allProperties = $this->getAllProperties(isset($filters['ignore_status']));
-
-        $properties = collect($allProperties)->filter(function ($item) use ($filters) {
-            return $this->filterItem($item, $filters);
-        });
-
-        $sortBy = $filters['sort'] ?? 'latest';
-        if ($sortBy === 'price_asc') {
-            $properties = $properties->sortBy('price_raw');
-        } elseif ($sortBy === 'price_desc') {
-            $properties = $properties->sortByDesc('price_raw');
-        } elseif ($sortBy === 'area_asc') {
-            $properties = $properties->sortBy('area');
-        } elseif ($sortBy === 'area_desc') {
-            $properties = $properties->sortByDesc('area');
-        } else { // latest
-            $properties = $properties->sort(function ($a, $b) {
-                $aVip = ($a['is_vip'] ?? false) ? 1 : 0;
-                $bVip = ($b['is_vip'] ?? false) ? 1 : 0;
-                if ($aVip !== $bVip) {
-                    return $bVip <=> $aVip;
-                }
-                return strval($b['id']) <=> strval($a['id']);
-            });
+        // 1. Get filtered DB properties
+        $dbProperties = [];
+        try {
+            $dbProperties = $this->buildSearchQuery($filters)->get()->map(function ($property) {
+                return $this->transformDbProperty($property);
+            })->toArray();
+        } catch (\Exception $e) {
+            Log::error('DB search error in PropertyService: ' . $e->getMessage());
         }
 
-        $currentPage = Paginator::resolveCurrentPage() ?: 1;
-        $itemsForCurrentPage = $properties->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        // 2. Get filtered API properties
+        $apiProperties = $this->getApiOnlyProperties();
+        $filteredApi = $this->filterPropertiesInPhp($apiProperties, $filters);
 
-        return new LengthAwarePaginator(
-            $itemsForCurrentPage,
-            $properties->count(),
+        // 3. Merge
+        $allMerged = array_merge($dbProperties, $filteredApi);
+
+        // 4. Sort merged list (VIP first, then based on the sorting type)
+        $sortBy = $filters['sort'] ?? 'latest';
+        usort($allMerged, function ($a, $b) use ($sortBy) {
+            $vipA = $a['is_vip'] ?? false;
+            $vipB = $b['is_vip'] ?? false;
+            if ($vipA !== $vipB) {
+                return $vipB ? 1 : -1;
+            }
+
+            if ($sortBy === 'price_asc') {
+                return ($a['price_raw'] ?? 0) <=> ($b['price_raw'] ?? 0);
+            } elseif ($sortBy === 'price_desc') {
+                return ($b['price_raw'] ?? 0) <=> ($a['price_raw'] ?? 0);
+            } elseif ($sortBy === 'area_asc') {
+                return ($a['area'] ?? 0) <=> ($b['area'] ?? 0);
+            } elseif ($sortBy === 'area_desc') {
+                return ($b['area'] ?? 0) <=> ($a['area'] ?? 0);
+            } else {
+                // latest (descending ID/date)
+                return ($b['id'] ?? 0) <=> ($a['id'] ?? 0);
+            }
+        });
+
+        // 5. Paginate manually
+        $currentPage = Paginator::resolveCurrentPage() ?: 1;
+        $collection = collect($allMerged);
+        $slice = $collection->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $paginator = new LengthAwarePaginator(
+            $slice,
+            $collection->count(),
             $perPage,
             $currentPage,
-            [
-                'path' => Paginator::resolveCurrentPath(),
-                'query' => request()->query()
-            ]
+            ['path' => Paginator::resolveCurrentPath()]
         );
+
+        return $paginator;
     }
 
     /**
@@ -188,13 +278,342 @@ class PropertyService
      */
     public function searchAllForMap(array $filters = []): array
     {
-        $allProperties = $this->getAllProperties(isset($filters['ignore_status']));
+        // 1. Get filtered DB properties
+        $dbProperties = [];
+        try {
+            $dbProperties = $this->buildSearchQuery($filters)->get()->map(function ($property) {
+                return $this->transformDbProperty($property);
+            })->toArray();
+        } catch (\Exception $e) {
+            Log::error('DB searchAllForMap error in PropertyService: ' . $e->getMessage());
+        }
 
-        $properties = collect($allProperties)->filter(function ($item) use ($filters) {
-            return $this->filterItem($item, $filters);
+        // 2. Get filtered API properties
+        $apiProperties = $this->getApiOnlyProperties();
+        $filteredApi = $this->filterPropertiesInPhp($apiProperties, $filters);
+
+        // 3. Merge
+        $allMerged = array_merge($dbProperties, $filteredApi);
+
+        // 4. Sort (VIP first)
+        usort($allMerged, function ($a, $b) {
+            $vipA = $a['is_vip'] ?? false;
+            $vipB = $b['is_vip'] ?? false;
+            if ($vipA !== $vipB) {
+                return $vipB ? 1 : -1;
+            }
+            return ($b['id'] ?? 0) <=> ($a['id'] ?? 0);
         });
 
-        return $properties->values()->toArray();
+        return $allMerged;
+    }
+
+    /**
+     * Filter properties in memory using PHP.
+     */
+    private function filterPropertiesInPhp(array $properties, array $filters): array
+    {
+        return array_filter($properties, function ($p) use ($filters) {
+            // 1. Keyword search
+            if (!empty($filters['keyword']) || !empty($filters['search'])) {
+                $keyword = !empty($filters['keyword']) ? $filters['keyword'] : $filters['search'];
+                $keyword = trim($keyword);
+                
+                $match = false;
+                $fields = ['title', 'city', 'district', 'ward', 'address', 'description'];
+                foreach ($fields as $field) {
+                    if (isset($p[$field]) && stripos($p[$field], $keyword) !== false) {
+                        $match = true;
+                        break;
+                    }
+                }
+                if (!$match) return false;
+            }
+
+            // 2. Transaction type (rent / sale)
+            $purpose = !empty($filters['transaction_type']) ? $filters['transaction_type'] : (!empty($filters['purpose']) ? $filters['purpose'] : null);
+            if (!empty($purpose) && isset($p['transaction_type']) && $p['transaction_type'] !== $purpose) {
+                return false;
+            }
+
+            // 3. Property type
+            $propType = !empty($filters['property_type']) ? $filters['property_type'] : (!empty($filters['type']) ? $filters['type'] : null);
+            if (!empty($propType)) {
+                $types = is_array($propType) ? $propType : [$propType];
+                $types = array_filter($types);
+                if (!empty($types) && isset($p['property_type']) && !in_array($p['property_type'], $types)) {
+                    return false;
+                }
+            }
+
+            // 4. Province / City
+            $provinceFilter = !empty($filters['province']) ? $filters['province'] : (!empty($filters['city']) ? $filters['city'] : null);
+            if (!empty($provinceFilter)) {
+                $cleanP = str_replace(['Thành phố ', 'Tỉnh '], '', $provinceFilter);
+                if (isset($p['city']) && stripos($p['city'], $cleanP) === false) {
+                    return false;
+                }
+            }
+
+            // 5. District
+            if (!empty($filters['district'])) {
+                $districts = is_array($filters['district']) ? $filters['district'] : [$filters['district']];
+                $districts = array_filter($districts);
+                if (!empty($districts)) {
+                    $distMatch = false;
+                    foreach ($districts as $d) {
+                        $cleanD = str_replace(['Quận ', 'Huyện ', 'Thị xã ', 'Thành phố '], '', $d);
+                        
+                        $abbr = null;
+                        foreach (self::DISTRICT_MAP as $key => $val) {
+                            if (stripos($val, $cleanD) !== false || stripos($cleanD, $val) !== false) {
+                                $abbr = $key;
+                                break;
+                            }
+                        }
+
+                        if (isset($p['district'])) {
+                            if (stripos($p['district'], $cleanD) !== false) {
+                                $distMatch = true;
+                                break;
+                            }
+                            if ($abbr && stripos($p['district'], $abbr) !== false) {
+                                $distMatch = true;
+                                break;
+                            }
+                        }
+                        if (isset($p['address']) && stripos($p['address'], $cleanD) !== false) {
+                            $distMatch = true;
+                            break;
+                        }
+                    }
+                    if (!$distMatch) return false;
+                }
+            }
+
+            // 6. Ward
+            if (!empty($filters['ward'])) {
+                $cleanW = str_replace(['Phường ', 'Xã ', 'Thị trấn '], '', $filters['ward']);
+                $wardMatch = false;
+                if (isset($p['ward']) && stripos($p['ward'], $cleanW) !== false) {
+                    $wardMatch = true;
+                }
+                if (isset($p['address']) && stripos($p['address'], $cleanW) !== false) {
+                    $wardMatch = true;
+                }
+                if (!$wardMatch) return false;
+            }
+
+            // 7. Price
+            if (!empty($filters['price'])) {
+                $priceFilter = $filters['price'];
+                $priceRaw = $p['price_raw'] ?? 0;
+                
+                if ($priceFilter === 'under_3' && $priceRaw >= 3000000) return false;
+                if ($priceFilter === '3_5' && ($priceRaw < 3000000 || $priceRaw > 5000000)) return false;
+                if ($priceFilter === '5_10' && ($priceRaw < 5000000 || $priceRaw > 10000000)) return false;
+                if ($priceFilter === '10_20' && ($priceRaw < 10000000 || $priceRaw > 20000000)) return false;
+                if ($priceFilter === 'above_20' && $priceRaw <= 20000000) return false;
+                if ($priceFilter === 'above_10' && $priceRaw <= 10000000) return false;
+                if ($priceFilter === 'under_1b' && $priceRaw >= 1000000000) return false;
+                if ($priceFilter === '1b_3b' && ($priceRaw < 1000000000 || $priceRaw > 3000000000)) return false;
+                if ($priceFilter === '3b_5b' && ($priceRaw < 3000000000 || $priceRaw > 5000000000)) return false;
+                if ($priceFilter === '5b_10b' && ($priceRaw < 5000000000 || $priceRaw > 10000000000)) return false;
+                if ($priceFilter === 'above_10b' && $priceRaw <= 10000000000) return false;
+            }
+
+            // 8. Area
+            if (!empty($filters['area'])) {
+                $areaFilter = $filters['area'];
+                $area = $p['area'] ?? 0;
+                
+                if ($areaFilter === 'under_30' && $area >= 30) return false;
+                if ($areaFilter === '30_50' && ($area < 30 || $area > 50)) return false;
+                if ($areaFilter === '50_80' && ($area < 50 || $area > 80)) return false;
+                if ($areaFilter === '80_150' && ($area < 80 || $area > 150)) return false;
+                if ($areaFilter === 'above_150' && $area <= 150) return false;
+            }
+
+            // 9. Bedrooms
+            if (!empty($filters['bedrooms'])) {
+                $bed = $filters['bedrooms'];
+                $pBed = $p['bedrooms'] ?? 0;
+                if ($bed === '5+' && $pBed < 5) return false;
+                if ($bed !== '5+' && (int)$bed !== (int)$pBed) return false;
+            }
+
+            // 10. Bathrooms
+            if (!empty($filters['bathrooms'])) {
+                $bath = $filters['bathrooms'];
+                $pBath = $p['bathrooms'] ?? 0;
+                if ($bath === '5+' && $pBath < 5) return false;
+                if ($bath !== '5+' && (int)$bath !== (int)$pBath) return false;
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * Private helper to build database search query using PostgreSQL.
+     */
+    private function buildSearchQuery(array $filters)
+    {
+        $query = Property::query()->with(['propertyImages', 'owner', 'category']);
+
+        if (!isset($filters['ignore_status'])) {
+            $query->where('status', 'approved');
+        }
+
+        // 1. Keyword search (fuzzy / partial substring matching using GIN trigram index)
+        if (!empty($filters['keyword']) || !empty($filters['search'])) {
+            $keyword = !empty($filters['keyword']) ? $filters['keyword'] : $filters['search'];
+            $keyword = trim($keyword);
+            
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('city', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('district', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('ward', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('address', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('description', 'ILIKE', "%{$keyword}%");
+            });
+        }
+
+        // 2. Transaction type (rent / sale)
+        $purpose = !empty($filters['transaction_type']) ? $filters['transaction_type'] : (!empty($filters['purpose']) ? $filters['purpose'] : null);
+        if (!empty($purpose)) {
+            $query->where('transaction_type', $purpose);
+        }
+
+        // 3. Property type (apartment, house, room, etc.)
+        $propType = !empty($filters['property_type']) ? $filters['property_type'] : (!empty($filters['type']) ? $filters['type'] : null);
+        if (!empty($propType)) {
+            $types = is_array($propType) ? $propType : [$propType];
+            $types = array_filter($types);
+            if (!empty($types)) {
+                $query->whereIn('property_type', $types);
+            }
+        }
+
+        // 4. Province / City
+        $provinceFilter = !empty($filters['province']) ? $filters['province'] : (!empty($filters['city']) ? $filters['city'] : null);
+        if (!empty($provinceFilter)) {
+            $cleanP = str_replace(['Thành phố ', 'Tỉnh '], '', $provinceFilter);
+            $query->where('city', 'ILIKE', "%{$cleanP}%");
+        }
+
+        // 5. District
+        if (!empty($filters['district'])) {
+            $districts = is_array($filters['district']) ? $filters['district'] : [$filters['district']];
+            $districts = array_filter($districts);
+            if (!empty($districts)) {
+                $query->where(function ($q) use ($districts) {
+                    foreach ($districts as $index => $d) {
+                        $cleanD = str_replace(['Quận ', 'Huyện ', 'Thị xã ', 'Thành phố '], '', $d);
+                        
+                        $abbr = null;
+                        foreach (self::DISTRICT_MAP as $key => $val) {
+                            if (stripos($val, $cleanD) !== false || stripos($cleanD, $val) !== false) {
+                                $abbr = $key;
+                                break;
+                            }
+                        }
+                        
+                        if ($index === 0) {
+                            $q->where('district', 'ILIKE', "%{$cleanD}%")
+                              ->orWhere('address', 'ILIKE', "%{$cleanD}%");
+                            if ($abbr) {
+                                $q->orWhere('district', $abbr);
+                            }
+                        } else {
+                            $q->orWhere('district', 'ILIKE', "%{$cleanD}%")
+                              ->orWhere('address', 'ILIKE', "%{$cleanD}%");
+                            if ($abbr) {
+                                $q->orWhere('district', $abbr);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 6. Ward
+        if (!empty($filters['ward'])) {
+            $cleanW = str_replace(['Phường ', 'Xã ', 'Thị trấn '], '', $filters['ward']);
+            $query->where(function ($q) use ($cleanW) {
+                $q->where('ward', 'ILIKE', "%{$cleanW}%")
+                  ->orWhere('address', 'ILIKE', "%{$cleanW}%");
+            });
+        }
+
+        // 7. Price filters
+        if (!empty($filters['price'])) {
+            $priceFilter = $filters['price'];
+            if ($priceFilter === 'under_3') {
+                $query->where('price', '<', 3000000);
+            } elseif ($priceFilter === '3_5') {
+                $query->whereBetween('price', [3000000, 5000000]);
+            } elseif ($priceFilter === '5_10') {
+                $query->whereBetween('price', [5000000, 10000000]);
+            } elseif ($priceFilter === '10_20') {
+                $query->whereBetween('price', [10000000, 20000000]);
+            } elseif ($priceFilter === 'above_20') {
+                $query->where('price', '>', 20000000);
+            } elseif ($priceFilter === 'above_10') {
+                $query->where('price', '>', 10000000);
+            } elseif ($priceFilter === 'under_1b') {
+                $query->where('price', '<', 1000000000);
+            } elseif ($priceFilter === '1b_3b') {
+                $query->whereBetween('price', [1000000000, 3000000000]);
+            } elseif ($priceFilter === '3b_5b') {
+                $query->whereBetween('price', [3000000000, 5000000000]);
+            } elseif ($priceFilter === '5b_10b') {
+                $query->whereBetween('price', [5000000000, 10000000000]);
+            } elseif ($priceFilter === 'above_10b') {
+                $query->where('price', '>', 10000000000);
+            }
+        }
+
+        // 8. Area filters
+        if (!empty($filters['area'])) {
+            $areaFilter = $filters['area'];
+            if ($areaFilter === 'under_30') {
+                $query->where('area', '<', 30);
+            } elseif ($areaFilter === '30_50') {
+                $query->whereBetween('area', [30, 50]);
+            } elseif ($areaFilter === '50_80') {
+                $query->whereBetween('area', [50, 80]);
+            } elseif ($areaFilter === '80_120') {
+                $query->whereBetween('area', [80, 120]);
+            } elseif ($areaFilter === 'above_120') {
+                $query->where('area', '>', 120);
+            }
+        }
+
+        // 9. Bedrooms
+        $bedroomsFilter = !empty($filters['bedrooms']) ? $filters['bedrooms'] : (!empty($filters['bedroom']) ? $filters['bedroom'] : null);
+        if (!empty($bedroomsFilter)) {
+            $query->where('bedroom', '>=', intval($bedroomsFilter));
+        }
+
+        // 10. Bathrooms
+        $bathroomsFilter = !empty($filters['bathrooms']) ? $filters['bathrooms'] : (!empty($filters['bathroom']) ? $filters['bathroom'] : null);
+        if (!empty($bathroomsFilter)) {
+            $query->where('bathroom', '>=', intval($bathroomsFilter));
+        }
+
+        // 11. Furniture
+        if (!empty($filters['furniture'])) {
+            $query->where('furniture', 'ILIKE', "%{$filters['furniture']}%");
+        }
+
+        // 12. Direction
+        if (!empty($filters['direction'])) {
+            $query->where('direction', 'ILIKE', "%{$filters['direction']}%");
+        }
+
+        return $query;
     }
 
     /**

@@ -6,64 +6,7 @@
     <!-- Hero Banner Component (Tích hợp Thanh tìm kiếm) -->
     @include('components.hero')
 
-    <!-- Section 1: Danh mục nổi bật -->
-    <section class="py-12 bg-white border-b border-slate-100 relative z-10 -mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 rounded-3xl shadow-lg shadow-slate-100">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
-            <!-- Cat 1 -->
-            <a href="/listings?property_type=apartment" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-building text-2xl"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150">Căn hộ chung cư</h3>
-                <span class="text-xs text-slate-400 mt-1">1,240 tin đăng</span>
-            </a>
 
-            <!-- Cat 2 -->
-            <a href="/listings?property_type=house" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-house text-2xl"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150">Nhà nguyên căn</h3>
-                <span class="text-xs text-slate-400 mt-1">850 tin đăng</span>
-            </a>
-
-            <!-- Cat 3 -->
-            <a href="/listings?property_type=room" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-hotel text-2xl"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150">Phòng trọ giá rẻ</h3>
-                <span class="text-xs text-slate-400 mt-1">3,420 tin đăng</span>
-            </a>
-
-            <!-- Cat 4 -->
-            <a href="/listings?property_type=office" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-briefcase text-2xl"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150">Văn phòng cho thuê</h3>
-                <span class="text-xs text-slate-400 mt-1">620 tin đăng</span>
-            </a>
-
-            <!-- Cat 5 -->
-            <a href="/listings?property_type=premises" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-store text-2xl"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150">Mặt bằng kinh doanh</h3>
-                <span class="text-xs text-slate-400 mt-1">480 tin đăng</span>
-            </a>
-
-            <!-- Cat 6 -->
-            <a href="/listings?property_type=house" class="group p-5 rounded-2xl bg-slate-50 hover:bg-primary-light hover:shadow-md hover:shadow-primary/5 transition duration-300 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary text-primary group-hover:text-white flex items-center justify-center mb-4 transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-tree-city text-2xl"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150">Biệt thự / Villa</h3>
-                <span class="text-xs text-slate-400 mt-1">150 tin đăng</span>
-            </a>
-        </div>
-    </section>
 
     <!-- Section 2: Danh sách Bất động sản và Bộ lọc -->
     <section id="listings" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
@@ -72,9 +15,6 @@
             <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Dành riêng cho bạn</span>
             <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tin Đăng Cho Thuê Nổi Bật</h2>
         </div>
-
-        <!-- Bộ lọc nâng cao Component -->
-        @include('components.filters')
 
         @php
             // Dữ liệu $properties được truyền trực tiếp từ Route web.php
