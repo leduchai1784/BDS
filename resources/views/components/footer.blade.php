@@ -32,7 +32,7 @@
 
             <!-- Links Column 1 -->
             <div class="col-span-1 sm:col-span-6 md:col-span-2 space-y-4">
-                <h4 class="text-sm font-bold uppercase tracking-wider text-white">Khám phá</h4>
+                <h4 class="text-sm font-bold uppercase tracking-wider text-white">Liên kết nhanh</h4>
                 <ul class="space-y-2.5 text-sm">
                     <li><a href="/" class="hover:text-primary transition duration-150">Trang chủ</a></li>
                     <li><a href="/listings" class="hover:text-primary transition duration-150">Kho dự án</a></li>
