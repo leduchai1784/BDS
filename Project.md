@@ -159,3 +159,34 @@ erDiagram
    php artisan serve
    ```
    Ứng dụng sẽ khả dụng tại địa chỉ: `http://127.0.0.1:8000`
+
+---
+
+## 🔄 Quy trình Đồng bộ Git & Vercel (Git & Vercel Sync Workflow)
+
+Hệ thống được cấu hình tự động triển khai (Auto Deployment) thông qua liên kết giữa GitHub và Vercel. Khi bạn hoàn thành code và thực hiện đẩy lên GitHub, Vercel sẽ tự động build và cập nhật phiên bản mới nhất.
+
+Các bước thực hiện cập nhật code:
+
+1. **Biên dịch assets (Nếu có thay đổi giao diện, CSS hoặc JS)**:
+   ```bash
+   npm run build
+   ```
+2. **Kiểm tra trạng thái các file thay đổi**:
+   ```bash
+   git status
+   ```
+3. **Thêm toàn bộ thay đổi vào hàng đợi (Stage changes)**:
+   ```bash
+   git add .
+   ```
+4. **Tạo commit với thông điệp mô tả thay đổi**:
+   ```bash
+   git commit -m "feat/style/fix: mô tả ngắn gọn thay đổi của bạn"
+   ```
+5. **Đẩy code lên repository GitHub**:
+   ```bash
+   git push origin main
+   ```
+   *(Sau khi lệnh push hoàn tất, Vercel sẽ tự động nhận diện commit mới trên nhánh `main` và tiến hành deploy lại trang web trong vòng 1-2 phút).*
+
