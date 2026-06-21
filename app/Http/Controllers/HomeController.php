@@ -19,8 +19,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $featured = $this->propertyService->getFeaturedProperties(6);
-        $latest = $this->propertyService->getLatestProperties(3);
+        $featured = $this->propertyService->getFeaturedProperties(8);
+        $latest = $this->propertyService->getLatestProperties(4);
         $stats = $this->propertyService->getSystemStats();
 
         return view('home', [
