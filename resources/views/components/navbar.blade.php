@@ -22,6 +22,7 @@
         }
     }" 
     @scroll.window="isScrolled = window.pageYOffset > 20 || window.location.pathname !== '/'"
+    @open-choose-type-modal.window="chooseTypeOpen = true; modalTab = 'select'"
     :class="isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-slate-100 py-3' : 'bg-transparent py-5'"
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full"
 >
