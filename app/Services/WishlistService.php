@@ -14,23 +14,18 @@ class WishlistService
      */
     public function toggleFavorite(int $userId, string $propertyId): bool
     {
-        if (!\Illuminate\Support\Str::isUuid($propertyId)) {
-            throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(Property::class, [$propertyId]);
-        }
-
         $user = User::findOrFail($userId);
         
-        // Check if property exists
-        Property::findOrFail($propertyId);
-
-        // Check if already in wishlist
-        $exists = $user->favoriteProperties()->where('property_id', $propertyId)->exists();
+        $exists = Wishlist::where('user_id', $userId)->where('property_id', $propertyId)->exists();
 
         if ($exists) {
-            $user->favoriteProperties()->detach($propertyId);
+            Wishlist::where('user_id', $userId)->where('property_id', $propertyId)->delete();
             return false; // Removed
         } else {
-            $user->favoriteProperties()->attach($propertyId);
+            Wishlist::create([
+                'user_id' => $userId,
+                'property_id' => $propertyId,
+            ]);
             return true; // Added
         }
     }
@@ -41,11 +36,9 @@ class WishlistService
     public function isFavorite(?int $userId, string $propertyId): bool
     {
         if ($userId) {
-            if (\Illuminate\Support\Str::isUuid($propertyId)) {
-                $user = User::find($userId);
-                if ($user && $user->favoriteProperties()->where('property_id', $propertyId)->exists()) {
-                    return true;
-                }
+            $exists = Wishlist::where('user_id', $userId)->where('property_id', $propertyId)->exists();
+            if ($exists) {
+                return true;
             }
         }
 
@@ -66,8 +59,22 @@ class WishlistService
      */
     public function getUserFavorites(int $userId)
     {
-        $user = User::findOrFail($userId);
-        return $user->favoriteProperties()->with('agent')->latest()->get();
+        $propertyIds = Wishlist::where('user_id', $userId)->orderBy('created_at', 'desc')->pluck('property_id')->toArray();
+        if (empty($propertyIds)) {
+            return collect();
+        }
+
+        $allProperties = app(\App\Services\PropertyService::class)->getAllProperties();
+        
+        $favorites = collect($allProperties)->filter(function ($property) use ($propertyIds) {
+            return in_array((string)$property['id'], $propertyIds);
+        });
+
+        $sortedFavorites = $favorites->sortBy(function ($property) use ($propertyIds) {
+            return array_search((string)$property['id'], $propertyIds);
+        });
+
+        return $sortedFavorites->values();
     }
 
     /**
@@ -90,10 +97,12 @@ class WishlistService
         }
 
         foreach ($wishlist as $propertyId) {
-            if (\Illuminate\Support\Str::isUuid($propertyId) && Property::where('id', $propertyId)->exists()) {
-                if (!$user->favoriteProperties()->where('property_id', $propertyId)->exists()) {
-                    $user->favoriteProperties()->attach($propertyId);
-                }
+            $exists = Wishlist::where('user_id', $userId)->where('property_id', $propertyId)->exists();
+            if (!$exists) {
+                Wishlist::create([
+                    'user_id' => $userId,
+                    'property_id' => $propertyId,
+                ]);
             }
         }
     }

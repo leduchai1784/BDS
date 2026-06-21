@@ -123,12 +123,55 @@ class WishlistTest extends TestCase
         $this->assertAuthenticatedAs($user);
 
         // Verify the database contains the wishlist item
-        $this->assertTrue($user->favoriteProperties()->where('property_id', $property->id)->exists());
+        $this->assertTrue(\App\Models\Wishlist::where('user_id', $user->id)->where('property_id', $property->id)->exists());
 
         // Verify cookie is deleted (expires in the past)
         $cookie = $this->getRawCookie($response, 'guest_wishlist');
         $this->assertNotNull($cookie);
         $this->assertTrue($cookie->getExpiresTime() < time());
+    }
+
+    /**
+     * Test authenticated user can toggle non-DB property in DB wishlist.
+     */
+    public function test_auth_user_can_toggle_nondb_property_in_db_wishlist(): void
+    {
+        // Create user
+        $email = 'wishlist.nondb.' . time() . '@nks.com.vn';
+        $user = User::create([
+            'name' => 'Nguyễn Hải Đăng',
+            'email' => $email,
+            'password' => Hash::make('password'),
+            'role' => 'tenant',
+        ]);
+
+        $nonDbPropertyId = '1'; // mock property ID is an integer string
+
+        // 1. Add to wishlist
+        $response = $this->actingAs($user)->postJson(route('wishlist.toggle'), [
+            'property_id' => $nonDbPropertyId,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'is_favorite' => true,
+        ]);
+
+        $this->assertTrue(\App\Models\Wishlist::where('user_id', $user->id)->where('property_id', $nonDbPropertyId)->exists());
+
+        // 2. Remove from wishlist
+        $response2 = $this->actingAs($user)->postJson(route('wishlist.toggle'), [
+            'property_id' => $nonDbPropertyId,
+        ]);
+
+        $response2->assertStatus(200);
+        $response2->assertJson([
+            'success' => true,
+            'is_favorite' => false,
+        ]);
+
+        $this->assertFalse(\App\Models\Wishlist::where('user_id', $user->id)->where('property_id', $nonDbPropertyId)->exists());
     }
 
     /**

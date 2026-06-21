@@ -97,7 +97,7 @@ class TenantModuleTest extends TestCase
             'is_favorite' => true,
         ]);
 
-        $this->assertTrue($this->tenant->favoriteProperties()->where('property_id', $this->property->id)->exists());
+        $this->assertTrue(\App\Models\Wishlist::where('user_id', $this->tenant->id)->where('property_id', $this->property->id)->exists());
 
         // 2. Remove from wishlist
         $response = $this->actingAs($this->tenant)->postJson(route('wishlist.toggle'), [
@@ -110,7 +110,7 @@ class TenantModuleTest extends TestCase
             'is_favorite' => false,
         ]);
 
-        $this->assertFalse($this->tenant->favoriteProperties()->where('property_id', $this->property->id)->exists());
+        $this->assertFalse(\App\Models\Wishlist::where('user_id', $this->tenant->id)->where('property_id', $this->property->id)->exists());
     }
 
     /**
@@ -128,7 +128,7 @@ class TenantModuleTest extends TestCase
             'success' => true,
             'is_favorite' => true,
         ]);
-        $this->assertTrue($this->owner->favoriteProperties()->where('property_id', $this->property->id)->exists());
+        $this->assertTrue(\App\Models\Wishlist::where('user_id', $this->owner->id)->where('property_id', $this->property->id)->exists());
 
         // 2. Owner toggles wishlist again (Remove)
         $response = $this->actingAs($this->owner)->postJson(route('wishlist.toggle'), [
@@ -140,7 +140,7 @@ class TenantModuleTest extends TestCase
             'success' => true,
             'is_favorite' => false,
         ]);
-        $this->assertFalse($this->owner->favoriteProperties()->where('property_id', $this->property->id)->exists());
+        $this->assertFalse(\App\Models\Wishlist::where('user_id', $this->owner->id)->where('property_id', $this->property->id)->exists());
 
         // 3. Admin toggles wishlist (Add)
         $admin = User::firstOrCreate(
@@ -161,7 +161,7 @@ class TenantModuleTest extends TestCase
             'success' => true,
             'is_favorite' => true,
         ]);
-        $this->assertTrue($admin->favoriteProperties()->where('property_id', $this->property->id)->exists());
+        $this->assertTrue(\App\Models\Wishlist::where('user_id', $admin->id)->where('property_id', $this->property->id)->exists());
     }
 
     /**

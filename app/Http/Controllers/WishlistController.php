@@ -27,10 +27,7 @@ class WishlistController extends Controller
         $userId = Auth::id();
         $propertyId = $request->property_id;
 
-        // Check if property is a UUID and exists in the DB
-        $isDbProperty = \Illuminate\Support\Str::isUuid($propertyId) && \App\Models\Property::where('id', $propertyId)->exists();
-
-        if ($userId && $isDbProperty) {
+        if ($userId) {
             $isAdded = $this->wishlistService->toggleFavorite($userId, $propertyId);
 
             return response()->json([
@@ -41,7 +38,6 @@ class WishlistController extends Controller
         } else {
             // Save to guest_wishlist cookie
             $cookieData = $request->cookie('guest_wishlist');
-            \Illuminate\Support\Facades\Log::info('guest_wishlist cookie raw: ' . var_export($cookieData, true));
             $wishlist = $cookieData ? json_decode($cookieData, true) : [];
             if (!is_array($wishlist)) {
                 $wishlist = [];
