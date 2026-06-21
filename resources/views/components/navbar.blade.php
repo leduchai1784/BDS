@@ -212,6 +212,9 @@
                         <a href="{{ route('register') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
                             <i class="fa-solid fa-user-plus mr-2 text-sm text-slate-400"></i> Đăng ký
                         </a>
+                        <a href="{{ route('wishlist.index') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-t border-slate-50">
+                            <i class="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin đã lưu
+                        </a>
                     </div>
                 </div>
             </div>
@@ -317,6 +320,7 @@
                 @guest
                 <a href="{{ route('login') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng nhập</a>
                 <a href="{{ route('register') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng ký</a>
+                <a href="{{ route('wishlist.index') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin đã lưu</a>
                 @endguest
 
                 <!-- Đăng tin miễn phí Button (Mobile) -->
@@ -334,3 +338,34 @@
     </div>
 
 </header>
+
+@auth
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const localWishlist = JSON.parse(localStorage.getItem('bds_wishlist') || '[]');
+        if (localWishlist.length > 0) {
+            fetch('{{ route('wishlist.sync') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    ids: localWishlist
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Wishlist synchronized successfully:', data.synced_count, 'items.');
+                    localStorage.removeItem('bds_wishlist');
+                }
+            })
+            .catch(error => {
+                console.error('Error synchronizing wishlist:', error);
+            });
+        }
+    });
+</script>
+@endauth

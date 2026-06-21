@@ -59,4 +59,31 @@ class WishlistService
         $user = User::findOrFail($userId);
         return $user->favoriteProperties()->with('agent')->latest()->get();
     }
+
+    /**
+     * Add a property to a user's favorites (without toggling off if it exists).
+     */
+    public function addFavorite(int $userId, string $propertyId): bool
+    {
+        if (!\Illuminate\Support\Str::isUuid($propertyId)) {
+            return false;
+        }
+
+        $user = User::find($userId);
+        if (!$user) {
+            return false;
+        }
+
+        // Ensure property exists
+        if (!Property::where('id', $propertyId)->exists()) {
+            return false;
+        }
+
+        $exists = $user->favoriteProperties()->where('property_id', $propertyId)->exists();
+        if (!$exists) {
+            $user->favoriteProperties()->attach($propertyId);
+            return true;
+        }
+        return false;
+    }
 }

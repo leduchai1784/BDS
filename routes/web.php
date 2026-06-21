@@ -216,6 +216,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/wishlist/sync', [App\Http\Controllers\WishlistController::class, 'sync'])->name('wishlist.sync');
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
@@ -272,6 +273,9 @@ Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->nam
 // Route API gợi ý tìm kiếm (Autocomplete)
 Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyController::class, 'autocomplete'])->name('properties.autocomplete');
 
+// Route trang yêu thích công khai
+Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/render', [App\Http\Controllers\WishlistController::class, 'renderCards'])->name('wishlist.render');
 
 // Route lựa chọn loại tin đăng (Bán / Cho thuê)
 Route::get('/properties/choose-type', function () {

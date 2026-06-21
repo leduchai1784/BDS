@@ -63,4 +63,60 @@ class PropertySearchTest extends TestCase
         $responsePrice = $this->get('/listings?price=under_3');
         $responsePrice->assertStatus(200);
     }
+
+    /**
+     * Test public wishlist index page.
+     */
+    public function test_wishlist_page_returns_successful_response(): void
+    {
+        $response = $this->get('/wishlist');
+        $response->assertStatus(200);
+        $response->assertSee('Tin Đăng Đã Lưu');
+    }
+
+    /**
+     * Test render cards endpoint.
+     */
+    public function test_wishlist_render_endpoint(): void
+    {
+        // Get some property ids
+        $propertyIds = Property::limit(2)->pluck('id')->toArray();
+        if (empty($propertyIds)) {
+            $propertyIds = [\Illuminate\Support\Str::uuid()->toString()];
+        }
+
+        $response = $this->postJson('/wishlist/render', [
+            'ids' => $propertyIds
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['success', 'html']);
+    }
+
+    /**
+     * Test sync wishlist endpoint for logged-in users.
+     */
+    public function test_wishlist_sync_endpoint(): void
+    {
+        $user = User::factory()->create(['role' => 'tenant']);
+        $properties = Property::limit(2)->get();
+        if ($properties->isEmpty()) {
+            return; // skip if no properties seeded
+        }
+        $propertyIds = $properties->pluck('id')->toArray();
+
+        $response = $this->actingAs($user)->postJson('/wishlist/sync', [
+            'ids' => $propertyIds
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true
+        ]);
+
+        // Check database
+        foreach ($propertyIds as $id) {
+            $this->assertTrue($user->favoriteProperties()->where('property_id', $id)->exists());
+        }
+    }
 }
