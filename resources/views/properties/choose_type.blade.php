@@ -54,8 +54,8 @@
 
     <!-- Main Selection Content -->
     <main class="flex-grow flex items-center justify-center py-12 px-4">
-        <div class="max-w-4xl w-full">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="max-w-xl w-full">
+            <div class="flex flex-col gap-5 md:gap-6">
                 
                 @php
                     $saleUrl = Auth::check() ? route('properties.create', ['purpose' => 'sale']) : route('login');
@@ -78,8 +78,8 @@
                         <p class="text-xs lg:text-sm font-semibold text-slate-500 mt-1">Nhà, đất, căn hộ...</p>
                     </div>
 
-                    <!-- Orange circular arrow button (Right) -->
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#ff6a00] hover:bg-[#e05d00] text-white flex items-center justify-center transition shadow-md shadow-orange-500/20 group-hover:scale-110 active:scale-95 flex-shrink-0 z-10">
+                    <!-- Blue circular arrow button (Right) -->
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center transition shadow-md shadow-primary/20 group-hover:scale-110 active:scale-95 flex-shrink-0 z-10">
                         <i class="fa-solid fa-arrow-right text-sm"></i>
                     </div>
                 </a>
@@ -104,8 +104,8 @@
                         <p class="text-xs lg:text-sm font-semibold text-slate-500 mt-1">Phòng trọ, mặt bằng...</p>
                     </div>
 
-                    <!-- Orange circular arrow button (Right) -->
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#ff6a00] hover:bg-[#e05d00] text-white flex items-center justify-center transition shadow-md shadow-orange-500/20 group-hover:scale-110 active:scale-95 flex-shrink-0 z-10">
+                    <!-- Blue circular arrow button (Right) -->
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center transition shadow-md shadow-primary/20 group-hover:scale-110 active:scale-95 flex-shrink-0 z-10">
                         <i class="fa-solid fa-arrow-right text-sm"></i>
                     </div>
                 </a>
