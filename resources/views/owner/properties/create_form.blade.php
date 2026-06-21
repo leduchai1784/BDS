@@ -1,5 +1,5 @@
 @php
-    $purpose = request()->query('purpose', 'rent');
+    $purpose = $purpose ?? request()->query('purpose', 'rent');
     $isSale = $purpose === 'sale';
 @endphp
 
@@ -15,7 +15,7 @@
     action="{{ route('properties.store') }}" 
     method="POST" 
     enctype="multipart/form-data"
-    x-data="propertyCreateForm()"
+    x-data="propertyCreateForm('{{ $purpose }}')"
     class="space-y-6 text-left"
 >
     @csrf
@@ -408,7 +408,7 @@
             <p class="text-[10px] text-slate-400 font-semibold px-1"><i class="fa-solid fa-circle-info mr-1"></i>Kéo thả điểm đánh dấu (Marker) màu đỏ hoặc bấm trực tiếp lên bản đồ để chọn tọa độ chính xác.</p>
             
             <!-- Map View Container -->
-            <div id="picker-map-create" style="height: 300px; min-height: 300px;" class="w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
+            <div :id="'picker-map-create-' + purpose" style="height: 300px; min-height: 300px;" class="w-full rounded-2xl border border-slate-150 shadow-inner bg-slate-200 overflow-hidden relative"></div>
         </div>
     </div>
 
@@ -540,8 +540,9 @@
 <script src="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.js"></script>
 
 <script>
-    function propertyCreateForm() {
+    function propertyCreateForm(purpose) {
         return {
+            purpose: purpose,
             lat: {{ old('latitude', 21.0285) }},
             lng: {{ old('longitude', 105.8521) }},
             coordsInput: '{{ old('latitude', 21.0285) }}, {{ old('longitude', 105.8521) }}',
@@ -567,24 +568,51 @@
                     })
                     .catch(err => console.error("Error loading provinces:", err));
 
-                this.$watch(() => this.activeTab, value => {
-                    if (value === 'create_property' && !this.map) {
+                const isStandalone = typeof this.activeModal === 'undefined';
+                if (isStandalone) {
+                    const isTabbed = typeof this.activeTab !== 'undefined';
+                    if (isTabbed) {
+                        this.$watch(() => this.activeTab, value => {
+                            if (value === 'create_property' && !this.map) {
+                                this.$nextTick(() => {
+                                    this.initMap();
+                                    this.detectCurrentLocation();
+                                });
+                            }
+                        });
+                        if (this.activeTab === 'create_property') {
+                            this.$nextTick(() => {
+                                this.initMap();
+                                this.detectCurrentLocation();
+                            });
+                        }
+                    } else {
                         this.$nextTick(() => {
                             this.initMap();
                             this.detectCurrentLocation();
                         });
                     }
-                });
-                if (this.activeTab === 'create_property') {
-                    this.$nextTick(() => {
-                        this.initMap();
-                        this.detectCurrentLocation();
+                } else {
+                    this.$watch(() => this.activeModal, value => {
+                        if (value === this.purpose && !this.map) {
+                            this.$nextTick(() => {
+                                this.initMap();
+                                this.detectCurrentLocation();
+                            });
+                        }
                     });
+                    if (this.activeModal === this.purpose) {
+                        this.$nextTick(() => {
+                            this.initMap();
+                            this.detectCurrentLocation();
+                        });
+                    }
                 }
             },
 
             initMap(retryCount = 0) {
-                const el = document.getElementById('picker-map-create');
+                const mapId = 'picker-map-create-' + this.purpose;
+                const el = document.getElementById(mapId);
                 if (!el) {
                     if (retryCount < 10) {
                         setTimeout(() => this.initMap(retryCount + 1), 100);
@@ -593,7 +621,7 @@
                 }
                 if (this.map) return;
                 this.map = new maplibregl.Map({
-                    container: 'picker-map-create',
+                    container: mapId,
                     style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
                     center: [this.lng, this.lat],
                     zoom: 13

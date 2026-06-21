@@ -10,7 +10,7 @@
         <nav class="flex text-xs font-semibold text-slate-500 mb-6 space-x-2" aria-label="Breadcrumb">
             <a href="/" class="hover:text-primary transition">Trang chủ</a>
             <span>/</span>
-            <a href="javascript:void(0)" x-data @click.prevent="$dispatch('open-choose-type-modal')" class="hover:text-primary transition">Đăng tin mới</a>
+            <a href="{{ route('properties.choose-type') }}" class="hover:text-primary transition">Đăng tin mới</a>
             <span>/</span>
             <span class="text-slate-800">{{ request()->query('purpose', 'rent') === 'sale' ? 'Đăng tin bán' : 'Đăng tin cho thuê' }}</span>
         </nav>

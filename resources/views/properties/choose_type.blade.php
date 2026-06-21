@@ -3,11 +3,15 @@
 @section('title', 'Đăng tin mới | BDS Rental')
 
 @section('content')
+@php
+    $userRole = Auth::check() ? Auth::user()->role : '';
+@endphp
 <div 
     x-data="{ 
         showWarning: false, 
         warningMessage: '',
-        checkRole(role, targetUrl) {
+        activeModal: null,
+        checkRole(role, purpose) {
             if (!role) {
                 window.location.href = '{{ route('login') }}';
                 return;
@@ -19,7 +23,7 @@
                 this.showWarning = true;
                 return;
             }
-            window.location.href = targetUrl;
+            this.activeModal = purpose;
         }
     }"
     class="bg-slate-50 min-h-screen flex flex-col font-sans pt-20"
@@ -34,13 +38,9 @@
             </div>
             <div class="flex flex-col gap-5 md:gap-6">
                 
-                @php
-                    $saleUrl = Auth::check() ? route('properties.create', ['purpose' => 'sale']) : route('login');
-                    $userRole = Auth::check() ? Auth::user()->role : '';
-                @endphp
                 <a 
                     href="javascript:void(0)"
-                    @click="checkRole('{{ $userRole }}', '{{ $saleUrl }}')"
+                    @click="checkRole('{{ $userRole }}', 'sale')"
                     class="group relative bg-white rounded-[32px] border border-slate-100 shadow-sm shadow-slate-100/50 p-8 lg:p-10 flex items-center justify-between overflow-hidden h-44 lg:h-48 hover:shadow-2xl hover:shadow-slate-200/80 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
                 >
                     <!-- Watermark background icon (Subtle and behind text) -->
@@ -61,12 +61,9 @@
                     </div>
                 </a>
 
-                @php
-                    $rentUrl = Auth::check() ? route('properties.create', ['purpose' => 'rent']) : route('login');
-                @endphp
                 <a 
                     href="javascript:void(0)"
-                    @click="checkRole('{{ $userRole }}', '{{ $rentUrl }}')"
+                    @click="checkRole('{{ $userRole }}', 'rent')"
                     class="group relative bg-white rounded-[32px] border border-slate-100 shadow-sm shadow-slate-100/50 p-8 lg:p-10 flex items-center justify-between overflow-hidden h-44 lg:h-48 hover:shadow-2xl hover:shadow-slate-200/80 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
                 >
                     <!-- Watermark background icon (Subtle and behind text) -->
@@ -140,6 +137,59 @@
                 >
                     Đóng
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Listing Modal -->
+    <div 
+        x-show="activeModal !== null" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10" 
+        x-cloak
+    >
+        <!-- Backdrop -->
+        <div 
+            @click="activeModal = null" 
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        ></div>
+        
+        <!-- Modal Content Container -->
+        <div 
+            class="bg-white rounded-[32px] max-w-4xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 md:p-10 shadow-2xl relative z-10 border border-slate-100 transform transition-all duration-300 flex flex-col"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        >
+            <!-- Close Button -->
+            <button 
+                type="button"
+                @click="activeModal = null"
+                class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-650 flex items-center justify-center transition cursor-pointer z-50 shadow-sm border border-slate-100"
+                title="Đóng"
+            >
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            <!-- Modal Content (Forms) -->
+            <div class="w-full">
+                <!-- If purpose is sale -->
+                <div x-show="activeModal === 'sale'">
+                    @include('owner.properties.create_form', ['purpose' => 'sale'])
+                </div>
+                
+                <!-- If purpose is rent -->
+                <div x-show="activeModal === 'rent'">
+                    @include('owner.properties.create_form', ['purpose' => 'rent'])
+                </div>
             </div>
         </div>
     </div>
