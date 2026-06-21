@@ -1,25 +1,5 @@
 <header 
-    x-data="{ 
-        mobileMenuOpen: false, 
-        isScrolled: window.pageYOffset > 20 || window.location.pathname !== '/',
-        chooseTypeOpen: false,
-        modalTab: 'select',
-        warningMessage: '',
-        checkRole(role, targetUrl) {
-            if (!role) {
-                window.location.href = '{{ route('login') }}';
-                return;
-            }
-            if (role !== 'owner') {
-                this.warningMessage = role === 'admin' 
-                    ? 'Tài khoản của bạn là Quản trị viên. Bạn cần tài khoản Chủ nhà / Môi giới để đăng tin.' 
-                    : 'Tài khoản của bạn là Khách thuê. Bạn cần tài khoản Chủ nhà / Môi giới để đăng tin.';
-                this.modalTab = 'warning';
-                return;
-            }
-            window.location.href = targetUrl;
-        }
-    }" 
+    x-data="{ mobileMenuOpen: false, isScrolled: window.pageYOffset > 20 || window.location.pathname !== '/' }" 
     @scroll.window="isScrolled = window.pageYOffset > 20 || window.location.pathname !== '/'"
     :class="isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-slate-100 py-3' : 'bg-transparent py-5'"
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full"
@@ -90,8 +70,7 @@
                 <!-- Đăng tin miễn phí Button -->
                 <div class="relative flex-shrink-0">
                     <a 
-                        href="javascript:void(0)"
-                        @click.prevent="chooseTypeOpen = true; modalTab = 'select';"
+                        href="{{ route('properties.choose-type') }}"
                         class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0 cursor-pointer"
                     >
                         <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
@@ -180,8 +159,7 @@
                 <!-- Đăng tin miễn phí Button -->
                 <div class="relative flex-shrink-0">
                     <a 
-                        href="javascript:void(0)"
-                        @click.prevent="chooseTypeOpen = true; modalTab = 'select';"
+                        href="{{ route('properties.choose-type') }}"
                         class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
@@ -341,129 +319,12 @@
                 <!-- Đăng tin miễn phí Button (Mobile) -->
                 <div class="w-full">
                     <a 
-                        href="javascript:void(0)"
-                        @click="mobileMenuOpen = false; chooseTypeOpen = true; modalTab = 'select';"
+                        href="{{ route('properties.choose-type') }}"
+                        @click="mobileMenuOpen = false"
                         class="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
                     >
                         <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
                     </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Choose Type Modal -->
-    <div 
-        x-show="chooseTypeOpen" 
-        class="fixed inset-0 z-[150] flex items-center justify-center p-4" 
-        x-cloak
-    >
-        <!-- Backdrop -->
-        <div 
-            @click="chooseTypeOpen = false" 
-            class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
-            x-transition:enter="ease-out duration-300"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-        ></div>
-        
-        <!-- Modal Content Container -->
-        <div 
-            class="bg-white rounded-[32px] max-w-md w-full p-6 sm:p-8 shadow-2xl relative z-10 border border-slate-100 transform transition-all duration-300"
-            x-transition:enter="ease-out duration-300"
-            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        >
-            <!-- Close Button -->
-            <button 
-                type="button"
-                @click="chooseTypeOpen = false"
-                class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-650 flex items-center justify-center transition cursor-pointer"
-                title="Đóng"
-            >
-                <i class="fa-solid fa-xmark text-sm"></i>
-            </button>
-
-            <!-- TAB 1: Select Type -->
-            <div x-show="modalTab === 'select'" class="text-left">
-                <h3 class="text-lg font-extrabold text-slate-800 mb-5">Đăng tin mới</h3>
-                
-                @php
-                    $saleUrl = Auth::check() ? route('properties.create', ['purpose' => 'sale']) : route('login');
-                    $rentUrl = Auth::check() ? route('properties.create', ['purpose' => 'rent']) : route('login');
-                    $userRole = Auth::check() ? Auth::user()->role : '';
-                @endphp
-                
-                <div class="flex flex-col gap-4">
-                    <!-- Option 1: Bán -->
-                    <a 
-                        href="javascript:void(0)"
-                        @click="checkRole('{{ $userRole }}', '{{ $saleUrl }}')"
-                        class="group relative bg-slate-50 hover:bg-white rounded-2xl border border-slate-100/80 p-5 flex items-center justify-between overflow-hidden h-28 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                    >
-                        <div class="absolute -left-4 -bottom-6 text-slate-200 opacity-15 group-hover:opacity-25 transition-opacity duration-300 select-none pointer-events-none z-0">
-                            <i class="fa-solid fa-house text-[80px]"></i>
-                        </div>
-                        <div class="flex flex-col text-left relative z-10">
-                            <span class="text-[9px] font-black tracking-widest text-slate-400 uppercase">ĐĂNG TIN</span>
-                            <h4 class="text-xl font-extrabold text-slate-800 mt-1">Bán</h4>
-                            <p class="text-[11px] font-semibold text-slate-500 mt-0.5">Nhà, đất, căn hộ...</p>
-                        </div>
-                        <div class="w-9 h-9 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center transition shadow-md shadow-primary/20 group-hover:scale-110 active:scale-95 flex-shrink-0 z-10">
-                            <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </div>
-                    </a>
-
-                    <!-- Option 2: Cho thuê -->
-                    <a 
-                        href="javascript:void(0)"
-                        @click="checkRole('{{ $userRole }}', '{{ $rentUrl }}')"
-                        class="group relative bg-slate-50 hover:bg-white rounded-2xl border border-slate-100/80 p-5 flex items-center justify-between overflow-hidden h-28 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                    >
-                        <div class="absolute -left-3 -bottom-5 text-slate-200 opacity-15 group-hover:opacity-25 transition-opacity duration-300 select-none pointer-events-none z-0">
-                            <i class="fa-solid fa-key text-[80px]"></i>
-                        </div>
-                        <div class="flex flex-col text-left relative z-10">
-                            <span class="text-[9px] font-black tracking-widest text-slate-400 uppercase">ĐĂNG TIN</span>
-                            <h4 class="text-xl font-extrabold text-slate-800 mt-1">Cho thuê</h4>
-                            <p class="text-[11px] font-semibold text-slate-500 mt-0.5">Phòng trọ, mặt bằng...</p>
-                        </div>
-                        <div class="w-9 h-9 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center transition shadow-md shadow-primary/20 group-hover:scale-110 active:scale-95 flex-shrink-0 z-10">
-                            <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- TAB 2: Warning Message -->
-            <div x-show="modalTab === 'warning'" class="text-center">
-                <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
-                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-                </div>
-                
-                <h3 class="text-lg font-extrabold text-slate-800 mb-2">Quyền hạn tài khoản</h3>
-                <p class="text-xs font-semibold text-slate-500 leading-relaxed mb-6" x-text="warningMessage"></p>
-                
-                <div class="flex flex-col gap-2">
-                    <a 
-                        href="{{ route('profile.index') }}" 
-                        class="w-full inline-flex items-center justify-center px-4 py-3 bg-primary hover:bg-primary-hover text-xs font-bold rounded-xl text-white shadow-lg shadow-primary/25 hover:shadow-primary/35 transition active:scale-98"
-                    >
-                        Vào trang cá nhân
-                    </a>
-                    <button 
-                        @click="modalTab = 'select'" 
-                        type="button" 
-                        class="w-full inline-flex items-center justify-center px-4 py-2.5 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-50 transition cursor-pointer"
-                    >
-                        Quay lại
-                    </button>
                 </div>
             </div>
         </div>

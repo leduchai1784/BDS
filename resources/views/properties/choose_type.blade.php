@@ -2,11 +2,6 @@
 
 @section('title', 'Đăng tin mới | BDS Rental')
 
-@php
-    $hideNavbar = true;
-    $hideFooter = true;
-@endphp
-
 @section('content')
 <div 
     x-data="{ 
@@ -27,34 +22,16 @@
             window.location.href = targetUrl;
         }
     }"
-    class="bg-slate-50 min-h-screen flex flex-col font-sans"
+    class="bg-slate-50 min-h-screen flex flex-col font-sans pt-20"
 >
-    <!-- Minimalist Header -->
-    <header class="bg-white border-b border-slate-100/80 shadow-sm h-16 flex items-center px-4 md:px-8 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto w-full flex items-center justify-between relative">
-            <!-- Back Button -->
-            <a 
-                href="javascript:void(0)" 
-                onclick="if(document.referrer) { window.history.back(); } else { window.location.href = '/'; }"
-                class="w-10 h-10 rounded-xl border border-slate-100 bg-white flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary/20 shadow-sm hover:shadow-md transition active:scale-95 cursor-pointer z-10"
-                title="Quay lại"
-            >
-                <i class="fa-solid fa-arrow-left text-sm"></i>
-            </a>
-
-            <!-- Centered Page Title -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <h1 class="text-base md:text-lg font-bold text-slate-800 tracking-tight">Đăng tin mới</h1>
-            </div>
-
-            <!-- Empty spacer for layout balancing -->
-            <div class="w-10"></div>
-        </div>
-    </header>
-
     <!-- Main Selection Content -->
     <main class="flex-grow flex items-center justify-center py-12 px-4">
         <div class="max-w-xl w-full">
+            <!-- Page Title -->
+            <div class="text-center mb-8">
+                <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">Đăng tin mới</h1>
+                <p class="text-xs lg:text-sm font-semibold text-slate-400 mt-2">Chọn hình thức giao dịch của bất động sản để bắt đầu</p>
+            </div>
             <div class="flex flex-col gap-5 md:gap-6">
                 
                 @php
