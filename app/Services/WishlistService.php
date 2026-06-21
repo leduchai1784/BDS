@@ -38,17 +38,27 @@ class WishlistService
     /**
      * Check if a property is favorited by a user.
      */
-    public function isFavorite(int $userId, string $propertyId): bool
+    public function isFavorite(?int $userId, string $propertyId): bool
     {
-        if (!\Illuminate\Support\Str::isUuid($propertyId)) {
-            return false;
+        if ($userId) {
+            if (\Illuminate\Support\Str::isUuid($propertyId)) {
+                $user = User::find($userId);
+                if ($user && $user->favoriteProperties()->where('property_id', $propertyId)->exists()) {
+                    return true;
+                }
+            }
         }
 
-        $user = User::find($userId);
-        if (!$user) {
-            return false;
+        // Check guest_wishlist cookie
+        $cookieData = request()->cookie('guest_wishlist');
+        if ($cookieData) {
+            $wishlist = json_decode($cookieData, true);
+            if (is_array($wishlist)) {
+                return in_array($propertyId, $wishlist);
+            }
         }
-        return $user->favoriteProperties()->where('property_id', $propertyId)->exists();
+
+        return false;
     }
 
     /**
@@ -61,29 +71,30 @@ class WishlistService
     }
 
     /**
-     * Add a property to a user's favorites (without toggling off if it exists).
+     * Merge wishlist from guest cookie to database for authenticated user.
      */
-    public function addFavorite(int $userId, string $propertyId): bool
+    public function mergeGuestWishlist(int $userId, ?string $cookieData): void
     {
-        if (!\Illuminate\Support\Str::isUuid($propertyId)) {
-            return false;
+        if (!$cookieData) {
+            return;
+        }
+
+        $wishlist = json_decode($cookieData, true);
+        if (!is_array($wishlist)) {
+            return;
         }
 
         $user = User::find($userId);
         if (!$user) {
-            return false;
+            return;
         }
 
-        // Ensure property exists
-        if (!Property::where('id', $propertyId)->exists()) {
-            return false;
+        foreach ($wishlist as $propertyId) {
+            if (\Illuminate\Support\Str::isUuid($propertyId) && Property::where('id', $propertyId)->exists()) {
+                if (!$user->favoriteProperties()->where('property_id', $propertyId)->exists()) {
+                    $user->favoriteProperties()->attach($propertyId);
+                }
+            }
         }
-
-        $exists = $user->favoriteProperties()->where('property_id', $propertyId)->exists();
-        if (!$exists) {
-            $user->favoriteProperties()->attach($propertyId);
-            return true;
-        }
-        return false;
     }
 }

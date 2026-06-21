@@ -71,35 +71,7 @@
             liked: {{ $isFavorite ? 'true' : 'false' }},
             isProcessing: false,
             showToast: false,
-            init() {
-                @guest
-                    const wishlist = JSON.parse(localStorage.getItem('bds_wishlist') || '[]');
-                    this.liked = wishlist.includes(String('{{ $property['id'] }}'));
-                @endguest
-
-                // Sync liked state across different cards representing the same property
-                window.addEventListener('wishlist-updated', (e) => {
-                    if (e.detail.id == '{{ $property['id'] }}') {
-                        this.liked = e.detail.liked;
-                    }
-                });
-            },
             toggleLike() {
-                @guest
-                    let wishlist = JSON.parse(localStorage.getItem('bds_wishlist') || '[]');
-                    const id = String('{{ $property['id'] }}');
-                    if (wishlist.includes(id)) {
-                        wishlist = wishlist.filter(item => item !== id);
-                        this.liked = false;
-                    } else {
-                        wishlist.push(id);
-                        this.liked = true;
-                    }
-                    localStorage.setItem('bds_wishlist', JSON.stringify(wishlist));
-                    window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { id: id, liked: this.liked } }));
-                    return;
-                @endguest
-
                 if (this.isProcessing) return;
                 this.isProcessing = true;
 
@@ -119,7 +91,6 @@
                     this.isProcessing = false;
                     if (data.success) {
                         this.liked = data.is_favorite;
-                        window.dispatchEvent(new CustomEvent('wishlist-updated', { detail: { id: '{{ $property['id'] }}', liked: this.liked } }));
                     }
                 })
                 .catch(error => {

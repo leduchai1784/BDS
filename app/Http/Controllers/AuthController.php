@@ -42,6 +42,14 @@ class AuthController extends Controller
                     'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
                 ])->onlyInput('email');
             }
+
+            // Merge guest wishlist
+            $cookieData = $request->cookie('guest_wishlist');
+            if ($cookieData) {
+                app(\App\Services\WishlistService::class)->mergeGuestWishlist(Auth::id(), $cookieData);
+                \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('guest_wishlist'));
+            }
+
             $request->session()->regenerate();
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
