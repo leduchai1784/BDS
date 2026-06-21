@@ -35,10 +35,10 @@
                 <h4 class="text-sm font-bold uppercase tracking-wider text-white">Khám phá</h4>
                 <ul class="space-y-2.5 text-sm">
                     <li><a href="/" class="hover:text-primary transition duration-150">Trang chủ</a></li>
-                    <li><a href="#featured" class="hover:text-primary transition duration-150">Thuê căn hộ</a></li>
-                    <li><a href="#featured" class="hover:text-primary transition duration-150">Thuê nhà riêng</a></li>
-                    <li><a href="#featured" class="hover:text-primary transition duration-150">Thuê văn phòng</a></li>
-                    <li><a href="#news" class="hover:text-primary transition duration-150">Tin tức bất động sản</a></li>
+                    <li><a href="/listings" class="hover:text-primary transition duration-150">Kho dự án</a></li>
+                    <li><a href="/map" class="hover:text-primary transition duration-150">Bản đồ</a></li>
+                    <li><a href="#news" class="hover:text-primary transition duration-150">Tin tức</a></li>
+                    <li><a href="#contact" class="hover:text-primary transition duration-150">Liên hệ</a></li>
                 </ul>
             </div>
 
