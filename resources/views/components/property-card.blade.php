@@ -91,6 +91,9 @@
                     this.isProcessing = false;
                     if (data.success) {
                         this.liked = data.is_favorite;
+                        if (!data.is_favorite && window.location.pathname.includes('/profile')) {
+                            window.location.reload();
+                        }
                     }
                 })
                 .catch(error => {
