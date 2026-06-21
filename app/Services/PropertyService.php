@@ -215,7 +215,7 @@ class PropertyService
     /**
      * Search and filter properties with database query.
      */
-    public function search(array $filters = [], int $perPage = 6): LengthAwarePaginator
+    public function search(array $filters = [], int $perPage = 12): LengthAwarePaginator
     {
         // 1. Get filtered DB properties
         $dbProperties = [];

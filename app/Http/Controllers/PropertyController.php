@@ -24,7 +24,7 @@ class PropertyController extends Controller
     public function index(SearchPropertyRequest $request)
     {
         // Use all input (validated query string)
-        $properties = $this->propertyService->search($request->validated(), 6);
+        $properties = $this->propertyService->search($request->validated(), 12);
         
         return view('listings', [
             'properties' => $properties
