@@ -360,6 +360,9 @@
                 if (data.success) {
                     console.log('Wishlist synchronized successfully:', data.synced_count, 'items.');
                     localStorage.removeItem('bds_wishlist');
+                    if (data.synced_count > 0 && (window.location.pathname.includes('/profile') || window.location.pathname.includes('/wishlist'))) {
+                        window.location.reload();
+                    }
                 }
             })
             .catch(error => {
