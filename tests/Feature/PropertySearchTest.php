@@ -63,4 +63,15 @@ class PropertySearchTest extends TestCase
         $responsePrice = $this->get('/listings?price=under_3');
         $responsePrice->assertStatus(200);
     }
+
+    /**
+     * Test serving vietnam_provinces.json route.
+     */
+    public function test_vietnam_provinces_json_route_returns_json(): void
+    {
+        $response = $this->get('/vietnam_provinces.json');
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/json');
+    }
 }
+

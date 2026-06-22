@@ -274,6 +274,18 @@ Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->nam
 Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyController::class, 'autocomplete'])->name('properties.autocomplete');
 
 
+// Route phục vụ file vietnam_provinces.json cho Vercel (bổ sung caching)
+Route::get('/vietnam_provinces.json', function () {
+    $path = public_path('vietnam_provinces.json');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Content-Type' => 'application/json',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+});
+
 // Route lựa chọn loại tin đăng (Bán / Cho thuê)
 Route::get('/properties/choose-type', function () {
     return view('properties.choose_type');
