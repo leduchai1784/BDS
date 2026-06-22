@@ -19,10 +19,47 @@ class ProfileService
         
         $user->update([
             'name' => $data['name'],
+            'firstname' => $data['firstname'] ?? null,
+            'lastname' => $data['lastname'] ?? null,
             'phone' => $data['phone'] ?? null,
-            // Only update email if it changed, to avoid unique constraints
             'email' => $data['email'] ?? $user->email,
+            'gender' => $data['gender'] ?? 0,
+            'dob' => $data['dob'] ?? null,
+            'pob' => $data['pob'] ?? null,
+            'add_street' => $data['add_street'] ?? null,
+            'add_ward' => $data['add_ward'] ?? null,
+            'add_district' => $data['add_district'] ?? null,
+            'add_province' => $data['add_province'] ?? null,
+            'zalo_id' => $data['zalo_id'] ?? null,
+            'zalo_key' => $data['zalo_key'] ?? null,
+            'intro' => $data['intro'] ?? null,
+            'website' => $data['website'] ?? null,
         ]);
+
+        return $user;
+    }
+
+    /**
+     * Update user CCCD details locally.
+     */
+    public function updateCccd(int $userId, array $data): User
+    {
+        $user = User::findOrFail($userId);
+
+        $updateData = [
+            'id_number' => $data['id_number'] ?? null,
+            'id_date' => $data['id_date'] ?? null,
+            'id_place' => $data['id_place'] ?? null,
+        ];
+
+        if (!empty($data['cccd_front'])) {
+            $updateData['cccd_front'] = $data['cccd_front'];
+        }
+        if (!empty($data['cccd_back'])) {
+            $updateData['cccd_back'] = $data['cccd_back'];
+        }
+
+        $user->update($updateData);
 
         return $user;
     }

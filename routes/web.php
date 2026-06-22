@@ -216,6 +216,8 @@ Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class,
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::post('/profile/cccd', [ProfileController::class, 'updateCccd'])->name('profile.cccd');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });

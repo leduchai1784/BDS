@@ -102,16 +102,34 @@ class NksAuthService
     public function updateCccd(string $token, array $data): array
     {
         try {
-            $response = Http::withoutVerifying()
-                ->timeout(15)
-                ->withToken($token)
-                ->post("{$this->baseUrl}/updateCccd", $data);
+            $request = Http::withoutVerifying()
+                ->timeout(20)
+                ->withToken($token);
+
+            $hasFiles = false;
+            $multipartData = [];
+
+            foreach ($data as $key => $value) {
+                if ($value instanceof \Illuminate\Http\UploadedFile) {
+                    $hasFiles = true;
+                    $request->attach($key, file_get_contents($value->getRealPath()), $value->getClientOriginalName());
+                } else {
+                    $multipartData[$key] = $value;
+                }
+            }
+
+            if ($hasFiles) {
+                $response = $request->post("{$this->baseUrl}/updateCccd", $multipartData);
+            } else {
+                $response = $request->post("{$this->baseUrl}/updateCccd", $data);
+            }
 
             $json = $response->json();
 
             return [
                 'success' => $response->successful() && !empty($json['success']),
                 'message' => $json['message'] ?? '',
+                'data'    => $json['data'] ?? [],
             ];
         } catch (\Exception $e) {
             Log::warning('NKS updateCccd failed: ' . $e->getMessage());
@@ -131,10 +149,28 @@ class NksAuthService
 
         return [
             'name'         => $name,
+            'firstname'    => $nksUser['firstname'] ?? null,
+            'lastname'     => $nksUser['lastname'] ?? null,
             'phone'        => $nksUser['phone'] ?? null,
             'avatar'       => $nksUser['avatar'] ?? null,
             'nks_user_id'  => (string) ($nksUser['id'] ?? ''),
             'nks_token'    => $token,
+            'gender'       => $nksUser['gender'] ?? 0,
+            'dob'          => $nksUser['dob'] ?? null,
+            'pob'          => $nksUser['pob'] ?? null,
+            'id_number'    => $nksUser['id_number'] ?? null,
+            'id_date'      => $nksUser['id_date'] ?? null,
+            'id_place'     => $nksUser['id_place'] ?? null,
+            'cccd_front'   => $nksUser['cccd_front'] ?? null,
+            'cccd_back'    => $nksUser['cccd_back'] ?? null,
+            'add_street'   => $nksUser['add_street'] ?? null,
+            'add_ward'     => $nksUser['add_ward'] ?? null,
+            'add_district' => $nksUser['add_district'] ?? null,
+            'add_province' => $nksUser['add_province'] ?? null,
+            'zalo_id'      => $nksUser['zalo_id'] ?? null,
+            'zalo_key'     => $nksUser['zalo_key'] ?? null,
+            'intro'        => $nksUser['intro'] ?? null,
+            'website'      => $nksUser['website'] ?? null,
         ];
     }
 }

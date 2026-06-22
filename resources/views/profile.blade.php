@@ -6,7 +6,8 @@
 <!-- Dashboard Wrapper with AlpineJS -->
 <div 
     x-data="{ 
-        activeTab: '{{ request('tab') ?? (session('success') || $errors->has('current_password') || $errors->has('new_password') ? ($errors->any() ? 'password' : 'profile') : 'profile') }}', 
+        activeTab: '{{ request('tab') ?? 'profile' }}', 
+        activeSubTab: '{{ request('subtab') ?? ($errors->has('current_password') || $errors->has('new_password') ? 'password' : ($errors->has('avatar') ? 'avatar' : ($errors->has('id_number') || $errors->has('id_date') || $errors->has('id_place') || $errors->has('cccd_front') || $errors->has('cccd_back') ? 'cccd' : 'info'))) }}',
         showToast: {{ session('success') ? 'true' : 'false' }}, 
         toastMessage: '{{ session('success') }}',
         init() {
@@ -180,8 +181,8 @@
                         @endif
 
                         <button 
-                            @click="activeTab = 'password'; window.history.pushState(null, '', '?tab=password');" 
-                            :class="activeTab === 'password' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            @click="activeTab = 'profile'; activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');" 
+                            :class="activeTab === 'profile' && activeSubTab === 'password' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
                             class="flex items-center space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                         >
                             <i class="fa-solid fa-key text-sm"></i>
@@ -277,127 +278,605 @@
                     </div>
                     @endif
 
-                    <!-- Profile Form (Real POST form) -->
-                    <form 
-                        action="{{ route('profile.update') }}"
-                        method="POST"
-                        enctype="multipart/form-data"
-                        x-data="{ 
-                            avatarUrl: '{{ $user['avatar'] }}',
-                            previewAvatar(event) {
-                                const file = event.target.files[0];
-                                if (file) {
-                                    this.avatarUrl = URL.createObjectURL(file);
+                    <!-- Horizontal Sub-Tabs -->
+                    <div class="flex flex-wrap gap-3 pb-5 border-b border-slate-100">
+                        <!-- THÔNG TIN CÁ NHÂN -->
+                        <button 
+                            @click="activeSubTab = 'info'; window.history.pushState(null, '', '?tab=profile&subtab=info');"
+                            :class="activeSubTab === 'info' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-user text-xs"></i>
+                            <span>Thông tin cá nhân</span>
+                        </button>
+
+                        <!-- ĐỔI MẬT KHẨU -->
+                        <button 
+                            @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
+                            :class="activeSubTab === 'password' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-key text-xs"></i>
+                            <span>Đổi mật khẩu</span>
+                        </button>
+
+                        <!-- ẢNH ĐẠI DIỆN -->
+                        <button 
+                            @click="activeSubTab = 'avatar'; window.history.pushState(null, '', '?tab=profile&subtab=avatar');"
+                            :class="activeSubTab === 'avatar' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-image text-xs"></i>
+                            <span>Ảnh đại diện</span>
+                        </button>
+
+                        <!-- XÁC THỰC CCCD -->
+                        <button 
+                            @click="activeSubTab = 'cccd'; window.history.pushState(null, '', '?tab=profile&subtab=cccd');"
+                            :class="activeSubTab === 'cccd' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-id-card text-xs"></i>
+                            <span>Xác thực CCCD</span>
+                        </button>
+                    </div>
+
+                    <!-- Sub-tab 1: Personal Info -->
+                    <div x-show="activeSubTab === 'info'" class="space-y-6" x-cloak>
+                        <form 
+                            action="{{ route('profile.update') }}"
+                            method="POST"
+                            class="space-y-6"
+                        >
+                            @csrf
+                            
+                            <!-- Grid 1: Basic Info -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <!-- Họ tên hiển thị -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="name"
+                                            value="{{ old('name', $user['name']) }}"
+                                            required
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('name')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Họ & tên đệm -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ & tên đệm</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user-tag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="firstname"
+                                            value="{{ old('firstname', $user['firstname']) }}"
+                                            placeholder="Lê Đức..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('firstname')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Tên -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tên</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user-tag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="lastname"
+                                            value="{{ old('lastname', $user['lastname']) }}"
+                                            placeholder="Hải..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('lastname')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Grid 2: Contact & Gender -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <!-- SĐT -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="tel" 
+                                            name="phone"
+                                            value="{{ old('phone', $user['phone']) }}"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('phone')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Email -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1 flex justify-between items-center">
+                                        <span>Địa chỉ Email</span>
+                                        <span class="text-[9px] text-amber-500 normal-case font-bold"><i class="fa-solid fa-lock mr-1"></i> Email đăng nhập</span>
+                                    </label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="email" 
+                                            name="email"
+                                            value="{{ old('email', $user['email']) }}"
+                                            required
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('email')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Giới tính -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới tính</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-venus-mars absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <select 
+                                            name="gender"
+                                            class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer"
+                                        >
+                                            <option value="0" {{ old('gender', $user['gender']) == 0 ? 'selected' : '' }}>Nam</option>
+                                            <option value="1" {{ old('gender', $user['gender']) == 1 ? 'selected' : '' }}>Nữ</option>
+                                            <option value="2" {{ old('gender', $user['gender']) == 2 ? 'selected' : '' }}>Khác</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Grid 3: Dob & Pob & Website -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <!-- Ngày sinh -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-cake-candles absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="dob"
+                                            value="{{ old('dob', $user['dob']) }}"
+                                            placeholder="dd/mm/yyyy..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('dob')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Nơi sinh -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi sinh</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="pob"
+                                            value="{{ old('pob', $user['pob']) }}"
+                                            placeholder="Hà Nội..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('pob')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Website -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Website</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-globe absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="website"
+                                            value="{{ old('website', $user['website']) }}"
+                                            placeholder="https://..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('website')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Grid 4: Address Details -->
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-5">
+                                <!-- Tỉnh / Thành -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh / Thành phố</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-map-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="add_province"
+                                            value="{{ old('add_province', $user['add_province']) }}"
+                                            placeholder="Hà Nội..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Quận / Huyện -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận / Huyện</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="add_district"
+                                            value="{{ old('add_district', $user['add_district']) }}"
+                                            placeholder="Cầu Giấy..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Phường / Xã -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường / Xã</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-tree-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="add_ward"
+                                            value="{{ old('add_ward', $user['add_ward']) }}"
+                                            placeholder="Dịch Vọng..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Đường / Số nhà -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Đường / Số nhà</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-road absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="add_street"
+                                            value="{{ old('add_street', $user['add_street']) }}"
+                                            placeholder="Số 10 Duy Tân..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Grid 5: Zalo Info -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <!-- Zalo ID -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Zalo ID</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-comments absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="zalo_id"
+                                            value="{{ old('zalo_id', $user['zalo_id']) }}"
+                                            placeholder="Zalo ID của bạn..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Zalo Key -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Zalo Key</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="zalo_key"
+                                            value="{{ old('zalo_key', $user['zalo_key']) }}"
+                                            placeholder="Zalo Key của bạn..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Giới thiệu bản thân -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới thiệu bản thân</label>
+                                <textarea 
+                                    name="intro"
+                                    rows="3"
+                                    placeholder="Chia sẻ một chút về bản thân bạn..."
+                                    class="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                >{{ old('intro', $user['intro']) }}</textarea>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="flex justify-end pt-4 border-t border-slate-100">
+                                <button 
+                                    type="submit" 
+                                    class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+                                >
+                                    Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Sub-tab 2: Change Password -->
+                    <div x-show="activeSubTab === 'password'" class="space-y-6" x-cloak>
+                        <form 
+                            action="{{ route('profile.password') }}"
+                            method="POST"
+                            class="max-w-md space-y-4"
+                        >
+                            @csrf
+                            <!-- Old Password -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu hiện tại</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="password" 
+                                        name="current_password"
+                                        required
+                                        placeholder="Nhập mật khẩu hiện tại..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    >
+                                </div>
+                                @error('current_password')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- New Password -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu mới</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="password" 
+                                        name="new_password"
+                                        required
+                                        placeholder="Tối thiểu 8 ký tự..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    >
+                                </div>
+                                @error('new_password')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Xác nhận mật khẩu mới</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="password" 
+                                        name="new_password_confirmation"
+                                        required
+                                        placeholder="Nhập lại mật khẩu mới..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex justify-end">
+                                <button 
+                                    type="submit" 
+                                    class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+                                >
+                                    <span>Đổi mật khẩu</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Sub-tab 3: Avatar -->
+                    <div x-show="activeSubTab === 'avatar'" class="space-y-6" x-cloak>
+                        <form 
+                            action="{{ route('profile.avatar') }}"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            x-data="{ 
+                                avatarUrl: '{{ $user['avatar'] }}',
+                                previewAvatar(event) {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        this.avatarUrl = URL.createObjectURL(file);
+                                    }
                                 }
-                            }
-                        }"
-                        class="space-y-6 pt-2"
-                    >
-                        @csrf
-                        <!-- Avatar change row -->
-                        <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-slate-100">
-                            <div class="w-20 h-20 rounded-full overflow-hidden border border-slate-200 shadow-sm bg-slate-150 flex-shrink-0">
-                                <img :src="avatarUrl" alt="Avatar preview" class="w-full h-full object-cover">
-                            </div>
-                            <div class="text-center sm:text-left space-y-2.5">
-                                <h4 class="text-xs font-bold text-slate-700">Ảnh đại diện</h4>
-                                <p class="text-[10px] text-slate-400 max-w-sm leading-normal">Định dạng JPG, PNG tối đa 2MB. Tải ảnh lên và bấm Lưu thay đổi bên dưới.</p>
-                                <label class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 hover:border-primary text-xs font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
-                                    <i class="fa-solid fa-camera mr-2 text-xs"></i> Chọn ảnh đại diện
-                                    <input type="file" name="avatar" accept="image/*" @change="previewAvatar($event)" class="hidden">
-                                </label>
-                                @error('avatar')
-                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Fields Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <!-- Họ tên -->
-                            <div class="space-y-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên</label>
-                                <div class="relative">
-                                    <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input 
-                                        type="text" 
-                                        name="name"
-                                        value="{{ old('name', $user['name']) }}"
-                                        required
-                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                    >
+                            }"
+                            class="space-y-6"
+                        >
+                            @csrf
+                            <div class="flex flex-col items-center space-y-4 py-8 bg-slate-50 rounded-3xl border border-slate-100">
+                                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-slate-200">
+                                    <img :src="avatarUrl" alt="Avatar preview" class="w-full h-full object-cover">
                                 </div>
-                                @error('name')
-                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- SĐT -->
-                            <div class="space-y-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại</label>
-                                <div class="relative">
-                                    <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input 
-                                        type="tel" 
-                                        name="phone"
-                                        value="{{ old('phone', $user['phone']) }}"
-                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                    >
-                                </div>
-                                @error('phone')
-                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Email -->
-                            <div class="space-y-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1 flex justify-between items-center">
-                                    <span>Địa chỉ Email</span>
-                                    <span class="text-[9px] text-amber-500 normal-case font-bold"><i class="fa-solid fa-lock mr-1"></i> Email đăng nhập</span>
-                                </label>
-                                <div class="relative">
-                                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input 
-                                        type="email" 
-                                        name="email"
-                                        value="{{ old('email', $user['email']) }}"
-                                        required
-                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                    >
-                                </div>
-                                @error('email')
-                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Vai trò -->
-                            <div class="space-y-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại tài khoản</label>
-                                <div class="relative">
-                                    <i class="fa-solid fa-users-gear absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <select 
-                                        name="role"
-                                        disabled
-                                        class="w-full pl-10 pr-8 py-2.5 bg-slate-100 text-slate-400 border border-slate-200 rounded-xl text-xs font-semibold outline-none appearance-none cursor-not-allowed transition"
-                                    >
-                                        <option value="Chủ nhà / Môi giới" {{ $user['role'] == 'Chủ nhà / Môi giới' ? 'selected' : '' }}>Chủ nhà / Môi giới</option>
-                                        <option value="Thành viên thuê nhà" {{ $user['role'] == 'Thành viên thuê nhà' ? 'selected' : '' }}>Thành viên thuê nhà</option>
-                                    </select>
-                                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                                <div class="text-center space-y-2">
+                                    <h4 class="text-sm font-bold text-slate-800">Ảnh đại diện tài khoản</h4>
+                                    <p class="text-xs text-slate-400 max-w-xs leading-normal">Hỗ trợ định dạng JPG, PNG dung lượng dưới 2MB.</p>
+                                    <label class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 hover:border-primary text-xs font-bold rounded-xl text-slate-700 hover:text-white bg-white hover:bg-primary shadow-sm transition cursor-pointer">
+                                        <i class="fa-solid fa-camera mr-2 text-xs"></i> Chọn ảnh mới
+                                        <input type="file" name="avatar" accept="image/*" @change="previewAvatar($event)" class="hidden">
+                                    </label>
+                                    @error('avatar')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
-                        </div>
+                            <div class="flex justify-end pt-4 border-t border-slate-100">
+                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                    Lưu ảnh đại diện
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
-                        <!-- Form Submit -->
-                        <div class="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
-                            <button 
-                                type="submit" 
-                                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
-                            >
-                                <span>Lưu thay đổi</span>
-                            </button>
-                        </div>
-                    </form>
+                    <!-- Sub-tab 4: CCCD Verification -->
+                    <div x-show="activeSubTab === 'cccd'" class="space-y-6" x-cloak>
+                        <form 
+                            action="{{ route('profile.cccd') }}"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            x-data="{
+                                cccdFrontUrl: '{{ $user['cccd_front'] ? (str_starts_with($user['cccd_front'], 'http') ? $user['cccd_front'] : asset($user['cccd_front'])) : '' }}',
+                                cccdBackUrl: '{{ $user['cccd_back'] ? (str_starts_with($user['cccd_back'], 'http') ? $user['cccd_back'] : asset($user['cccd_back'])) : '' }}',
+                                previewFront(event) {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        this.cccdFrontUrl = URL.createObjectURL(file);
+                                    }
+                                },
+                                previewBack(event) {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        this.cccdBackUrl = URL.createObjectURL(file);
+                                    }
+                                }
+                            }"
+                            class="space-y-6"
+                        >
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <!-- Số CCCD -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số CCCD / CMND</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-address-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="id_number"
+                                            value="{{ old('id_number', $user['id_number']) }}"
+                                            required
+                                            placeholder="Nhập 12 số CCCD..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('id_number')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Ngày cấp -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày cấp</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-calendar-day absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="id_date"
+                                            value="{{ old('id_date', $user['id_date']) }}"
+                                            required
+                                            placeholder="dd/mm/yyyy..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('id_date')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Nơi cấp -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi cấp</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="id_place"
+                                            value="{{ old('id_place', $user['id_place']) }}"
+                                            required
+                                            placeholder="Cục CSQLHC về trật tự xã hội..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('id_place')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- CCCD Front / Back Images Upload -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <!-- Mặt trước -->
+                                <div class="space-y-2">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt trước CCCD</label>
+                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
+                                        <template x-if="cccdFrontUrl">
+                                            <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
+                                                <img :src="cccdFrontUrl" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                                                    <span class="text-white text-xs font-bold"><i class="fa-solid fa-camera mr-1"></i> Thay đổi</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!cccdFrontUrl">
+                                            <div class="text-center py-6">
+                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
+                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt trước CCCD</p>
+                                            </div>
+                                        </template>
+                                        <input type="file" name="cccd_front" accept="image/*" @change="previewFront($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    </div>
+                                    @error('cccd_front')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Mặt sau -->
+                                <div class="space-y-2">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt sau CCCD</label>
+                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
+                                        <template x-if="cccdBackUrl">
+                                            <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
+                                                <img :src="cccdBackUrl" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                                                    <span class="text-white text-xs font-bold"><i class="fa-solid fa-camera mr-1"></i> Thay đổi</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!cccdBackUrl">
+                                            <div class="text-center py-6">
+                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
+                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt sau CCCD</p>
+                                            </div>
+                                        </template>
+                                        <input type="file" name="cccd_back" accept="image/*" @change="previewBack($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    </div>
+                                    @error('cccd_back')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-4 border-t border-slate-100">
+                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                    Cập nhật thông tin CCCD
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- TAB 2: Saved / Favorite Listings OR Owner Properties -->
@@ -774,81 +1253,6 @@
                 </div>
                 @endif
 
-                <!-- TAB 4: Change Password (Giai đoạn 7) -->
-                <div x-show="activeTab === 'password'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
-                    <div class="pb-5 border-b border-slate-100 mb-6">
-                        <h2 class="text-xl font-bold text-slate-800">Đổi mật khẩu tài khoản</h2>
-                        <p class="text-xs text-slate-400 mt-1 font-semibold">Để bảo mật tài khoản, vui lòng thiết lập mật khẩu có độ dài tối thiểu 6 ký tự.</p>
-                    </div>
-
-                    <form 
-                        action="{{ route('profile.password') }}"
-                        method="POST"
-                        class="max-w-md space-y-4"
-                    >
-                        @csrf
-                        <!-- Old Password -->
-                        <div class="space-y-1">
-                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu hiện tại</label>
-                            <div class="relative">
-                                <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input 
-                                    type="password" 
-                                    name="current_password"
-                                    required
-                                    placeholder="Nhập mật khẩu hiện tại..."
-                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                >
-                            </div>
-                            @error('current_password')
-                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- New Password -->
-                        <div class="space-y-1">
-                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu mới</label>
-                            <div class="relative">
-                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input 
-                                    type="password" 
-                                    name="new_password"
-                                    required
-                                    placeholder="Tối thiểu 8 ký tự..."
-                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                >
-                            </div>
-                            @error('new_password')
-                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="space-y-1">
-                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Xác nhận mật khẩu mới</label>
-                            <div class="relative">
-                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input 
-                                    type="password" 
-                                    name="new_password_confirmation"
-                                    required
-                                    placeholder="Nhập lại mật khẩu mới..."
-                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="pt-4 flex justify-end">
-                            <button 
-                                type="submit" 
-                                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
-                            >
-                                <span>Cập nhật mật khẩu</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
 
             </div>
             

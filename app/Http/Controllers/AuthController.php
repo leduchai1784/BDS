@@ -67,15 +67,7 @@ class AuthController extends Controller
             );
 
             // Always refresh token & info
-            $user->nks_token   = $nksToken;
-            $user->nks_user_id = (string) ($nksUser['id'] ?? '');
-            $user->name        = $localData['name'];
-            if (!empty($localData['phone'])) {
-                $user->phone = $localData['phone'];
-            }
-            if (!empty($localData['avatar'])) {
-                $user->avatar = $localData['avatar'];
-            }
+            $user->fill($localData);
             $user->save();
 
             // Check if account is locked
