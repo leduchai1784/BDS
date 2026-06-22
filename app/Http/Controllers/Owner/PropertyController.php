@@ -215,7 +215,7 @@ class PropertyController extends Controller
             'longitude' => $request->longitude,
             'phone' => $request->phone,
             'zalo' => $request->zalo,
-            'status' => 'pending', // Updates reset status to pending for re-approval
+            'status' => in_array($property->status, ['approved', 'rented']) ? $property->status : 'pending',
         ]);
 
         // Update main image if new one is uploaded or URL is provided
@@ -342,8 +342,8 @@ class PropertyController extends Controller
         abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền ẩn/hiện tin đăng này.');
 
         if ($property->status === 'rented') {
-            $property->update(['status' => 'pending']);
-            $msg = 'Đã hiện tin đăng! Tin của bạn đang chờ kiểm duyệt lại.';
+            $property->update(['status' => 'approved']);
+            $msg = 'Đã hiện tin đăng thành công!';
         } else {
             $property->update(['status' => 'rented']);
             $msg = 'Đã ẩn tin đăng thành công!';
