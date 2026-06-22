@@ -212,12 +212,20 @@ class ProfileController extends Controller
 
         $avatarData = $request->input('avatar');
 
-        // Handle Avatar upload locally
+        // Handle Avatar upload locally (will fail gracefully on read-only file systems)
         $avatarPath = $this->profileService->updateAvatar($user->id, $avatarData);
 
         // Sync to NKS if user has a token
         if ($user->nks_token) {
             $this->nksAuthService->updateAvatar($user->nks_token, $avatarData);
+
+            // Fetch the updated user profile from NKS and save the hosted avatar URL locally
+            $nksInfo = $this->nksAuthService->getUserInfo($user->nks_token);
+            if ($nksInfo['success'] && !empty($nksInfo['user']['avatar'])) {
+                $user->update([
+                    'avatar' => $nksInfo['user']['avatar']
+                ]);
+            }
         }
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'avatar'])->with('success', 'Ảnh đại diện đã được cập nhật thành công!');

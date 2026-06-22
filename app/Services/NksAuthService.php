@@ -164,6 +164,34 @@ class NksAuthService
     }
 
     /**
+     * Lấy thông tin chi tiết người dùng từ NKS.
+     */
+    public function getUserInfo(string $token): array
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->timeout(10)
+                ->post("{$this->baseUrl}", [
+                    'access_token' => $token
+                ]);
+
+            if ($response->successful()) {
+                $json = $response->json();
+                if (!empty($json['success']) && !empty($json['data'])) {
+                    return [
+                        'success' => true,
+                        'user'    => $json['data']
+                    ];
+                }
+            }
+            return ['success' => false];
+        } catch (\Exception $e) {
+            Log::warning('NKS getUserInfo failed: ' . $e->getMessage());
+            return ['success' => false];
+        }
+    }
+
+    /**
      * Map NKS user array sang data để tạo/cập nhật User local.
      */
     public function mapNksUserToLocal(array $nksUser, string $token): array

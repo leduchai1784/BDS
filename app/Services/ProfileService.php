@@ -97,19 +97,27 @@ class ProfileService
         }
 
         // Store new avatar in public/uploads/avatars directory
-        $filename = 'avatar_' . $userId . '_' . time() . '.' . $imageType;
-        $dir = public_path('uploads/avatars');
-        if (!file_exists($dir)) {
-            mkdir($dir, 0755, true);
-        }
-        
-        file_put_contents($dir . '/' . $filename, $decodedData);
-        $avatarPath = 'uploads/avatars/' . $filename;
+        $avatarPath = '';
+        try {
+            $filename = 'avatar_' . $userId . '_' . time() . '.' . $imageType;
+            $dir = public_path('uploads/avatars');
+            if (!file_exists($dir)) {
+                @mkdir($dir, 0755, true);
+            }
+            
+            if (@file_put_contents($dir . '/' . $filename, $decodedData) !== false) {
+                $avatarPath = 'uploads/avatars/' . $filename;
 
-        // Update database
-        $user->update([
-            'avatar' => $avatarPath
-        ]);
+                // Update database
+                $user->update([
+                    'avatar' => $avatarPath
+                ]);
+            } else {
+                \Log::warning("Local avatar write failed: file_put_contents returned false (possibly read-only filesystem).");
+            }
+        } catch (\Exception $e) {
+            \Log::warning("Local avatar save exception (possibly read-only filesystem): " . $e->getMessage());
+        }
 
         return $avatarPath;
     }
