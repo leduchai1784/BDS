@@ -183,12 +183,12 @@
             <div class="w-full">
                 <!-- If purpose is sale -->
                 <div x-show="activeModal === 'sale'">
-                    @include('owner.properties.create_form', ['purpose' => 'sale'])
+                    @include('owner.properties.create_form', ['purpose' => 'sale', 'isModal' => true])
                 </div>
                 
                 <!-- If purpose is rent -->
                 <div x-show="activeModal === 'rent'">
-                    @include('owner.properties.create_form', ['purpose' => 'rent'])
+                    @include('owner.properties.create_form', ['purpose' => 'rent', 'isModal' => true])
                 </div>
             </div>
         </div>

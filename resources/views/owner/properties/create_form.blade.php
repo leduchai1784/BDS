@@ -915,13 +915,22 @@
                                 this.map.setCenter([this.lng, this.lat]);
                             }
                         } else {
-                            // Fallback: strip the first part of the query (e.g. detailed street address) and try again
+                            // Smarter fallback: try stripping the first word of the first part (if it contains multiple words)
                             const parts = query.split(',');
-                            if (parts.length > 1) {
-                                parts.shift();
-                                const fallbackQuery = parts.join(',').trim();
-                                if (fallbackQuery.length >= 3) {
+                            if (parts.length > 0) {
+                                const firstPart = parts[0].trim();
+                                const words = firstPart.split(/\s+/);
+                                if (words.length > 1) {
+                                    words.shift();
+                                    parts[0] = words.join(' ');
+                                    const fallbackQuery = parts.join(',').trim();
                                     this.geocodeQuery(fallbackQuery);
+                                } else if (parts.length > 1) {
+                                    parts.shift();
+                                    const fallbackQuery = parts.join(',').trim();
+                                    if (fallbackQuery.length >= 3) {
+                                        this.geocodeQuery(fallbackQuery);
+                                    }
                                 }
                             }
                         }
