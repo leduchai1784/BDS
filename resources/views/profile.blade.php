@@ -335,6 +335,7 @@
                                 districtSearch: '{{ old('add_district', $user['add_district'] ?? '') }}',
                                 selectedWard: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
                                 wardSearch: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
+                                isEditing: {{ $errors->any() ? 'true' : 'false' }},
                                 init() {
                                     fetch('/vietnam_provinces.json')
                                         .then(res => res.json())
@@ -408,7 +409,8 @@
                                             name="name"
                                             value="{{ old('name', $user['name']) }}"
                                             required
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                     @error('name')
@@ -423,7 +425,8 @@
                                         <i class="fa-solid fa-venus-mars absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         <select 
                                             name="gender"
-                                            class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                             <option value="0" {{ old('gender', $user['gender']) == 0 ? 'selected' : '' }}>Nam</option>
                                             <option value="1" {{ old('gender', $user['gender']) == 1 ? 'selected' : '' }}>Nữ</option>
@@ -445,7 +448,8 @@
                                             type="tel" 
                                             name="phone"
                                             value="{{ old('phone', $user['phone']) }}"
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                     @error('phone')
@@ -466,7 +470,8 @@
                                             name="email"
                                             value="{{ old('email', $user['email']) }}"
                                             required
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                     @error('email')
@@ -502,7 +507,8 @@
                                             type="date" 
                                             name="dob"
                                             value="{{ $dobOld }}"
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                     @error('dob')
@@ -520,7 +526,8 @@
                                             name="pob"
                                             value="{{ old('pob', $user['pob']) }}"
                                             placeholder="Hà Nội..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                     @error('pob')
@@ -538,7 +545,8 @@
                                             name="website"
                                             value="{{ old('website', $user['website']) }}"
                                             placeholder="https://..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                     @error('website')
@@ -579,7 +587,8 @@
                                             x-model="provinceSearch"
                                             @focus="open = true; $el.select()"
                                             @input="open = true"
-                                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                         <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                                         
@@ -640,7 +649,7 @@
                                             x-model="districtSearch"
                                             @focus="open = true; $el.select()"
                                             @input="open = true"
-                                            :disabled="!selectedProvince"
+                                            :disabled="!isEditing || !selectedProvince"
                                             class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
                                         <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
@@ -699,7 +708,7 @@
                                             x-model="wardSearch"
                                             @focus="open = true; $el.select()"
                                             @input="open = true"
-                                            :disabled="!selectedDistrict"
+                                            :disabled="!isEditing || !selectedDistrict"
                                             class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
                                         <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
@@ -738,7 +747,8 @@
                                             name="add_street"
                                             value="{{ old('add_street', $user['add_street']) }}"
                                             placeholder="Số 10 Duy Tân..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            :disabled="!isEditing"
+                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                         >
                                     </div>
                                 </div>
@@ -752,14 +762,46 @@
                                     name="intro"
                                     rows="3"
                                     placeholder="Chia sẻ một chút về bản thân bạn..."
-                                    class="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    :disabled="!isEditing"
+                                    class="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
                                 >{{ old('intro', $user['intro']) }}</textarea>
                             </div>
 
                             <!-- Submit -->
-                            <div class="flex justify-end pt-4 border-t border-slate-100">
+                            <!-- Action Buttons -->
+                            <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-100">
+                                <!-- Chỉnh sửa -->
+                                <button 
+                                    type="button" 
+                                    x-show="!isEditing"
+                                    @click="isEditing = true"
+                                    class="inline-flex items-center justify-center px-6 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition cursor-pointer active:scale-98 min-w-[130px]"
+                                >
+                                    <i class="fa-solid fa-pen-to-square mr-2 text-xs"></i>Chỉnh sửa
+                                </button>
+
+                                <!-- Hủy bỏ -->
+                                <button 
+                                    type="button" 
+                                    x-show="isEditing"
+                                    @click="
+                                        isEditing = false;
+                                        // Reset fields to original values
+                                        provinceSearch = selectedProvince = '{{ old('add_province', $user['add_province'] ?? '') }}';
+                                        districtSearch = selectedDistrict = '{{ old('add_district', $user['add_district'] ?? '') }}';
+                                        wardSearch = selectedWard = '{{ old('add_ward', $user['add_ward'] ?? '') }}';
+                                        initializeDropdowns();
+                                        $el.form.reset();
+                                    "
+                                    class="inline-flex items-center justify-center px-6 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer active:scale-98 min-w-[100px]"
+                                >
+                                    Hủy
+                                </button>
+
+                                <!-- Lưu thay đổi -->
                                 <button 
                                     type="submit" 
+                                    x-show="isEditing"
                                     class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
                                 >
                                     Lưu thay đổi
