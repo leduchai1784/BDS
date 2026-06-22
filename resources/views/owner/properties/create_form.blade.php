@@ -281,28 +281,49 @@
         <!-- Grid: Tỉnh/Thành phố, Quận/Huyện, Phường/Xã, Địa chỉ chính xác -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Tỉnh/Thành phố -->
-            <div class="space-y-1">
+            <div class="space-y-1" x-data="{ open: false }" @click.outside="if(!provinces.find(p => p.Name.toLowerCase() === provinceSearch.toLowerCase())) { provinceSearch = selectedProvince; } open = false">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <select 
-                        x-model="selectedProvince"
-                        @change="
-                            cityText = selectedProvince;
-                            selectedDistrict = '';
-                            districtText = '';
-                            selectedWard = '';
-                            wardText = '';
-                            geocodeAddress();
-                        "
+                    <input 
+                        type="text" 
+                        placeholder="-- Chọn Tỉnh/Thành phố --"
+                        x-model="provinceSearch"
+                        @focus="open = true"
+                        @input="open = true"
                         required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition text-left"
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition text-left"
                     >
-                        <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                        <template x-for="p in provinces" :key="p.Id">
-                            <option :value="p.Name" x-text="p.Name"></option>
-                        </template>
-                    </select>
                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    
+                    <!-- Dropdown Panel -->
+                    <div 
+                        x-show="open" 
+                        class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
+                        x-cloak
+                    >
+                        <template x-for="p in provinces.filter(prov => !provinceSearch || prov.Name.toLowerCase().includes(provinceSearch.toLowerCase()))" :key="p.Id">
+                            <div 
+                                @click="
+                                    selectedProvince = p.Name;
+                                    provinceSearch = p.Name;
+                                    cityText = p.Name;
+                                    selectedDistrict = '';
+                                    districtSearch = '';
+                                    districtText = '';
+                                    selectedWard = '';
+                                    wardSearch = '';
+                                    wardText = '';
+                                    open = false;
+                                    geocodeAddress();
+                                "
+                                class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                                x-text="p.Name"
+                            ></div>
+                        </template>
+                        <div x-show="provinces.filter(prov => !provinceSearch || prov.Name.toLowerCase().includes(provinceSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                            Không tìm thấy kết quả
+                        </div>
+                    </div>
                 </div>
                 <input type="hidden" name="city" :value="cityText">
                 @error('city')
@@ -311,26 +332,47 @@
             </div>
 
             <!-- Quận/Huyện -->
-            <div class="space-y-1">
+            <div class="space-y-1" x-data="{ open: false }" @click.outside="if(!(provinces.find(p => p.Name === selectedProvince)?.Districts || []).find(d => d.Name.toLowerCase() === districtSearch.toLowerCase())) { districtSearch = selectedDistrict; } open = false">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <select 
-                        x-model="selectedDistrict"
-                        @change="
-                            districtText = selectedDistrict;
-                            selectedWard = '';
-                            wardText = '';
-                            geocodeAddress();
-                        "
+                    <input 
+                        type="text" 
+                        placeholder="-- Chọn Quận/Huyện --"
+                        x-model="districtSearch"
+                        @focus="open = true"
+                        @input="open = true"
+                        :disabled="!selectedProvince"
                         required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition text-left"
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition text-left disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        <option value="">-- Chọn Quận/Huyện --</option>
-                        <template x-for="d in (provinces.find(p => p.Name === selectedProvince)?.Districts || [])" :key="d.Id">
-                            <option :value="d.Name" x-text="d.Name"></option>
-                        </template>
-                    </select>
                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    
+                    <!-- Dropdown Panel -->
+                    <div 
+                        x-show="open" 
+                        class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
+                        x-cloak
+                    >
+                        <template x-for="d in (provinces.find(p => p.Name === selectedProvince)?.Districts || []).filter(dist => !districtSearch || dist.Name.toLowerCase().includes(districtSearch.toLowerCase()))" :key="d.Id">
+                            <div 
+                                @click="
+                                    selectedDistrict = d.Name;
+                                    districtSearch = d.Name;
+                                    districtText = d.Name;
+                                    selectedWard = '';
+                                    wardSearch = '';
+                                    wardText = '';
+                                    open = false;
+                                    geocodeAddress();
+                                "
+                                class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                                x-text="d.Name"
+                            ></div>
+                        </template>
+                        <div x-show="(provinces.find(p => p.Name === selectedProvince)?.Districts || []).filter(dist => !districtSearch || dist.Name.toLowerCase().includes(districtSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                            Không tìm thấy kết quả
+                        </div>
+                    </div>
                 </div>
                 <input type="hidden" name="district" :value="getDistrictCode(districtText)">
                 @error('district')
@@ -339,24 +381,44 @@
             </div>
 
             <!-- Phường/Xã -->
-            <div class="space-y-1">
+            <div class="space-y-1" x-data="{ open: false }" @click.outside="if(!(provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).find(w => w.Name.toLowerCase() === wardSearch.toLowerCase())) { wardSearch = selectedWard; } open = false">
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <select 
-                        x-model="selectedWard"
-                        @change="
-                            wardText = selectedWard;
-                            geocodeAddress();
-                        "
+                    <input 
+                        type="text" 
+                        placeholder="-- Chọn Phường/Xã --"
+                        x-model="wardSearch"
+                        @focus="open = true"
+                        @input="open = true"
+                        :disabled="!selectedDistrict"
                         required 
-                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none cursor-pointer transition text-left"
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition text-left disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        <option value="">-- Chọn Phường/Xã --</option>
-                        <template x-for="w in (provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || [])" :key="w.Id">
-                            <option :value="w.Name" x-text="w.Name"></option>
-                        </template>
-                    </select>
                     <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    
+                    <!-- Dropdown Panel -->
+                    <div 
+                        x-show="open" 
+                        class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
+                        x-cloak
+                    >
+                        <template x-for="w in (provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).filter(ward => !wardSearch || ward.Name.toLowerCase().includes(wardSearch.toLowerCase()))" :key="w.Id">
+                            <div 
+                                @click="
+                                    selectedWard = w.Name;
+                                    wardSearch = w.Name;
+                                    wardText = w.Name;
+                                    open = false;
+                                    geocodeAddress();
+                                "
+                                class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                                x-text="w.Name"
+                            ></div>
+                        </template>
+                        <div x-show="(provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).filter(ward => !wardSearch || ward.Name.toLowerCase().includes(wardSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                            Không tìm thấy kết quả
+                        </div>
+                    </div>
                 </div>
                 <input type="hidden" name="ward" :value="wardText">
                 @error('ward')
@@ -550,6 +612,9 @@
             wardText: '{{ old('ward') }}',
             districtText: '{{ old('district') }}',
             cityText: '{{ old('city', 'Thành phố Hà Nội') }}',
+            provinceSearch: '',
+            districtSearch: '',
+            wardSearch: '',
             provinces: [],
             selectedProvince: '',
             selectedDistrict: '',
