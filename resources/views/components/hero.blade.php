@@ -3,9 +3,9 @@
     <div class="absolute inset-0 z-0 overflow-hidden">
         <!-- Background Image with Dark Overlay -->
         <img 
-            src="{{ asset('images/hero_bg.png') }}" 
+            src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" 
             alt="Real estate banner" 
-            class="w-full h-full object-cover object-center opacity-40 transform scale-105"
+            class="w-full h-full object-cover object-center opacity-50 transform scale-105"
         >
         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-slate-950/40"></div>
 

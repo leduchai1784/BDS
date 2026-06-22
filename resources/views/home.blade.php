@@ -132,7 +132,7 @@
                 <!-- City 1 -->
                 <a href="/listings?province=Hà Nội" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
-                        <img src="{{ asset('images/hero_bg.png') }}" alt="Hà Nội" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
+                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" alt="Hà Nội" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                     </div>
                     <div class="relative z-10 text-left">
@@ -230,7 +230,7 @@
         <div class="relative rounded-3xl bg-slate-900 overflow-hidden shadow-xl py-12 px-6 sm:px-12 md:py-16 md:px-16 text-left border border-slate-800">
             <!-- Background effects -->
             <div class="absolute inset-0 opacity-10">
-                <img src="{{ asset('images/hero_bg.png') }}" alt="Landlord CTA" class="w-full h-full object-cover">
+                <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" alt="Landlord CTA" class="w-full h-full object-cover">
             </div>
             <div class="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-primary/30 blur-3xl"></div>
             <div class="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-primary/10 blur-3xl"></div>
