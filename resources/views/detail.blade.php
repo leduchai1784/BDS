@@ -158,10 +158,7 @@
                             <i class="fa-solid fa-file-contract text-base"></i>
                         </div>
                         <div>
-                            @php
-                                $isSaleLocal = $property['price_label'] && stripos($property['price_label'], 'tháng') === false;
-                            @endphp
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">{{ $isSaleLocal ? 'Pháp lý' : 'Đặt cọc & HĐ' }}</span>
+                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Pháp lý</span>
                             <span class="text-sm font-extrabold text-slate-800 truncate block max-w-[150px]" title="{{ $property['legal'] }}">{{ $property['legal'] }}</span>
                         </div>
                     </div>
