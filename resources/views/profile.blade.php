@@ -837,39 +837,23 @@
 
                             <!-- Input Fields Group -->
                             <div class="space-y-4 pt-2">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                                    <!-- Họ và tên -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <!-- Số CCCD -->
                                     <div class="space-y-1 text-left">
-                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên (trên CCCD)</label>
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số CCCD / CMND (12 số)</label>
                                         <div class="relative">
                                             <input 
                                                 type="text" 
-                                                name="name"
-                                                value="{{ old('name', $user['name']) }}"
+                                                name="id_number"
+                                                value="{{ old('id_number', $user['id_number']) }}"
                                                 required
-                                                placeholder="Ví dụ: LÊ ĐỨC HẢI"
-                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition uppercase"
+                                                placeholder="Ví dụ: 012345678901"
+                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                             >
                                         </div>
-                                        @error('name')
+                                        @error('id_number')
                                             <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                                         @enderror
-                                    </div>
-
-                                    <!-- Giới tính -->
-                                    <div class="space-y-1 text-left">
-                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới tính</label>
-                                        <div class="relative">
-                                            <select 
-                                                name="gender"
-                                                class="w-full pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer"
-                                            >
-                                                <option value="0" {{ old('gender', $user['gender']) == 0 ? 'selected' : '' }}>Nam</option>
-                                                <option value="1" {{ old('gender', $user['gender']) == 1 ? 'selected' : '' }}>Nữ</option>
-                                                <option value="2" {{ old('gender', $user['gender']) == 2 ? 'selected' : '' }}>Khác</option>
-                                            </select>
-                                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                                        </div>
                                     </div>
 
                                     <!-- Ngày sinh -->
@@ -892,25 +876,7 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                                    <!-- Số CCCD -->
-                                    <div class="space-y-1 text-left">
-                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số CCCD / CMND (12 số)</label>
-                                        <div class="relative">
-                                            <input 
-                                                type="text" 
-                                                name="id_number"
-                                                value="{{ old('id_number', $user['id_number']) }}"
-                                                required
-                                                placeholder="Ví dụ: 012345678901"
-                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                            >
-                                        </div>
-                                        @error('id_number')
-                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <!-- Ngày cấp -->
                                     <div class="space-y-1 text-left">
                                         <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày cấp</label>
@@ -989,24 +955,14 @@
                             </div>
 
                             <!-- CCCD Info Summary Card -->
-                            <div class="bg-slate-50/50 border border-slate-100 rounded-3xl p-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-center sm:text-left mt-6">
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-3xl p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center sm:text-left mt-6">
                                 <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Họ và tên</span>
-                                    <span class="text-xs font-black text-slate-800">{{ $user['name'] ?? 'Chưa cập nhật' }}</span>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Số CCCD đã lưu</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $user['id_number'] ?? 'Chưa cập nhật' }}</span>
                                 </div>
                                 <div>
                                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ngày sinh</span>
                                     <span class="text-xs font-black text-slate-800">{{ $user['dob'] ?? 'Chưa cập nhật' }}</span>
-                                </div>
-                                <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Giới tính</span>
-                                    <span class="text-xs font-black text-slate-800">
-                                        @if(($user['gender'] ?? 0) == 0) Nam @elseif(($user['gender'] ?? 0) == 1) Nữ @else Khác @endif
-                                    </span>
-                                </div>
-                                <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Số CCCD đã lưu</span>
-                                    <span class="text-xs font-black text-slate-800">{{ $user['id_number'] ?? 'Chưa cập nhật' }}</span>
                                 </div>
                                 <div>
                                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ngày cấp</span>
@@ -1020,7 +976,7 @@
                                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Quê quán (Nơi sinh)</span>
                                     <span class="text-xs font-black text-slate-800 truncate block" title="{{ $user['pob'] ?? 'Chưa cập nhật' }}">{{ $user['pob'] ?? 'Chưa cập nhật' }}</span>
                                 </div>
-                                <div class="col-span-2 md:col-span-4">
+                                <div class="col-span-2">
                                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nơi thường trú</span>
                                     <span class="text-xs font-black text-slate-800 truncate block" title="{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}">{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}</span>
                                 </div>
