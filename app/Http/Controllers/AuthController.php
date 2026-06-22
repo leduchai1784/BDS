@@ -52,22 +52,20 @@ class AuthController extends Controller
             // Map NKS data → local fields
             $localData = $this->nksAuthService->mapNksUserToLocal($nksUser, $nksToken);
 
-            // Find or create local user by email; set role = tenant on first create
+            // Preserve existing role; default to 'tenant' for new users
+            $existingUser = User::where('email', $nksUser['email'])->first();
+            $role = $existingUser ? $existingUser->role : 'tenant';
+
+            // Find or create local user by email
             $user = User::updateOrCreate(
                 ['email' => $nksUser['email']],
                 array_merge($localData, [
-                    // Only set role on creation; don't overwrite if already owner/admin
-                    'role'   => null,   // handled below
-                    'status' => 'active',
-                    // Provide a dummy password so local model is valid
+                    'role'     => $role,
+                    'status'   => 'active',
                     'password' => Hash::make($credentials['password']),
                 ])
             );
 
-            // Set role only if this is a newly created user (no role yet)
-            if (empty($user->role) || $user->wasRecentlyCreated) {
-                $user->role = 'tenant';
-            }
             // Always refresh token & info
             $user->nks_token   = $nksToken;
             $user->nks_user_id = (string) ($nksUser['id'] ?? '');
