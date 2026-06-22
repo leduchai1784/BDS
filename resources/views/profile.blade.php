@@ -529,38 +529,6 @@
                                 </div>
                             </div>
 
-                            <!-- Grid 5: Zalo Info -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <!-- Zalo ID -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Zalo ID</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-comments absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="zalo_id"
-                                            value="{{ old('zalo_id', $user['zalo_id']) }}"
-                                            placeholder="Zalo ID của bạn..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                        >
-                                    </div>
-                                </div>
-
-                                <!-- Zalo Key -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Zalo Key</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="zalo_key"
-                                            value="{{ old('zalo_key', $user['zalo_key']) }}"
-                                            placeholder="Zalo Key của bạn..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                        >
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Giới thiệu bản thân -->
                             <div class="space-y-1">

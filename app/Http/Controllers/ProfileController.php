@@ -149,8 +149,6 @@ class ProfileController extends Controller
             'add_ward' => 'nullable|string|max:100',
             'add_district' => 'nullable|string|max:100',
             'add_province' => 'nullable|string|max:100',
-            'zalo_id' => 'nullable|string|max:100',
-            'zalo_key' => 'nullable|string|max:100',
             'intro' => 'nullable|string|max:1000',
             'website' => 'nullable|string|max:255',
         ], [
@@ -173,7 +171,7 @@ class ProfileController extends Controller
 
         $updateData = $request->only([
             'name', 'phone', 'email', 'gender', 'dob', 'pob',
-            'add_street', 'add_ward', 'add_district', 'add_province', 'zalo_id', 'zalo_key', 'intro', 'website'
+            'add_street', 'add_ward', 'add_district', 'add_province', 'intro', 'website'
         ]);
         $updateData['firstname'] = $firstname;
         $updateData['lastname'] = $lastname;
