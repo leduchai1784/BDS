@@ -21,7 +21,7 @@ class NksAuthService
             $response = Http::withoutVerifying()
                 ->timeout(10)
                 ->post("{$this->baseUrl}/login", [
-                    'email'    => $email,
+                    'username' => $email,
                     'password' => $password,
                 ]);
 
