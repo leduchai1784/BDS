@@ -50,7 +50,15 @@ class ProfileService
             'id_number' => $data['id_number'] ?? null,
             'id_date' => $data['id_date'] ?? null,
             'id_place' => $data['id_place'] ?? null,
+            'permanent_address' => $data['permanent_address'] ?? null,
         ];
+
+        if (isset($data['name'])) $updateData['name'] = $data['name'];
+        if (isset($data['firstname'])) $updateData['firstname'] = $data['firstname'];
+        if (isset($data['lastname'])) $updateData['lastname'] = $data['lastname'];
+        if (isset($data['gender'])) $updateData['gender'] = $data['gender'];
+        if (isset($data['dob'])) $updateData['dob'] = $data['dob'];
+        if (isset($data['pob'])) $updateData['pob'] = $data['pob'];
 
         if (!empty($data['cccd_front'])) {
             $updateData['cccd_front'] = $data['cccd_front'];

@@ -755,14 +755,32 @@
                                     }
                                 }
                             }"
-                            class="space-y-6"
+                            class="space-y-6 text-left"
                         >
                             @csrf
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Xác thực CCCD / CMND</h2>
+                                <p class="text-xs text-slate-400 mt-1 font-semibold">Tải lên hình ảnh CCCD 2 mặt và cập nhật thông tin giấy tờ</p>
+                            </div>
+
+                            <!-- Yêu cầu hình ảnh alert -->
+                            <div class="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-start space-x-3 text-left">
+                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-black text-amber-800 mb-0.5">Yêu cầu hình ảnh:</h4>
+                                    <p class="text-[11px] text-amber-700 font-semibold leading-relaxed">
+                                        Ảnh chụp rõ nét, không bị lóa sáng, không mất góc và không bị che khuất các thông tin cá nhân quan trọng.
+                                    </p>
+                                </div>
+                            </div>
+
                             <!-- CCCD Front / Back Images Upload -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <!-- Mặt trước -->
-                                <div class="space-y-2">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt trước CCCD</label>
+                                <div class="space-y-2 text-left">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt trước CCCD</label>
                                     <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
                                         <template x-if="cccdFrontUrl">
                                             <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
@@ -773,9 +791,12 @@
                                             </div>
                                         </template>
                                         <template x-if="!cccdFrontUrl">
-                                            <div class="text-center py-6">
-                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
-                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt trước CCCD</p>
+                                            <div class="text-center py-6 flex flex-col items-center justify-center">
+                                                <div class="w-12 h-12 bg-blue-50 text-primary flex items-center justify-center rounded-full mb-3">
+                                                    <i class="fa-solid fa-camera text-lg"></i>
+                                                </div>
+                                                <p class="text-xs font-bold text-slate-700">Chọn ảnh mặt trước</p>
+                                                <p class="text-[10px] text-slate-400 mt-1">Nhấp để tải lên</p>
                                             </div>
                                         </template>
                                         <input type="file" name="cccd_front" accept="image/*" @change="previewFront($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -786,8 +807,8 @@
                                 </div>
 
                                 <!-- Mặt sau -->
-                                <div class="space-y-2">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt sau CCCD</label>
+                                <div class="space-y-2 text-left">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt sau CCCD</label>
                                     <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
                                         <template x-if="cccdBackUrl">
                                             <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
@@ -798,9 +819,12 @@
                                             </div>
                                         </template>
                                         <template x-if="!cccdBackUrl">
-                                            <div class="text-center py-6">
-                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
-                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt sau CCCD</p>
+                                            <div class="text-center py-6 flex flex-col items-center justify-center">
+                                                <div class="w-12 h-12 bg-blue-50 text-primary flex items-center justify-center rounded-full mb-3">
+                                                    <i class="fa-solid fa-camera text-lg"></i>
+                                                </div>
+                                                <p class="text-xs font-bold text-slate-700">Chọn ảnh mặt sau</p>
+                                                <p class="text-[10px] text-slate-400 mt-1">Nhấp để tải lên</p>
                                             </div>
                                         </template>
                                         <input type="file" name="cccd_back" accept="image/*" @change="previewBack($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -811,62 +835,194 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                                <!-- Số CCCD -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số CCCD / CMND</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-address-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="id_number"
-                                            value="{{ old('id_number', $user['id_number']) }}"
-                                            required
-                                            placeholder="Nhập 12 số CCCD..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                        >
+                            <!-- Input Fields Group -->
+                            <div class="space-y-4 pt-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                    <!-- Họ và tên -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên (trên CCCD)</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="name"
+                                                value="{{ old('name', $user['name']) }}"
+                                                required
+                                                placeholder="Ví dụ: LÊ ĐỨC HẢI"
+                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition uppercase"
+                                            >
+                                        </div>
+                                        @error('name')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                    @error('id_number')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
+
+                                    <!-- Giới tính -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới tính</label>
+                                        <div class="relative">
+                                            <select 
+                                                name="gender"
+                                                class="w-full pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer"
+                                            >
+                                                <option value="0" {{ old('gender', $user['gender']) == 0 ? 'selected' : '' }}>Nam</option>
+                                                <option value="1" {{ old('gender', $user['gender']) == 1 ? 'selected' : '' }}>Nữ</option>
+                                                <option value="2" {{ old('gender', $user['gender']) == 2 ? 'selected' : '' }}>Khác</option>
+                                            </select>
+                                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ngày sinh -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="dob"
+                                                value="{{ old('dob', $user['dob']) }}"
+                                                required
+                                                placeholder="dd/mm/yyyy"
+                                                class="w-full pr-10 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            >
+                                            <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        </div>
+                                        @error('dob')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
 
-                                <!-- Ngày cấp -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày cấp</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-calendar-day absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="id_date"
-                                            value="{{ old('id_date', $user['id_date']) }}"
-                                            required
-                                            placeholder="dd/mm/yyyy..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                        >
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                    <!-- Số CCCD -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số CCCD / CMND (12 số)</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="id_number"
+                                                value="{{ old('id_number', $user['id_number']) }}"
+                                                required
+                                                placeholder="Ví dụ: 012345678901"
+                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            >
+                                        </div>
+                                        @error('id_number')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                    @error('id_date')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
+
+                                    <!-- Ngày cấp -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày cấp</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="id_date"
+                                                value="{{ old('id_date', $user['id_date']) }}"
+                                                required
+                                                placeholder="dd/mm/yyyy"
+                                                class="w-full pr-10 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            >
+                                            <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        </div>
+                                        @error('id_date')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Nơi cấp -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi cấp</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="id_place"
+                                                value="{{ old('id_place', $user['id_place']) }}"
+                                                required
+                                                placeholder="Ví dụ: Cục Cảnh sát QLHC về TTXH"
+                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            >
+                                        </div>
+                                        @error('id_place')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
 
-                                <!-- Nơi cấp -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi cấp</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="id_place"
-                                            value="{{ old('id_place', $user['id_place']) }}"
-                                            required
-                                            placeholder="Cục CSQLHC về trật tự xã hội..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                        >
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <!-- Quê quán -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quê quán (Nơi sinh)</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="pob"
+                                                value="{{ old('pob', $user['pob']) }}"
+                                                required
+                                                placeholder="Ví dụ: Ba Đình, Hà Nội"
+                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            >
+                                        </div>
+                                        @error('pob')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                    @error('id_place')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
+
+                                    <!-- Nơi thường trú -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi thường trú</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                name="permanent_address"
+                                                value="{{ old('permanent_address', $user['permanent_address']) }}"
+                                                required
+                                                placeholder="Ví dụ: 123 Nguyễn Huệ, Quận 1, TP.HCM"
+                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            >
+                                        </div>
+                                        @error('permanent_address')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CCCD Info Summary Card -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-3xl p-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-center sm:text-left mt-6">
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Họ và tên</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $user['name'] ?? 'Chưa cập nhật' }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ngày sinh</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $user['dob'] ?? 'Chưa cập nhật' }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Giới tính</span>
+                                    <span class="text-xs font-black text-slate-800">
+                                        @if(($user['gender'] ?? 0) == 0) Nam @elseif(($user['gender'] ?? 0) == 1) Nữ @else Khác @endif
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Số CCCD đã lưu</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $user['id_number'] ?? 'Chưa cập nhật' }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ngày cấp</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $user['id_date'] ?? 'Chưa cập nhật' }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nơi cấp</span>
+                                    <span class="text-xs font-black text-slate-800">{{ $user['id_place'] ?? 'Chưa cập nhật' }}</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Quê quán (Nơi sinh)</span>
+                                    <span class="text-xs font-black text-slate-800 truncate block" title="{{ $user['pob'] ?? 'Chưa cập nhật' }}">{{ $user['pob'] ?? 'Chưa cập nhật' }}</span>
+                                </div>
+                                <div class="col-span-2 md:col-span-4">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nơi thường trú</span>
+                                    <span class="text-xs font-black text-slate-800 truncate block" title="{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}">{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}</span>
                                 </div>
                             </div>
 

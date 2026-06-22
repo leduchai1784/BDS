@@ -169,7 +169,7 @@ class AuthenticationTest extends TestCase
             'phone' => '0988888888',
         ]);
 
-        $response->assertRedirect('/profile');
+        $response->assertRedirect('/profile?tab=profile&subtab=info');
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('users', [
@@ -199,7 +199,7 @@ class AuthenticationTest extends TestCase
             'new_password_confirmation' => 'newpassword123',
         ]);
 
-        $response->assertRedirect('/profile');
+        $response->assertRedirect('/profile?tab=profile&subtab=password');
         $response->assertSessionHas('success');
 
         $user->refresh();

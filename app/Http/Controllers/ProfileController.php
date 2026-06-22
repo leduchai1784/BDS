@@ -57,6 +57,7 @@ class ProfileController extends Controller
             'add_ward'     => $user->add_ward,
             'add_district' => $user->add_district,
             'add_province' => $user->add_province,
+            'permanent_address' => $user->permanent_address,
             'zalo_id'      => $user->zalo_id,
             'zalo_key'     => $user->zalo_key,
             'intro'        => $user->intro,
@@ -212,15 +213,24 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
+            'name' => 'required|string|max:255',
+            'gender' => 'required|integer|in:0,1,2',
+            'dob' => 'required|string|max:50',
+            'pob' => 'required|string|max:255',
             'id_number' => 'required|string|max:50',
             'id_date' => 'required|string|max:50',
             'id_place' => 'required|string|max:255',
+            'permanent_address' => 'required|string|max:255',
             'cccd_front' => 'nullable|image|mimes:jpeg,png,jpg|max:3072',
             'cccd_back' => 'nullable|image|mimes:jpeg,png,jpg|max:3072',
         ], [
+            'name.required' => 'Họ và tên không được để trống.',
+            'dob.required' => 'Ngày sinh không được để trống.',
+            'pob.required' => 'Quê quán không được để trống.',
             'id_number.required' => 'Số CCCD không được để trống.',
             'id_date.required' => 'Ngày cấp không được để trống.',
             'id_place.required' => 'Nơi cấp không được để trống.',
+            'permanent_address.required' => 'Nơi thường trú không được để trống.',
             'cccd_front.image' => 'Mặt trước CCCD phải là định dạng hình ảnh.',
             'cccd_front.mimes' => 'Hỗ trợ các định dạng ảnh: jpeg, png, jpg.',
             'cccd_front.max' => 'Dung lượng ảnh mặt trước tối đa là 3MB.',
@@ -247,10 +257,28 @@ class ProfileController extends Controller
             $cccdBackPath = 'uploads/cccd/' . $filename;
         }
 
+        // Split name into firstname and lastname
+        $fullName = trim($request->name);
+        $parts = explode(' ', $fullName);
+        if (count($parts) > 1) {
+            $lastname = array_pop($parts);
+            $firstname = implode(' ', $parts);
+        } else {
+            $firstname = '';
+            $lastname = $fullName;
+        }
+
         $localData = [
+            'name' => $fullName,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'gender' => $request->gender,
+            'dob' => $request->dob,
+            'pob' => $request->pob,
             'id_number' => $request->id_number,
             'id_date' => $request->id_date,
             'id_place' => $request->id_place,
+            'permanent_address' => $request->permanent_address,
         ];
 
         if ($cccdFrontPath) {
@@ -266,9 +294,16 @@ class ProfileController extends Controller
         // Sync to NKS if user has a token
         if ($user->nks_token) {
             $nksData = [
+                'name' => $fullName,
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'gender' => $request->gender,
+                'dob' => $request->dob,
+                'pob' => $request->pob,
                 'id_number' => $request->id_number,
                 'id_date' => $request->id_date,
                 'id_place' => $request->id_place,
+                'permanent_address' => $request->permanent_address,
             ];
             
             if ($request->hasFile('cccd_front')) {

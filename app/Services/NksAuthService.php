@@ -167,6 +167,7 @@ class NksAuthService
             'add_ward'     => $nksUser['add_ward'] ?? null,
             'add_district' => $nksUser['add_district'] ?? null,
             'add_province' => $nksUser['add_province'] ?? null,
+            'permanent_address' => $nksUser['permanent_address'] ?? null,
             'zalo_id'      => $nksUser['zalo_id'] ?? null,
             'zalo_key'     => $nksUser['zalo_key'] ?? null,
             'intro'        => $nksUser['intro'] ?? null,
