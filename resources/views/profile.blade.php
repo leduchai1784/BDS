@@ -758,6 +758,59 @@
                             class="space-y-6"
                         >
                             @csrf
+                            <!-- CCCD Front / Back Images Upload -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <!-- Mặt trước -->
+                                <div class="space-y-2">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt trước CCCD</label>
+                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
+                                        <template x-if="cccdFrontUrl">
+                                            <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
+                                                <img :src="cccdFrontUrl" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                                                    <span class="text-white text-xs font-bold"><i class="fa-solid fa-camera mr-1"></i> Thay đổi</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!cccdFrontUrl">
+                                            <div class="text-center py-6">
+                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
+                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt trước CCCD</p>
+                                            </div>
+                                        </template>
+                                        <input type="file" name="cccd_front" accept="image/*" @change="previewFront($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    </div>
+                                    @error('cccd_front')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Mặt sau -->
+                                <div class="space-y-2">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt sau CCCD</label>
+                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
+                                        <template x-if="cccdBackUrl">
+                                            <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
+                                                <img :src="cccdBackUrl" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                                                    <span class="text-white text-xs font-bold"><i class="fa-solid fa-camera mr-1"></i> Thay đổi</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!cccdBackUrl">
+                                            <div class="text-center py-6">
+                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
+                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt sau CCCD</p>
+                                            </div>
+                                        </template>
+                                        <input type="file" name="cccd_back" accept="image/*" @change="previewBack($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    </div>
+                                    @error('cccd_back')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                 <!-- Số CCCD -->
                                 <div class="space-y-1">
@@ -812,59 +865,6 @@
                                         >
                                     </div>
                                     @error('id_place')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- CCCD Front / Back Images Upload -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <!-- Mặt trước -->
-                                <div class="space-y-2">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt trước CCCD</label>
-                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
-                                        <template x-if="cccdFrontUrl">
-                                            <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
-                                                <img :src="cccdFrontUrl" class="w-full h-full object-cover">
-                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                                                    <span class="text-white text-xs font-bold"><i class="fa-solid fa-camera mr-1"></i> Thay đổi</span>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        <template x-if="!cccdFrontUrl">
-                                            <div class="text-center py-6">
-                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
-                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt trước CCCD</p>
-                                            </div>
-                                        </template>
-                                        <input type="file" name="cccd_front" accept="image/*" @change="previewFront($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                    </div>
-                                    @error('cccd_front')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Mặt sau -->
-                                <div class="space-y-2">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh mặt sau CCCD</label>
-                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
-                                        <template x-if="cccdBackUrl">
-                                            <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
-                                                <img :src="cccdBackUrl" class="w-full h-full object-cover">
-                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                                                    <span class="text-white text-xs font-bold"><i class="fa-solid fa-camera mr-1"></i> Thay đổi</span>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        <template x-if="!cccdBackUrl">
-                                            <div class="text-center py-6">
-                                                <i class="fa-solid fa-id-card text-slate-300 text-3xl mb-2"></i>
-                                                <p class="text-[11px] text-slate-400 font-semibold">Tải lên mặt sau CCCD</p>
-                                            </div>
-                                        </template>
-                                        <input type="file" name="cccd_back" accept="image/*" @change="previewBack($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                    </div>
-                                    @error('cccd_back')
                                         <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                                     @enderror
                                 </div>
