@@ -625,7 +625,7 @@
             marker: null,
 
             init() {
-                fetch('{{ asset('vietnam_provinces.json') }}')
+                fetch('/vietnam_provinces.json')
                     .then(res => res.json())
                     .then(data => {
                         this.provinces = data;
