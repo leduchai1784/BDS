@@ -1691,6 +1691,18 @@
         overflow: hidden;
         border-radius: 50%;
     }
+    /* Fix legibility of Cancel button when hovered */
+    #cancel-crop-btn {
+        color: #e11d48 !important;
+        border-color: #fecdd3 !important;
+        background-color: #ffffff !important;
+        transition: all 0.2s ease-in-out;
+    }
+    #cancel-crop-btn:hover {
+        color: #ffffff !important;
+        background-color: #e11d48 !important;
+        border-color: #e11d48 !important;
+    }
 </style>
 
 <script>
