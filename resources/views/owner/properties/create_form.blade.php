@@ -488,7 +488,7 @@
                 <input 
                     type="text" 
                     name="phone" 
-                    value="{{ old('phone', Auth::user()->phone) }}"
+                    value="{{ old('phone', Auth::user()?->phone) }}"
                     required 
                     placeholder="Ví dụ: 0987654321" 
                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
