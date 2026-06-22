@@ -144,7 +144,7 @@
                 <!-- City 2 -->
                 <a href="/listings?province=Thành phố Hồ Chí Minh" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
-                        <img src="{{ asset('images/apartment_2.png') }}" alt="TP. Hồ Chí Minh" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
+                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg" alt="TP. Hồ Chí Minh" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                     </div>
                     <div class="relative z-10 text-left">
@@ -156,7 +156,7 @@
                 <!-- City 3 -->
                 <a href="/listings?province=Đà Nẵng" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
-                        <img src="{{ asset('images/house_2.png') }}" alt="Đà Nẵng" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
+                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg" alt="Đà Nẵng" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                     </div>
                     <div class="relative z-10 text-left">
@@ -168,7 +168,7 @@
                 <!-- City 4 -->
                 <a href="/listings?province=Bình Dương" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
                     <div class="absolute inset-0">
-                        <img src="{{ asset('images/house_1.png') }}" alt="Bình Dương" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
+                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/mvt1mwpuj5vo4qm538rb.jpg" alt="Bình Dương" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                     </div>
                     <div class="relative z-10 text-left">
