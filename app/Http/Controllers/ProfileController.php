@@ -204,20 +204,20 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'avatar' => 'required|string'
         ], [
             'avatar.required' => 'Vui lòng chọn ảnh đại diện.',
-            'avatar.image' => 'Ảnh đại diện phải là định dạng hình ảnh.',
-            'avatar.mimes' => 'Hỗ trợ các định dạng ảnh: jpeg, png, jpg, gif.',
-            'avatar.max' => 'Dung lượng ảnh tối đa là 2MB.'
+            'avatar.string' => 'Dữ liệu ảnh đại diện không hợp lệ.'
         ]);
 
+        $avatarData = $request->input('avatar');
+
         // Handle Avatar upload locally
-        $avatarPath = $this->profileService->updateAvatar($user->id, $request->file('avatar'));
+        $avatarPath = $this->profileService->updateAvatar($user->id, $avatarData);
 
         // Sync to NKS if user has a token
         if ($user->nks_token) {
-            $this->nksAuthService->updateAvatar($user->nks_token, $request->file('avatar'));
+            $this->nksAuthService->updateAvatar($user->nks_token, $avatarData);
         }
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'avatar'])->with('success', 'Ảnh đại diện đã được cập nhật thành công!');

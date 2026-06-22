@@ -75,7 +75,7 @@ class ProfileService
     /**
      * Upload and update user avatar.
      */
-    public function updateAvatar(int $userId, UploadedFile $file): string
+    public function updateAvatar(int $userId, string $base64Data): string
     {
         $user = User::findOrFail($userId);
 
@@ -87,9 +87,23 @@ class ProfileService
             }
         }
 
+        // Decode base64
+        if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $base64Data, $matches)) {
+            $imageType = $matches[1];
+            $decodedData = base64_decode($matches[2]);
+        } else {
+            $imageType = 'jpg';
+            $decodedData = base64_decode($base64Data);
+        }
+
         // Store new avatar in public/uploads/avatars directory
-        $filename = 'avatar_' . $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads/avatars'), $filename);
+        $filename = 'avatar_' . $userId . '_' . time() . '.' . $imageType;
+        $dir = public_path('uploads/avatars');
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        
+        file_put_contents($dir . '/' . $filename, $decodedData);
         $avatarPath = 'uploads/avatars/' . $filename;
 
         // Update database

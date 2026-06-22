@@ -83,13 +83,13 @@ class NksAuthService
     /**
      * Cập nhật avatar lên NKS.
      */
-    public function updateAvatar(string $token, UploadedFile $file): array
+    public function updateAvatar(string $token, string $base64Data): array
     {
         try {
             $response = Http::withoutVerifying()
                 ->timeout(15)
-                ->attach('avatar', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
                 ->post("{$this->baseUrl}/updateAvatar", [
+                    'avatar' => $base64Data,
                     'access_token' => $token
                 ]);
 

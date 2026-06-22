@@ -883,40 +883,112 @@
                     <!-- Sub-tab 3: Avatar -->
                     <div x-show="activeSubTab === 'avatar'" class="space-y-6" x-cloak>
                         <form 
+                            id="avatar-form"
                             action="{{ route('profile.avatar') }}"
                             method="POST"
-                            enctype="multipart/form-data"
                             x-data="{ 
-                                avatarUrl: '{{ $user['avatar'] }}',
-                                previewAvatar(event) {
-                                    const file = event.target.files[0];
-                                    if (file) {
-                                        this.avatarUrl = URL.createObjectURL(file);
-                                    }
-                                }
+                                hasImage: false
                             }"
                             class="space-y-6"
                         >
                             @csrf
-                            <div class="flex flex-col items-center space-y-4 py-8 bg-slate-50 rounded-3xl border border-slate-100">
-                                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-slate-200">
-                                    <img :src="avatarUrl" alt="Avatar preview" class="w-full h-full object-cover">
+                            <!-- Hidden input to hold the cropped base64 image data -->
+                            <input type="hidden" name="avatar" id="cropped-avatar-input">
+
+                            <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-8 bg-slate-50 rounded-3xl border border-slate-100 px-6">
+                                <!-- Left side: Interactive Area (original avatar or Cropper container) -->
+                                <div class="flex flex-col items-center space-y-4 w-full max-w-sm">
+                                    <!-- Current Avatar view (shows when no new image selected) -->
+                                    <div x-show="!hasImage" class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-slate-200 relative group">
+                                        <img src="{{ $user['avatar'] }}" alt="Avatar preview" class="w-full h-full object-cover">
+                                    </div>
+
+                                    <!-- Cropper container (shows when a new image is selected) -->
+                                    <div x-show="hasImage" class="w-full bg-slate-100 rounded-2xl overflow-hidden border border-slate-200" style="display: none;">
+                                        <div class="avatar-crop-container flex justify-center items-center overflow-hidden h-64">
+                                            <img id="cropper-image" src="" alt="Source image for cropping" class="max-w-full max-h-full">
+                                        </div>
+                                    </div>
+
+                                    <!-- Action button for choosing files -->
+                                    <div class="text-center space-y-2">
+                                        <h4 class="text-sm font-bold text-slate-800">Ảnh đại diện tài khoản</h4>
+                                        <p class="text-xs text-slate-400 max-w-xs leading-normal">Hỗ trợ định dạng JPG, PNG dung lượng dưới 5MB.</p>
+                                        
+                                        <div class="flex flex-wrap justify-center gap-3">
+                                            <!-- Select Image Button -->
+                                            <label class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 hover:border-primary text-xs font-bold rounded-xl text-slate-700 hover:text-white bg-white hover:bg-primary shadow-sm transition cursor-pointer">
+                                                <i class="fa-solid fa-camera mr-2 text-xs"></i> Chọn ảnh mới
+                                                <input type="file" id="avatar-file-input" accept="image/*" class="hidden">
+                                            </label>
+
+                                            <!-- Cancel/Reset Selection Button -->
+                                            <button 
+                                                type="button" 
+                                                x-show="hasImage" 
+                                                style="display: none;"
+                                                id="cancel-crop-btn"
+                                                class="inline-flex items-center justify-center px-4 py-2 border border-rose-200 hover:border-rose-500 text-xs font-bold rounded-xl text-rose-600 hover:text-white bg-white hover:bg-rose-500 shadow-sm transition cursor-pointer"
+                                            >
+                                                Hủy chọn
+                                            </button>
+                                        </div>
+
+                                        @error('avatar')
+                                            <p class="text-red-500 text-[10px] font-bold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                 </div>
-                                <div class="text-center space-y-2">
-                                    <h4 class="text-sm font-bold text-slate-800">Ảnh đại diện tài khoản</h4>
-                                    <p class="text-xs text-slate-400 max-w-xs leading-normal">Hỗ trợ định dạng JPG, PNG dung lượng dưới 2MB.</p>
-                                    <label class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 hover:border-primary text-xs font-bold rounded-xl text-slate-700 hover:text-white bg-white hover:bg-primary shadow-sm transition cursor-pointer">
-                                        <i class="fa-solid fa-camera mr-2 text-xs"></i> Chọn ảnh mới
-                                        <input type="file" name="avatar" accept="image/*" @change="previewAvatar($event)" class="hidden">
-                                    </label>
-                                    @error('avatar')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
+
+                                <!-- Right side: Cropper Controls & Cropped Preview (only shows when image is loaded) -->
+                                <div x-show="hasImage" class="flex flex-col items-center space-y-6 w-full max-w-xs border-t md:border-t-0 md:border-l border-slate-200/80 pt-6 md:pt-0 md:pl-8" style="display: none;">
+                                    <!-- Cropped Preview Circle -->
+                                    <div class="flex flex-col items-center space-y-2">
+                                        <span class="text-xs font-bold text-slate-500">Xem trước kết quả</span>
+                                        <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-md bg-slate-100">
+                                            <!-- Preview element container for Cropper.js -->
+                                            <div class="img-preview w-full h-full overflow-hidden rounded-full"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Navigation & Crop Controls -->
+                                    <div class="flex flex-col space-y-3 w-full">
+                                        <span class="text-xs font-bold text-slate-500 text-center">Công cụ thu phóng & xoay</span>
+                                        
+                                        <!-- Zoom & Pan Slider / Buttons -->
+                                        <div class="flex justify-center gap-2">
+                                            <!-- Zoom In -->
+                                            <button type="button" id="btn-zoom-in" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-650 flex items-center justify-center transition border border-slate-200 shadow-sm" title="Phóng to">
+                                                <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+                                            </button>
+                                            
+                                            <!-- Zoom Out -->
+                                            <button type="button" id="btn-zoom-out" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-650 flex items-center justify-center transition border border-slate-200 shadow-sm" title="Thu nhỏ">
+                                                <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
+                                            </button>
+
+                                            <!-- Rotate Left -->
+                                            <button type="button" id="btn-rotate-left" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-650 flex items-center justify-center transition border border-slate-200 shadow-sm" title="Xoay trái">
+                                                <i class="fa-solid fa-rotate-left text-sm"></i>
+                                            </button>
+
+                                            <!-- Rotate Right -->
+                                            <button type="button" id="btn-rotate-right" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-650 flex items-center justify-center transition border border-slate-200 shadow-sm" title="Xoay phải">
+                                                <i class="fa-solid fa-rotate-right text-sm"></i>
+                                            </button>
+
+                                            <!-- Reset -->
+                                            <button type="button" id="btn-reset" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-650 flex items-center justify-center transition border border-slate-200 shadow-sm" title="Đặt lại">
+                                                <i class="fa-solid fa-arrows-rotate text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            
                             <div class="flex justify-end pt-4 border-t border-slate-100">
-                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
-                                    Lưu ảnh đại diện
+                                <button type="submit" id="save-avatar-btn" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                    <i class="fa-solid fa-floppy-disk mr-2"></i> Lưu ảnh đại diện
                                 </button>
                             </div>
                         </form>
@@ -1589,3 +1661,183 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<!-- Cropper.js CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<style>
+    .avatar-crop-container {
+        max-width: 100%;
+        max-height: 280px;
+        background-color: #f8fafc;
+        position: relative;
+    }
+    /* Make the crop box circular */
+    .cropper-view-box,
+    .cropper-face {
+        border-radius: 50%;
+        outline: initial;
+        border: 3px solid #3b82f6;
+    }
+    .cropper-line, .cropper-point {
+        display: none !important;
+    }
+    /* Style the preview circular image */
+    .img-preview {
+        width: 112px;
+        height: 112px;
+        overflow: hidden;
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const avatarFileInput = document.getElementById('avatar-file-input');
+    const cropperImage = document.getElementById('cropper-image');
+    const cancelCropBtn = document.getElementById('cancel-crop-btn');
+    const avatarForm = document.getElementById('avatar-form');
+    const croppedAvatarInput = document.getElementById('cropped-avatar-input');
+
+    let cropper = null;
+
+    // Controls
+    const btnZoomIn = document.getElementById('btn-zoom-in');
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    const btnRotateLeft = document.getElementById('btn-rotate-left');
+    const btnRotateRight = document.getElementById('btn-rotate-right');
+    const btnReset = document.getElementById('btn-reset');
+
+    avatarFileInput.addEventListener('change', function (e) {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            
+            // Validate size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhỏ hơn.');
+                avatarFileInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                cropperImage.src = event.target.result;
+                
+                // Show Cropper & controls in Alpine
+                const formEl = document.getElementById('avatar-form');
+                if (formEl) {
+                    if (formEl.__x) {
+                        formEl.__x.$data.hasImage = true;
+                    } else if (window.Alpine) {
+                        const alpineData = Alpine.$data(formEl);
+                        if (alpineData) {
+                            alpineData.hasImage = true;
+                        }
+                    }
+                }
+                
+                // Safe DOM fallbacks
+                document.querySelectorAll('[x-show="hasImage"]').forEach(el => {
+                    el.style.display = 'block';
+                });
+                document.querySelectorAll('[x-show="!hasImage"]').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                // Initialize Cropper
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    cropBoxMovable: false,
+                    cropBoxResizable: false,
+                    toggleDragModeOnDblclick: false,
+                    preview: '.img-preview',
+                    ready() {
+                        // Cropper is loaded
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    if (btnZoomIn) {
+        btnZoomIn.addEventListener('click', () => cropper && cropper.zoom(0.1));
+    }
+    if (btnZoomOut) {
+        btnZoomOut.addEventListener('click', () => cropper && cropper.zoom(-0.1));
+    }
+    if (btnRotateLeft) {
+        btnRotateLeft.addEventListener('click', () => cropper && cropper.rotate(-90));
+    }
+    if (btnRotateRight) {
+        btnRotateRight.addEventListener('click', () => cropper && cropper.rotate(90));
+    }
+    if (btnReset) {
+        btnReset.addEventListener('click', () => cropper && cropper.reset());
+    }
+
+    if (cancelCropBtn) {
+        cancelCropBtn.addEventListener('click', function () {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            avatarFileInput.value = '';
+            cropperImage.src = '';
+            
+            const formEl = document.getElementById('avatar-form');
+            if (formEl) {
+                if (formEl.__x) {
+                    formEl.__x.$data.hasImage = false;
+                } else if (window.Alpine) {
+                    const alpineData = Alpine.$data(formEl);
+                    if (alpineData) {
+                        alpineData.hasImage = false;
+                    }
+                }
+            }
+            
+            document.querySelectorAll('[x-show="hasImage"]').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('[x-show="!hasImage"]').forEach(el => {
+                el.style.display = 'block';
+            });
+        });
+    }
+
+    avatarForm.addEventListener('submit', function (e) {
+        if (cropper) {
+            e.preventDefault();
+            
+            const canvas = cropper.getCroppedCanvas({
+                width: 400,
+                height: 400,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+            
+            if (canvas) {
+                const base64Data = canvas.toDataURL('image/jpeg', 0.9);
+                croppedAvatarInput.value = base64Data;
+                avatarForm.submit();
+            } else {
+                alert('Có lỗi xảy ra khi xử lý ảnh đại diện.');
+            }
+        } else {
+            e.preventDefault();
+            alert('Vui lòng chọn ảnh đại diện trước khi lưu.');
+        }
+    });
+});
+</script>
+@endpush
