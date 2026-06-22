@@ -836,7 +836,8 @@ class PropertyService
             'agent' => [
                 'name' => $agentName,
                 'phone' => $agentPhone,
-                'avatar' => $agentAvatar
+                'avatar' => $agentAvatar,
+                'zalo' => null
             ],
             'created_at' => 'Vừa cập nhật',
             'description' => $description
@@ -1362,6 +1363,10 @@ class PropertyService
             'bedrooms' => $property->bedroom,
             'bathrooms' => $property->bathroom,
             'floors' => $property->floors,
+            'frontage' => $property->frontage,
+            'road_width' => $property->road_width,
+            'deposit' => $property->deposit,
+            'lease_term' => $property->lease_term,
             'location' => $property->address,
             'district' => $property->district,
             'lat' => $property->latitude,
@@ -1376,7 +1381,8 @@ class PropertyService
             'agent' => [
                 'name' => $agentName,
                 'phone' => $agentPhone,
-                'avatar' => $agentAvatar
+                'avatar' => $agentAvatar,
+                'zalo' => $property->zalo
             ],
             'created_at' => $property->created_at ? $property->created_at->diffForHumans() : 'Vừa cập nhật',
             'description' => $property->description

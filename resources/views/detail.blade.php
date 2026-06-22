@@ -383,7 +383,7 @@
                     
                     <!-- Zalo Button -->
                     <a 
-                        href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', $property['agent']['phone']) }}" 
+                        href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', !empty($property['agent']['zalo']) ? $property['agent']['zalo'] : $property['agent']['phone']) }}" 
                         target="_blank"
                         class="col-span-5 inline-flex items-center justify-center px-4 py-3 rounded-2xl text-white bg-[#0068ff] hover:bg-[#0055d0] shadow-md shadow-[#0068ff]/25 hover:shadow-[#0055d0]/35 transition font-bold text-sm cursor-pointer"
                     >
@@ -598,7 +598,7 @@
     
     <!-- Zalo Text Button -->
     <a 
-        href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', $property['agent']['phone']) }}" 
+        href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', !empty($property['agent']['zalo']) ? $property['agent']['zalo'] : $property['agent']['phone']) }}" 
         target="_blank"
         class="w-12 h-12 rounded-2xl bg-[#0068ff] hover:bg-[#0055d0] text-white flex items-center justify-center text-base font-bold shadow-md shadow-[#0068ff]/20 active:scale-95 transition"
         title="Chat Zalo"
