@@ -327,6 +327,72 @@
                             action="{{ route('profile.update') }}"
                             method="POST"
                             class="space-y-6"
+                            x-data="{
+                                provinces: [],
+                                selectedProvince: '{{ old('add_province', $user['add_province'] ?? '') }}',
+                                provinceSearch: '{{ old('add_province', $user['add_province'] ?? '') }}',
+                                selectedDistrict: '{{ old('add_district', $user['add_district'] ?? '') }}',
+                                districtSearch: '{{ old('add_district', $user['add_district'] ?? '') }}',
+                                selectedWard: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
+                                wardSearch: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
+                                init() {
+                                    fetch('/vietnam_provinces.json')
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            this.provinces = data;
+                                            this.initializeDropdowns();
+                                        })
+                                        .catch(err => console.error('Error loading provinces:', err));
+                                },
+                                initializeDropdowns() {
+                                    if (!this.provinces || !this.provinces.length) return;
+                                    
+                                    // 1. Match province
+                                    if (this.provinceSearch) {
+                                        const matchProv = this.provinces.find(p => 
+                                            p.Name.toLowerCase() === this.provinceSearch.toLowerCase() ||
+                                            p.Name.toLowerCase().replace(/^(thành phố|tỉnh)\s+/i, '') === this.provinceSearch.toLowerCase()
+                                        );
+                                        if (matchProv) {
+                                            this.selectedProvince = matchProv.Name;
+                                            this.provinceSearch = matchProv.Name;
+                                        }
+                                    }
+                                    
+                                    // 2. Match district
+                                    if (this.districtSearch && this.selectedProvince) {
+                                        const prov = this.provinces.find(p => p.Name === this.selectedProvince);
+                                        if (prov) {
+                                            const matchDist = prov.Districts.find(d => 
+                                                d.Name.toLowerCase() === this.districtSearch.toLowerCase() ||
+                                                d.Name.toLowerCase().replace(/^(quận|huyện|thị xã|thành phố)\s+/i, '') === this.districtSearch.toLowerCase()
+                                            );
+                                            if (matchDist) {
+                                                this.selectedDistrict = matchDist.Name;
+                                                this.districtSearch = matchDist.Name;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // 3. Match ward
+                                    if (this.wardSearch && this.selectedProvince && this.selectedDistrict) {
+                                        const prov = this.provinces.find(p => p.Name === this.selectedProvince);
+                                        if (prov) {
+                                            const dist = prov.Districts.find(d => d.Name === this.selectedDistrict);
+                                            if (dist) {
+                                                const matchWard = dist.Wards.find(w => 
+                                                    w.Name.toLowerCase() === this.wardSearch.toLowerCase() ||
+                                                    w.Name.toLowerCase().replace(/^(phường|xã|thị trấn)\s+/i, '') === this.wardSearch.toLowerCase()
+                                                );
+                                                if (matchWard) {
+                                                    this.selectedWard = matchWard.Name;
+                                                    this.wardSearch = matchWard.Name;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }"
                         >
                             @csrf
                             
@@ -469,47 +535,181 @@
                             <!-- Grid 4: Address Details -->
                             <div class="grid grid-cols-1 sm:grid-cols-4 gap-5">
                                 <!-- Tỉnh / Thành -->
-                                <div class="space-y-1">
+                                <div class="space-y-1" x-data="{ open: false }" @click.outside="
+                                    if (!provinceSearch) {
+                                        selectedProvince = '';
+                                        provinceSearch = '';
+                                        selectedDistrict = '';
+                                        districtSearch = '';
+                                        selectedWard = '';
+                                        wardSearch = '';
+                                    } else {
+                                        const found = provinces.find(p => p.Name.toLowerCase() === provinceSearch.toLowerCase());
+                                        if (found) {
+                                            selectedProvince = found.Name;
+                                            provinceSearch = found.Name;
+                                        } else {
+                                            provinceSearch = selectedProvince;
+                                        }
+                                    }
+                                    open = false;
+                                ">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh / Thành phố</label>
                                     <div class="relative">
                                         <i class="fa-solid fa-map-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         <input 
                                             type="text" 
                                             name="add_province"
-                                            value="{{ old('add_province', $user['add_province']) }}"
-                                            placeholder="Hà Nội..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            placeholder="Chọn Tỉnh/Thành phố..."
+                                            x-model="provinceSearch"
+                                            @focus="open = true; $el.select()"
+                                            @input="open = true"
+                                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left"
                                         >
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                                        
+                                        <!-- Dropdown Panel -->
+                                        <div 
+                                            x-show="open" 
+                                            class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
+                                            x-cloak
+                                        >
+                                            <template x-for="p in provinces.filter(prov => !provinceSearch || prov.Name.toLowerCase().includes(provinceSearch.toLowerCase()))" :key="p.Id">
+                                                <div 
+                                                    @click="
+                                                        selectedProvince = p.Name;
+                                                        provinceSearch = p.Name;
+                                                        selectedDistrict = '';
+                                                        districtSearch = '';
+                                                        selectedWard = '';
+                                                        wardSearch = '';
+                                                        open = false;
+                                                    "
+                                                    class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                                                    x-text="p.Name"
+                                                ></div>
+                                            </template>
+                                            <div x-show="provinces.filter(prov => !provinceSearch || prov.Name.toLowerCase().includes(provinceSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                                                Không tìm thấy kết quả
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Quận / Huyện -->
-                                <div class="space-y-1">
+                                <div class="space-y-1" x-data="{ open: false }" @click.outside="
+                                    if (!districtSearch) {
+                                        selectedDistrict = '';
+                                        districtSearch = '';
+                                        selectedWard = '';
+                                        wardSearch = '';
+                                    } else {
+                                        const prov = provinces.find(p => p.Name === selectedProvince);
+                                        const found = prov ? prov.Districts.find(d => d.Name.toLowerCase() === districtSearch.toLowerCase()) : null;
+                                        if (found) {
+                                            selectedDistrict = found.Name;
+                                            districtSearch = found.Name;
+                                        } else {
+                                            districtSearch = selectedDistrict;
+                                        }
+                                    }
+                                    open = false;
+                                ">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận / Huyện</label>
                                     <div class="relative">
                                         <i class="fa-solid fa-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         <input 
                                             type="text" 
                                             name="add_district"
-                                            value="{{ old('add_district', $user['add_district']) }}"
-                                            placeholder="Cầu Giấy..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            placeholder="Chọn Quận/Huyện..."
+                                            x-model="districtSearch"
+                                            @focus="open = true; $el.select()"
+                                            @input="open = true"
+                                            :disabled="!selectedProvince"
+                                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+
+                                        <!-- Dropdown Panel -->
+                                        <div 
+                                            x-show="open" 
+                                            class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
+                                            x-cloak
+                                        >
+                                            <template x-for="d in (provinces.find(p => p.Name === selectedProvince)?.Districts || []).filter(dist => !districtSearch || dist.Name.toLowerCase().includes(districtSearch.toLowerCase()))" :key="d.Id">
+                                                <div 
+                                                    @click="
+                                                        selectedDistrict = d.Name;
+                                                        districtSearch = d.Name;
+                                                        selectedWard = '';
+                                                        wardSearch = '';
+                                                        open = false;
+                                                    "
+                                                    class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                                                    x-text="d.Name"
+                                                ></div>
+                                            </template>
+                                            <div x-show="(provinces.find(p => p.Name === selectedProvince)?.Districts || []).filter(dist => !districtSearch || dist.Name.toLowerCase().includes(districtSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                                                Không tìm thấy kết quả
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Phường / Xã -->
-                                <div class="space-y-1">
+                                <div class="space-y-1" x-data="{ open: false }" @click.outside="
+                                    if (!wardSearch) {
+                                        selectedWard = '';
+                                        wardSearch = '';
+                                    } else {
+                                        const prov = provinces.find(p => p.Name === selectedProvince);
+                                        const dist = prov ? prov.Districts.find(d => d.Name === selectedDistrict) : null;
+                                        const found = dist ? dist.Wards.find(w => w.Name.toLowerCase() === wardSearch.toLowerCase()) : null;
+                                        if (found) {
+                                            selectedWard = found.Name;
+                                            wardSearch = found.Name;
+                                        } else {
+                                            wardSearch = selectedWard;
+                                        }
+                                    }
+                                    open = false;
+                                ">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường / Xã</label>
                                     <div class="relative">
                                         <i class="fa-solid fa-tree-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         <input 
                                             type="text" 
                                             name="add_ward"
-                                            value="{{ old('add_ward', $user['add_ward']) }}"
-                                            placeholder="Dịch Vọng..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                            placeholder="Chọn Phường/Xã..."
+                                            x-model="wardSearch"
+                                            @focus="open = true; $el.select()"
+                                            @input="open = true"
+                                            :disabled="!selectedDistrict"
+                                            class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+
+                                        <!-- Dropdown Panel -->
+                                        <div 
+                                            x-show="open" 
+                                            class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
+                                            x-cloak
+                                        >
+                                            <template x-for="w in (provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).filter(ward => !wardSearch || ward.Name.toLowerCase().includes(wardSearch.toLowerCase()))" :key="w.Id">
+                                                <div 
+                                                    @click="
+                                                        selectedWard = w.Name;
+                                                        wardSearch = w.Name;
+                                                        open = false;
+                                                    "
+                                                    class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                                                    x-text="w.Name"
+                                                ></div>
+                                            </template>
+                                            <div x-show="(provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).filter(ward => !wardSearch || ward.Name.toLowerCase().includes(wardSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                                                Không tìm thấy kết quả
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
