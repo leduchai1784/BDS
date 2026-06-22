@@ -1373,9 +1373,9 @@ class PropertyService
             'lng' => $property->longitude,
             'image' => $featureImg,
             'images' => $galleryImages,
-            'direction' => $property->direction ?: 'Đông Nam',
+            'direction' => $property->direction ?: 'Chưa cập nhật',
             'furniture' => $property->furniture ?: 'Chưa cập nhật',
-            'legal' => $property->legal ?: 'Sổ hồng chính chủ, hợp đồng cho thuê tối thiểu 1 năm',
+            'legal' => $property->legal ?: 'Chưa cập nhật',
             'is_vip' => (bool)$property->is_vip,
             'is_new' => (bool)$property->is_new,
             'agent' => [
