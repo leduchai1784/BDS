@@ -675,14 +675,14 @@
             locationText: '{{ old('address', $property->address) }}',
             wardText: '{{ old('ward', $property->ward) }}',
             districtText: '{{ old('district', $property->district) }}',
-            cityText: '{{ old('city', $property->city ?? 'Thành phố Hà Nội') }}',
-            provinceSearch: '',
-            districtSearch: '',
-            wardSearch: '',
+            cityText: '{{ old('city', $property->city ?? '') }}',
+            provinceSearch: '{{ old('city', $property->city ?? '') }}',
+            districtSearch: '{{ old('district', $property->district ?? '') }}',
+            wardSearch: '{{ old('ward', $property->ward ?? '') }}',
             provinces: [],
-            selectedProvince: '',
-            selectedDistrict: '',
-            selectedWard: '',
+            selectedProvince: '{{ old('city', $property->city ?? '') }}',
+            selectedDistrict: '{{ old('district', $property->district ?? '') }}',
+            selectedWard: '{{ old('ward', $property->ward ?? '') }}',
             mainPreview: '',
             galleryPreviews: [],
             deletedImages: [], // Holds paths of images to be deleted
@@ -814,6 +814,8 @@
                     );
                     if (matchCity) {
                         this.selectedProvince = matchCity.Name;
+                        this.provinceSearch = matchCity.Name;
+                        this.cityText = matchCity.Name;
                     }
                 }
                 
@@ -835,6 +837,8 @@
                         );
                         if (matchDist) {
                             this.selectedDistrict = matchDist.Name;
+                            this.districtSearch = matchDist.Name;
+                            this.districtText = matchDist.Name;
                         }
                     }
                 }
@@ -850,6 +854,8 @@
                         );
                         if (matchWard) {
                             this.selectedWard = matchWard.Name;
+                            this.wardSearch = matchWard.Name;
+                            this.wardText = matchWard.Name;
                         }
                     }
                 }

@@ -654,14 +654,14 @@
             locationText: '{{ old('address') }}',
             wardText: '{{ old('ward') }}',
             districtText: '{{ old('district') }}',
-            cityText: '{{ old('city', 'Thành phố Hà Nội') }}',
-            provinceSearch: '',
-            districtSearch: '',
-            wardSearch: '',
+            cityText: '{{ old('city', '') }}',
+            provinceSearch: '{{ old('city', '') }}',
+            districtSearch: '{{ old('district', '') }}',
+            wardSearch: '{{ old('ward', '') }}',
             provinces: [],
-            selectedProvince: '',
-            selectedDistrict: '',
-            selectedWard: '',
+            selectedProvince: '{{ old('city', '') }}',
+            selectedDistrict: '{{ old('district', '') }}',
+            selectedWard: '{{ old('ward', '') }}',
             mainPreview: '',
             galleryPreviews: [],
             mainImageType: 'file',
@@ -831,6 +831,8 @@
                     );
                     if (matchCity) {
                         this.selectedProvince = matchCity.Name;
+                        this.provinceSearch = matchCity.Name;
+                        this.cityText = matchCity.Name;
                     }
                 }
                 
@@ -852,6 +854,8 @@
                         );
                         if (matchDist) {
                             this.selectedDistrict = matchDist.Name;
+                            this.districtSearch = matchDist.Name;
+                            this.districtText = matchDist.Name;
                         }
                     }
                 }
@@ -867,6 +871,8 @@
                         );
                         if (matchWard) {
                             this.selectedWard = matchWard.Name;
+                            this.wardSearch = matchWard.Name;
+                            this.wardText = matchWard.Name;
                         }
                     }
                 }
