@@ -140,8 +140,6 @@ class ProfileController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'firstname' => 'nullable|string|max:100',
-            'lastname' => 'nullable|string|max:100',
             'phone' => 'nullable|string|max:20',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'gender' => 'nullable|integer',
@@ -162,10 +160,23 @@ class ProfileController extends Controller
             'email.unique' => 'Email này đã được sử dụng bởi thành viên khác.',
         ]);
 
+        // Split name into firstname and lastname
+        $fullName = trim($request->name);
+        $parts = explode(' ', $fullName);
+        if (count($parts) > 1) {
+            $lastname = array_pop($parts);
+            $firstname = implode(' ', $parts);
+        } else {
+            $firstname = '';
+            $lastname = $fullName;
+        }
+
         $updateData = $request->only([
-            'name', 'firstname', 'lastname', 'phone', 'email', 'gender', 'dob', 'pob',
+            'name', 'phone', 'email', 'gender', 'dob', 'pob',
             'add_street', 'add_ward', 'add_district', 'add_province', 'zalo_id', 'zalo_key', 'intro', 'website'
         ]);
+        $updateData['firstname'] = $firstname;
+        $updateData['lastname'] = $lastname;
 
         // Update fields locally
         $this->profileService->updateProfile($user->id, $updateData);

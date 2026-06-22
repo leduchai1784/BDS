@@ -331,8 +331,8 @@
                             @csrf
                             
                             <!-- Grid 1: Basic Info -->
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                                <!-- Họ tên hiển thị -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <!-- Họ và tên -->
                                 <div class="space-y-1">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên</label>
                                     <div class="relative">
@@ -350,45 +350,26 @@
                                     @enderror
                                 </div>
 
-                                <!-- Họ & tên đệm -->
+                                <!-- Giới tính -->
                                 <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ & tên đệm</label>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới tính</label>
                                     <div class="relative">
-                                        <i class="fa-solid fa-user-tag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="firstname"
-                                            value="{{ old('firstname', $user['firstname']) }}"
-                                            placeholder="Lê Đức..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        <i class="fa-solid fa-venus-mars absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <select 
+                                            name="gender"
+                                            class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer"
                                         >
+                                            <option value="0" {{ old('gender', $user['gender']) == 0 ? 'selected' : '' }}>Nam</option>
+                                            <option value="1" {{ old('gender', $user['gender']) == 1 ? 'selected' : '' }}>Nữ</option>
+                                            <option value="2" {{ old('gender', $user['gender']) == 2 ? 'selected' : '' }}>Khác</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                                     </div>
-                                    @error('firstname')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Tên -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tên</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-user-tag absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="lastname"
-                                            value="{{ old('lastname', $user['lastname']) }}"
-                                            placeholder="Hải..."
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                                        >
-                                    </div>
-                                    @error('lastname')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
                                 </div>
                             </div>
 
-                            <!-- Grid 2: Contact & Gender -->
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <!-- Grid 2: Contact Info -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <!-- SĐT -->
                                 <div class="space-y-1">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại</label>
@@ -425,23 +406,6 @@
                                     @error('email')
                                         <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                                     @enderror
-                                </div>
-
-                                <!-- Giới tính -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới tính</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-venus-mars absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <select 
-                                            name="gender"
-                                            class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer"
-                                        >
-                                            <option value="0" {{ old('gender', $user['gender']) == 0 ? 'selected' : '' }}>Nam</option>
-                                            <option value="1" {{ old('gender', $user['gender']) == 1 ? 'selected' : '' }}>Nữ</option>
-                                            <option value="2" {{ old('gender', $user['gender']) == 2 ? 'selected' : '' }}>Khác</option>
-                                        </select>
-                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                                    </div>
                                 </div>
                             </div>
 
