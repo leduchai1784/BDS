@@ -55,12 +55,20 @@ class NksAuthService
     public function updateInfo(string $token, array $data): array
     {
         try {
+            $payload = array_merge($data, ['access_token' => $token]);
+
             $response = Http::withoutVerifying()
                 ->timeout(10)
-                ->withToken($token)
-                ->post("{$this->baseUrl}/updateInfo", $data);
+                ->post("{$this->baseUrl}/updateInfo", $payload);
 
             $json = $response->json();
+
+            Log::info('NKS updateInfo Request:', [
+                'url' => "{$this->baseUrl}/updateInfo",
+                'payload' => $payload,
+                'status' => $response->status(),
+                'response' => $json
+            ]);
 
             return [
                 'success' => $response->successful() && !empty($json['success']),
@@ -80,11 +88,18 @@ class NksAuthService
         try {
             $response = Http::withoutVerifying()
                 ->timeout(15)
-                ->withToken($token)
                 ->attach('avatar', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
-                ->post("{$this->baseUrl}/updateAvatar");
+                ->post("{$this->baseUrl}/updateAvatar", [
+                    'access_token' => $token
+                ]);
 
             $json = $response->json();
+
+            Log::info('NKS updateAvatar Request:', [
+                'url' => "{$this->baseUrl}/updateAvatar",
+                'status' => $response->status(),
+                'response' => $json
+            ]);
 
             return [
                 'success' => $response->successful() && !empty($json['success']),
@@ -103,8 +118,7 @@ class NksAuthService
     {
         try {
             $request = Http::withoutVerifying()
-                ->timeout(20)
-                ->withToken($token);
+                ->timeout(20);
 
             $hasFiles = false;
             $multipartData = [];
@@ -118,13 +132,25 @@ class NksAuthService
                 }
             }
 
+            $multipartData['access_token'] = $token;
+
             if ($hasFiles) {
                 $response = $request->post("{$this->baseUrl}/updateCccd", $multipartData);
             } else {
-                $response = $request->post("{$this->baseUrl}/updateCccd", $data);
+                $response = Http::withoutVerifying()
+                    ->timeout(20)
+                    ->post("{$this->baseUrl}/updateCccd", $multipartData);
             }
 
             $json = $response->json();
+
+            Log::info('NKS updateCccd Request:', [
+                'url' => "{$this->baseUrl}/updateCccd",
+                'hasFiles' => $hasFiles,
+                'payload' => $multipartData,
+                'status' => $response->status(),
+                'response' => $json
+            ]);
 
             return [
                 'success' => $response->successful() && !empty($json['success']),
