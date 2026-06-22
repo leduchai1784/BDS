@@ -9,9 +9,9 @@
         <!-- Left Side: Image Illustration -->
         <div class="md:w-1/2 relative bg-slate-900 overflow-hidden hidden md:block">
             <img 
-                src="{{ asset('images/apartment_2.png') }}" 
+                src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/rxws6x6gxuewnt10nhgg.jpg" 
                 alt="Register illustration" 
-                class="w-full h-full object-cover opacity-60 scale-105"
+                class="w-full h-full object-cover opacity-80 scale-105"
             >
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
             
