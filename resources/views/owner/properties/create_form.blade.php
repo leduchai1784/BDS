@@ -15,7 +15,7 @@
     action="{{ route('properties.store') }}" 
     method="POST" 
     enctype="multipart/form-data"
-    x-data="propertyCreateForm('{{ $purpose }}')"
+    x-data="propertyCreateForm('{{ $purpose }}', {{ isset($isModal) && $isModal ? 'true' : 'false' }})"
     class="space-y-6 text-left"
 >
     @csrf
@@ -540,7 +540,7 @@
 <script src="https://unpkg.com/maplibre-gl@^4.0.0/dist/maplibre-gl.js"></script>
 
 <script>
-    function propertyCreateForm(purpose) {
+    function propertyCreateForm(purpose, isModal = false) {
         return {
             purpose: purpose,
             lat: {{ old('latitude', 21.0285) }},
@@ -560,7 +560,7 @@
             marker: null,
 
             init() {
-                fetch('/vietnam_provinces.json')
+                fetch('{{ asset('vietnam_provinces.json') }}')
                     .then(res => res.json())
                     .then(data => {
                         this.provinces = data;
@@ -568,11 +568,25 @@
                     })
                     .catch(err => console.error("Error loading provinces:", err));
 
-                const isStandalone = typeof this.activeModal === 'undefined';
-                if (isStandalone) {
+                if (isModal) {
+                    this.$watch('activeModal', value => {
+                        if (value === this.purpose && !this.map) {
+                            this.$nextTick(() => {
+                                this.initMap();
+                                this.detectCurrentLocation();
+                            });
+                        }
+                    });
+                    if (typeof activeModal !== 'undefined' && activeModal === this.purpose) {
+                        this.$nextTick(() => {
+                            this.initMap();
+                            this.detectCurrentLocation();
+                        });
+                    }
+                } else {
                     const isTabbed = typeof this.activeTab !== 'undefined';
                     if (isTabbed) {
-                        this.$watch(() => this.activeTab, value => {
+                        this.$watch('activeTab', value => {
                             if (value === 'create_property' && !this.map) {
                                 this.$nextTick(() => {
                                     this.initMap();
@@ -587,21 +601,6 @@
                             });
                         }
                     } else {
-                        this.$nextTick(() => {
-                            this.initMap();
-                            this.detectCurrentLocation();
-                        });
-                    }
-                } else {
-                    this.$watch(() => this.activeModal, value => {
-                        if (value === this.purpose && !this.map) {
-                            this.$nextTick(() => {
-                                this.initMap();
-                                this.detectCurrentLocation();
-                            });
-                        }
-                    });
-                    if (this.activeModal === this.purpose) {
                         this.$nextTick(() => {
                             this.initMap();
                             this.detectCurrentLocation();

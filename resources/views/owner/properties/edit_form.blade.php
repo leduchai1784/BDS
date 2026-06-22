@@ -583,7 +583,7 @@
             marker: null,
 
             init() {
-                fetch('/vietnam_provinces.json')
+                fetch('{{ asset('vietnam_provinces.json') }}')
                     .then(res => res.json())
                     .then(data => {
                         this.provinces = data;
@@ -591,14 +591,21 @@
                     })
                     .catch(err => console.error("Error loading provinces:", err));
 
-                this.$watch(() => this.activeTab, value => {
-                    if (value === 'edit_property' && !this.map) {
+                const isTabbed = typeof activeTab !== 'undefined';
+                if (isTabbed) {
+                    this.$watch('activeTab', value => {
+                        if (value === 'edit_property' && !this.map) {
+                            this.$nextTick(() => {
+                                this.initMap();
+                            });
+                        }
+                    });
+                    if (activeTab === 'edit_property') {
                         this.$nextTick(() => {
                             this.initMap();
                         });
                     }
-                });
-                if (this.activeTab === 'edit_property') {
+                } else {
                     this.$nextTick(() => {
                         this.initMap();
                     });
