@@ -158,6 +158,15 @@ class ProfileController extends Controller
             'email.unique' => 'Email này đã được sử dụng bởi thành viên khác.',
         ]);
 
+        // Convert YYYY-MM-DD from type="date" to dd/mm/yyyy for DB and API compatibility
+        if ($request->filled('dob') && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->dob)) {
+            try {
+                $request->merge([
+                    'dob' => \Carbon\Carbon::createFromFormat('Y-m-d', $request->dob)->format('d/m/Y')
+                ]);
+            } catch (\Exception $e) {}
+        }
+
         // Split name into firstname and lastname
         $fullName = trim($request->name);
         $parts = explode(' ', $fullName);
@@ -244,6 +253,22 @@ class ProfileController extends Controller
             'cccd_back.mimes' => 'Hỗ trợ các định dạng ảnh: jpeg, png, jpg.',
             'cccd_back.max' => 'Dung lượng ảnh mặt sau tối đa là 3MB.',
         ]);
+
+        // Convert YYYY-MM-DD from type="date" to dd/mm/yyyy for DB and API compatibility
+        if ($request->filled('dob') && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->dob)) {
+            try {
+                $request->merge([
+                    'dob' => \Carbon\Carbon::createFromFormat('Y-m-d', $request->dob)->format('d/m/Y')
+                ]);
+            } catch (\Exception $e) {}
+        }
+        if ($request->filled('id_date') && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->id_date)) {
+            try {
+                $request->merge([
+                    'id_date' => \Carbon\Carbon::createFromFormat('Y-m-d', $request->id_date)->format('d/m/Y')
+                ]);
+            } catch (\Exception $e) {}
+        }
 
         $cccdFrontPath = null;
         $cccdBackPath = null;

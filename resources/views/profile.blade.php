@@ -481,12 +481,27 @@
                                 <div class="space-y-1">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
                                     <div class="relative">
-                                        <i class="fa-solid fa-cake-candles absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <i class="fa-solid fa-cake-candles absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs z-10"></i>
+                                        @php
+                                            $dobVal = '';
+                                            if (!empty($user['dob'])) {
+                                                try {
+                                                    $dobVal = \Carbon\Carbon::createFromFormat('d/m/Y', $user['dob'])->format('Y-m-d');
+                                                } catch (\Exception $e) {
+                                                    $dobVal = $user['dob'];
+                                                }
+                                            }
+                                            $dobOld = old('dob', $dobVal);
+                                            if (!empty($dobOld) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $dobOld)) {
+                                                try {
+                                                    $dobOld = \Carbon\Carbon::createFromFormat('d/m/Y', $dobOld)->format('Y-m-d');
+                                                } catch (\Exception $e) {}
+                                            }
+                                        @endphp
                                         <input 
-                                            type="text" 
+                                            type="date" 
                                             name="dob"
-                                            value="{{ old('dob', $user['dob']) }}"
-                                            placeholder="dd/mm/yyyy..."
+                                            value="{{ $dobOld }}"
                                             class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                         >
                                     </div>
@@ -992,15 +1007,29 @@
                                     <div class="space-y-1 text-left">
                                         <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
                                         <div class="relative">
+                                            @php
+                                                $cccdDobVal = '';
+                                                if (!empty($user['dob'])) {
+                                                    try {
+                                                        $cccdDobVal = \Carbon\Carbon::createFromFormat('d/m/Y', $user['dob'])->format('Y-m-d');
+                                                    } catch (\Exception $e) {
+                                                        $cccdDobVal = $user['dob'];
+                                                    }
+                                                }
+                                                $cccdDobOld = old('dob', $cccdDobVal);
+                                                if (!empty($cccdDobOld) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $cccdDobOld)) {
+                                                    try {
+                                                        $cccdDobOld = \Carbon\Carbon::createFromFormat('d/m/Y', $cccdDobOld)->format('Y-m-d');
+                                                    } catch (\Exception $e) {}
+                                                }
+                                            @endphp
                                             <input 
-                                                type="text" 
+                                                type="date" 
                                                 name="dob"
-                                                value="{{ old('dob', $user['dob']) }}"
+                                                value="{{ $cccdDobOld }}"
                                                 required
-                                                placeholder="dd/mm/yyyy"
-                                                class="w-full pr-10 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                                class="w-full pr-4 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                             >
-                                            <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         </div>
                                         @error('dob')
                                             <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
@@ -1013,15 +1042,29 @@
                                     <div class="space-y-1 text-left">
                                         <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày cấp</label>
                                         <div class="relative">
+                                            @php
+                                                $cccdIdDateVal = '';
+                                                if (!empty($user['id_date'])) {
+                                                    try {
+                                                        $cccdIdDateVal = \Carbon\Carbon::createFromFormat('d/m/Y', $user['id_date'])->format('Y-m-d');
+                                                    } catch (\Exception $e) {
+                                                        $cccdIdDateVal = $user['id_date'];
+                                                    }
+                                                }
+                                                $cccdIdDateOld = old('id_date', $cccdIdDateVal);
+                                                if (!empty($cccdIdDateOld) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $cccdIdDateOld)) {
+                                                    try {
+                                                        $cccdIdDateOld = \Carbon\Carbon::createFromFormat('d/m/Y', $cccdIdDateOld)->format('Y-m-d');
+                                                    } catch (\Exception $e) {}
+                                                }
+                                            @endphp
                                             <input 
-                                                type="text" 
+                                                type="date" 
                                                 name="id_date"
-                                                value="{{ old('id_date', $user['id_date']) }}"
+                                                value="{{ $cccdIdDateOld }}"
                                                 required
-                                                placeholder="dd/mm/yyyy"
-                                                class="w-full pr-10 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                                class="w-full pr-4 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                             >
-                                            <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         </div>
                                         @error('id_date')
                                             <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
