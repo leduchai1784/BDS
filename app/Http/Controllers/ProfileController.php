@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ProfileService;
 use App\Services\WishlistService;
 use App\Services\AppointmentService;
+use App\Services\NksAuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,15 +14,18 @@ class ProfileController extends Controller
     protected ProfileService $profileService;
     protected WishlistService $wishlistService;
     protected AppointmentService $appointmentService;
+    protected NksAuthService $nksAuthService;
 
     public function __construct(
         ProfileService $profileService,
         WishlistService $wishlistService,
-        AppointmentService $appointmentService
+        AppointmentService $appointmentService,
+        NksAuthService $nksAuthService
     ) {
         $this->profileService = $profileService;
         $this->wishlistService = $wishlistService;
         $this->appointmentService = $appointmentService;
+        $this->nksAuthService = $nksAuthService;
     }
 
     /**
@@ -142,12 +146,24 @@ class ProfileController extends Controller
             'avatar.max' => 'Dung lượng ảnh tối đa là 2MB.'
         ]);
 
-        // Update fields
+        // Update fields locally
         $this->profileService->updateProfile($user->id, $request->only('name', 'email', 'phone'));
 
-        // Handle Avatar upload
+        // Handle Avatar upload locally
         if ($request->hasFile('avatar')) {
             $this->profileService->updateAvatar($user->id, $request->file('avatar'));
+        }
+
+        // Sync to NKS if user has a token
+        if ($user->nks_token) {
+            $this->nksAuthService->updateInfo($user->nks_token, [
+                'name'  => $request->name,
+                'phone' => $request->phone,
+            ]);
+
+            if ($request->hasFile('avatar')) {
+                $this->nksAuthService->updateAvatar($user->nks_token, $request->file('avatar'));
+            }
         }
 
         return redirect()->route('profile.index')->with('success', 'Hồ sơ cá nhân đã được cập nhật thành công!');
