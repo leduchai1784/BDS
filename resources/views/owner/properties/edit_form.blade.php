@@ -525,18 +525,39 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <!-- Ảnh đại diện chính -->
             <div class="space-y-2">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ảnh đại diện chính</label>
+                <div class="flex items-center justify-between px-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Ảnh đại diện chính</label>
+                    <div class="flex bg-slate-100 p-0.5 rounded-lg text-[9px] font-bold select-none">
+                        <button type="button" @click="mainImageType = 'file'; mainPreview = ''; image_url = '';" :class="mainImageType === 'file' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Upload file</button>
+                        <button type="button" @click="mainImageType = 'url'; mainPreview = '';" :class="mainImageType === 'url' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Nhập link</button>
+                    </div>
+                </div>
                 
                 <div class="flex items-start space-x-4">
                     <div class="w-24 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center flex-shrink-0">
                         <img :src="mainPreview ? mainPreview : '{{ asset($property->image) }}'" class="w-full h-full object-cover">
                     </div>
-                    <div class="space-y-2">
-                        <p class="text-[9px] text-slate-400 leading-normal">Chọn ảnh mới nếu muốn thay đổi ảnh đại diện hiện tại.</p>
-                        <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
-                            <i class="fa-solid fa-camera mr-1.5"></i> Thay ảnh đại diện
-                            <input type="file" name="image" accept="image/*" @change="previewMainImage($event)" class="hidden">
-                        </label>
+                    <div class="flex-grow space-y-2">
+                        <div x-show="mainImageType === 'file'" class="space-y-2">
+                            <p class="text-[9px] text-slate-400 leading-normal">Chọn ảnh mới nếu muốn thay đổi ảnh đại diện hiện tại từ máy tính.</p>
+                            <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
+                                <i class="fa-solid fa-camera mr-1.5"></i> Thay ảnh đại diện
+                                <input type="file" name="image" accept="image/*" @change="previewMainImage($event)" class="hidden">
+                            </label>
+                        </div>
+                        <div x-show="mainImageType === 'url'" class="space-y-1 text-left">
+                            <p class="text-[9px] text-slate-400 leading-normal">Nhập liên kết ảnh chính mới từ URL để thay đổi:</p>
+                            <input 
+                                type="text" 
+                                name="image_url" 
+                                x-model="image_url"
+                                placeholder="Dán link ảnh đại diện mới vào đây..." 
+                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                            >
+                            @error('image_url')
+                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
                 @error('image')
@@ -546,14 +567,35 @@
 
             <!-- Thêm ảnh phụ (Gallery) -->
             <div class="space-y-2">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Tải lên thêm ảnh phụ</label>
+                <div class="flex items-center justify-between px-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tải lên thêm ảnh phụ</label>
+                    <div class="flex bg-slate-100 p-0.5 rounded-lg text-[9px] font-bold select-none">
+                        <button type="button" @click="galleryImageType = 'file'; galleryPreviews = []; gallery_urls = '';" :class="galleryImageType === 'file' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Upload file</button>
+                        <button type="button" @click="galleryImageType = 'url'; galleryPreviews = [];" :class="galleryImageType === 'url' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Nhập link</button>
+                    </div>
+                </div>
                 
                 <div class="space-y-2">
-                    <p class="text-[9px] text-slate-400 leading-normal">Chọn các ảnh phụ mới để tải thêm lên thư viện ảnh bất động sản.</p>
-                    <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
-                        <i class="fa-solid fa-images mr-1.5"></i> Chọn ảnh phụ mới
-                        <input type="file" name="images[]" multiple accept="image/*" @change="previewGalleryImages($event)" class="hidden">
-                    </label>
+                    <div x-show="galleryImageType === 'file'" class="space-y-2">
+                        <p class="text-[9px] text-slate-400 leading-normal">Chọn các ảnh phụ mới từ máy tính để tải thêm lên thư viện ảnh.</p>
+                        <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
+                            <i class="fa-solid fa-images mr-1.5"></i> Chọn ảnh phụ mới
+                            <input type="file" name="images[]" multiple accept="image/*" @change="previewGalleryImages($event)" class="hidden">
+                        </label>
+                    </div>
+                    <div x-show="galleryImageType === 'url'" class="space-y-1 text-left">
+                        <p class="text-[9px] text-slate-400 leading-normal">Dán link các ảnh phụ mới vào đây (mỗi dòng một link hoặc cách nhau bằng dấu phẩy):</p>
+                        <textarea 
+                            name="gallery_urls" 
+                            x-model="gallery_urls"
+                            rows="2"
+                            placeholder="Ví dụ:&#10;https://cloudinary.com/image_new1.jpg&#10;https://cloudinary.com/image_new2.jpg" 
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                        ></textarea>
+                        @error('gallery_urls')
+                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
             </div>
         </div>
@@ -644,6 +686,10 @@
             mainPreview: '',
             galleryPreviews: [],
             deletedImages: [], // Holds paths of images to be deleted
+            mainImageType: 'file',
+            image_url: '',
+            galleryImageType: 'file',
+            gallery_urls: '',
             map: null,
             marker: null,
 
@@ -655,6 +701,23 @@
                         this.initializeDropdowns();
                     })
                     .catch(err => console.error("Error loading provinces:", err));
+
+                this.$watch('image_url', value => {
+                    if (this.mainImageType === 'url') {
+                        this.mainPreview = value;
+                    }
+                });
+                this.$watch('gallery_urls', value => {
+                    if (this.galleryImageType === 'url') {
+                        if (!value) {
+                            this.galleryPreviews = [];
+                        } else {
+                            this.galleryPreviews = value.split(/[\n,\r]+/)
+                                .map(u => u.trim())
+                                .filter(u => u.length > 0);
+                        }
+                    }
+                });
 
                 const isTabbed = typeof activeTab !== 'undefined';
                 if (isTabbed) {

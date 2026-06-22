@@ -79,7 +79,12 @@ class PropertyController extends Controller
         ]);
 
         // Upload main image
-        if ($request->hasFile('image')) {
+        if ($request->filled('image_url')) {
+            $property->propertyImages()->create([
+                'image_path' => $request->image_url,
+                'is_primary' => true,
+            ]);
+        } elseif ($request->hasFile('image')) {
             $path = $request->file('image')->store('properties', 'public');
             $property->propertyImages()->create([
                 'image_path' => $path,
@@ -87,7 +92,21 @@ class PropertyController extends Controller
             ]);
         }
 
-        // Upload gallery images
+        // Upload gallery images from URLs
+        if ($request->filled('gallery_urls')) {
+            $urls = preg_split('/[\n,\r]+/', $request->gallery_urls);
+            foreach ($urls as $url) {
+                $url = trim($url);
+                if (!empty($url)) {
+                    $property->propertyImages()->create([
+                        'image_path' => $url,
+                        'is_primary' => false,
+                    ]);
+                }
+            }
+        }
+
+        // Upload gallery images from files
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
                 $path = $img->store('properties', 'public');
@@ -128,7 +147,18 @@ class PropertyController extends Controller
 
         // Validate total images count <= 10
         $existingCount = $property->propertyImages()->count();
-        $newCount = $request->hasFile('images') ? count($request->file('images')) : 0;
+        $newFilesCount = $request->hasFile('images') ? count($request->file('images')) : 0;
+        
+        $newUrlsCount = 0;
+        if ($request->filled('gallery_urls')) {
+            $urls = preg_split('/[\n,\r]+/', $request->gallery_urls);
+            foreach ($urls as $url) {
+                if (!empty(trim($url))) {
+                    $newUrlsCount++;
+                }
+            }
+        }
+        $newCount = $newFilesCount + $newUrlsCount;
         $deletedCount = $request->filled('delete_images') ? count($request->delete_images) : 0;
         $totalCount = $existingCount + $newCount - $deletedCount;
 
@@ -137,7 +167,7 @@ class PropertyController extends Controller
         }
 
         // Ensure at least 1 image remains
-        $newPrimaryUploaded = $request->hasFile('image');
+        $newPrimaryUploaded = $request->hasFile('image') || $request->filled('image_url');
         $hasPrimaryRemaining = $property->propertyImages()->where('is_primary', true)->exists();
         if (!$newPrimaryUploaded && !$hasPrimaryRemaining) {
             return back()->withErrors(['image' => 'Tin đăng phải có ít nhất 1 ảnh đại diện.'])->withInput();
@@ -188,11 +218,26 @@ class PropertyController extends Controller
             'status' => 'pending', // Updates reset status to pending for re-approval
         ]);
 
-        // Update main image if new one is uploaded
-        if ($request->hasFile('image')) {
+        // Update main image if new one is uploaded or URL is provided
+        if ($request->filled('image_url')) {
             $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
             if ($oldPrimary) {
-                Storage::disk('public')->delete($oldPrimary->image_path);
+                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($oldPrimary->image_path);
+                }
+                $oldPrimary->delete();
+            }
+
+            $property->propertyImages()->create([
+                'image_path' => $request->image_url,
+                'is_primary' => true,
+            ]);
+        } elseif ($request->hasFile('image')) {
+            $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
+            if ($oldPrimary) {
+                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($oldPrimary->image_path);
+                }
                 $oldPrimary->delete();
             }
 
@@ -212,13 +257,29 @@ class PropertyController extends Controller
                     ->orWhere('image_path', $delPath)
                     ->first();
                 if ($imgRecord) {
-                    Storage::disk('public')->delete($imgRecord->image_path);
+                    if (!filter_var($imgRecord->image_path, FILTER_VALIDATE_URL)) {
+                        Storage::disk('public')->delete($imgRecord->image_path);
+                    }
                     $imgRecord->delete();
                 }
             }
         }
 
-        // Upload new gallery images
+        // Upload new gallery images from URLs
+        if ($request->filled('gallery_urls')) {
+            $urls = preg_split('/[\n,\r]+/', $request->gallery_urls);
+            foreach ($urls as $url) {
+                $url = trim($url);
+                if (!empty($url)) {
+                    $property->propertyImages()->create([
+                        'image_path' => $url,
+                        'is_primary' => false,
+                    ]);
+                }
+            }
+        }
+
+        // Upload new gallery images from files
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
                 $path = $img->store('properties', 'public');

@@ -143,6 +143,47 @@ class OwnerModuleTest extends TestCase
     }
 
     /**
+     * Test owner can store property with image URLs.
+     */
+    public function test_owner_can_store_property_with_image_url(): void
+    {
+        $response = $this->actingAs($this->owner1)->post(route('properties.store'), [
+            'title' => 'Property with URLs',
+            'description' => 'Luxury villa description text here.',
+            'price' => 20000000,
+            'area' => 120,
+            'address' => 'District 1, HCMC',
+            'ward' => 'Bến Nghé',
+            'type' => 'Biệt thự / Villa',
+            'district' => 'D1',
+            'city' => 'Hồ Chí Minh',
+            'latitude' => 10.7791,
+            'longitude' => 106.6983,
+            'phone' => '0987654321',
+            'category_id' => $this->category->id,
+            'image_url' => 'https://res.cloudinary.com/test/image.jpg',
+            'gallery_urls' => "https://res.cloudinary.com/test/gallery1.jpg\nhttps://res.cloudinary.com/test/gallery2.jpg",
+            'bedroom' => 2,
+            'bathroom' => 2,
+        ]);
+
+        $response->assertRedirect(route('profile.index', ['tab' => 'properties']));
+        
+        $this->assertDatabaseHas('properties', [
+            'title' => 'Property with URLs',
+            'price' => 20000000,
+            'owner_id' => $this->owner1->id,
+            'status' => 'pending'
+        ]);
+
+        $property = Property::where('title', 'Property with URLs')->first();
+        $this->assertEquals('https://res.cloudinary.com/test/image.jpg', $property->image);
+        $this->assertCount(2, $property->images);
+        $this->assertContains('https://res.cloudinary.com/test/gallery1.jpg', $property->images);
+        $this->assertContains('https://res.cloudinary.com/test/gallery2.jpg', $property->images);
+    }
+
+    /**
      * Test owner can edit their own property.
      */
     public function test_owner_can_edit_own_property(): void
