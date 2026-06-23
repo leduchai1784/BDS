@@ -185,6 +185,20 @@ class NksAuthService
             $name = $nksUser['name'] ?? 'NKS User';
         }
 
+        $dob = $nksUser['dob'] ?? null;
+        if (!empty($dob) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) {
+            try {
+                $dob = \Carbon\Carbon::createFromFormat('Y-m-d', $dob)->format('d/m/Y');
+            } catch (\Exception $e) {}
+        }
+
+        $idDate = $nksUser['id_date'] ?? null;
+        if (!empty($idDate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $idDate)) {
+            try {
+                $idDate = \Carbon\Carbon::createFromFormat('Y-m-d', $idDate)->format('d/m/Y');
+            } catch (\Exception $e) {}
+        }
+
         return [
             'name'         => $name,
             'firstname'    => $nksUser['firstname'] ?? null,
@@ -194,10 +208,10 @@ class NksAuthService
             'nks_user_id'  => (string) ($nksUser['id'] ?? ''),
             'nks_token'    => $token,
             'gender'       => $nksUser['gender'] ?? 0,
-            'dob'          => $nksUser['dob'] ?? null,
+            'dob'          => $dob,
             'pob'          => $nksUser['pob'] ?? null,
             'id_number'    => $nksUser['id_number'] ?? null,
-            'id_date'      => $nksUser['id_date'] ?? null,
+            'id_date'      => $idDate,
             'id_place'     => $nksUser['id_place'] ?? null,
             'cccd_front'   => $nksUser['cccd_front'] ?? null,
             'cccd_back'    => $nksUser['cccd_back'] ?? null,
