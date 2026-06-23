@@ -82,9 +82,16 @@
 
                         <!-- User Name & Role Badge -->
                         <div class="px-5">
-                            <h4 class="text-base font-extrabold text-slate-800 leading-snug tracking-tight mb-2">{{ $user['name'] }}</h4>
+                            <h4 class="text-base font-extrabold text-slate-800 leading-snug tracking-tight mb-2 flex items-center justify-center gap-1.5">
+                                {{ $user['name'] }}
+                                @if(!empty($user['id_number']))
+                                    <span class="inline-flex items-center text-emerald-500" title="Tài khoản đã xác thực CCCD">
+                                        <i class="fa-solid fa-circle-check text-sm"></i>
+                                    </span>
+                                @endif
+                            </h4>
                             
-                            <div class="flex items-center justify-center mb-3">
+                            <div class="flex flex-wrap items-center justify-center gap-2 mb-3">
                                 @if(Auth::user()->role === 'admin')
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100/85 shadow-sm">
                                         <i class="fa-solid fa-shield-halved mr-1.5 text-rose-500"></i>
@@ -99,6 +106,18 @@
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-sky-50 text-sky-600 border border-sky-100/85 shadow-sm">
                                         <i class="fa-solid fa-house-user mr-1.5 text-sky-500"></i>
                                         Khách thuê nhà
+                                    </span>
+                                @endif
+
+                                @if(!empty($user['id_number']))
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500 text-white border border-emerald-600 shadow-sm" title="Tài khoản đã xác thực CCCD">
+                                        <i class="fa-solid fa-circle-check mr-1.5"></i>
+                                        Đã xác thực
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 shadow-sm" title="Chưa xác thực CCCD">
+                                        <i class="fa-solid fa-circle-question mr-1.5 text-slate-400"></i>
+                                        Chưa xác thực
                                     </span>
                                 @endif
                             </div>
@@ -1000,10 +1019,12 @@
                             action="{{ route('profile.cccd') }}"
                             method="POST"
                             x-data="{
-                                cccdFrontUrl: '{{ $user['cccd_front'] ? (str_starts_with($user['cccd_front'], 'http') ? $user['cccd_front'] : asset($user['cccd_front'])) : '' }}',
-                                cccdBackUrl: '{{ $user['cccd_back'] ? (str_starts_with($user['cccd_back'], 'http') ? $user['cccd_back'] : asset($user['cccd_back'])) : '' }}',
+                                cccdFrontUrl: '{{ $user['cccd_front'] ? (str_starts_with($user['cccd_front'], 'http') ? $user['cccd_front'] : (str_starts_with(ltrim($user['cccd_front'], '/'), 'uploads/') ? asset(ltrim($user['cccd_front'], '/')) : 'https://data.nks.vn/storage/' . ltrim(str_replace('storage/', '', ltrim($user['cccd_front'], '/')), '/'))) : '' }}',
+                                cccdBackUrl: '{{ $user['cccd_back'] ? (str_starts_with($user['cccd_back'], 'http') ? $user['cccd_back'] : (str_starts_with(ltrim($user['cccd_back'], '/'), 'uploads/') ? asset(ltrim($user['cccd_back'], '/')) : 'https://data.nks.vn/storage/' . ltrim(str_replace('storage/', '', ltrim($user['cccd_back'], '/')), '/'))) : '' }}',
                                 isScanningFront: false,
                                 isScanningBack: false,
+                                isEditingCccd: {{ (!empty($user['id_number']) && !$errors->hasAny(['id_number', 'dob', 'id_date', 'id_place', 'pob', 'permanent_address', 'cccd_front', 'cccd_back'])) ? 'false' : 'true' }},
+                                hasVerifiedCccd: {{ (!empty($user['id_number'])) ? 'true' : 'false' }},
                                 
                                 compressImage(file, callback) {
                                     const reader = new FileReader();
@@ -1203,10 +1224,154 @@
                             <input type="hidden" name="cccd_front" id="cccd-front-base64">
                             <input type="hidden" name="cccd_back" id="cccd-back-base64">
 
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-800">Xác thực CCCD / CMND</h2>
-                                <p class="text-xs text-slate-400 mt-1 font-semibold">Tải lên hình ảnh CCCD 2 mặt và cập nhật thông tin giấy tờ</p>
+                            <!-- READ-ONLY VERIFIED VIEW -->
+                            <div x-show="!isEditingCccd" class="space-y-6">
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Xác thực CCCD / CMND</h2>
+                                    <p class="text-xs text-slate-400 mt-1 font-semibold">Thông tin xác thực danh tính của bạn</p>
+                                </div>
+
+                                <!-- Verified Success Banner -->
+                                <div class="bg-gradient-to-br from-emerald-500 to-teal-650 text-white rounded-3xl p-6 shadow-md shadow-emerald-550/10 flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                                    </div>
+                                    <div class="text-left">
+                                        <h3 class="text-sm font-black uppercase tracking-wider mb-0.5">Tài khoản đã xác thực</h3>
+                                        <p class="text-[11px] text-emerald-100 font-semibold leading-relaxed">
+                                            Thông tin Căn cước công dân của bạn đã được đối soát và xác thực thành công trên hệ thống.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Read-only images -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <!-- Mặt trước -->
+                                    <div class="space-y-2 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt trước CCCD</label>
+                                        <div class="border border-slate-150 rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] overflow-hidden">
+                                            <template x-if="cccdFrontUrl">
+                                                <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
+                                                    <img :src="cccdFrontUrl" class="w-full h-full object-cover">
+                                                </div>
+                                            </template>
+                                            <template x-if="!cccdFrontUrl">
+                                                <div class="text-center py-6 flex flex-col items-center justify-center text-slate-400">
+                                                    <i class="fa-solid fa-image text-3xl mb-2"></i>
+                                                    <p class="text-xs font-bold">Chưa có ảnh mặt trước</p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mặt sau -->
+                                    <div class="space-y-2 text-left">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt sau CCCD</label>
+                                        <div class="border border-slate-150 rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] overflow-hidden">
+                                            <template x-if="cccdBackUrl">
+                                                <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
+                                                    <img :src="cccdBackUrl" class="w-full h-full object-cover">
+                                                </div>
+                                            </template>
+                                            <template x-if="!cccdBackUrl">
+                                                <div class="text-center py-6 flex flex-col items-center justify-center text-slate-400">
+                                                    <i class="fa-solid fa-image text-3xl mb-2"></i>
+                                                    <p class="text-xs font-bold">Chưa có ảnh mặt sau</p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Summary Card -->
+                                <div class="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-5">
+                                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xs">
+                                            <i class="fa-solid fa-address-card"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-slate-800">Thông tin Căn cước công dân đã lưu</h4>
+                                            <p class="text-[9px] text-slate-400 font-semibold">Dữ liệu hiện tại trong hệ thống</p>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-left">
+                                        <!-- Row 1 Left: Số CCCD -->
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                                <i class="fa-solid fa-hashtag"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Số CCCD / CMND</span>
+                                                <span class="text-xs font-black text-slate-800">{{ $user['id_number'] ?? 'Chưa cập nhật' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Row 1 Right: Ngày sinh -->
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                                <i class="fa-solid fa-calendar-day"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày sinh</span>
+                                                <span class="text-xs font-black text-slate-800">{{ $user['dob'] ?? 'Chưa cập nhật' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Row 2 Left: Ngày cấp -->
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                                <i class="fa-solid fa-calendar-check"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày cấp</span>
+                                                <span class="text-xs font-black text-slate-800">{{ $user['id_date'] ?? 'Chưa cập nhật' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Row 2 Right: Nơi cấp -->
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                                <i class="fa-solid fa-building-columns"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi cấp</span>
+                                                <span class="text-xs font-black text-slate-800 leading-relaxed">{{ $user['id_place'] ?? 'Chưa cập nhật' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Row 3: Quê quán -->
+                                        <div class="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
+                                            <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                                <i class="fa-solid fa-map-location-dot"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Quê quán (Nơi sinh)</span>
+                                                <span class="text-xs font-black text-slate-800 leading-relaxed">{{ $user['pob'] ?? 'Chưa cập nhật' }}</span>
+                                            </div>
+                                        </div>
+                                        <!-- Row 4: Nơi thường trú -->
+                                        <div class="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5">
+                                            <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                                <i class="fa-solid fa-house-user"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi thường trú</span>
+                                                <span class="text-xs font-black text-slate-800 leading-relaxed">{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Edit action -->
+                                <div class="flex justify-end pt-4 border-t border-slate-100">
+                                    <button type="button" @click="isEditingCccd = true" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer active:scale-98">
+                                        <i class="fa-solid fa-pen-to-square mr-2"></i> Chỉnh sửa thông tin
+                                    </button>
+                                </div>
                             </div>
+
+                            <!-- EDITABLE FORM VIEW -->
+                            <div x-show="isEditingCccd" class="space-y-6" x-cloak>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-800">Cập nhật thông tin CCCD</h2>
+                                    <p class="text-xs text-slate-400 mt-1 font-semibold">Tải lên hình ảnh CCCD 2 mặt và cập nhật thông tin giấy tờ</p>
+                                </div>
 
                             <!-- Yêu cầu hình ảnh alert -->
                             <div class="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-start space-x-3 text-left">
@@ -1522,10 +1687,17 @@
                                 </div>
                             </div>
 
-                            <div class="flex justify-end pt-4 border-t border-slate-100">
-                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
-                                    Cập nhật thông tin CCCD
-                                </button>
+                                <!-- Edit/Update Buttons at bottom of Editable View -->
+                                <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-100">
+                                    <template x-if="hasVerifiedCccd">
+                                        <button type="button" @click="isEditingCccd = false" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition cursor-pointer active:scale-98">
+                                            Hủy bỏ
+                                        </button>
+                                    </template>
+                                    <button type="submit" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                        Cập nhật thông tin CCCD
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
