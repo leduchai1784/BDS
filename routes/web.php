@@ -218,6 +218,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::post('/profile/cccd', [ProfileController::class, 'updateCccd'])->name('profile.cccd');
+    Route::post('/profile/scan-cccd', [ProfileController::class, 'scanCccd'])->name('profile.scan-cccd');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });

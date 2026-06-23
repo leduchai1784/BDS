@@ -1010,52 +1010,78 @@
                                     if (file) {
                                         this.cccdFrontUrl = URL.createObjectURL(file);
                                         this.isScanningFront = true;
+                                        const startTime = Date.now();
                                         
                                         // Read file as base64
                                         const reader = new FileReader();
                                         reader.onload = (e) => {
-                                            document.getElementById('cccd-front-base64').value = e.target.result;
+                                            const base64Data = e.target.result;
+                                            document.getElementById('cccd-front-base64').value = base64Data;
+                                            
+                                            // Call Laravel OCR API
+                                            fetch('{{ route('profile.scan-cccd') }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: JSON.stringify({
+                                                    image: base64Data,
+                                                    side: 'front'
+                                                })
+                                            })
+                                            .then(res => res.json())
+                                            .then(resData => {
+                                                const elapsed = Date.now() - startTime;
+                                                const remaining = Math.max(0, 1800 - elapsed);
+                                                
+                                                setTimeout(() => {
+                                                    this.isScanningFront = false;
+                                                    
+                                                    if (resData.success && resData.data) {
+                                                        const idInput = document.getElementById('cccd-id-number');
+                                                        const dobInput = document.getElementById('cccd-dob');
+                                                        const pobInput = document.getElementById('cccd-pob');
+                                                        const addrInput = document.getElementById('cccd-permanent-address');
+                                                        
+                                                        if (resData.data.number && idInput) {
+                                                            idInput.value = resData.data.number;
+                                                            idInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => idInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        if (resData.data.dob && dobInput) {
+                                                            dobInput.value = resData.data.dob;
+                                                            dobInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => dobInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        if (resData.data.pob && pobInput) {
+                                                            pobInput.value = resData.data.pob;
+                                                            pobInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => pobInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        if (resData.data.permanent_address && addrInput) {
+                                                            addrInput.value = resData.data.permanent_address;
+                                                            addrInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => addrInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        
+                                                        this.showToastNotification('Quét thông tin mặt trước CCCD thành công!');
+                                                    } else {
+                                                        this.showToastNotification(resData.message || 'Không thể nhận dạng hình ảnh. Vui lòng điền thủ công.');
+                                                    }
+                                                }, remaining);
+                                            })
+                                            .catch(err => {
+                                                console.error(err);
+                                                const elapsed = Date.now() - startTime;
+                                                const remaining = Math.max(0, 1800 - elapsed);
+                                                setTimeout(() => {
+                                                    this.isScanningFront = false;
+                                                    this.showToastNotification('Lỗi kết nối OCR. Vui lòng điền thủ công.');
+                                                }, remaining);
+                                            });
                                         };
                                         reader.readAsDataURL(file);
-                                        
-                                        // OCR Simulation
-                                        setTimeout(() => {
-                                            this.isScanningFront = false;
-                                            
-                                            // Auto-populate
-                                            const idInput = document.getElementById('cccd-id-number');
-                                            const dobInput = document.getElementById('cccd-dob');
-                                            const pobInput = document.getElementById('cccd-pob');
-                                            
-                                            // Generate random valid CCCD number
-                                            if (idInput && !idInput.value) {
-                                                const rnd = Math.floor(100000000 + Math.random() * 900000000);
-                                                idInput.value = '0791950' + rnd.toString().substring(0, 5);
-                                                idInput.classList.add('ocr-highlight');
-                                                setTimeout(() => idInput.classList.remove('ocr-highlight'), 1500);
-                                            }
-                                            if (dobInput && !dobInput.value) {
-                                                dobInput.value = '1995-10-24';
-                                                dobInput.classList.add('ocr-highlight');
-                                                setTimeout(() => dobInput.classList.remove('ocr-highlight'), 1500);
-                                            }
-                                            if (pobInput && !pobInput.value) {
-                                                pobInput.value = 'Ba Đình, Hà Nội';
-                                                pobInput.classList.add('ocr-highlight');
-                                                setTimeout(() => pobInput.classList.remove('ocr-highlight'), 1500);
-                                            }
-                                            
-                                            // Trigger Toast success
-                                            const rootEl = document.querySelector('[x-data]');
-                                            if (rootEl) {
-                                                if (window.Alpine && Alpine.$data) {
-                                                    const data = Alpine.$data(rootEl);
-                                                    if (data && data.triggerToast) data.triggerToast('Quét thông tin mặt trước CCCD thành công!');
-                                                } else if (rootEl.__x && rootEl.__x.$data) {
-                                                    rootEl.__x.$data.triggerToast('Quét thông tin mặt trước CCCD thành công!');
-                                                }
-                                            }
-                                        }, 1800);
                                     }
                                 },
                                 
@@ -1064,50 +1090,84 @@
                                     if (file) {
                                         this.cccdBackUrl = URL.createObjectURL(file);
                                         this.isScanningBack = true;
+                                        const startTime = Date.now();
                                         
                                         // Read file as base64
                                         const reader = new FileReader();
                                         reader.onload = (e) => {
-                                            document.getElementById('cccd-back-base64').value = e.target.result;
+                                            const base64Data = e.target.result;
+                                            document.getElementById('cccd-back-base64').value = base64Data;
+                                            
+                                            // Call Laravel OCR API
+                                            fetch('{{ route('profile.scan-cccd') }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: JSON.stringify({
+                                                    image: base64Data,
+                                                    side: 'back'
+                                                })
+                                            })
+                                            .then(res => res.json())
+                                            .then(resData => {
+                                                const elapsed = Date.now() - startTime;
+                                                const remaining = Math.max(0, 1800 - elapsed);
+                                                
+                                                setTimeout(() => {
+                                                    this.isScanningBack = false;
+                                                    
+                                                    if (resData.success && resData.data) {
+                                                        const dateInput = document.getElementById('cccd-id-date');
+                                                        const placeInput = document.getElementById('cccd-id-place');
+                                                        const addrInput = document.getElementById('cccd-permanent-address');
+                                                        
+                                                        if (resData.data.issue_date && dateInput) {
+                                                            dateInput.value = resData.data.issue_date;
+                                                            dateInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => dateInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        if (resData.data.issue_place && placeInput) {
+                                                            placeInput.value = resData.data.issue_place;
+                                                            placeInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => placeInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        if (resData.data.permanent_address && addrInput && !addrInput.value) {
+                                                            addrInput.value = resData.data.permanent_address;
+                                                            addrInput.classList.add('ocr-highlight');
+                                                            setTimeout(() => addrInput.classList.remove('ocr-highlight'), 1500);
+                                                        }
+                                                        
+                                                        this.showToastNotification('Quét thông tin mặt sau CCCD thành công!');
+                                                    } else {
+                                                        this.showToastNotification(resData.message || 'Không thể nhận dạng hình ảnh. Vui lòng điền thủ công.');
+                                                    }
+                                                }, remaining);
+                                            })
+                                            .catch(err => {
+                                                console.error(err);
+                                                const elapsed = Date.now() - startTime;
+                                                const remaining = Math.max(0, 1800 - elapsed);
+                                                setTimeout(() => {
+                                                    this.isScanningBack = false;
+                                                    this.showToastNotification('Lỗi kết nối OCR. Vui lòng điền thủ công.');
+                                                }, remaining);
+                                            });
                                         };
                                         reader.readAsDataURL(file);
-                                        
-                                        // OCR Simulation
-                                        setTimeout(() => {
-                                            this.isScanningBack = false;
-                                            
-                                            // Auto-populate
-                                            const dateInput = document.getElementById('cccd-id-date');
-                                            const placeInput = document.getElementById('cccd-id-place');
-                                            const addrInput = document.getElementById('cccd-permanent-address');
-                                            
-                                            if (dateInput && !dateInput.value) {
-                                                dateInput.value = '2022-10-20';
-                                                dateInput.classList.add('ocr-highlight');
-                                                setTimeout(() => dateInput.classList.remove('ocr-highlight'), 1500);
-                                            }
-                                            if (placeInput && !placeInput.value) {
-                                                placeInput.value = 'Cục Cảnh sát QLHC về TTXH';
-                                                placeInput.classList.add('ocr-highlight');
-                                                setTimeout(() => placeInput.classList.remove('ocr-highlight'), 1500);
-                                            }
-                                            if (addrInput && !addrInput.value) {
-                                                addrInput.value = '123 Phố Huế, Hai Bà Trưng, Hà Nội';
-                                                addrInput.classList.add('ocr-highlight');
-                                                setTimeout(() => addrInput.classList.remove('ocr-highlight'), 1500);
-                                            }
-                                            
-                                            // Trigger Toast success
-                                            const rootEl = document.querySelector('[x-data]');
-                                            if (rootEl) {
-                                                if (window.Alpine && Alpine.$data) {
-                                                    const data = Alpine.$data(rootEl);
-                                                    if (data && data.triggerToast) data.triggerToast('Quét thông tin mặt sau CCCD thành công!');
-                                                } else if (rootEl.__x && rootEl.__x.$data) {
-                                                    rootEl.__x.$data.triggerToast('Quét thông tin mặt sau CCCD thành công!');
-                                                }
-                                            }
-                                        }, 1800);
+                                    }
+                                },
+ 
+                                showToastNotification(msg) {
+                                    const rootEl = document.querySelector('[x-data]');
+                                    if (rootEl) {
+                                        if (window.Alpine && Alpine.$data) {
+                                            const data = Alpine.$data(rootEl);
+                                            if (data && data.triggerToast) data.triggerToast(msg);
+                                        } else if (rootEl.__x && rootEl.__x.$data) {
+                                            rootEl.__x.$data.triggerToast(msg);
+                                        }
                                     }
                                 }
                             }"

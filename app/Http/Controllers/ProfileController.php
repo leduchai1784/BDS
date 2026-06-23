@@ -376,4 +376,124 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'password'])->with('success', 'Mật khẩu đã được thay đổi thành công!');
     }
+
+    /**
+     * Scan CCCD image using FPT AI OCR API.
+     */
+    public function scanCccd(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|string',
+            'side' => 'required|string|in:front,back'
+        ]);
+
+        $base64Image = $request->input('image');
+        $side = $request->input('side');
+
+        // Extract raw base64 data
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+        }
+
+        $decodedImage = base64_decode($base64Image);
+        if (!$decodedImage) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu ảnh không hợp lệ.'
+            ], 400);
+        }
+
+        // Save to system temp file
+        $tempFile = tempnam(sys_get_temp_dir(), 'cccd_ocr_');
+        file_put_contents($tempFile, $decodedImage);
+
+        try {
+            $apiKey = env('FPT_AI_API_KEY', 'jEg5yvUc8HLoUnesjGKVuBEyaZz1NRFa');
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'api-key' => $apiKey
+            ])->attach(
+                'image', file_get_contents($tempFile), 'cccd.jpg'
+            )->post('https://api.fpt.ai/vision/idr/vnm');
+
+            // Delete temp file
+            @unlink($tempFile);
+
+            if ($response->failed()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể kết nối đến API OCR của FPT.'
+                ], 500);
+            }
+
+            $ocrData = $response->json();
+            if (isset($ocrData['errorCode']) && $ocrData['errorCode'] != 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lỗi OCR từ FPT: ' . ($ocrData['errorMessage'] ?? 'Không xác định')
+                ], 422);
+            }
+
+            $data = $ocrData['data'][0] ?? null;
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể đọc được thông tin từ hình ảnh.'
+                ], 422);
+            }
+
+            $result = [];
+            if ($side === 'front') {
+                if (!empty($data['id'])) {
+                    $result['number'] = $data['id'];
+                }
+                if (!empty($data['dob'])) {
+                    $result['dob'] = $this->formatOcrDate($data['dob']);
+                }
+                if (!empty($data['home'])) {
+                    $result['pob'] = $data['home'];
+                }
+                if (!empty($data['address'])) {
+                    $result['permanent_address'] = $data['address'];
+                }
+            } else {
+                if (!empty($data['issue_date'])) {
+                    $result['issue_date'] = $this->formatOcrDate($data['issue_date']);
+                }
+                if (!empty($data['issue_loc'])) {
+                    $result['issue_place'] = $data['issue_loc'];
+                }
+                if (!empty($data['address'])) {
+                    $result['permanent_address'] = $data['address'];
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $result
+            ]);
+
+        } catch (\Exception $e) {
+            @unlink($tempFile);
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi trong quá trình quét OCR: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper to format DD/MM/YYYY to YYYY-MM-DD.
+     */
+    private function formatOcrDate($dateStr)
+    {
+        if (empty($dateStr)) {
+            return null;
+        }
+        try {
+            $dateStr = str_replace(' ', '', $dateStr);
+            return \Carbon\Carbon::createFromFormat('d/m/Y', $dateStr)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return $dateStr;
+        }
+    }
 }
