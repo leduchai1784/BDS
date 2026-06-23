@@ -350,11 +350,14 @@ class ProfileController extends Controller
 
             $this->nksAuthService->updateCccd($user->nks_token, $nksData);
 
-            // Sync other profile fields (dob, pob, permanent_address) retrieved from CCCD to NKS as well
+            // Sync other profile fields and CCCD fields to NKS as well (acts as a fail-safe if updateCccd fails due to image library issues on NKS)
             $nksInfoData = [
                 'dob' => $request->dob,
                 'pob' => $request->pob,
                 'permanent_address' => $request->permanent_address,
+                'id_number' => $request->id_number,
+                'id_date' => $nksIdDate,
+                'id_place' => $request->id_place,
             ];
 
             if (!empty($nksInfoData['dob']) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksInfoData['dob'])) {
