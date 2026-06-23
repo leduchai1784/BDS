@@ -1005,6 +1005,38 @@
                                 isScanningFront: false,
                                 isScanningBack: false,
                                 
+                                compressImage(file, callback) {
+                                    const reader = new FileReader();
+                                    reader.readAsDataURL(file);
+                                    reader.onload = (e) => {
+                                        const img = new Image();
+                                        img.src = e.target.result;
+                                        img.onload = () => {
+                                            const canvas = document.createElement('canvas');
+                                            const maxW = 1000;
+                                            const maxH = 1000;
+                                            let w = img.width;
+                                            let h = img.height;
+                                            if (w > h) {
+                                                if (w > maxW) {
+                                                    h = Math.round((h * maxW) / w);
+                                                    w = maxW;
+                                                }
+                                            } else {
+                                                if (h > maxH) {
+                                                    w = Math.round((w * maxH) / h);
+                                                    h = maxH;
+                                                }
+                                            }
+                                            canvas.width = w;
+                                            canvas.height = h;
+                                            const ctx = canvas.getContext('2d');
+                                            ctx.drawImage(img, 0, 0, w, h);
+                                            callback(canvas.toDataURL('image/jpeg', 0.8));
+                                        };
+                                    };
+                                },
+                                
                                 previewFront(event) {
                                     const file = event.target.files[0];
                                     if (file) {
@@ -1012,10 +1044,7 @@
                                         this.isScanningFront = true;
                                         const startTime = Date.now();
                                         
-                                        // Read file as base64
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            const base64Data = e.target.result;
+                                        this.compressImage(file, (base64Data) => {
                                             document.getElementById('cccd-front-base64').value = base64Data;
                                             
                                             // Call Laravel OCR API
@@ -1080,8 +1109,7 @@
                                                     this.showToastNotification('Lỗi kết nối OCR. Vui lòng điền thủ công.');
                                                 }, remaining);
                                             });
-                                        };
-                                        reader.readAsDataURL(file);
+                                        });
                                     }
                                 },
                                 
@@ -1092,10 +1120,7 @@
                                         this.isScanningBack = true;
                                         const startTime = Date.now();
                                         
-                                        // Read file as base64
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            const base64Data = e.target.result;
+                                        this.compressImage(file, (base64Data) => {
                                             document.getElementById('cccd-back-base64').value = base64Data;
                                             
                                             // Call Laravel OCR API
@@ -1154,8 +1179,7 @@
                                                     this.showToastNotification('Lỗi kết nối OCR. Vui lòng điền thủ công.');
                                                 }, remaining);
                                             });
-                                        };
-                                        reader.readAsDataURL(file);
+                                        });
                                     }
                                 },
  
