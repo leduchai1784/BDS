@@ -176,6 +176,10 @@
                  'success' => true,
                  'message' => 'CCCD updated successfully'
              ], 200),
+             'https://account.nks.vn/api/nks/user/updateInfo' => Http::response([
+                 'success' => true,
+                 'message' => 'Profile updated successfully'
+             ], 200),
              'https://account.nks.vn/api/nks/user' => Http::response([
                  'success' => true,
                  'data' => [

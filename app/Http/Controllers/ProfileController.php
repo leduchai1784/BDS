@@ -350,6 +350,21 @@ class ProfileController extends Controller
 
             $this->nksAuthService->updateCccd($user->nks_token, $nksData);
 
+            // Sync other profile fields (dob, pob, permanent_address) retrieved from CCCD to NKS as well
+            $nksInfoData = [
+                'dob' => $request->dob,
+                'pob' => $request->pob,
+                'permanent_address' => $request->permanent_address,
+            ];
+
+            if (!empty($nksInfoData['dob']) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksInfoData['dob'])) {
+                try {
+                    $nksInfoData['dob'] = \Carbon\Carbon::createFromFormat('d/m/Y', $nksInfoData['dob'])->format('Y-m-d');
+                } catch (\Exception $e) {}
+            }
+
+            $this->nksAuthService->updateInfo($user->nks_token, $nksInfoData);
+
             // Fetch updated profile from NKS to sync URLs back to local DB
             $nksInfo = $this->nksAuthService->getUserInfo($user->nks_token);
             if ($nksInfo['success'] && !empty($nksInfo['user'])) {
