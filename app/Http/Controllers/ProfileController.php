@@ -316,9 +316,15 @@ class ProfileController extends Controller
                 if (str_starts_with($existingPath, 'data:image')) {
                     return $existingPath;
                 }
-                if (str_starts_with($existingPath, 'http')) {
+                
+                $url = $existingPath;
+                if (str_starts_with($existingPath, 'users/')) {
+                    $url = 'https://data.nks.vn/storage/' . $existingPath;
+                }
+
+                if (str_starts_with($url, 'http')) {
                     try {
-                        $imgData = \Illuminate\Support\Facades\Http::withoutVerifying()->get($existingPath)->body();
+                        $imgData = \Illuminate\Support\Facades\Http::withoutVerifying()->get($url)->body();
                         return 'data:image/jpeg;base64,' . base64_encode($imgData);
                     } catch (\Exception $e) {
                         return '';
