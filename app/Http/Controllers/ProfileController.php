@@ -245,8 +245,8 @@ class ProfileController extends Controller
             'id_date' => 'required|string|max:50',
             'id_place' => 'required|string|max:255',
             'permanent_address' => 'required|string|max:255',
-            'cccd_front' => 'nullable|image|mimes:jpeg,png,jpg|max:3072',
-            'cccd_back' => 'nullable|image|mimes:jpeg,png,jpg|max:3072',
+            'cccd_front' => 'nullable|string',
+            'cccd_back' => 'nullable|string',
         ], [
             'dob.required' => 'Ngày sinh không được để trống.',
             'pob.required' => 'Quê quán không được để trống.',
@@ -254,12 +254,8 @@ class ProfileController extends Controller
             'id_date.required' => 'Ngày cấp không được để trống.',
             'id_place.required' => 'Nơi cấp không được để trống.',
             'permanent_address.required' => 'Nơi thường trú không được để trống.',
-            'cccd_front.image' => 'Mặt trước CCCD phải là định dạng hình ảnh.',
-            'cccd_front.mimes' => 'Hỗ trợ các định dạng ảnh: jpeg, png, jpg.',
-            'cccd_front.max' => 'Dung lượng ảnh mặt trước tối đa là 3MB.',
-            'cccd_back.image' => 'Mặt sau CCCD phải là định dạng hình ảnh.',
-            'cccd_back.mimes' => 'Hỗ trợ các định dạng ảnh: jpeg, png, jpg.',
-            'cccd_back.max' => 'Dung lượng ảnh mặt sau tối đa là 3MB.',
+            'cccd_front.string' => 'Ảnh mặt trước CCCD không hợp lệ.',
+            'cccd_back.string' => 'Ảnh mặt sau CCCD không hợp lệ.',
         ]);
 
         // Convert YYYY-MM-DD from type="date" to dd/mm/yyyy for DB and API compatibility
@@ -278,23 +274,8 @@ class ProfileController extends Controller
             } catch (\Exception $e) {}
         }
 
-        $cccdFrontPath = null;
-        $cccdBackPath = null;
-
-        // Local CCCD uploads
-        if ($request->hasFile('cccd_front')) {
-            $file = $request->file('cccd_front');
-            $filename = 'cccd_front_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/cccd'), $filename);
-            $cccdFrontPath = 'uploads/cccd/' . $filename;
-        }
-
-        if ($request->hasFile('cccd_back')) {
-            $file = $request->file('cccd_back');
-            $filename = 'cccd_back_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/cccd'), $filename);
-            $cccdBackPath = 'uploads/cccd/' . $filename;
-        }
+        $cccdFront = $request->input('cccd_front');
+        $cccdBack = $request->input('cccd_back');
 
         $localData = [
             'dob' => $request->dob,
@@ -305,35 +286,69 @@ class ProfileController extends Controller
             'permanent_address' => $request->permanent_address,
         ];
 
-        if ($cccdFrontPath) {
-            $localData['cccd_front'] = $cccdFrontPath;
+        if ($cccdFront) {
+            $localData['cccd_front'] = $cccdFront;
         }
-        if ($cccdBackPath) {
-            $localData['cccd_back'] = $cccdBackPath;
+        if ($cccdBack) {
+            $localData['cccd_back'] = $cccdBack;
         }
 
-        // Save locally
+        // Save locally (will fail gracefully on read-only file systems)
         $this->profileService->updateCccd($user->id, $localData);
 
         // Sync to NKS if user has a token
         if ($user->nks_token) {
+            // Helper to get base64 string (either new upload or existing path)
+            $helperGetBase64 = function ($inputBase64, $existingPath) {
+                if ($inputBase64) {
+                    return $inputBase64;
+                }
+                if (!$existingPath) {
+                    return '';
+                }
+                if (str_starts_with($existingPath, 'data:image')) {
+                    return $existingPath;
+                }
+                if (str_starts_with($existingPath, 'http')) {
+                    try {
+                        $imgData = Http::withoutVerifying()->get($existingPath)->body();
+                        return 'data:image/jpeg;base64,' . base64_encode($imgData);
+                    } catch (\Exception $e) {
+                        return '';
+                    }
+                }
+                $fullPath = public_path($existingPath);
+                if (file_exists($fullPath)) {
+                    $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
+                    return 'data:image/' . $ext . ';base64,' . base64_encode(file_get_contents($fullPath));
+                }
+                return '';
+            };
+
             $nksData = [
-                'dob' => $request->dob,
-                'pob' => $request->pob,
                 'id_number' => $request->id_number,
                 'id_date' => $request->id_date,
                 'id_place' => $request->id_place,
-                'permanent_address' => $request->permanent_address,
+                'cccd_front' => $helperGetBase64($cccdFront, $user->cccd_front),
+                'cccd_back' => $helperGetBase64($cccdBack, $user->cccd_back),
             ];
-            
-            if ($request->hasFile('cccd_front')) {
-                $nksData['cccd_front'] = $request->file('cccd_front');
-            }
-            if ($request->hasFile('cccd_back')) {
-                $nksData['cccd_back'] = $request->file('cccd_back');
-            }
 
             $this->nksAuthService->updateCccd($user->nks_token, $nksData);
+
+            // Fetch updated profile from NKS to sync URLs back to local DB
+            $nksInfo = $this->nksAuthService->getUserInfo($user->nks_token);
+            if ($nksInfo['success'] && !empty($nksInfo['user'])) {
+                $syncFields = [];
+                if (!empty($nksInfo['user']['cccd_front'])) {
+                    $syncFields['cccd_front'] = $nksInfo['user']['cccd_front'];
+                }
+                if (!empty($nksInfo['user']['cccd_back'])) {
+                    $syncFields['cccd_back'] = $nksInfo['user']['cccd_back'];
+                }
+                if (!empty($syncFields)) {
+                    $user->update($syncFields);
+                }
+            }
         }
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'cccd'])->with('success', 'Thông tin xác thực CCCD đã được cập nhật thành công!');

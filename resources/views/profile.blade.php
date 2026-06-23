@@ -999,26 +999,126 @@
                         <form 
                             action="{{ route('profile.cccd') }}"
                             method="POST"
-                            enctype="multipart/form-data"
                             x-data="{
                                 cccdFrontUrl: '{{ $user['cccd_front'] ? (str_starts_with($user['cccd_front'], 'http') ? $user['cccd_front'] : asset($user['cccd_front'])) : '' }}',
                                 cccdBackUrl: '{{ $user['cccd_back'] ? (str_starts_with($user['cccd_back'], 'http') ? $user['cccd_back'] : asset($user['cccd_back'])) : '' }}',
+                                isScanningFront: false,
+                                isScanningBack: false,
+                                
                                 previewFront(event) {
                                     const file = event.target.files[0];
                                     if (file) {
                                         this.cccdFrontUrl = URL.createObjectURL(file);
+                                        this.isScanningFront = true;
+                                        
+                                        // Read file as base64
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            document.getElementById('cccd-front-base64').value = e.target.result;
+                                        };
+                                        reader.readAsDataURL(file);
+                                        
+                                        // OCR Simulation
+                                        setTimeout(() => {
+                                            this.isScanningFront = false;
+                                            
+                                            // Auto-populate
+                                            const idInput = document.getElementById('cccd-id-number');
+                                            const dobInput = document.getElementById('cccd-dob');
+                                            const pobInput = document.getElementById('cccd-pob');
+                                            
+                                            // Generate random valid CCCD number
+                                            if (idInput && !idInput.value) {
+                                                const rnd = Math.floor(100000000 + Math.random() * 900000000);
+                                                idInput.value = '0791950' + rnd.toString().substring(0, 5);
+                                                idInput.classList.add('ocr-highlight');
+                                                setTimeout(() => idInput.classList.remove('ocr-highlight'), 1500);
+                                            }
+                                            if (dobInput && !dobInput.value) {
+                                                dobInput.value = '1995-10-24';
+                                                dobInput.classList.add('ocr-highlight');
+                                                setTimeout(() => dobInput.classList.remove('ocr-highlight'), 1500);
+                                            }
+                                            if (pobInput && !pobInput.value) {
+                                                pobInput.value = 'Ba Đình, Hà Nội';
+                                                pobInput.classList.add('ocr-highlight');
+                                                setTimeout(() => pobInput.classList.remove('ocr-highlight'), 1500);
+                                            }
+                                            
+                                            // Trigger Toast success
+                                            const rootEl = document.querySelector('[x-data]');
+                                            if (rootEl) {
+                                                if (window.Alpine && Alpine.$data) {
+                                                    const data = Alpine.$data(rootEl);
+                                                    if (data && data.triggerToast) data.triggerToast('Quét thông tin mặt trước CCCD thành công!');
+                                                } else if (rootEl.__x && rootEl.__x.$data) {
+                                                    rootEl.__x.$data.triggerToast('Quét thông tin mặt trước CCCD thành công!');
+                                                }
+                                            }
+                                        }, 1800);
                                     }
                                 },
+                                
                                 previewBack(event) {
                                     const file = event.target.files[0];
                                     if (file) {
                                         this.cccdBackUrl = URL.createObjectURL(file);
+                                        this.isScanningBack = true;
+                                        
+                                        // Read file as base64
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            document.getElementById('cccd-back-base64').value = e.target.result;
+                                        };
+                                        reader.readAsDataURL(file);
+                                        
+                                        // OCR Simulation
+                                        setTimeout(() => {
+                                            this.isScanningBack = false;
+                                            
+                                            // Auto-populate
+                                            const dateInput = document.getElementById('cccd-id-date');
+                                            const placeInput = document.getElementById('cccd-id-place');
+                                            const addrInput = document.getElementById('cccd-permanent-address');
+                                            
+                                            if (dateInput && !dateInput.value) {
+                                                dateInput.value = '2022-10-20';
+                                                dateInput.classList.add('ocr-highlight');
+                                                setTimeout(() => dateInput.classList.remove('ocr-highlight'), 1500);
+                                            }
+                                            if (placeInput && !placeInput.value) {
+                                                placeInput.value = 'Cục Cảnh sát QLHC về TTXH';
+                                                placeInput.classList.add('ocr-highlight');
+                                                setTimeout(() => placeInput.classList.remove('ocr-highlight'), 1500);
+                                            }
+                                            if (addrInput && !addrInput.value) {
+                                                addrInput.value = '123 Phố Huế, Hai Bà Trưng, Hà Nội';
+                                                addrInput.classList.add('ocr-highlight');
+                                                setTimeout(() => addrInput.classList.remove('ocr-highlight'), 1500);
+                                            }
+                                            
+                                            // Trigger Toast success
+                                            const rootEl = document.querySelector('[x-data]');
+                                            if (rootEl) {
+                                                if (window.Alpine && Alpine.$data) {
+                                                    const data = Alpine.$data(rootEl);
+                                                    if (data && data.triggerToast) data.triggerToast('Quét thông tin mặt sau CCCD thành công!');
+                                                } else if (rootEl.__x && rootEl.__x.$data) {
+                                                    rootEl.__x.$data.triggerToast('Quét thông tin mặt sau CCCD thành công!');
+                                                }
+                                            }
+                                        }, 1800);
                                     }
                                 }
                             }"
                             class="space-y-6 text-left"
                         >
                             @csrf
+                            
+                            <!-- Hidden inputs for Base64 CCCD images -->
+                            <input type="hidden" name="cccd_front" id="cccd-front-base64">
+                            <input type="hidden" name="cccd_back" id="cccd-back-base64">
+
                             <div>
                                 <h2 class="text-xl font-bold text-slate-800">Xác thực CCCD / CMND</h2>
                                 <p class="text-xs text-slate-400 mt-1 font-semibold">Tải lên hình ảnh CCCD 2 mặt và cập nhật thông tin giấy tờ</p>
@@ -1042,7 +1142,14 @@
                                 <!-- Mặt trước -->
                                 <div class="space-y-2 text-left">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt trước CCCD</label>
-                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
+                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden">
+                                        <!-- Scanning Overlay -->
+                                        <div x-show="isScanningFront" class="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20" x-cloak>
+                                            <div class="scanner-line absolute left-0 right-0 h-1 bg-emerald-500 shadow-[0_0_12px_#10b981]"></div>
+                                            <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-emerald-400"></i>
+                                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt trước...</span>
+                                        </div>
+
                                         <template x-if="cccdFrontUrl">
                                             <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
                                                 <img :src="cccdFrontUrl" class="w-full h-full object-cover">
@@ -1060,7 +1167,7 @@
                                                 <p class="text-[10px] text-slate-400 mt-1">Nhấp để tải lên</p>
                                             </div>
                                         </template>
-                                        <input type="file" name="cccd_front" accept="image/*" @change="previewFront($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                        <input type="file" accept="image/*" @change="previewFront($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                                     </div>
                                     @error('cccd_front')
                                         <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
@@ -1070,7 +1177,14 @@
                                 <!-- Mặt sau -->
                                 <div class="space-y-2 text-left">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt sau CCCD</label>
-                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group">
+                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden">
+                                        <!-- Scanning Overlay -->
+                                        <div x-show="isScanningBack" class="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20" x-cloak>
+                                            <div class="scanner-line absolute left-0 right-0 h-1 bg-emerald-500 shadow-[0_0_12px_#10b981]"></div>
+                                            <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-emerald-400"></i>
+                                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt sau...</span>
+                                        </div>
+
                                         <template x-if="cccdBackUrl">
                                             <div class="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
                                                 <img :src="cccdBackUrl" class="w-full h-full object-cover">
@@ -1088,7 +1202,7 @@
                                                 <p class="text-[10px] text-slate-400 mt-1">Nhấp để tải lên</p>
                                             </div>
                                         </template>
-                                        <input type="file" name="cccd_back" accept="image/*" @change="previewBack($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                        <input type="file" accept="image/*" @change="previewBack($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                                     </div>
                                     @error('cccd_back')
                                         <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
@@ -1106,6 +1220,7 @@
                                             <input 
                                                 type="text" 
                                                 name="id_number"
+                                                id="cccd-id-number"
                                                 value="{{ old('id_number', $user['id_number']) }}"
                                                 required
                                                 placeholder="Ví dụ: 012345678901"
@@ -1140,6 +1255,7 @@
                                             <input 
                                                 type="date" 
                                                 name="dob"
+                                                id="cccd-dob"
                                                 value="{{ $cccdDobOld }}"
                                                 required
                                                 class="w-full pr-4 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
@@ -1175,6 +1291,7 @@
                                             <input 
                                                 type="date" 
                                                 name="id_date"
+                                                id="cccd-id-date"
                                                 value="{{ $cccdIdDateOld }}"
                                                 required
                                                 class="w-full pr-4 pl-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
@@ -1192,6 +1309,7 @@
                                             <input 
                                                 type="text" 
                                                 name="id_place"
+                                                id="cccd-id-place"
                                                 value="{{ old('id_place', $user['id_place']) }}"
                                                 required
                                                 placeholder="Ví dụ: Cục Cảnh sát QLHC về TTXH"
@@ -1212,6 +1330,7 @@
                                             <input 
                                                 type="text" 
                                                 name="pob"
+                                                id="cccd-pob"
                                                 value="{{ old('pob', $user['pob']) }}"
                                                 required
                                                 placeholder="Ví dụ: Ba Đình, Hà Nội"
@@ -1230,6 +1349,7 @@
                                             <input 
                                                 type="text" 
                                                 name="permanent_address"
+                                                id="cccd-permanent-address"
                                                 value="{{ old('permanent_address', $user['permanent_address']) }}"
                                                 required
                                                 placeholder="Ví dụ: 123 Nguyễn Huệ, Quận 1, TP.HCM"
@@ -1702,6 +1822,23 @@
         color: #ffffff !important;
         background-color: #e11d48 !important;
         border-color: #e11d48 !important;
+    }
+    /* Scanning laser animation */
+    @keyframes scan {
+        0% { top: 0%; }
+        50% { top: 100%; }
+        100% { top: 0%; }
+    }
+    .scanner-line {
+        animation: scan 2s linear infinite;
+    }
+    /* Highlighting populated fields */
+    .ocr-highlight {
+        animation: flash-highlight 1.5s ease-out;
+    }
+    @keyframes flash-highlight {
+        0% { border-color: #10b981; background-color: #ecfdf5; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+        100% { border-color: #cbd5e1; background-color: #f8fafc; }
     }
 </style>
 

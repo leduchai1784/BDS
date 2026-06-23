@@ -60,11 +60,60 @@ class ProfileService
         if (isset($data['dob'])) $updateData['dob'] = $data['dob'];
         if (isset($data['pob'])) $updateData['pob'] = $data['pob'];
 
+        // Decode cccd_front if it is a Base64 string
         if (!empty($data['cccd_front'])) {
-            $updateData['cccd_front'] = $data['cccd_front'];
+            if (str_starts_with($data['cccd_front'], 'data:image') || preg_match('/^data:image\/(\w+);base64,/i', $data['cccd_front'])) {
+                try {
+                    if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $data['cccd_front'], $matches)) {
+                        $ext = $matches[1];
+                        $decoded = base64_decode($matches[2]);
+                    } else {
+                        $ext = 'jpg';
+                        $decoded = base64_decode($data['cccd_front']);
+                    }
+                    
+                    $filename = 'cccd_front_' . $userId . '_' . time() . '.' . $ext;
+                    $dir = public_path('uploads/cccd');
+                    if (!file_exists($dir)) {
+                        @mkdir($dir, 0755, true);
+                    }
+                    if (@file_put_contents($dir . '/' . $filename, $decoded) !== false) {
+                        $updateData['cccd_front'] = 'uploads/cccd/' . $filename;
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning("Local cccd_front save failed: " . $e->getMessage());
+                }
+            } else {
+                $updateData['cccd_front'] = $data['cccd_front'];
+            }
         }
+
+        // Decode cccd_back if it is a Base64 string
         if (!empty($data['cccd_back'])) {
-            $updateData['cccd_back'] = $data['cccd_back'];
+            if (str_starts_with($data['cccd_back'], 'data:image') || preg_match('/^data:image\/(\w+);base64,/i', $data['cccd_back'])) {
+                try {
+                    if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $data['cccd_back'], $matches)) {
+                        $ext = $matches[1];
+                        $decoded = base64_decode($matches[2]);
+                    } else {
+                        $ext = 'jpg';
+                        $decoded = base64_decode($data['cccd_back']);
+                    }
+                    
+                    $filename = 'cccd_back_' . $userId . '_' . time() . '.' . $ext;
+                    $dir = public_path('uploads/cccd');
+                    if (!file_exists($dir)) {
+                        @mkdir($dir, 0755, true);
+                    }
+                    if (@file_put_contents($dir . '/' . $filename, $decoded) !== false) {
+                        $updateData['cccd_back'] = 'uploads/cccd/' . $filename;
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning("Local cccd_back save failed: " . $e->getMessage());
+                }
+            } else {
+                $updateData['cccd_back'] = $data['cccd_back'];
+            }
         }
 
         $user->update($updateData);

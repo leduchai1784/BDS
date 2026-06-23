@@ -117,37 +117,21 @@ class NksAuthService
     public function updateCccd(string $token, array $data): array
     {
         try {
-            $request = Http::withoutVerifying()
-                ->timeout(20);
-
-            $hasFiles = false;
-            $multipartData = [];
-
-            foreach ($data as $key => $value) {
-                if ($value instanceof \Illuminate\Http\UploadedFile) {
-                    $hasFiles = true;
-                    $request->attach($key, file_get_contents($value->getRealPath()), $value->getClientOriginalName());
-                } else {
-                    $multipartData[$key] = $value;
-                }
-            }
-
-            $multipartData['access_token'] = $token;
-
-            if ($hasFiles) {
-                $response = $request->post("{$this->baseUrl}/updateCccd", $multipartData);
-            } else {
-                $response = Http::withoutVerifying()
-                    ->timeout(20)
-                    ->post("{$this->baseUrl}/updateCccd", $multipartData);
-            }
+            $response = Http::withoutVerifying()
+                ->timeout(20)
+                ->post("{$this->baseUrl}/updateCccd", [
+                    'front'        => $data['cccd_front'] ?? '',
+                    'back'         => $data['cccd_back'] ?? '',
+                    'number'       => $data['id_number'] ?? '',
+                    'date'         => $data['id_date'] ?? '',
+                    'place'        => $data['id_place'] ?? '',
+                    'access_token' => $token
+                ]);
 
             $json = $response->json();
 
             Log::info('NKS updateCccd Request:', [
                 'url' => "{$this->baseUrl}/updateCccd",
-                'hasFiles' => $hasFiles,
-                'payload' => $multipartData,
                 'status' => $response->status(),
                 'response' => $json
             ]);
