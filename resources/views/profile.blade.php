@@ -1424,30 +1424,77 @@
                             </div>
 
                             <!-- CCCD Info Summary Card -->
-                            <div class="bg-slate-50/50 border border-slate-100 rounded-3xl p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center sm:text-left mt-6">
-                                <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Số CCCD đã lưu</span>
-                                    <span class="text-xs font-black text-slate-800">{{ $user['id_number'] ?? 'Chưa cập nhật' }}</span>
+                            <div class="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-3xl p-6 mt-6 shadow-sm">
+                                <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-5">
+                                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xs">
+                                        <i class="fa-solid fa-address-card"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800">Thông tin Căn cước công dân đã lưu</h4>
+                                        <p class="text-[9px] text-slate-400 font-semibold">Dữ liệu hiện tại trong hệ thống</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ngày sinh</span>
-                                    <span class="text-xs font-black text-slate-800">{{ $user['dob'] ?? 'Chưa cập nhật' }}</span>
-                                </div>
-                                <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ngày cấp</span>
-                                    <span class="text-xs font-black text-slate-800">{{ $user['id_date'] ?? 'Chưa cập nhật' }}</span>
-                                </div>
-                                <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nơi cấp</span>
-                                    <span class="text-xs font-black text-slate-800">{{ $user['id_place'] ?? 'Chưa cập nhật' }}</span>
-                                </div>
-                                <div class="col-span-2">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Quê quán (Nơi sinh)</span>
-                                    <span class="text-xs font-black text-slate-800 truncate block" title="{{ $user['pob'] ?? 'Chưa cập nhật' }}">{{ $user['pob'] ?? 'Chưa cập nhật' }}</span>
-                                </div>
-                                <div class="col-span-2">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nơi thường trú</span>
-                                    <span class="text-xs font-black text-slate-800 truncate block" title="{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}">{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}</span>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-left">
+                                    <!-- Row 1 Left: Số CCCD -->
+                                    <div class="flex items-start gap-3">
+                                        <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                            <i class="fa-solid fa-hashtag"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Số CCCD / CMND</span>
+                                            <span class="text-xs font-black text-slate-800">{{ $user['id_number'] ?? 'Chưa cập nhật' }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Row 1 Right: Ngày sinh -->
+                                    <div class="flex items-start gap-3">
+                                        <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                            <i class="fa-solid fa-calendar-day"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày sinh</span>
+                                            <span class="text-xs font-black text-slate-800">{{ $user['dob'] ?? 'Chưa cập nhật' }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Row 2 Left: Ngày cấp -->
+                                    <div class="flex items-start gap-3">
+                                        <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                            <i class="fa-solid fa-calendar-check"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày cấp</span>
+                                            <span class="text-xs font-black text-slate-800">{{ $user['id_date'] ?? 'Chưa cập nhật' }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Row 2 Right: Nơi cấp -->
+                                    <div class="flex items-start gap-3">
+                                        <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                            <i class="fa-solid fa-building-columns"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi cấp</span>
+                                            <span class="text-xs font-black text-slate-800 leading-relaxed">{{ $user['id_place'] ?? 'Chưa cập nhật' }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Row 3: Quê quán -->
+                                    <div class="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
+                                        <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                            <i class="fa-solid fa-map-location-dot"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Quê quán (Nơi sinh)</span>
+                                            <span class="text-xs font-black text-slate-800 leading-relaxed">{{ $user['pob'] ?? 'Chưa cập nhật' }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Row 4: Nơi thường trú -->
+                                    <div class="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5">
+                                        <div class="mt-1 text-slate-400 text-xs w-4 text-center">
+                                            <i class="fa-solid fa-house-user"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi thường trú</span>
+                                            <span class="text-xs font-black text-slate-800 leading-relaxed">{{ $user['permanent_address'] ?? 'Chưa cập nhật' }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

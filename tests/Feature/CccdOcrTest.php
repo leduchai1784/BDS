@@ -139,4 +139,71 @@
                  'message' => 'Lỗi OCR từ FPT: Image is invalid'
              ]);
      }
+ 
+     public function test_update_cccd_saves_locally(): void
+     {
+         $payload = [
+             'dob' => '1995-10-24',
+             'pob' => 'Ba Đình, Hà Nội',
+             'id_number' => '079195012345',
+             'id_date' => '2022-10-20',
+             'id_place' => 'Cục Cảnh sát QLHC về TTXH',
+             'permanent_address' => '123 Phố Huế, Hai Bà Trưng, Hà Nội',
+             'cccd_front' => 'data:image/jpeg;base64,' . base64_encode('fake front image'),
+             'cccd_back' => 'data:image/jpeg;base64,' . base64_encode('fake back image'),
+         ];
+ 
+         $response = $this->actingAs($this->user)
+             ->post(route('profile.cccd'), $payload);
+ 
+         $response->assertRedirect(route('profile.index', ['tab' => 'profile', 'subtab' => 'cccd']));
+         
+         $this->user->refresh();
+         $this->assertEquals('079195012345', $this->user->id_number);
+         $this->assertEquals('24/10/1995', $this->user->dob);
+         $this->assertEquals('20/10/2022', $this->user->id_date);
+         $this->assertEquals('Ba Đình, Hà Nội', $this->user->pob);
+         $this->assertEquals('Cục Cảnh sát QLHC về TTXH', $this->user->id_place);
+         $this->assertEquals('123 Phố Huế, Hai Bà Trưng, Hà Nội', $this->user->permanent_address);
+     }
+ 
+     public function test_update_cccd_syncs_to_nks(): void
+     {
+         $this->user->update(['nks_token' => 'mock-nks-token']);
+ 
+         Http::fake([
+             'https://account.nks.vn/api/nks/user/updateCccd' => Http::response([
+                 'success' => true,
+                 'message' => 'CCCD updated successfully'
+             ], 200),
+             'https://account.nks.vn/api/nks/user' => Http::response([
+                 'success' => true,
+                 'data' => [
+                     'cccd_front' => 'https://data.nks.vn/uploads/cccd/front.jpg',
+                     'cccd_back' => 'https://data.nks.vn/uploads/cccd/back.jpg'
+                 ]
+             ], 200)
+         ]);
+ 
+         $payload = [
+             'dob' => '1995-10-24',
+             'pob' => 'Ba Đình, Hà Nội',
+             'id_number' => '079195012345',
+             'id_date' => '2022-10-20',
+             'id_place' => 'Cục Cảnh sát QLHC về TTXH',
+             'permanent_address' => '123 Phố Huế, Hai Bà Trưng, Hà Nội',
+             'cccd_front' => 'data:image/jpeg;base64,' . base64_encode('fake front image'),
+             'cccd_back' => 'data:image/jpeg;base64,' . base64_encode('fake back image'),
+         ];
+ 
+         $response = $this->actingAs($this->user)
+             ->post(route('profile.cccd'), $payload);
+ 
+         $response->assertRedirect(route('profile.index', ['tab' => 'profile', 'subtab' => 'cccd']));
+         
+         $this->user->refresh();
+         $this->assertEquals('079195012345', $this->user->id_number);
+         $this->assertEquals('https://data.nks.vn/uploads/cccd/front.jpg', $this->user->cccd_front);
+         $this->assertEquals('https://data.nks.vn/uploads/cccd/back.jpg', $this->user->cccd_back);
+     }
  }
