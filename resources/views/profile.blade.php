@@ -1231,18 +1231,7 @@
                                     <p class="text-xs text-slate-400 mt-1 font-semibold">Thông tin xác thực danh tính của bạn</p>
                                 </div>
 
-                                <!-- Verified Success Banner -->
-                                <div class="bg-gradient-to-br from-emerald-500 to-teal-650 text-white rounded-3xl p-6 shadow-md shadow-emerald-550/10 flex items-center space-x-4">
-                                    <div class="w-12 h-12 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-circle-check text-2xl"></i>
-                                    </div>
-                                    <div class="text-left">
-                                        <h3 class="text-sm font-black uppercase tracking-wider mb-0.5">Tài khoản đã xác thực</h3>
-                                        <p class="text-[11px] text-emerald-100 font-semibold leading-relaxed">
-                                            Thông tin Căn cước công dân của bạn đã được đối soát và xác thực thành công trên hệ thống.
-                                        </p>
-                                    </div>
-                                </div>
+
 
                                 <!-- Read-only images -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
