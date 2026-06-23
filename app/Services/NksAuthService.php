@@ -55,6 +55,13 @@ class NksAuthService
     public function updateInfo(string $token, array $data): array
     {
         try {
+            if (isset($data['id_place'])) {
+                $data['id_place'] = $this->sanitizeNksString($data['id_place'], 50);
+            }
+            if (isset($data['pob'])) {
+                $data['pob'] = $this->sanitizeNksString($data['pob'], 100);
+            }
+
             $payload = array_merge($data, ['access_token' => $token]);
 
             $response = Http::withoutVerifying()
@@ -117,6 +124,7 @@ class NksAuthService
     public function updateCccd(string $token, array $data): array
     {
         try {
+            $idPlace = $this->sanitizeNksString($data['id_place'] ?? $data['place'] ?? '', 50);
             $response = Http::withoutVerifying()
                 ->timeout(20)
                 ->post("{$this->baseUrl}/updateCccd", [
@@ -124,7 +132,7 @@ class NksAuthService
                     'back'         => $data['cccd_back'] ?? '',
                     'number'       => $data['id_number'] ?? '',
                     'date'         => $data['id_date'] ?? '',
-                    'place'        => $data['id_place'] ?? '',
+                    'place'        => $idPlace,
                     'access_token' => $token
                 ]);
 
@@ -225,5 +233,36 @@ class NksAuthService
             'intro'        => $nksUser['intro'] ?? null,
             'website'      => $nksUser['website'] ?? null,
         ];
+    }
+
+    /**
+     * Sanitize and truncate a string to fit NKS API limits.
+     */
+    private function sanitizeNksString(?string $str, int $maxLength = 50): string
+    {
+        if (empty($str)) {
+            return '';
+        }
+        
+        $str = trim($str);
+        
+        // Map common long Vietnamese ID places to standard short forms
+        if ($maxLength === 50) {
+            $lowerStr = mb_strtolower($str);
+            if (str_contains($lowerStr, 'cục cảnh sát quản lý hành chính về trật tự xã hội') || 
+                str_contains($lowerStr, 'cục cảnh sát qlhc về ttxh')) {
+                return 'Cục Cảnh sát QLHC về TTXH';
+            }
+            if (str_contains($lowerStr, 'cục cảnh sát đăng ký quản lý cư trú và dữ liệu quốc gia về dân cư') || 
+                str_contains($lowerStr, 'cục cảnh sát đkql cư trú và dlqg về dân cư')) {
+                return 'Cục Cảnh sát ĐKQL cư trú & DLQG dân cư';
+            }
+        }
+        
+        if (mb_strlen($str) > $maxLength) {
+            return mb_substr($str, 0, $maxLength);
+        }
+        
+        return $str;
     }
 }
