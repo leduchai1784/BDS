@@ -190,7 +190,13 @@ class ProfileController extends Controller
 
         // Sync to NKS if user has a token
         if ($user->nks_token) {
-            $this->nksAuthService->updateInfo($user->nks_token, $updateData);
+            $nksUpdateData = $updateData;
+            if (!empty($nksUpdateData['dob']) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksUpdateData['dob'])) {
+                try {
+                    $nksUpdateData['dob'] = \Carbon\Carbon::createFromFormat('d/m/Y', $nksUpdateData['dob'])->format('Y-m-d');
+                } catch (\Exception $e) {}
+            }
+            $this->nksAuthService->updateInfo($user->nks_token, $nksUpdateData);
         }
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'info'])->with('success', 'Hồ sơ cá nhân đã được cập nhật thành công!');
@@ -295,6 +301,7 @@ class ProfileController extends Controller
 
         // Save locally (will fail gracefully on read-only file systems)
         $this->profileService->updateCccd($user->id, $localData);
+        $user->refresh();
 
         // Sync to NKS if user has a token
         if ($user->nks_token) {
@@ -311,7 +318,7 @@ class ProfileController extends Controller
                 }
                 if (str_starts_with($existingPath, 'http')) {
                     try {
-                        $imgData = Http::withoutVerifying()->get($existingPath)->body();
+                        $imgData = \Illuminate\Support\Facades\Http::withoutVerifying()->get($existingPath)->body();
                         return 'data:image/jpeg;base64,' . base64_encode($imgData);
                     } catch (\Exception $e) {
                         return '';
@@ -325,9 +332,17 @@ class ProfileController extends Controller
                 return '';
             };
 
+            // Convert id_date from d/m/Y to Y-m-d format for NKS API compatibility
+            $nksIdDate = $request->id_date;
+            if (!empty($nksIdDate) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksIdDate)) {
+                try {
+                    $nksIdDate = \Carbon\Carbon::createFromFormat('d/m/Y', $nksIdDate)->format('Y-m-d');
+                } catch (\Exception $e) {}
+            }
+
             $nksData = [
                 'id_number' => $request->id_number,
-                'id_date' => $request->id_date,
+                'id_date' => $nksIdDate,
                 'id_place' => $request->id_place,
                 'cccd_front' => $helperGetBase64($cccdFront, $user->cccd_front),
                 'cccd_back' => $helperGetBase64($cccdBack, $user->cccd_back),
