@@ -7,7 +7,7 @@
 <div 
     x-data="{ 
         activeTab: '{{ request('tab') ?? 'profile' }}', 
-        activeSubTab: '{{ request('subtab') ?? ($errors->has('avatar') ? 'avatar' : ($errors->has('id_number') || $errors->has('id_date') || $errors->has('id_place') || $errors->has('cccd_front') || $errors->has('cccd_back') ? 'cccd' : 'info')) }}',
+        activeSubTab: '{{ request('subtab') ?? ($errors->has('current_password') || $errors->has('new_password') ? 'password' : ($errors->has('avatar') ? 'avatar' : ($errors->has('id_number') || $errors->has('id_date') || $errors->has('id_place') || $errors->has('cccd_front') || $errors->has('cccd_back') ? 'cccd' : 'info'))) }}',
         showToast: {{ session('success') ? 'true' : 'false' }}, 
         toastMessage: '{{ session('success') }}',
         init() {
@@ -302,7 +302,15 @@
                             <span>Thông tin cá nhân</span>
                         </button>
 
-
+                        <!-- ĐỔI MẬT KHẨU -->
+                        <button 
+                            @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
+                            :class="activeSubTab === 'password' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-key text-xs"></i>
+                            <span>Đổi mật khẩu</span>
+                        </button>
 
                         <!-- ẢNH ĐẠI DIỆN -->
                         <button 
@@ -814,7 +822,75 @@
                         </form>
                     </div>
 
+                    <!-- Sub-tab 2: Change Password -->
+                    <div x-show="activeSubTab === 'password'" class="space-y-6" x-cloak>
+                        <form 
+                            action="{{ route('profile.password') }}"
+                            method="POST"
+                            class="max-w-md space-y-4"
+                        >
+                            @csrf
+                            <!-- Old Password -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu hiện tại</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="password" 
+                                        name="current_password"
+                                        required
+                                        placeholder="Nhập mật khẩu hiện tại..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    >
+                                </div>
+                                @error('current_password')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
+                            </div>
 
+                            <!-- New Password -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu mới</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="password" 
+                                        name="new_password"
+                                        required
+                                        placeholder="Tối thiểu 8 ký tự..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    >
+                                </div>
+                                @error('new_password')
+                                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Xác nhận mật khẩu mới</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input 
+                                        type="password" 
+                                        name="new_password_confirmation"
+                                        required
+                                        placeholder="Nhập lại mật khẩu mới..."
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex justify-end">
+                                <button 
+                                    type="submit" 
+                                    class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+                                >
+                                    <span>Đổi mật khẩu</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
                     <!-- Sub-tab 3: Avatar -->
                     <div x-show="activeSubTab === 'avatar'" class="space-y-6" x-cloak>
