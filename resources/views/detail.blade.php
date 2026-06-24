@@ -311,7 +311,7 @@
         </div>
 
         <!-- RIGHT COLUMN: Sticky Agent Sidebar & Booking (4/12 cols) -->
-        <div id="booking-section" class="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+        <div id="booking-section" class="lg:col-span-4 lg:sticky lg:top-24 space-y-6 z-20">
             
             <!-- Agent Profile Card -->
             <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-md text-left">
@@ -543,10 +543,10 @@
                                 >
                             </div>
                             
-                            <div class="relative text-left" x-data="{ open: false }" @click.outside="open = false">
+                            <div class="relative text-left" x-data="{ open: false, dropdownPlacement: 'bottom' }" @click.outside="open = false">
                                 <button 
                                     type="button"
-                                    @click="open = !open"
+                                    @click="open = !open; if(open) { dropdownPlacement = ($event.currentTarget.getBoundingClientRect().bottom + 260 > window.innerHeight) ? 'top' : 'bottom' }"
                                     :class="open ? 'border-primary bg-white ring-2 ring-primary/10' : 'border-slate-200 bg-slate-50 hover:bg-slate-100/70'"
                                     class="w-full border rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition cursor-pointer text-left flex items-center justify-between"
                                 >
@@ -566,7 +566,8 @@
                                     x-transition:leave="transition ease-in duration-150"
                                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                     x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                                    class="absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
+                                    :class="dropdownPlacement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'"
+                                    class="absolute left-0 right-0 max-h-56 overflow-y-auto bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
                                     x-cloak
                                 >
                                     <div class="space-y-0.5">
