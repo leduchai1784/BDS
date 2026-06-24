@@ -130,14 +130,56 @@
                     </div>
 
                     <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible scrollbar-none border-b lg:border-b-0 border-slate-100">
-                        <button 
-                            @click="activeTab = 'profile'; window.history.pushState(null, '', '?tab=profile');" 
-                            :class="activeTab === 'profile' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
-                        >
-                            <i class="fa-solid fa-user-gear text-sm"></i>
-                            <span>Thông tin cá nhân</span>
-                        </button>
+                        <!-- Dropdown wrapper for Profile -->
+                        <div class="flex flex-col w-full">
+                            <button 
+                                @click="activeTab = 'profile'; window.history.pushState(null, '', '?tab=profile');" 
+                                :class="activeTab === 'profile' ? 'bg-primary-light text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                                class="flex items-center justify-between px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap cursor-pointer transition focus:outline-none w-full text-left"
+                            >
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-user-gear text-sm"></i>
+                                    <span>Thông tin cá nhân</span>
+                                </div>
+                                <i :class="activeTab === 'profile' ? 'rotate-180 text-primary' : 'text-slate-400'" class="fa-solid fa-chevron-down text-[10px] hidden lg:inline-block transition-transform duration-200 ml-2"></i>
+                            </button>
+                            
+                            <!-- Subtabs list (Desktop only) -->
+                            <div 
+                                x-show="activeTab === 'profile'" 
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
+                                x-transition:enter-end="opacity-100 max-h-48 overflow-visible"
+                                class="hidden lg:flex flex-col pl-9 pr-4 py-2 space-y-1.5 bg-slate-50/40 border-l border-slate-100/80"
+                            >
+                                <button 
+                                    @click="activeSubTab = 'info'; window.history.pushState(null, '', '?tab=profile&subtab=info');"
+                                    :class="activeSubTab === 'info' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
+                                    class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
+                                >
+                                    <i class="fa-solid fa-user text-[10px]"></i>
+                                    <span>Thông tin cá nhân</span>
+                                </button>
+                                
+                                <button 
+                                    @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
+                                    :class="activeSubTab === 'password' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
+                                    class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
+                                >
+                                    <i class="fa-solid fa-key text-[10px]"></i>
+                                    <span>Đổi mật khẩu</span>
+                                </button>
+                                
+                                <button 
+                                    @click="activeSubTab = 'cccd'; window.history.pushState(null, '', '?tab=profile&subtab=cccd');"
+                                    :class="activeSubTab === 'cccd' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
+                                    class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
+                                >
+                                    <i class="fa-solid fa-id-card text-[10px]"></i>
+                                    <span>Xác thực CCCD</span>
+                                </button>
+                            </div>
+                        </div>
                         
                         @if(Auth::user()->role === 'owner')
                         <button 
@@ -224,6 +266,42 @@
 
 
                     </nav>
+
+                    <!-- Subtabs for Mobile (shown below the main nav scrollbar on mobile, hidden on desktop) -->
+                    <div 
+                        x-show="activeTab === 'profile'"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 max-h-0"
+                        x-transition:enter-end="opacity-100 max-h-16"
+                        class="flex lg:hidden flex-row overflow-x-auto scrollbar-none border-t border-slate-100/70 p-2.5 gap-2 bg-slate-50/50 whitespace-nowrap w-full"
+                    >
+                        <button 
+                            @click="activeSubTab = 'info'; window.history.pushState(null, '', '?tab=profile&subtab=info');"
+                            :class="activeSubTab === 'info' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:text-primary'"
+                            class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-user text-[9px]"></i>
+                            <span>Thông tin cá nhân</span>
+                        </button>
+                        
+                        <button 
+                            @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
+                            :class="activeSubTab === 'password' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:text-primary'"
+                            class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-key text-[9px]"></i>
+                            <span>Đổi mật khẩu</span>
+                        </button>
+                        
+                        <button 
+                            @click="activeSubTab = 'cccd'; window.history.pushState(null, '', '?tab=profile&subtab=cccd');"
+                            :class="activeSubTab === 'cccd' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:text-primary'"
+                            class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-id-card text-[9px]"></i>
+                            <span>Xác thực CCCD</span>
+                        </button>
+                    </div>
                 </div>
                 </div>
             </div>
@@ -301,48 +379,7 @@
                     </div>
                     @endif
 
-                    <!-- Horizontal Sub-Tabs -->
-                    <div class="flex flex-wrap gap-3 pb-5 border-b border-slate-100">
-                        <!-- THÔNG TIN CÁ NHÂN -->
-                        <button 
-                            @click="activeSubTab = 'info'; window.history.pushState(null, '', '?tab=profile&subtab=info');"
-                            :class="activeSubTab === 'info' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
-                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
-                        >
-                            <i class="fa-solid fa-user text-xs"></i>
-                            <span>Thông tin cá nhân</span>
-                        </button>
 
-                        <!-- ĐỔI MẬT KHẨU -->
-                        <button 
-                            @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
-                            :class="activeSubTab === 'password' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
-                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
-                        >
-                            <i class="fa-solid fa-key text-xs"></i>
-                            <span>Đổi mật khẩu</span>
-                        </button>
-
-                        <!-- ẢNH ĐẠI DIỆN -->
-                        <button 
-                            @click="activeSubTab = 'avatar'; window.history.pushState(null, '', '?tab=profile&subtab=avatar');"
-                            :class="activeSubTab === 'avatar' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
-                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
-                        >
-                            <i class="fa-solid fa-image text-xs"></i>
-                            <span>Ảnh đại diện</span>
-                        </button>
-
-                        <!-- XÁC THỰC CCCD -->
-                        <button 
-                            @click="activeSubTab = 'cccd'; window.history.pushState(null, '', '?tab=profile&subtab=cccd');"
-                            :class="activeSubTab === 'cccd' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-primary'"
-                            class="flex items-center space-x-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
-                        >
-                            <i class="fa-solid fa-id-card text-xs"></i>
-                            <span>Xác thực CCCD</span>
-                        </button>
-                    </div>
 
                     <!-- Sub-tab 1: Personal Info -->
                     <div x-show="activeSubTab === 'info'" class="space-y-6" x-cloak>
