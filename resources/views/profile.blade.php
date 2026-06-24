@@ -8,6 +8,7 @@
     x-data="{ 
         activeTab: '{{ request('tab') ?? 'profile' }}', 
         activeSubTab: '{{ request('subtab') ?? ($errors->has('current_password') || $errors->has('new_password') ? 'password' : ($errors->has('avatar') ? 'avatar' : ($errors->has('id_number') || $errors->has('id_date') || $errors->has('id_place') || $errors->has('cccd_front') || $errors->has('cccd_back') ? 'cccd' : 'info'))) }}',
+        profileMenuOpen: {{ request('tab') === 'profile' || !request('tab') ? 'true' : 'false' }},
         showToast: {{ session('success') ? 'true' : 'false' }}, 
         toastMessage: '{{ session('success') }}',
         init() {
@@ -78,6 +79,15 @@
                             <span class="absolute bottom-0.5 right-0.5 w-4.5 h-4.5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-md" title="Đang trực tuyến">
                                 <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
                             </span>
+                            
+                            <!-- Change Avatar Button -->
+                            <button 
+                                @click="activeTab = 'profile'; activeSubTab = 'avatar'; window.history.pushState(null, '', '?tab=profile&subtab=avatar');"
+                                class="absolute bottom-0.5 left-0.5 w-6 h-6 rounded-full bg-white hover:bg-slate-50 text-slate-500 hover:text-primary border border-slate-200 shadow-md flex items-center justify-center cursor-pointer transition-all active:scale-90 z-10" 
+                                title="Thay đổi ảnh đại diện"
+                            >
+                                <i class="fa-solid fa-camera text-[9px]"></i>
+                            </button>
                         </div>
 
                         <!-- User Name & Role Badge -->
@@ -133,7 +143,15 @@
                         <!-- Dropdown wrapper for Profile -->
                         <div class="flex flex-col w-full">
                             <button 
-                                @click="activeTab = 'profile'; window.history.pushState(null, '', '?tab=profile');" 
+                                @click="
+                                    if (activeTab !== 'profile') {
+                                        activeTab = 'profile';
+                                        profileMenuOpen = true;
+                                    } else {
+                                        profileMenuOpen = !profileMenuOpen;
+                                    }
+                                    window.history.pushState(null, '', '?tab=profile');
+                                " 
                                 :class="activeTab === 'profile' ? 'bg-primary-light text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
                                 class="flex items-center justify-between px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap cursor-pointer transition focus:outline-none w-full text-left"
                             >
@@ -141,12 +159,12 @@
                                     <i class="fa-solid fa-user-gear text-sm"></i>
                                     <span>Thông tin cá nhân</span>
                                 </div>
-                                <i :class="activeTab === 'profile' ? 'rotate-180 text-primary' : 'text-slate-400'" class="fa-solid fa-chevron-down text-[10px] hidden lg:inline-block transition-transform duration-200 ml-2"></i>
+                                <i :class="activeTab === 'profile' && profileMenuOpen ? 'rotate-180 text-primary' : 'text-slate-400'" class="fa-solid fa-chevron-down text-[10px] hidden lg:inline-block transition-transform duration-200 ml-2"></i>
                             </button>
                             
                             <!-- Subtabs list (Desktop only) -->
                             <div 
-                                x-show="activeTab === 'profile'" 
+                                x-show="activeTab === 'profile' && profileMenuOpen" 
                                 x-cloak
                                 x-transition:enter="transition ease-out duration-200"
                                 x-transition:enter-start="opacity-0 -translate-y-2"
