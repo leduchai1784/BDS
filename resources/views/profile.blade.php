@@ -1873,7 +1873,10 @@
                                 <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
                                     <i class="fa-solid fa-heart-crack"></i>
                                 </div>
-                                <p class="text-xs font-bold text-slate-500">Bạn chưa lưu tin yêu thích nào.</p>
+                                <p class="text-xs font-bold text-slate-500 mb-4">Bạn chưa lưu tin yêu thích nào.</p>
+                                <a href="/listings" class="inline-flex items-center justify-center px-5 py-2.5 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                    <i class="fa-solid fa-magnifying-glass mr-2"></i> Khám phá ngay
+                                </a>
                             </div>
                         @else
                             @foreach($properties as $property)
@@ -2019,7 +2022,10 @@
                                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
                                         <i class="fa-solid fa-calendar-xmark"></i>
                                     </div>
-                                    <p class="text-xs font-bold text-slate-500">Bạn chưa đặt lịch hẹn xem nhà nào.</p>
+                                    <p class="text-xs font-bold text-slate-500 mb-4">Bạn chưa đặt lịch hẹn xem nhà nào.</p>
+                                    <a href="/listings" class="inline-flex items-center justify-center px-5 py-2.5 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                        <i class="fa-solid fa-calendar-plus mr-2"></i> Đặt lịch ngay
+                                    </a>
                                 </div>
                             @else
                                 <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
