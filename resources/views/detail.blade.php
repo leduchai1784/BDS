@@ -567,7 +567,8 @@
                                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                     x-transition:leave-end="opacity-0 translate-y-1 scale-95"
                                     :class="dropdownPlacement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'"
-                                    class="absolute left-0 right-0 max-h-[180px] overflow-y-auto bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
+                                    class="absolute left-0 right-0 bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
+                                    style="max-height: 180px; overflow-y: auto;"
                                     x-cloak
                                 >
                                     <div class="space-y-0.5">
