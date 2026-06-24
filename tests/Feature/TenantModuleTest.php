@@ -8,6 +8,13 @@ use App\Models\Appointment;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AdminAppointmentNotification;
+use App\Mail\TenantAppointmentConfirmation;
+use App\Mail\OwnerAppointmentNotification;
+use App\Mail\AdminAppointmentCancellation;
+use App\Mail\TenantAppointmentCancellation;
+use App\Mail\OwnerAppointmentCancellation;
 use Tests\TestCase;
 
 class TenantModuleTest extends TestCase
@@ -169,10 +176,13 @@ class TenantModuleTest extends TestCase
      */
     public function test_tenant_can_book_appointment(): void
     {
+        Mail::fake();
+
         $response = $this->actingAs($this->tenant)->postJson(route('appointments.book'), [
             'property_id' => $this->property->id,
             'name' => 'Khách thuê',
             'phone' => '0987654321',
+            'email' => 'tenant.test@nks.com.vn',
             'date' => date('Y-m-d', strtotime('+1 day')),
             'time' => '10:00',
             'message' => 'Tôi muốn xem nhà vào lúc 10h sáng.',
@@ -188,8 +198,13 @@ class TenantModuleTest extends TestCase
             'property_id' => $this->property->id,
             'name' => 'Khách thuê',
             'phone' => '0987654321',
+            'email' => 'tenant.test@nks.com.vn',
             'status' => 'pending',
         ]);
+
+        Mail::assertSent(TenantAppointmentConfirmation::class);
+        Mail::assertSent(OwnerAppointmentNotification::class);
+        Mail::assertSent(AdminAppointmentNotification::class);
     }
 
     /**
@@ -201,6 +216,7 @@ class TenantModuleTest extends TestCase
             'property_id' => $this->property->id,
             'name' => 'Chủ nhà',
             'phone' => '0987654321',
+            'email' => 'owner.test@nks.com.vn',
             'date' => date('Y-m-d', strtotime('+1 day')),
             'time' => '10:00',
         ]);
@@ -213,11 +229,14 @@ class TenantModuleTest extends TestCase
      */
     public function test_tenant_can_cancel_own_appointment(): void
     {
+        Mail::fake();
+
         $appointment = Appointment::create([
             'user_id' => $this->tenant->id,
             'property_id' => $this->property->id,
             'name' => 'Khách thuê',
             'phone' => '0987654321',
+            'email' => 'tenant.test@nks.com.vn',
             'date' => date('Y-m-d', strtotime('+1 day')),
             'time' => '10:00',
             'status' => 'pending',
@@ -231,6 +250,10 @@ class TenantModuleTest extends TestCase
         $appointment->refresh();
         $this->assertEquals('rejected', $appointment->status);
         $this->assertEquals('Khách thuê hủy lịch hẹn', $appointment->reject_reason);
+
+        Mail::assertSent(TenantAppointmentCancellation::class);
+        Mail::assertSent(OwnerAppointmentCancellation::class);
+        Mail::assertSent(AdminAppointmentCancellation::class);
     }
 
     /**
@@ -243,6 +266,7 @@ class TenantModuleTest extends TestCase
             'property_id' => $this->property->id,
             'name' => 'Khách thuê',
             'phone' => '0987654321',
+            'email' => 'tenant.test@nks.com.vn',
             'date' => date('Y-m-d', strtotime('+1 day')),
             'time' => '10:00',
             'status' => 'pending',

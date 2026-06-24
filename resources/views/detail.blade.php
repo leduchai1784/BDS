@@ -404,6 +404,7 @@
                     x-data="{ 
                         name: '{{ Auth::check() ? Auth::user()->name : '' }}', 
                         phone: '{{ Auth::check() ? Auth::user()->phone : '' }}', 
+                        email: '{{ Auth::check() ? Auth::user()->email : '' }}', 
                         date: '', 
                         time: '', 
                         message: '',
@@ -436,6 +437,7 @@
                                     property_id: {{ $property['id'] }},
                                     name: this.name,
                                     phone: this.phone,
+                                    email: this.email,
                                     date: this.date,
                                     time: this.time,
                                     message: this.message
@@ -504,6 +506,17 @@
                                 type="tel" 
                                 x-model="phone"
                                 placeholder="Số điện thoại liên hệ..." 
+                                required
+                                class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl px-4 py-2.5 text-xs font-medium outline-none transition"
+                            >
+                        </div>
+
+                        <!-- Input Email -->
+                        <div>
+                            <input 
+                                type="email" 
+                                x-model="email"
+                                placeholder="Địa chỉ email liên hệ..." 
                                 required
                                 class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl px-4 py-2.5 text-xs font-medium outline-none transition"
                             >

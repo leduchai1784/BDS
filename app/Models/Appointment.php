@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
     'property_id', 
     'name', 
     'phone', 
+    'email', 
     'date', 
     'time', 
     'message', 
