@@ -222,6 +222,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/register-owner', [ProfileController::class, 'registerOwner'])->name('profile.register-owner');
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Đặt lịch xem nhà
+    Route::post('/appointments', [App\Http\Controllers\AppointmentController::class, 'book'])->name('appointments.book');
+    // Hủy lịch hẹn
+    Route::post('/appointments/{id}/cancel', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('appointments.cancel');
 });
 
 // Route dành cho Chủ nhà (Bảo vệ bởi auth và owner middleware)
@@ -298,11 +303,7 @@ Route::get('/properties/choose-type', function () {
 
 // Route dành riêng cho Khách thuê (Tenant) (Bảo vệ bởi auth và tenant middleware)
 Route::middleware(['auth', 'tenant'])->group(function () {
-    // Đặt lịch xem nhà
-    Route::post('/appointments', [App\Http\Controllers\AppointmentController::class, 'book'])->name('appointments.book');
-
-    // Hủy lịch hẹn
-    Route::post('/appointments/{id}/cancel', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    //
 });
 
 // Route đăng nhập / đăng ký (Bảo vệ bởi middleware guest)

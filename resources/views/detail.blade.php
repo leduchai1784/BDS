@@ -417,8 +417,8 @@
                                 return;
                             @endguest
 
-                            @if(Auth::check() && Auth::user()->role !== 'tenant')
-                                alert('Chỉ tài khoản khách thuê mới có thể đặt lịch xem nhà.');
+                            @if(Auth::check() && Auth::id() === $property['owner_id'])
+                                alert('Bạn không thể tự đặt lịch xem nhà trên tin đăng của chính mình.');
                                 return;
                             @endif
 

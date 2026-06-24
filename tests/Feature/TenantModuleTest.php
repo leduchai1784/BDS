@@ -208,9 +208,9 @@ class TenantModuleTest extends TestCase
     }
 
     /**
-     * Test non-tenant cannot book an appointment.
+     * Test owner cannot book an appointment for their own property.
      */
-    public function test_non_tenant_cannot_book_appointment(): void
+    public function test_user_cannot_book_own_property_appointment(): void
     {
         $response = $this->actingAs($this->owner)->postJson(route('appointments.book'), [
             'property_id' => $this->property->id,
@@ -222,6 +222,46 @@ class TenantModuleTest extends TestCase
         ]);
 
         $response->assertStatus(403);
+    }
+
+    /**
+     * Test owner can book an appointment for someone else's property.
+     */
+    public function test_owner_can_book_other_property_appointment(): void
+    {
+        Mail::fake();
+
+        $otherOwner = User::create([
+            'name' => 'Chủ nhà khác',
+            'email' => 'other.owner@nks.com.vn',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+        ]);
+
+        $response = $this->actingAs($otherOwner)->postJson(route('appointments.book'), [
+            'property_id' => $this->property->id,
+            'name' => 'Chủ nhà khác',
+            'phone' => '0987654321',
+            'email' => 'other.owner@nks.com.vn',
+            'date' => date('Y-m-d', strtotime('+1 day')),
+            'time' => '10:00',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+        ]);
+
+        $this->assertDatabaseHas('appointments', [
+            'user_id' => $otherOwner->id,
+            'property_id' => $this->property->id,
+            'email' => 'other.owner@nks.com.vn',
+            'status' => 'pending',
+        ]);
+
+        Mail::assertSent(TenantAppointmentConfirmation::class);
+        Mail::assertSent(OwnerAppointmentNotification::class);
+        Mail::assertSent(AdminAppointmentNotification::class);
     }
 
     /**
