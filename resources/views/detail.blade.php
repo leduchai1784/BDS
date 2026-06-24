@@ -585,14 +585,6 @@
                                             >
                                                 Chiều
                                             </button>
-                                            <button 
-                                                type="button"
-                                                @click="tab = 'evening'"
-                                                :class="tab === 'evening' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
-                                                class="flex-1 text-center py-1 text-[10px] font-black uppercase tracking-wider border-b-2 transition cursor-pointer"
-                                            >
-                                                Tối
-                                            </button>
                                         </div>
                                         
                                         <!-- Time slots grid -->
@@ -609,19 +601,7 @@
                                         </div>
                                         
                                         <div x-show="tab === 'afternoon'" class="grid grid-cols-4 gap-2" x-cloak>
-                                            <template x-for="t in ['13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30']" :key="t">
-                                                <button 
-                                                    type="button"
-                                                    @click="time = t; open = false"
-                                                    :class="time === t ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-transparent'"
-                                                    class="py-2 text-[11px] font-bold rounded-lg border text-center transition cursor-pointer"
-                                                    x-text="t"
-                                                ></button>
-                                            </template>
-                                        </div>
-                                        
-                                        <div x-show="tab === 'evening'" class="grid grid-cols-4 gap-2" x-cloak>
-                                            <template x-for="t in ['18:00', '18:30', '19:00', '19:30', '20:00']" :key="t">
+                                            <template x-for="t in ['13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']" :key="t">
                                                 <button 
                                                     type="button"
                                                     @click="time = t; open = false"
