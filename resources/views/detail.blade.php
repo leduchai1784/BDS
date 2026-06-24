@@ -543,74 +543,74 @@
                                 >
                             </div>
                             
-                            <!-- Custom Time Picker Dropdown -->
-                            <div class="relative text-left" x-data="{ open: false }" @click.outside="open = false">
+                            <div class="relative text-left" x-data="{ open: false, tab: 'morning' }" @click.outside="open = false">
                                 <button 
                                     type="button"
-                                    @click="open = !open"
-                                    class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl px-3 py-2.5 text-xs font-medium outline-none transition cursor-pointer text-left flex items-center justify-between"
+                                    @click="open = !open; if (open && time) { tab = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'].includes(time) ? 'morning' : 'afternoon'; }"
+                                    class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition cursor-pointer text-left flex items-center justify-between"
+                                    :class="open ? 'border-primary bg-white ring-2 ring-primary/10' : 'border-slate-200 bg-slate-50 hover:bg-slate-100/70'"
                                 >
                                     <span x-text="time ? time : 'Chọn giờ'" :class="time ? 'text-slate-800' : 'text-slate-400'"></span>
-                                    <i class="fa-regular fa-clock text-slate-400 text-xs"></i>
+                                    <i class="fa-regular fa-clock text-slate-400 text-xs transition" :class="open ? 'text-primary scale-110' : 'text-slate-400'"></i>
                                 </button>
                                 
                                 <!-- Dropdown Panel -->
                                 <div 
                                     x-show="open"
-                                    x-transition:enter="transition ease-out duration-150"
-                                    x-transition:enter-start="opacity-0 scale-95"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    x-transition:leave="transition ease-in duration-100"
-                                    x-transition:leave-start="opacity-100 scale-100"
-                                    x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute right-0 top-full mt-2 w-[280px] sm:w-[320px] bg-white border border-slate-100 rounded-2xl shadow-xl z-50 p-4 space-y-3"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                    x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                                    class="absolute right-0 top-full mt-2 w-[290px] sm:w-[320px] bg-white border border-slate-150 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-4 space-y-3.5"
                                     x-cloak
                                 >
-                                    <!-- Periods Tabs -->
-                                    <div x-data="{ tab: 'morning' }" class="space-y-3">
-                                        <div class="flex border-b border-slate-100 pb-2 gap-2">
+                                    <!-- Segmented Control Tabs -->
+                                    <div class="flex bg-slate-100/80 p-1 rounded-xl">
+                                        <button 
+                                            type="button"
+                                            @click="tab = 'morning'"
+                                            :class="tab === 'morning' ? 'bg-white text-primary shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-semibold'"
+                                            class="flex-1 text-center py-1.5 text-[11px] rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+                                        >
+                                            <i class="fa-regular fa-sun text-xs"></i>
+                                            Sáng
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            @click="tab = 'afternoon'"
+                                            :class="tab === 'afternoon' ? 'bg-white text-primary shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-semibold'"
+                                            class="flex-1 text-center py-1.5 text-[11px] rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+                                        >
+                                            <i class="fa-regular fa-cloud-sun text-xs"></i>
+                                            Chiều
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Time slots grid -->
+                                    <div x-show="tab === 'morning'" class="grid grid-cols-4 gap-2">
+                                        <template x-for="t in ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30']" :key="t">
                                             <button 
                                                 type="button"
-                                                @click="tab = 'morning'"
-                                                :class="tab === 'morning' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
-                                                class="flex-1 text-center py-1 text-[10px] font-black uppercase tracking-wider border-b-2 transition cursor-pointer"
-                                            >
-                                                Sáng
-                                            </button>
+                                                @click="time = t; open = false"
+                                                :class="time === t ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20 font-bold' : 'bg-slate-50 hover:bg-slate-100 hover:border-slate-300 text-slate-700 border-slate-200 font-semibold'"
+                                                class="py-2.5 text-[11px] rounded-xl border text-center transition cursor-pointer"
+                                                x-text="t"
+                                            ></button>
+                                        </template>
+                                    </div>
+                                    
+                                    <div x-show="tab === 'afternoon'" class="grid grid-cols-4 gap-2" x-cloak>
+                                        <template x-for="t in ['13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']" :key="t">
                                             <button 
                                                 type="button"
-                                                @click="tab = 'afternoon'"
-                                                :class="tab === 'afternoon' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
-                                                class="flex-1 text-center py-1 text-[10px] font-black uppercase tracking-wider border-b-2 transition cursor-pointer"
-                                            >
-                                                Chiều
-                                            </button>
-                                        </div>
-                                        
-                                        <!-- Time slots grid -->
-                                        <div x-show="tab === 'morning'" class="grid grid-cols-4 gap-2">
-                                            <template x-for="t in ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30']" :key="t">
-                                                <button 
-                                                    type="button"
-                                                    @click="time = t; open = false"
-                                                    :class="time === t ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-transparent'"
-                                                    class="py-2 text-[11px] font-bold rounded-lg border text-center transition cursor-pointer"
-                                                    x-text="t"
-                                                ></button>
-                                            </template>
-                                        </div>
-                                        
-                                        <div x-show="tab === 'afternoon'" class="grid grid-cols-4 gap-2" x-cloak>
-                                            <template x-for="t in ['13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']" :key="t">
-                                                <button 
-                                                    type="button"
-                                                    @click="time = t; open = false"
-                                                    :class="time === t ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-transparent'"
-                                                    class="py-2 text-[11px] font-bold rounded-lg border text-center transition cursor-pointer"
-                                                    x-text="t"
-                                                ></button>
-                                            </template>
-                                        </div>
+                                                @click="time = t; open = false"
+                                                :class="time === t ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20 font-bold' : 'bg-slate-50 hover:bg-slate-100 hover:border-slate-300 text-slate-700 border-slate-200 font-semibold'"
+                                                class="py-2.5 text-[11px] rounded-xl border text-center transition cursor-pointer"
+                                                x-text="t"
+                                            ></button>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
