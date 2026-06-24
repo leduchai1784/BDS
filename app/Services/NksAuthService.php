@@ -55,14 +55,58 @@ class NksAuthService
     public function updateInfo(string $token, array $data): array
     {
         try {
-            if (isset($data['id_place'])) {
-                $data['id_place'] = $this->sanitizeNksString($data['id_place'], 50);
-            }
-            if (isset($data['pob'])) {
-                $data['pob'] = $this->sanitizeNksString($data['pob'], 100);
+            // First, fetch current NKS user details to prevent partial updates from resetting/nullifying other fields
+            $currentNksData = [];
+            $nksInfo = $this->getUserInfo($token);
+            if ($nksInfo['success'] && !empty($nksInfo['user'])) {
+                $currentNksData = $nksInfo['user'];
             }
 
-            $payload = array_merge($data, ['access_token' => $token]);
+            // Updatable fields on NKS
+            $updatableKeys = [
+                'name', 'firstname', 'lastname', 'phone', 'email', 'gender', 'dob', 'pob',
+                'id_number', 'id_date', 'id_place', 'permanent_address',
+                'add_street', 'add_ward', 'add_district', 'add_province',
+                'intro', 'website', 'zalo_id', 'zalo_key'
+            ];
+
+            // Build merged payload
+            $mergedData = [];
+            foreach ($updatableKeys as $key) {
+                if (array_key_exists($key, $currentNksData)) {
+                    $mergedData[$key] = $currentNksData[$key];
+                }
+            }
+
+            // If NKS user fetch failed or returned empty, we can fallback to the local authenticated user's data to merge
+            if (empty($mergedData) && auth()->check()) {
+                $localUser = auth()->user();
+                if ($localUser->nks_token === $token) {
+                    $localUserMap = $this->mapLocalUserToNks($localUser);
+                    foreach ($updatableKeys as $key) {
+                        if (array_key_exists($key, $localUserMap) && !is_null($localUserMap[$key])) {
+                            $mergedData[$key] = $localUserMap[$key];
+                        }
+                    }
+                }
+            }
+
+            // Overwrite with the newly provided update data
+            foreach ($data as $key => $val) {
+                if (in_array($key, $updatableKeys)) {
+                    $mergedData[$key] = $val;
+                }
+            }
+
+            // Sanitize values
+            if (isset($mergedData['id_place'])) {
+                $mergedData['id_place'] = $this->sanitizeNksString($mergedData['id_place'], 50);
+            }
+            if (isset($mergedData['pob'])) {
+                $mergedData['pob'] = $this->sanitizeNksString($mergedData['pob'], 100);
+            }
+
+            $payload = array_merge($mergedData, ['access_token' => $token]);
 
             $response = Http::withoutVerifying()
                 ->timeout(10)
@@ -264,5 +308,48 @@ class NksAuthService
         }
         
         return $str;
+    }
+
+    /**
+     * Map local User model fields back to NKS API keys.
+     */
+    public function mapLocalUserToNks($user): array
+    {
+        $dob = $user->dob;
+        if (!empty($dob) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $dob)) {
+            try {
+                $dob = \Carbon\Carbon::createFromFormat('d/m/Y', $dob)->format('Y-m-d');
+            } catch (\Exception $e) {}
+        }
+
+        $idDate = $user->id_date;
+        if (!empty($idDate) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $idDate)) {
+            try {
+                $idDate = \Carbon\Carbon::createFromFormat('d/m/Y', $idDate)->format('Y-m-d');
+            } catch (\Exception $e) {}
+        }
+
+        return [
+            'name'              => $user->name,
+            'firstname'         => $user->firstname,
+            'lastname'          => $user->lastname,
+            'phone'             => $user->phone,
+            'email'             => $user->email,
+            'gender'            => $user->gender,
+            'dob'               => $dob,
+            'pob'               => $user->pob,
+            'id_number'         => $user->id_number,
+            'id_date'           => $idDate,
+            'id_place'          => $user->id_place,
+            'permanent_address' => $user->permanent_address,
+            'add_street'        => $user->add_street,
+            'add_ward'          => $user->add_ward,
+            'add_district'      => $user->add_district,
+            'add_province'      => $user->add_province,
+            'zalo_id'           => $user->zalo_id,
+            'zalo_key'          => $user->zalo_key,
+            'intro'             => $user->intro,
+            'website'           => $user->website,
+        ];
     }
 }

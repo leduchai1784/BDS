@@ -581,6 +581,14 @@ class ProfileController extends Controller
             'company' => $request->company,
         ]);
 
+        // Sync name and phone to NKS if user has a token
+        if ($user->nks_token) {
+            $this->nksAuthService->updateInfo($user->nks_token, [
+                'name' => $request->name,
+                'phone' => $request->phone
+            ]);
+        }
+
         return redirect()->route('profile.index', ['tab' => 'profile'])->with('success', 'Đăng ký làm chủ nhà thành công! Chào mừng đối tác mới.');
     }
 }
