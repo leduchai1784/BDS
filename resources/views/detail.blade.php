@@ -546,7 +546,7 @@
                             <div class="relative text-left" x-data="{ open: false, dropdownPlacement: 'bottom' }" @click.outside="open = false">
                                 <button 
                                     type="button"
-                                    @click="open = !open; if(open) { dropdownPlacement = ($event.currentTarget.getBoundingClientRect().bottom + 300 > window.innerHeight) ? 'top' : 'bottom' }"
+                                    @click="open = !open; if(open) { dropdownPlacement = ($event.currentTarget.getBoundingClientRect().bottom + 210 > window.innerHeight) ? 'top' : 'bottom' }"
                                     :class="open ? 'border-primary bg-white ring-2 ring-primary/10' : 'border-slate-200 bg-slate-50 hover:bg-slate-100/70'"
                                     class="w-full border rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition cursor-pointer text-left flex items-center justify-between"
                                 >
@@ -567,7 +567,7 @@
                                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                     x-transition:leave-end="opacity-0 translate-y-1 scale-95"
                                     :class="dropdownPlacement === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'"
-                                    class="absolute left-0 right-0 max-h-[270px] overflow-y-auto bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
+                                    class="absolute left-0 right-0 max-h-[180px] overflow-y-auto bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
                                     x-cloak
                                 >
                                     <div class="space-y-0.5">
@@ -686,8 +686,12 @@
     }
     
     /* Custom scrollbar for time dropdown */
+    .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 #f1f5f9;
+    }
     .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
+        width: 8px;
         display: block !important;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
@@ -695,11 +699,12 @@
         border-radius: 9999px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background-color: #94a3b8; /* slate-400 */
+        background-color: #cbd5e1; /* slate-300 */
         border-radius: 9999px;
+        border: 2px solid #f1f5f9;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: #64748b; /* slate-500 */
+        background-color: #94a3b8; /* slate-400 */
     }
 </style>
 <script>
