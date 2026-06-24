@@ -543,33 +543,46 @@
                                 >
                             </div>
                             
-                            <div class="relative text-left">
-                                <select 
-                                    x-model="time"
-                                    required
-                                    :class="time ? 'text-slate-800' : 'text-slate-400'"
-                                    class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl pl-3 pr-8 py-2.5 text-xs font-semibold outline-none appearance-none transition cursor-pointer"
+                            <div class="relative text-left" x-data="{ open: false }" @click.outside="open = false">
+                                <button 
+                                    type="button"
+                                    @click="open = !open"
+                                    :class="open ? 'border-primary bg-white ring-2 ring-primary/10' : 'border-slate-200 bg-slate-50 hover:bg-slate-100/70'"
+                                    class="w-full border rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition cursor-pointer text-left flex items-center justify-between"
                                 >
-                                    <option value="" class="text-slate-400">Chọn giờ</option>
-                                    <option value="08:00" class="text-slate-800">08:00</option>
-                                    <option value="08:30" class="text-slate-800">08:30</option>
-                                    <option value="09:00" class="text-slate-800">09:00</option>
-                                    <option value="09:30" class="text-slate-800">09:30</option>
-                                    <option value="10:00" class="text-slate-800">10:00</option>
-                                    <option value="10:30" class="text-slate-800">10:30</option>
-                                    <option value="11:00" class="text-slate-800">11:00</option>
-                                    <option value="11:30" class="text-slate-800">11:30</option>
-                                    <option value="13:30" class="text-slate-800">13:30</option>
-                                    <option value="14:00" class="text-slate-800">14:00</option>
-                                    <option value="14:30" class="text-slate-800">14:30</option>
-                                    <option value="15:00" class="text-slate-800">15:00</option>
-                                    <option value="15:30" class="text-slate-800">15:30</option>
-                                    <option value="16:00" class="text-slate-800">16:00</option>
-                                    <option value="16:30" class="text-slate-800">16:30</option>
-                                    <option value="17:00" class="text-slate-800">17:00</option>
-                                    <option value="17:30" class="text-slate-800">17:30</option>
-                                </select>
-                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[9px]"></i>
+                                    <div class="flex items-center gap-1.5">
+                                        <i class="fa-regular fa-clock text-[11px]" :class="time ? 'text-slate-600' : 'text-slate-400'"></i>
+                                        <span x-text="time ? time : 'Chọn giờ'" :class="time ? 'text-slate-800' : 'text-slate-400'"></span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition duration-200" :class="open ? 'text-primary rotate-180' : ''"></i>
+                                </button>
+                                
+                                <!-- Dropdown Panel -->
+                                <div 
+                                    x-show="open"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                    x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                                    class="absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 custom-scrollbar"
+                                    x-cloak
+                                >
+                                    <div class="space-y-0.5">
+                                        <template x-for="t in ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30']" :key="t">
+                                            <button 
+                                                type="button"
+                                                @click="time = t; open = false"
+                                                :class="time === t ? 'bg-primary/10 text-primary font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-semibold'"
+                                                class="w-full text-left px-3 py-2 text-[11px] rounded-lg transition cursor-pointer flex items-center justify-between"
+                                            >
+                                                <span x-text="t"></span>
+                                                <i x-show="time === t" class="fa-solid fa-check text-primary text-[10px]" x-cloak></i>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -669,6 +682,21 @@
     #property-detail-map .maplibregl-popup-tip {
         border-top-color: #ffffff !important;
         border-bottom-color: #ffffff !important;
+    }
+    
+    /* Custom scrollbar for time dropdown */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1; /* slate-300 */
+        border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8; /* slate-400 */
     }
 </style>
 <script>
