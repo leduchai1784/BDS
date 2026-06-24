@@ -356,15 +356,19 @@ class ProfileController extends Controller
                 } catch (\Exception $e) {}
             }
 
-            $nksData = [
-                'id_number' => $request->id_number,
-                'id_date' => $nksIdDate,
-                'id_place' => $request->id_place,
-                'cccd_front' => $helperGetBase64($cccdFront, $user->cccd_front),
-                'cccd_back' => $helperGetBase64($cccdBack, $user->cccd_back),
-            ];
+            // Only update CCCD images on NKS if at least one new image was uploaded.
+            // This prevents downloading/re-uploading existing images and avoids timeout failures on text-only edits.
+            if ($cccdFront || $cccdBack) {
+                $nksData = [
+                    'id_number' => $request->id_number,
+                    'id_date' => $nksIdDate,
+                    'id_place' => $request->id_place,
+                    'cccd_front' => $helperGetBase64($cccdFront, $user->cccd_front),
+                    'cccd_back' => $helperGetBase64($cccdBack, $user->cccd_back),
+                ];
 
-            $this->nksAuthService->updateCccd($user->nks_token, $nksData);
+                $this->nksAuthService->updateCccd($user->nks_token, $nksData);
+            }
 
             // Sync other profile fields and CCCD fields to NKS as well (acts as a fail-safe if updateCccd fails due to image library issues on NKS)
             $nksInfoData = [
