@@ -402,15 +402,24 @@
                 <!-- Booking Appointment Form ("Đặt lịch xem nhà") -->
                 <div 
                     x-data="{ 
-                        name: '{{ Auth::check() ? Auth::user()->name : '' }}', 
-                        phone: '{{ Auth::check() ? Auth::user()->phone : '' }}', 
-                        email: '{{ Auth::check() ? Auth::user()->email : '' }}', 
+                        name: {!! json_encode(Auth::check() ? Auth::user()->name : '') !!}, 
+                        phone: {!! json_encode(Auth::check() ? Auth::user()->phone : '') !!}, 
+                        email: {!! json_encode(Auth::check() ? Auth::user()->email : '') !!}, 
                         date: '', 
                         time: '', 
                         message: '',
                         submitted: false,
                         errorMessage: '',
                         isProcessing: false,
+                        resetForm() {
+                            this.date = '';
+                            this.time = '';
+                            this.message = '';
+                            this.errorMessage = '';
+                            this.name = {!! json_encode(Auth::check() ? Auth::user()->name : '') !!};
+                            this.phone = {!! json_encode(Auth::check() ? Auth::user()->phone : '') !!};
+                            this.email = {!! json_encode(Auth::check() ? Auth::user()->email : '') !!};
+                        },
                         submitForm() {
                             @guest
                                 window.location.href = '{{ route('login') }}';
@@ -464,7 +473,7 @@
                             .catch(error => {
                                 this.isProcessing = false;
                                 this.errorMessage = 'Lỗi kết nối mạng, vui lòng thử lại.';
-                                console.error('Error:', error);
+                                  console.error('Error:', error);
                             });
                         }
                     }"
@@ -477,7 +486,7 @@
                         </h5>
                         <button 
                             type="button"
-                            @click="date = ''; time = ''; message = ''; errorMessage = ''; name = '{{ Auth::check() ? Auth::user()->name : '' }}'; phone = '{{ Auth::check() ? Auth::user()->phone : '' }}'; email = '{{ Auth::check() ? Auth::user()->email : '' }}';"
+                            @click="resetForm()"
                             class="text-[10px] font-bold text-slate-400 hover:text-primary transition cursor-pointer flex items-center gap-1"
                         >
                             <i class="fa-solid fa-arrow-rotate-left"></i>
