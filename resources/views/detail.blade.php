@@ -543,76 +543,33 @@
                                 >
                             </div>
                             
-                            <div class="relative text-left" x-data="{ open: false, tab: 'morning' }" @click.outside="open = false">
-                                <button 
-                                    type="button"
-                                    @click="open = !open; if (open && time) { tab = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'].includes(time) ? 'morning' : 'afternoon'; }"
-                                    class="w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs font-semibold outline-none transition cursor-pointer text-left flex items-center justify-between"
-                                    :class="open ? 'border-primary bg-white ring-2 ring-primary/10' : 'border-slate-200 bg-slate-50 hover:bg-slate-100/70'"
+                            <div class="relative text-left">
+                                <select 
+                                    x-model="time"
+                                    required
+                                    :class="time ? 'text-slate-800' : 'text-slate-400'"
+                                    class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl pl-3 pr-8 py-2.5 text-xs font-semibold outline-none appearance-none transition cursor-pointer"
                                 >
-                                    <span x-text="time ? time : 'Chọn giờ'" :class="time ? 'text-slate-800' : 'text-slate-400'"></span>
-                                    <i class="fa-regular fa-clock text-slate-400 text-xs transition" :class="open ? 'text-primary scale-110' : 'text-slate-400'"></i>
-                                </button>
-                                
-                                <!-- Dropdown Panel -->
-                                <div 
-                                    x-show="open"
-                                    x-transition:enter="transition ease-out duration-200"
-                                    x-transition:enter-start="opacity-0 translate-y-1 scale-95"
-                                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                    x-transition:leave="transition ease-in duration-150"
-                                    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                                    x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                                    class="absolute right-0 top-full mt-2 w-[290px] sm:w-[320px] bg-white border border-slate-150 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-4 space-y-3.5"
-                                    x-cloak
-                                >
-                                    <!-- Segmented Control Tabs -->
-                                    <div class="flex bg-slate-100/80 p-1 rounded-xl">
-                                        <button 
-                                            type="button"
-                                            @click="tab = 'morning'"
-                                            :class="tab === 'morning' ? 'bg-white text-primary shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-semibold'"
-                                            class="flex-1 text-center py-1.5 text-[11px] rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
-                                        >
-                                            <i class="fa-regular fa-sun text-xs"></i>
-                                            Sáng
-                                        </button>
-                                        <button 
-                                            type="button"
-                                            @click="tab = 'afternoon'"
-                                            :class="tab === 'afternoon' ? 'bg-white text-primary shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-semibold'"
-                                            class="flex-1 text-center py-1.5 text-[11px] rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
-                                        >
-                                            <i class="fa-regular fa-cloud-sun text-xs"></i>
-                                            Chiều
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Time slots grid -->
-                                    <div x-show="tab === 'morning'" class="grid grid-cols-4 gap-2">
-                                        <template x-for="t in ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30']" :key="t">
-                                            <button 
-                                                type="button"
-                                                @click="time = t; open = false"
-                                                :class="time === t ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20 font-bold' : 'bg-slate-50 hover:bg-slate-100 hover:border-slate-300 text-slate-700 border-slate-200 font-semibold'"
-                                                class="py-2.5 text-[11px] rounded-xl border text-center transition cursor-pointer"
-                                                x-text="t"
-                                            ></button>
-                                        </template>
-                                    </div>
-                                    
-                                    <div x-show="tab === 'afternoon'" class="grid grid-cols-4 gap-2" x-cloak>
-                                        <template x-for="t in ['13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']" :key="t">
-                                            <button 
-                                                type="button"
-                                                @click="time = t; open = false"
-                                                :class="time === t ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20 font-bold' : 'bg-slate-50 hover:bg-slate-100 hover:border-slate-300 text-slate-700 border-slate-200 font-semibold'"
-                                                class="py-2.5 text-[11px] rounded-xl border text-center transition cursor-pointer"
-                                                x-text="t"
-                                            ></button>
-                                        </template>
-                                    </div>
-                                </div>
+                                    <option value="" class="text-slate-400">Chọn giờ</option>
+                                    <option value="08:00" class="text-slate-800">08:00</option>
+                                    <option value="08:30" class="text-slate-800">08:30</option>
+                                    <option value="09:00" class="text-slate-800">09:00</option>
+                                    <option value="09:30" class="text-slate-800">09:30</option>
+                                    <option value="10:00" class="text-slate-800">10:00</option>
+                                    <option value="10:30" class="text-slate-800">10:30</option>
+                                    <option value="11:00" class="text-slate-800">11:00</option>
+                                    <option value="11:30" class="text-slate-800">11:30</option>
+                                    <option value="13:30" class="text-slate-800">13:30</option>
+                                    <option value="14:00" class="text-slate-800">14:00</option>
+                                    <option value="14:30" class="text-slate-800">14:30</option>
+                                    <option value="15:00" class="text-slate-800">15:00</option>
+                                    <option value="15:30" class="text-slate-800">15:30</option>
+                                    <option value="16:00" class="text-slate-800">16:00</option>
+                                    <option value="16:30" class="text-slate-800">16:30</option>
+                                    <option value="17:00" class="text-slate-800">17:00</option>
+                                    <option value="17:30" class="text-slate-800">17:30</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[9px]"></i>
                             </div>
                         </div>
 
