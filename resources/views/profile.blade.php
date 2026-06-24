@@ -147,37 +147,43 @@
                             <!-- Subtabs list (Desktop only) -->
                             <div 
                                 x-show="activeTab === 'profile'" 
+                                x-cloak
                                 x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
-                                x-transition:enter-end="opacity-100 max-h-48 overflow-visible"
-                                class="hidden lg:flex flex-col pl-9 pr-4 py-2 space-y-1.5 bg-slate-50/40 border-l border-slate-100/80"
+                                x-transition:enter-start="opacity-0 -translate-y-2"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-2"
+                                class="profile-subtabs-desktop pl-9 pr-4 py-2 space-y-1.5 bg-slate-50/40 border-l border-slate-100/80"
                             >
-                                <button 
-                                    @click="activeSubTab = 'info'; window.history.pushState(null, '', '?tab=profile&subtab=info');"
-                                    :class="activeSubTab === 'info' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
-                                    class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
-                                >
-                                    <i class="fa-solid fa-user text-[10px]"></i>
-                                    <span>Thông tin cá nhân</span>
-                                </button>
-                                
-                                <button 
-                                    @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
-                                    :class="activeSubTab === 'password' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
-                                    class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
-                                >
-                                    <i class="fa-solid fa-key text-[10px]"></i>
-                                    <span>Đổi mật khẩu</span>
-                                </button>
-                                
-                                <button 
-                                    @click="activeSubTab = 'cccd'; window.history.pushState(null, '', '?tab=profile&subtab=cccd');"
-                                    :class="activeSubTab === 'cccd' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
-                                    class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
-                                >
-                                    <i class="fa-solid fa-id-card text-[10px]"></i>
-                                    <span>Xác thực CCCD</span>
-                                </button>
+                                <div class="flex flex-col space-y-1.5">
+                                    <button 
+                                        @click="activeSubTab = 'info'; window.history.pushState(null, '', '?tab=profile&subtab=info');"
+                                        :class="activeSubTab === 'info' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
+                                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
+                                    >
+                                        <i class="fa-solid fa-user text-[10px]"></i>
+                                        <span>Thông tin cá nhân</span>
+                                    </button>
+                                    
+                                    <button 
+                                        @click="activeSubTab = 'password'; window.history.pushState(null, '', '?tab=profile&subtab=password');"
+                                        :class="activeSubTab === 'password' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
+                                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
+                                    >
+                                        <i class="fa-solid fa-key text-[10px]"></i>
+                                        <span>Đổi mật khẩu</span>
+                                    </button>
+                                    
+                                    <button 
+                                        @click="activeSubTab = 'cccd'; window.history.pushState(null, '', '?tab=profile&subtab=cccd');"
+                                        :class="activeSubTab === 'cccd' ? 'text-primary font-black bg-primary-light/40' : 'text-slate-500 font-semibold hover:text-primary hover:bg-slate-50'"
+                                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
+                                    >
+                                        <i class="fa-solid fa-id-card text-[10px]"></i>
+                                        <span>Xác thực CCCD</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
@@ -2208,6 +2214,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
 <style>
+    @media (max-width: 1023px) {
+        .profile-subtabs-desktop {
+            display: none !important;
+        }
+    }
     .avatar-crop-container {
         max-width: 100%;
         max-height: 280px;
