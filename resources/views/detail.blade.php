@@ -470,10 +470,20 @@
                     }"
                     class="border-t border-slate-100 pt-5"
                 >
-                    <h5 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-primary"></i>
-                        <span>Đặt lịch xem nhà</span>
-                    </h5>
+                    <div class="flex justify-between items-center mb-4">
+                        <h5 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-primary"></i>
+                            <span>Đặt lịch xem nhà</span>
+                        </h5>
+                        <button 
+                            type="button"
+                            @click="date = ''; time = ''; message = ''; errorMessage = ''; name = '{{ Auth::check() ? Auth::user()->name : '' }}'; phone = '{{ Auth::check() ? Auth::user()->phone : '' }}'; email = '{{ Auth::check() ? Auth::user()->email : '' }}';"
+                            class="text-[10px] font-bold text-slate-400 hover:text-primary transition cursor-pointer flex items-center gap-1"
+                        >
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
+                            <span>Đặt lại</span>
+                        </button>
+                    </div>
 
                     <!-- Success State -->
                     <div 
