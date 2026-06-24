@@ -25,7 +25,7 @@ class ProfileService
             'email' => $data['email'] ?? $user->email,
             'gender' => $data['gender'] ?? 0,
             'dob' => $data['dob'] ?? null,
-            'pob' => $data['pob'] ?? null,
+            'pob' => $data['pob'] ?? $user->pob,
             'add_street' => $data['add_street'] ?? null,
             'add_ward' => $data['add_ward'] ?? null,
             'add_district' => $data['add_district'] ?? null,

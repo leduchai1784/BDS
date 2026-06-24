@@ -205,4 +205,30 @@ class AuthenticationTest extends TestCase
         $user->refresh();
         $this->assertTrue(Hash::check('newpassword123', $user->password));
     }
+
+    /**
+     * Test profile update preserves POB (Place of Birth) data.
+     */
+    public function test_user_profile_update_preserves_pob(): void
+    {
+        $email = 'test.profile.pob.' . time() . '@nks.com.vn';
+        $user = User::create([
+            'name' => 'Nguyễn Văn Hùng',
+            'email' => $email,
+            'password' => Hash::make('password'),
+            'role' => 'tenant',
+            'pob' => 'Hải Phòng',
+        ]);
+
+        $response = $this->actingAs($user)->post('/profile', [
+            'name' => 'Nguyễn Văn Hùng Updated',
+            'email' => $email,
+            'phone' => '0988888888',
+        ]);
+
+        $response->assertRedirect('/profile?tab=profile&subtab=info');
+        
+        $user->refresh();
+        $this->assertEquals('Hải Phòng', $user->pob);
+    }
 }

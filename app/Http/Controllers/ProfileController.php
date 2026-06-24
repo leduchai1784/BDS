@@ -144,7 +144,6 @@ class ProfileController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'gender' => 'nullable|integer',
             'dob' => 'nullable|string|max:50',
-            'pob' => 'nullable|string|max:255',
             'add_street' => 'nullable|string|max:255',
             'add_ward' => 'nullable|string|max:100',
             'add_district' => 'nullable|string|max:100',
@@ -179,7 +178,7 @@ class ProfileController extends Controller
         }
 
         $updateData = $request->only([
-            'name', 'phone', 'email', 'gender', 'dob', 'pob',
+            'name', 'phone', 'email', 'gender', 'dob',
             'add_street', 'add_ward', 'add_district', 'add_province', 'intro', 'website'
         ]);
         $updateData['firstname'] = $firstname;

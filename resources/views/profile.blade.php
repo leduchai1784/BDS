@@ -492,8 +492,8 @@
                                 </div>
                             </div>
 
-                            <!-- Grid 3: Dob & Pob & Website -->
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <!-- Grid 3: Dob & Website -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <!-- Ngày sinh -->
                                 <div class="space-y-1">
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
@@ -524,25 +524,6 @@
                                         >
                                     </div>
                                     @error('dob')
-                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Nơi sinh -->
-                                <div class="space-y-1">
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi sinh</label>
-                                    <div class="relative">
-                                        <i class="fa-solid fa-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                        <input 
-                                            type="text" 
-                                            name="pob"
-                                            value="{{ old('pob', $user['pob']) }}"
-                                            placeholder="Hà Nội..."
-                                            :disabled="!isEditing"
-                                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-                                        >
-                                    </div>
-                                    @error('pob')
                                         <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                                     @enderror
                                 </div>
