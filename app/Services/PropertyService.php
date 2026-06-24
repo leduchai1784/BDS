@@ -833,6 +833,7 @@ class PropertyService
             'legal' => "Sổ hồng chính chủ, hợp đồng cho thuê tối thiểu 1 năm",
             'is_vip' => ($id % 2 === 0),
             'is_new' => true,
+            'owner_id' => null,
             'agent' => [
                 'name' => $agentName,
                 'phone' => $agentPhone,
@@ -1378,6 +1379,7 @@ class PropertyService
             'legal' => $property->legal ?: 'Chưa cập nhật',
             'is_vip' => (bool)$property->is_vip,
             'is_new' => (bool)$property->is_new,
+            'owner_id' => $property->owner_id,
             'agent' => [
                 'name' => $agentName,
                 'phone' => $agentPhone,
