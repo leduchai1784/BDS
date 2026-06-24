@@ -534,4 +534,38 @@ class ProfileController extends Controller
             return $dateStr;
         }
     }
+
+    /**
+     * Register tenant user as owner.
+     */
+    public function registerOwner(Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        // Make sure only tenant users can register
+        if ($user->role !== 'tenant') {
+            return redirect()->route('profile.index')->withErrors(['role' => 'Chỉ tài khoản khách hàng mới có thể đăng ký làm chủ nhà.']);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'company' => 'nullable|string|max:255',
+        ], [
+            'name.required' => 'Vui lòng nhập họ và tên.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'name.max' => 'Họ và tên không được vượt quá 255 ký tự.',
+            'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự.',
+            'company.max' => 'Tên công ty không được vượt quá 255 ký tự.',
+        ]);
+
+        $user->update([
+            'role' => 'owner',
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'company' => $request->company,
+        ]);
+
+        return redirect()->route('profile.index', ['tab' => 'profile'])->with('success', 'Đăng ký làm chủ nhà thành công! Chào mừng đối tác mới.');
+    }
 }

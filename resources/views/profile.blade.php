@@ -197,6 +197,17 @@
                                 {{ $stats['total_appointments'] }}
                             </span>
                         </button>
+
+                        <button 
+                            @click="activeTab = 'register_owner'; window.history.pushState(null, '', '?tab=register_owner');" 
+                            :class="activeTab === 'register_owner' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-user-tie text-sm"></i>
+                                <span>Đăng ký làm chủ nhà</span>
+                            </div>
+                        </button>
                         @endif
 
 
@@ -2063,8 +2074,84 @@
                                 </div>
                             @endif
                         @endif
+                @if(Auth::user()->role === 'tenant')
+                <!-- TAB 5: Register Owner -->
+                <div x-show="activeTab === 'register_owner'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    <!-- Title -->
+                    <div class="pb-5 border-b border-slate-100 mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Đăng ký làm chủ nhà</h2>
+                        <p class="text-xs text-slate-400 mt-1 font-semibold">Trở thành đối tác chủ nhà để đăng tin cho thuê và bán bất động sản.</p>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <div class="bg-slate-50 border border-slate-100 p-6 rounded-3xl">
+                        <form action="{{ route('profile.register-owner') }}" method="POST" class="space-y-6">
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <!-- Họ và tên -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="name"
+                                            value="{{ old('name', Auth::user()->name) }}"
+                                            required
+                                            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('name')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Số điện thoại -->
+                                <div class="space-y-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="phone"
+                                            value="{{ old('phone', Auth::user()->phone) }}"
+                                            required
+                                            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('phone')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Công ty (nếu có) -->
+                                <div class="space-y-1 sm:col-span-2">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Công ty / Tổ chức (nếu có)</label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-building absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input 
+                                            type="text" 
+                                            name="company"
+                                            value="{{ old('company', Auth::user()->company ?? '') }}"
+                                            placeholder="Ví dụ: Công ty Bất động sản ABC..."
+                                            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-xs font-semibold outline-none transition"
+                                        >
+                                    </div>
+                                    @error('company')
+                                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-4 border-t border-slate-100">
+                                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                    <i class="fa-solid fa-circle-check mr-2"></i> Xác nhận đăng ký làm chủ nhà
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+                @endif
                 @endif
 
 

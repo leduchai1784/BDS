@@ -220,6 +220,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/cccd', [ProfileController::class, 'updateCccd'])->name('profile.cccd');
     Route::post('/profile/scan-cccd', [ProfileController::class, 'scanCccd'])->name('profile.scan-cccd');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/register-owner', [ProfileController::class, 'registerOwner'])->name('profile.register-owner');
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

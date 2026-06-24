@@ -231,4 +231,57 @@ class AuthenticationTest extends TestCase
         $user->refresh();
         $this->assertEquals('Hải Phòng', $user->pob);
     }
+
+    /**
+     * Test tenant can register as owner.
+     */
+    public function test_tenant_can_register_as_owner(): void
+    {
+        $email = 'tenant.reg.' . time() . '@nks.com.vn';
+        $user = User::create([
+            'name' => 'Khách Hàng',
+            'email' => $email,
+            'password' => Hash::make('password'),
+            'role' => 'tenant',
+        ]);
+
+        $response = $this->actingAs($user)->post('/profile/register-owner', [
+            'name' => 'Chủ Nhà Mới',
+            'phone' => '0912345678',
+            'company' => 'Công Ty Bất Động Sản NKS',
+        ]);
+
+        $response->assertRedirect('/profile?tab=profile');
+        $response->assertSessionHas('success');
+
+        $user->refresh();
+        $this->assertEquals('owner', $user->role);
+        $this->assertEquals('Chủ Nhà Mới', $user->name);
+        $this->assertEquals('0912345678', $user->phone);
+        $this->assertEquals('Công Ty Bất Động Sản NKS', $user->company);
+    }
+
+    /**
+     * Test non-tenant users cannot register as owner.
+     */
+    public function test_non_tenant_cannot_register_as_owner(): void
+    {
+        $email = 'admin.reg.' . time() . '@nks.com.vn';
+        $user = User::create([
+            'name' => 'Admin User',
+            'email' => $email,
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($user)->post('/profile/register-owner', [
+            'name' => 'Admin Attempt',
+            'phone' => '0912345678',
+        ]);
+
+        $response->assertSessionHasErrors(['role']);
+        
+        $user->refresh();
+        $this->assertEquals('admin', $user->role);
+    }
 }

@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 #[Fillable([
-    'name', 'firstname', 'lastname', 'email', 'password', 'phone', 'avatar', 'gender', 'dob', 'pob',
+    'name', 'firstname', 'lastname', 'email', 'password', 'phone', 'avatar', 'company', 'gender', 'dob', 'pob',
     'id_number', 'id_date', 'id_place', 'cccd_front', 'cccd_back', 'add_street', 'add_ward',
     'add_district', 'add_province', 'permanent_address', 'zalo_id', 'zalo_key', 'intro', 'website', 'role', 'status',
     'nks_user_id', 'nks_token'
