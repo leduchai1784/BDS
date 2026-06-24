@@ -34,6 +34,17 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Self-healing sync: pull latest profile & CCCD details from NKS if logged in via NKS
+        if ($user->nks_token) {
+            $nksInfo = $this->nksAuthService->getUserInfo($user->nks_token);
+            if ($nksInfo['success'] && !empty($nksInfo['user'])) {
+                $localData = $this->nksAuthService->mapNksUserToLocal($nksInfo['user'], $user->nks_token);
+                $user->update($localData);
+                $user->refresh();
+            }
+        }
+
         $favorites = $this->wishlistService->getUserFavorites($user->id);
 
         $userData = [
