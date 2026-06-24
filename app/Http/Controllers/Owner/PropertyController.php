@@ -75,7 +75,7 @@ class PropertyController extends Controller
             'longitude' => $request->longitude,
             'phone' => $request->phone,
             'zalo' => $request->zalo,
-            'status' => 'pending', // Default is pending
+            'status' => 'approved', // Auto-approved by default
             'is_vip' => false,
             'is_new' => true,
             'views_count' => 0,
@@ -121,7 +121,7 @@ class PropertyController extends Controller
         }
 
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Đăng tin mới thành công! Tin của bạn đang chờ kiểm duyệt từ Admin.');
+            ->with('success', 'Đăng tin mới thành công! Tin của bạn đã được tự động duyệt và hiển thị.');
     }
 
     /**
@@ -221,7 +221,7 @@ class PropertyController extends Controller
             'longitude' => $request->longitude,
             'phone' => $request->phone,
             'zalo' => $request->zalo,
-            'status' => in_array($property->status, ['approved', 'rented']) ? $property->status : 'pending',
+            'status' => in_array($property->status, ['approved', 'rented']) ? $property->status : 'approved',
         ]);
 
         // Update main image if new one is uploaded or URL is provided
@@ -297,7 +297,7 @@ class PropertyController extends Controller
         }
 
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Cập nhật tin đăng thành công! Tin đăng của bạn đang chờ kiểm duyệt lại.');
+            ->with('success', 'Cập nhật tin đăng thành công!');
     }
 
     /**

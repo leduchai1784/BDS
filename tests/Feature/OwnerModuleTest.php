@@ -124,7 +124,7 @@ class OwnerModuleTest extends TestCase
             'title' => 'New Villa with Pool',
             'price' => 15000000,
             'owner_id' => $this->owner1->id,
-            'status' => 'pending'
+            'status' => 'approved'
         ]);
 
         $property = Property::where('title', 'New Villa with Pool')->first();
@@ -173,7 +173,7 @@ class OwnerModuleTest extends TestCase
             'title' => 'Property with URLs',
             'price' => 20000000,
             'owner_id' => $this->owner1->id,
-            'status' => 'pending'
+            'status' => 'approved'
         ]);
 
         $property = Property::where('title', 'Property with URLs')->first();
