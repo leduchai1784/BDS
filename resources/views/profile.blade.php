@@ -2074,6 +2074,10 @@
                                 </div>
                             @endif
                         @endif
+                    </div>
+                </div>
+                @endif
+
                 @if(Auth::user()->role === 'tenant')
                 <!-- TAB 5: Register Owner -->
                 <div x-show="activeTab === 'register_owner'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
@@ -2151,7 +2155,6 @@
                         </form>
                     </div>
                 </div>
-                @endif
                 @endif
 
 
