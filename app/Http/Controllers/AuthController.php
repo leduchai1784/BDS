@@ -49,6 +49,12 @@ class AuthController extends Controller
             $nksUser  = $nksResult['user'];
             $nksToken = $nksResult['token'];
 
+            // Fetch the full and updated user profile from NKS to get complete CCCD details!
+            $nksFullResult = $this->nksAuthService->getUserInfo($nksToken);
+            if ($nksFullResult['success'] && !empty($nksFullResult['user'])) {
+                $nksUser = array_merge($nksUser, $nksFullResult['user']);
+            }
+
             // Map NKS data → local fields
             $localData = $this->nksAuthService->mapNksUserToLocal($nksUser, $nksToken);
 
