@@ -6,10 +6,13 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Property;
 use App\Models\Appointment;
+use App\Mail\TenantAppointmentApproval;
+use App\Mail\TenantAppointmentRejection;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class OwnerModuleTest extends TestCase
@@ -275,6 +278,8 @@ class OwnerModuleTest extends TestCase
      */
     public function test_owner_can_manage_appointments(): void
     {
+        Mail::fake();
+
         $property = Property::create([
             'title' => 'Property for Viewing',
             'description' => 'Description.',
@@ -298,6 +303,7 @@ class OwnerModuleTest extends TestCase
             'property_id' => $property->id,
             'name' => 'John Doe',
             'phone' => '0987654321',
+            'email' => 'tenant@test.com',
             'date' => '2026-06-12',
             'time' => '10:00:00',
             'message' => 'Want to view',
@@ -308,6 +314,9 @@ class OwnerModuleTest extends TestCase
         $response = $this->actingAs($this->owner1)->post(route('appointments.approve', $appointment->id));
         $response->assertRedirect(route('profile.index', ['tab' => 'appointments']));
         $this->assertEquals('approved', $appointment->fresh()->status);
+        Mail::assertSent(TenantAppointmentApproval::class, function ($mail) use ($appointment) {
+            return $mail->appointment->id === $appointment->id && $mail->hasTo('tenant@test.com');
+        });
 
         // 2. Test Complete
         $response = $this->actingAs($this->owner1)->post(route('appointments.complete', $appointment->id));
@@ -322,6 +331,9 @@ class OwnerModuleTest extends TestCase
         $response->assertRedirect(route('profile.index', ['tab' => 'appointments']));
         $this->assertEquals('rejected', $appointment->fresh()->status);
         $this->assertEquals('Chủ nhà bận đột xuất.', $appointment->fresh()->reject_reason);
+        Mail::assertSent(TenantAppointmentRejection::class, function ($mail) use ($appointment) {
+            return $mail->appointment->id === $appointment->id && $mail->hasTo('tenant@test.com');
+        });
     }
 
     /**

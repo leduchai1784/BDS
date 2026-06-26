@@ -14,7 +14,7 @@ class AppointmentController extends Controller
      */
     public function approve($id)
     {
-        $appointment = Appointment::with('property')->findOrFail($id);
+        $appointment = Appointment::with(['property.owner'])->findOrFail($id);
 
         // Security Check
         abort_if($appointment->property->owner_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
@@ -23,6 +23,15 @@ class AppointmentController extends Controller
             'status' => 'approved',
             'reject_reason' => null // Clear if previously rejected
         ]);
+
+        // Send Email to Tenant
+        try {
+            if ($appointment->email) {
+                \Illuminate\Support\Facades\Mail::to($appointment->email)->send(new \App\Mail\TenantAppointmentApproval($appointment));
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error sending appointment approval email: ' . $e->getMessage());
+        }
 
         return redirect()->route('profile.index', ['tab' => 'appointments'])
             ->with('success', 'Xác nhận lịch hẹn xem nhà thành công!');
@@ -33,7 +42,7 @@ class AppointmentController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $appointment = Appointment::with('property')->findOrFail($id);
+        $appointment = Appointment::with(['property.owner'])->findOrFail($id);
 
         // Security Check
         abort_if($appointment->property->owner_id !== Auth::id(), 403, 'Bạn không có quyền quản lý lịch hẹn này.');
@@ -48,6 +57,15 @@ class AppointmentController extends Controller
             'status' => 'rejected',
             'reject_reason' => $request->reject_reason
         ]);
+
+        // Send Email to Tenant
+        try {
+            if ($appointment->email) {
+                \Illuminate\Support\Facades\Mail::to($appointment->email)->send(new \App\Mail\TenantAppointmentRejection($appointment));
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error sending appointment rejection email: ' . $e->getMessage());
+        }
 
         return redirect()->route('profile.index', ['tab' => 'appointments'])
             ->with('success', 'Từ chối lịch hẹn xem nhà thành công!');
