@@ -99,6 +99,8 @@ class ProfileController extends Controller
                 ->latest()
                 ->get();
 
+            $myBookedAppointments = $this->appointmentService->getUserAppointments($user->id);
+
             // Load categories and edit target property
             $categories = \App\Models\Category::all();
             $editProperty = null;
@@ -119,7 +121,7 @@ class ProfileController extends Controller
                 'myProperties' => $myProperties,
                 'ownerAppointments' => $ownerAppointments,
                 'properties' => $favorites, // keep favorites just in case
-                'appointments' => [],
+                'appointments' => $myBookedAppointments,
                 'categories' => $categories,
                 'property' => $editProperty
             ]);

@@ -1955,6 +1955,7 @@
                         x-data="{
                             rejectOpen: false,
                             rejectUrl: '',
+                            ownerActiveSubTab: 'received',
                             openRejectModal(actionUrl) {
                                 this.rejectUrl = actionUrl;
                                 this.rejectOpen = true;
@@ -1993,82 +1994,175 @@
                         </div>
                         @endif
 
+                        <!-- Owner Sub-tabs Navigation -->
+                        @if(Auth::user()->role === 'owner')
+                            <div class="flex items-center gap-2 mb-6 p-1 bg-slate-100 rounded-xl w-fit">
+                                <button 
+                                    type="button" 
+                                    @click="ownerActiveSubTab = 'received'"
+                                    :class="ownerActiveSubTab === 'received' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
+                                    class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer"
+                                >
+                                    <i class="fa-solid fa-calendar-check mr-1.5"></i> Lịch hẹn khách đặt
+                                </button>
+                                <button 
+                                    type="button" 
+                                    @click="ownerActiveSubTab = 'sent'"
+                                    :class="ownerActiveSubTab === 'sent' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
+                                    class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer"
+                                >
+                                    <i class="fa-solid fa-calendar-plus mr-1.5"></i> Lịch hẹn bạn đặt
+                                </button>
+                            </div>
+                        @endif
+
                         <!-- List Appointments -->
                         @if(Auth::user()->role === 'owner')
-                            @if($ownerAppointments->isEmpty())
-                                <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
-                                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
-                                        <i class="fa-solid fa-calendar-xmark"></i>
+                            <!-- Received appointments list -->
+                            <div x-show="ownerActiveSubTab === 'received'">
+                                @if($ownerAppointments->isEmpty())
+                                    <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
+                                            <i class="fa-solid fa-calendar-xmark"></i>
+                                        </div>
+                                        <p class="text-xs font-bold text-slate-500">Chưa có khách đặt lịch hẹn xem nhà nào.</p>
                                     </div>
-                                    <p class="text-xs font-bold text-slate-500">Chưa có khách đặt lịch hẹn xem nhà nào.</p>
-                                </div>
-                            @else
-                                <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
-                                    <table class="min-w-full divide-y divide-slate-100 text-left">
-                                        <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                            <tr>
-                                                <th scope="col" class="px-5 py-4">Khách hàng</th>
-                                                <th scope="col" class="px-5 py-4">Ngày giờ hẹn</th>
-                                                <th scope="col" class="px-5 py-4">Bất động sản</th>
-                                                <th scope="col" class="px-5 py-4">Trạng thái</th>
-                                                <th scope="col" class="px-5 py-4 text-right">Thao tác</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
-                                            @foreach($ownerAppointments as $app)
+                                @else
+                                    <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                        <table class="min-w-full divide-y divide-slate-100 text-left">
+                                            <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                                 <tr>
-                                                    <td class="px-5 py-4 whitespace-nowrap">
-                                                        <span class="block text-slate-800 font-bold">{{ $app->name }}</span>
-                                                        <span class="text-[10px] text-slate-400"><i class="fa-solid fa-phone mr-1"></i>{{ $app->phone }}</span>
-                                                    </td>
-                                                    <td class="px-5 py-4 whitespace-nowrap">
-                                                        <span class="block text-slate-800">{{ \Carbon\Carbon::parse($app->date)->format('d/m/Y') }}</span>
-                                                        <span class="text-[10px] text-slate-400"><i class="fa-solid fa-clock mr-1"></i>{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
-                                                    </td>
-                                                    <td class="px-5 py-4 max-w-[200px] truncate">
-                                                        <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $app->property->title }}">{{ $app->property->title }}</a>
-                                                    </td>
-                                                    <td class="px-5 py-4 whitespace-nowrap">
-                                                        @if($app->status === 'approved')
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã duyệt</span>
-                                                        @elseif($app->status === 'pending')
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
-                                                        @elseif($app->status === 'rejected')
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Lý do: {{ $app->reject_reason }}">Từ chối</span>
-                                                        @elseif($app->status === 'completed')
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
-                                                        @endif
-                                                    </td>
-                                                    <td class="px-5 py-4 whitespace-nowrap text-right">
-                                                        @if($app->status === 'pending')
-                                                            <div class="inline-flex items-center space-x-2">
-                                                                <form action="{{ route('appointments.approve', $app->id) }}" method="POST" class="inline-block">
+                                                    <th scope="col" class="px-5 py-4">Khách hàng</th>
+                                                    <th scope="col" class="px-5 py-4">Ngày giờ hẹn</th>
+                                                    <th scope="col" class="px-5 py-4">Bất động sản</th>
+                                                    <th scope="col" class="px-5 py-4">Trạng thái</th>
+                                                    <th scope="col" class="px-5 py-4 text-right">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
+                                                @foreach($ownerAppointments as $app)
+                                                    <tr>
+                                                        <td class="px-5 py-4 whitespace-nowrap">
+                                                            <span class="block text-slate-800 font-bold">{{ $app->name }}</span>
+                                                            <span class="text-[10px] text-slate-400"><i class="fa-solid fa-phone mr-1"></i>{{ $app->phone }}</span>
+                                                        </td>
+                                                        <td class="px-5 py-4 whitespace-nowrap">
+                                                            <span class="block text-slate-800">{{ \Carbon\Carbon::parse($app->date)->format('d/m/Y') }}</span>
+                                                            <span class="text-[10px] text-slate-400"><i class="fa-solid fa-clock mr-1"></i>{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
+                                                        </td>
+                                                        <td class="px-5 py-4 max-w-[200px] truncate">
+                                                            <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $app->property->title }}">{{ $app->property->title }}</a>
+                                                        </td>
+                                                        <td class="px-5 py-4 whitespace-nowrap">
+                                                            @if($app->status === 'approved')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã duyệt</span>
+                                                            @elseif($app->status === 'pending')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
+                                                            @elseif($app->status === 'rejected')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Lý do: {{ $app->reject_reason }}">Từ chối</span>
+                                                            @elseif($app->status === 'completed')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-5 py-4 whitespace-nowrap text-right">
+                                                            @if($app->status === 'pending')
+                                                                <div class="inline-flex items-center space-x-2">
+                                                                    <form action="{{ route('appointments.approve', $app->id) }}" method="POST" class="inline-block">
+                                                                        @csrf
+                                                                        <button type="submit" class="px-2.5 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                            Duyệt
+                                                                        </button>
+                                                                    </form>
+                                                                    <button type="button" @click="openRejectModal('{{ route('appointments.reject', $app->id) }}')" class="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                        Từ chối
+                                                                    </button>
+                                                                </div>
+                                                            @elseif($app->status === 'approved')
+                                                                <form action="{{ route('appointments.complete', $app->id) }}" method="POST" class="inline-block">
+                                                                        @csrf
+                                                                        <button type="submit" class="px-2.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                            Đã xem nhà
+                                                                        </button>
+                                                                </form>
+                                                            @else
+                                                                <span class="text-[10px] text-slate-400">Không có thao tác</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Sent appointments list (the ones they booked themselves) -->
+                            <div x-show="ownerActiveSubTab === 'sent'">
+                                @if($appointments->isEmpty())
+                                    <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
+                                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-xl">
+                                            <i class="fa-solid fa-calendar-xmark"></i>
+                                        </div>
+                                        <p class="text-xs font-bold text-slate-500 mb-4">Bạn chưa đặt lịch hẹn xem nhà nào.</p>
+                                        <a href="/listings" class="inline-flex items-center justify-center px-5 py-2.5 text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md transition cursor-pointer active:scale-98">
+                                            <i class="fa-solid fa-calendar-plus mr-2"></i> Đặt lịch ngay
+                                        </a>
+                                    </div>
+                                @else
+                                    <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                        <table class="min-w-full divide-y divide-slate-100 text-left">
+                                            <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                <tr>
+                                                    <th scope="col" class="px-5 py-4">Mã số</th>
+                                                    <th scope="col" class="px-5 py-4">Ngày hẹn</th>
+                                                    <th scope="col" class="px-5 py-4">Bất động sản</th>
+                                                    <th scope="col" class="px-5 py-4">Chủ nhà</th>
+                                                    <th scope="col" class="px-5 py-4">Trạng thái</th>
+                                                    <th scope="col" class="px-5 py-4 text-right">Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-100 text-xs text-slate-600 font-semibold">
+                                                @foreach($appointments as $app)
+                                                    <tr>
+                                                        <td class="px-5 py-4 text-slate-900 font-bold">#BK-{{ $app->id }}</td>
+                                                        <td class="px-5 py-4 whitespace-nowrap">
+                                                            <span class="block">{{ \Carbon\Carbon::parse($app->date)->format('d/m/Y') }}</span>
+                                                            <span class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
+                                                        </td>
+                                                        <td class="px-5 py-4 max-w-[200px] truncate">
+                                                            <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800">{{ $app->property->title }}</a>
+                                                        </td>
+                                                        <td class="px-5 py-4 whitespace-nowrap">{{ $app->property->agent->name ?? 'N/A' }}</td>
+                                                        <td class="px-5 py-4 whitespace-nowrap">
+                                                            @if($app->status === 'approved')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã xác nhận</span>
+                                                            @elseif($app->status === 'pending')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
+                                                            @elseif($app->status === 'rejected')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Lý do từ chối: {{ $app->reject_reason }}">Đã từ chối</span>
+                                                            @elseif($app->status === 'completed')
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-5 py-4 whitespace-nowrap text-right">
+                                                            @if($app->status === 'pending' || $app->status === 'approved')
+                                                                <form action="{{ route('appointments.cancel', $app->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn xem nhà này không?');">
                                                                     @csrf
-                                                                    <button type="submit" class="px-2.5 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
-                                                                        Duyệt
+                                                                    <button type="submit" class="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                                        Hủy lịch
                                                                     </button>
                                                                 </form>
-                                                                <button type="button" @click="openRejectModal('{{ route('appointments.reject', $app->id) }}')" class="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
-                                                                    Từ chối
-                                                                </button>
-                                                            </div>
-                                                        @elseif($app->status === 'approved')
-                                                            <form action="{{ route('appointments.complete', $app->id) }}" method="POST" class="inline-block">
-                                                                    @csrf
-                                                                    <button type="submit" class="px-2.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
-                                                                        Đã xem nhà
-                                                                    </button>
-                                                            </form>
-                                                        @else
-                                                            <span class="text-[10px] text-slate-400">Không có thao tác</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
+                                                            @else
+                                                                <span class="text-[10px] text-slate-400">Không có thao tác</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
                         @else
                             @if($appointments->isEmpty())
                                 <div class="text-center py-12 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
