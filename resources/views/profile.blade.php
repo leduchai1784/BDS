@@ -227,7 +227,7 @@
                         >
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-calendar-days text-sm"></i>
-                                <span>Lịch hẹn khách đặt</span>
+                                <span>Lịch hẹn</span>
                             </div>
                             <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
                                 {{ $stats['total_appointments'] }}

@@ -134,7 +134,7 @@
                             <i class="fa-solid fa-list-check mr-2 text-sm text-slate-400"></i> Quản lý tin đăng
                         </a>
                         <a href="{{ route('profile.index', ['tab' => 'appointments']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
-                            <i class="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn khách đặt
+                            <i class="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn
                         </a>
                         @elseif(Auth::user()->role === 'tenant')
                         <a href="{{ route('profile.index', ['tab' => 'appointments']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
