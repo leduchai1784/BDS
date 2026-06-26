@@ -15,7 +15,16 @@
             const saved = localStorage.getItem('bds_chat_history');
             if (saved) {
                 try {
-                    this.messages = JSON.parse(saved);
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        this.messages = parsed.map(msg => ({
+                            role: msg.role || 'assistant',
+                            text: msg.text || '',
+                            properties: Array.isArray(msg.properties) ? msg.properties : []
+                        }));
+                    } else {
+                        this.loadWelcomeMessage();
+                    }
                 } catch(e) {
                     this.loadWelcomeMessage();
                 }
@@ -154,12 +163,7 @@
     <div 
         x-show="open" 
         x-cloak
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+        x-transition
         class="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-2rem)] h-[550px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-100"
     >
         <!-- Header -->
@@ -219,7 +223,7 @@
                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 pl-1">
                                 <i class="fa-solid fa-paperclip text-[10px]"></i> Bất động sản đề xuất:
                             </p>
-                            <template x-for="prop in msg.properties" :key="prop.id">
+                            <template x-for="prop in (msg.properties || [])" :key="prop.id">
                                 <a 
                                     :href="'/property/' + prop.id" 
                                     class="block bg-white hover:bg-slate-50 border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow transition duration-200"
