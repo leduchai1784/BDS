@@ -1096,14 +1096,14 @@ class PropertyService
     {
         $primaryImg = $property->propertyImages()->where('is_primary', true)->first();
         $featureImg = $primaryImg ? $primaryImg->image_path : 'images/default-property.png';
-        if ($featureImg !== 'images/default-property.png' && stripos($featureImg, 'http') !== 0 && stripos($featureImg, 'storage/') !== 0 && stripos($featureImg, 'data:') !== 0) {
+        if ($featureImg !== 'images/default-property.png' && stripos($featureImg, 'http') !== 0 && stripos($featureImg, 'storage/') !== 0) {
             $featureImg = 'storage/' . $featureImg;
         }
 
         $galleryImages = [$featureImg];
         foreach ($property->propertyImages as $img) {
             $path = $img->image_path;
-            if (stripos($path, 'http') !== 0 && stripos($path, 'storage/') !== 0 && stripos($path, 'data:') !== 0) {
+            if (stripos($path, 'http') !== 0 && stripos($path, 'storage/') !== 0) {
                 $path = 'storage/' . $path;
             }
             $galleryImages[] = $path;

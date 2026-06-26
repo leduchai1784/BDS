@@ -81,6 +81,8 @@ class PropertyController extends Controller
             'views_count' => 0,
         ]);
 
+        $fileWriteError = false;
+
         // Upload main image
         if ($request->filled('image_url')) {
             $property->propertyImages()->create([
@@ -88,11 +90,20 @@ class PropertyController extends Controller
                 'is_primary' => true,
             ]);
         } elseif ($request->hasFile('image')) {
-            $path = $this->saveImage($request->file('image'));
-            $property->propertyImages()->create([
-                'image_path' => $path,
-                'is_primary' => true,
-            ]);
+            try {
+                $path = $request->file('image')->store('properties', 'public');
+                $property->propertyImages()->create([
+                    'image_path' => $path,
+                    'is_primary' => true,
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("Failed to store main image locally (possibly read-only filesystem): " . $e->getMessage());
+                $fileWriteError = true;
+                $property->propertyImages()->create([
+                    'image_path' => 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+                    'is_primary' => true,
+                ]);
+            }
         }
 
         // Upload gallery images from URLs
@@ -112,16 +123,26 @@ class PropertyController extends Controller
         // Upload gallery images from files
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $path = $this->saveImage($img);
-                $property->propertyImages()->create([
-                    'image_path' => $path,
-                    'is_primary' => false,
-                ]);
+                try {
+                    $path = $img->store('properties', 'public');
+                    $property->propertyImages()->create([
+                        'image_path' => $path,
+                        'is_primary' => false,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("Failed to store gallery image locally (possibly read-only filesystem): " . $e->getMessage());
+                    $fileWriteError = true;
+                }
             }
         }
 
+        $successMsg = 'Đăng tin mới thành công! Tin của bạn đã được tự động duyệt và hiển thị.';
+        if ($fileWriteError) {
+            $successMsg .= ' (Lưu ý: Do giới hạn bộ nhớ Read-only trên Vercel, hình ảnh tải lên trực tiếp không thể lưu trữ. Hệ thống đã sử dụng ảnh mặc định. Hãy chỉnh sửa tin đăng và sử dụng chức năng "Nhập link" để dán URL ảnh trực tuyến).';
+        }
+
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Đăng tin mới thành công! Tin của bạn đã được tự động duyệt và hiển thị.');
+            ->with('success', $successMsg);
     }
 
     /**
@@ -224,11 +245,13 @@ class PropertyController extends Controller
             'status' => in_array($property->status, ['approved', 'rented']) ? $property->status : 'approved',
         ]);
 
+        $fileWriteError = false;
+
         // Update main image if new one is uploaded or URL is provided
         if ($request->filled('image_url')) {
             $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
             if ($oldPrimary) {
-                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL) && stripos($oldPrimary->image_path, 'data:') !== 0) {
+                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
                     try {
                         Storage::disk('public')->delete($oldPrimary->image_path);
                     } catch (\Exception $e) {}
@@ -243,7 +266,7 @@ class PropertyController extends Controller
         } elseif ($request->hasFile('image')) {
             $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
             if ($oldPrimary) {
-                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL) && stripos($oldPrimary->image_path, 'data:') !== 0) {
+                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
                     try {
                         Storage::disk('public')->delete($oldPrimary->image_path);
                     } catch (\Exception $e) {}
@@ -251,11 +274,20 @@ class PropertyController extends Controller
                 $oldPrimary->delete();
             }
 
-            $path = $this->saveImage($request->file('image'));
-            $property->propertyImages()->create([
-                'image_path' => $path,
-                'is_primary' => true,
-            ]);
+            try {
+                $path = $request->file('image')->store('properties', 'public');
+                $property->propertyImages()->create([
+                    'image_path' => $path,
+                    'is_primary' => true,
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("Failed to store updated main image locally (possibly read-only filesystem): " . $e->getMessage());
+                $fileWriteError = true;
+                $property->propertyImages()->create([
+                    'image_path' => 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+                    'is_primary' => true,
+                ]);
+            }
         }
 
         // Delete requested gallery images
@@ -267,7 +299,7 @@ class PropertyController extends Controller
                     ->orWhere('image_path', $delPath)
                     ->first();
                 if ($imgRecord) {
-                    if (!filter_var($imgRecord->image_path, FILTER_VALIDATE_URL) && stripos($imgRecord->image_path, 'data:') !== 0) {
+                    if (!filter_var($imgRecord->image_path, FILTER_VALIDATE_URL)) {
                         try {
                             Storage::disk('public')->delete($imgRecord->image_path);
                         } catch (\Exception $e) {}
@@ -294,16 +326,26 @@ class PropertyController extends Controller
         // Upload new gallery images from files
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $path = $this->saveImage($img);
-                $property->propertyImages()->create([
-                    'image_path' => $path,
-                    'is_primary' => false,
-                ]);
+                try {
+                    $path = $img->store('properties', 'public');
+                    $property->propertyImages()->create([
+                        'image_path' => $path,
+                        'is_primary' => false,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("Failed to store new gallery image locally (possibly read-only filesystem): " . $e->getMessage());
+                    $fileWriteError = true;
+                }
             }
         }
 
+        $successMsg = 'Cập nhật tin đăng thành công!';
+        if ($fileWriteError) {
+            $successMsg .= ' (Lưu ý: Do giới hạn bộ nhớ Read-only trên Vercel, một số hình ảnh tải lên trực tiếp không thể lưu trữ. Hãy sử dụng chức năng "Nhập link" để cung cấp liên kết ảnh trực tuyến).';
+        }
+
         return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Cập nhật tin đăng thành công!');
+            ->with('success', $successMsg);
     }
 
     /**
@@ -318,11 +360,9 @@ class PropertyController extends Controller
 
         // Delete image files physically
         foreach ($property->propertyImages as $img) {
-            if (stripos($img->image_path, 'data:') !== 0) {
-                try {
-                    Storage::disk('public')->delete($img->image_path);
-                } catch (\Exception $e) {}
-            }
+            try {
+                Storage::disk('public')->delete($img->image_path);
+            } catch (\Exception $e) {}
         }
 
         // Delete from database (SoftDeletes is configured, so this will soft delete)
@@ -382,23 +422,5 @@ class PropertyController extends Controller
             return round($value, 1) . ' triệu' . $suffix;
         }
         return number_format($price) . 'đ' . $suffix;
-    }
-
-    private function saveImage($file)
-    {
-        // 1. Try to save as file (local storage)
-        try {
-            $testPath = 'properties/.test_write';
-            Storage::disk('public')->put($testPath, 'test');
-            Storage::disk('public')->delete($testPath);
-            
-            // Writable, save as file
-            return $file->store('properties', 'public');
-        } catch (\Exception $e) {
-            // 2. Read-only filesystem fallback: convert to base64
-            $mime = $file->getMimeType();
-            $base64 = base64_encode(file_get_contents($file->getRealPath()));
-            return 'data:' . $mime . ';base64,' . $base64;
-        }
     }
 }
