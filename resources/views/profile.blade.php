@@ -2003,7 +2003,7 @@
                                     :class="ownerActiveSubTab === 'received' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
                                     class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer"
                                 >
-                                    <i class="fa-solid fa-calendar-check mr-1.5"></i> Lịch hẹn khách đặt
+                                    <i class="fa-solid fa-calendar-check mr-1.5"></i> Lịch khách đặt
                                 </button>
                                 <button 
                                     type="button" 
@@ -2011,7 +2011,7 @@
                                     :class="ownerActiveSubTab === 'sent' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
                                     class="px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer"
                                 >
-                                    <i class="fa-solid fa-calendar-plus mr-1.5"></i> Lịch hẹn bạn đặt
+                                    <i class="fa-solid fa-calendar-plus mr-1.5"></i> Lịch của tôi
                                 </button>
                             </div>
                         @endif
