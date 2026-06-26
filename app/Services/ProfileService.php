@@ -63,25 +63,31 @@ class ProfileService
         // Decode cccd_front if it is a Base64 string
         if (!empty($data['cccd_front'])) {
             if (str_starts_with($data['cccd_front'], 'data:image') || preg_match('/^data:image\/(\w+);base64,/i', $data['cccd_front'])) {
-                try {
-                    if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $data['cccd_front'], $matches)) {
-                        $ext = $matches[1];
-                        $decoded = base64_decode($matches[2]);
-                    } else {
-                        $ext = 'jpg';
-                        $decoded = base64_decode($data['cccd_front']);
+                // Try Cloudinary first
+                $uploadedUrl = app(\App\Services\CloudinaryService::class)->uploadBase64($data['cccd_front'], 'cccd');
+                if ($uploadedUrl) {
+                    $updateData['cccd_front'] = $uploadedUrl;
+                } else {
+                    try {
+                        if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $data['cccd_front'], $matches)) {
+                            $ext = $matches[1];
+                            $decoded = base64_decode($matches[2]);
+                        } else {
+                            $ext = 'jpg';
+                            $decoded = base64_decode($data['cccd_front']);
+                        }
+                        
+                        $filename = 'cccd_front_' . $userId . '_' . time() . '.' . $ext;
+                        $dir = public_path('uploads/cccd');
+                        if (!file_exists($dir)) {
+                            @mkdir($dir, 0755, true);
+                        }
+                        if (@file_put_contents($dir . '/' . $filename, $decoded) !== false) {
+                            $updateData['cccd_front'] = 'uploads/cccd/' . $filename;
+                        }
+                    } catch (\Exception $e) {
+                        \Log::warning("Local cccd_front save failed: " . $e->getMessage());
                     }
-                    
-                    $filename = 'cccd_front_' . $userId . '_' . time() . '.' . $ext;
-                    $dir = public_path('uploads/cccd');
-                    if (!file_exists($dir)) {
-                        @mkdir($dir, 0755, true);
-                    }
-                    if (@file_put_contents($dir . '/' . $filename, $decoded) !== false) {
-                        $updateData['cccd_front'] = 'uploads/cccd/' . $filename;
-                    }
-                } catch (\Exception $e) {
-                    \Log::warning("Local cccd_front save failed: " . $e->getMessage());
                 }
             } else {
                 $updateData['cccd_front'] = $data['cccd_front'];
@@ -91,25 +97,31 @@ class ProfileService
         // Decode cccd_back if it is a Base64 string
         if (!empty($data['cccd_back'])) {
             if (str_starts_with($data['cccd_back'], 'data:image') || preg_match('/^data:image\/(\w+);base64,/i', $data['cccd_back'])) {
-                try {
-                    if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $data['cccd_back'], $matches)) {
-                        $ext = $matches[1];
-                        $decoded = base64_decode($matches[2]);
-                    } else {
-                        $ext = 'jpg';
-                        $decoded = base64_decode($data['cccd_back']);
+                // Try Cloudinary first
+                $uploadedUrl = app(\App\Services\CloudinaryService::class)->uploadBase64($data['cccd_back'], 'cccd');
+                if ($uploadedUrl) {
+                    $updateData['cccd_back'] = $uploadedUrl;
+                } else {
+                    try {
+                        if (preg_match('/^data:image\/(\w+);base64,(.+)$/i', $data['cccd_back'], $matches)) {
+                            $ext = $matches[1];
+                            $decoded = base64_decode($matches[2]);
+                        } else {
+                            $ext = 'jpg';
+                            $decoded = base64_decode($data['cccd_back']);
+                        }
+                        
+                        $filename = 'cccd_back_' . $userId . '_' . time() . '.' . $ext;
+                        $dir = public_path('uploads/cccd');
+                        if (!file_exists($dir)) {
+                            @mkdir($dir, 0755, true);
+                        }
+                        if (@file_put_contents($dir . '/' . $filename, $decoded) !== false) {
+                            $updateData['cccd_back'] = 'uploads/cccd/' . $filename;
+                        }
+                    } catch (\Exception $e) {
+                        \Log::warning("Local cccd_back save failed: " . $e->getMessage());
                     }
-                    
-                    $filename = 'cccd_back_' . $userId . '_' . time() . '.' . $ext;
-                    $dir = public_path('uploads/cccd');
-                    if (!file_exists($dir)) {
-                        @mkdir($dir, 0755, true);
-                    }
-                    if (@file_put_contents($dir . '/' . $filename, $decoded) !== false) {
-                        $updateData['cccd_back'] = 'uploads/cccd/' . $filename;
-                    }
-                } catch (\Exception $e) {
-                    \Log::warning("Local cccd_back save failed: " . $e->getMessage());
                 }
             } else {
                 $updateData['cccd_back'] = $data['cccd_back'];
@@ -147,25 +159,35 @@ class ProfileService
 
         // Store new avatar in public/uploads/avatars directory
         $avatarPath = '';
-        try {
-            $filename = 'avatar_' . $userId . '_' . time() . '.' . $imageType;
-            $dir = public_path('uploads/avatars');
-            if (!file_exists($dir)) {
-                @mkdir($dir, 0755, true);
-            }
-            
-            if (@file_put_contents($dir . '/' . $filename, $decodedData) !== false) {
-                $avatarPath = 'uploads/avatars/' . $filename;
+        
+        // Try Cloudinary first
+        $uploadedUrl = app(\App\Services\CloudinaryService::class)->uploadBase64($base64Data, 'avatars');
+        if ($uploadedUrl) {
+            $avatarPath = $uploadedUrl;
+            $user->update([
+                'avatar' => $avatarPath
+            ]);
+        } else {
+            try {
+                $filename = 'avatar_' . $userId . '_' . time() . '.' . $imageType;
+                $dir = public_path('uploads/avatars');
+                if (!file_exists($dir)) {
+                    @mkdir($dir, 0755, true);
+                }
+                
+                if (@file_put_contents($dir . '/' . $filename, $decodedData) !== false) {
+                    $avatarPath = 'uploads/avatars/' . $filename;
 
-                // Update database
-                $user->update([
-                    'avatar' => $avatarPath
-                ]);
-            } else {
-                \Log::warning("Local avatar write failed: file_put_contents returned false (possibly read-only filesystem).");
+                    // Update database
+                    $user->update([
+                        'avatar' => $avatarPath
+                    ]);
+                } else {
+                    \Log::warning("Local avatar write failed: file_put_contents returned false (possibly read-only filesystem).");
+                }
+            } catch (\Exception $e) {
+                \Log::warning("Local avatar save exception (possibly read-only filesystem): " . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            \Log::warning("Local avatar save exception (possibly read-only filesystem): " . $e->getMessage());
         }
 
         return $avatarPath;
