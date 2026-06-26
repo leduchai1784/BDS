@@ -26,6 +26,10 @@ class PropertyController extends Controller
      */
     public function store(StorePropertyRequest $request)
     {
+        if ($request->hasFile('image') || $request->hasFile('images')) {
+            $this->checkStorageWritable();
+        }
+
         // Format price label
         $priceLabel = $this->formatPriceLabel($request->price);
 
@@ -147,6 +151,10 @@ class PropertyController extends Controller
         
         // Authorization check
         abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
+
+        if ($request->hasFile('image') || $request->hasFile('images')) {
+            $this->checkStorageWritable();
+        }
 
         // Validate total images count <= 10
         $existingCount = $property->propertyImages()->count();
@@ -372,5 +380,18 @@ class PropertyController extends Controller
             return round($value, 1) . ' triệu' . $suffix;
         }
         return number_format($price) . 'đ' . $suffix;
+    }
+
+    private function checkStorageWritable()
+    {
+        try {
+            $testPath = 'properties/.test_write';
+            Storage::disk('public')->put($testPath, 'test');
+            Storage::disk('public')->delete($testPath);
+        } catch (\Exception $e) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'image' => 'Máy chủ hiện tại không hỗ trợ tải lên tệp tin trực tiếp (Hệ thống tập tin Read-only trên Vercel). Vui lòng sử dụng tùy chọn "Nhập link" để sử dụng liên kết ảnh trực tuyến.'
+            ]);
+        }
     }
 }
