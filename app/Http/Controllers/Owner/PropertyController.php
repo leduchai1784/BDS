@@ -26,10 +26,6 @@ class PropertyController extends Controller
      */
     public function store(StorePropertyRequest $request)
     {
-        if ($request->hasFile('image') || $request->hasFile('images')) {
-            $this->checkStorageWritable();
-        }
-
         // Format price label
         $priceLabel = $this->formatPriceLabel($request->price);
 
@@ -92,7 +88,7 @@ class PropertyController extends Controller
                 'is_primary' => true,
             ]);
         } elseif ($request->hasFile('image')) {
-            $path = $request->file('image')->store('properties', 'public');
+            $path = $this->saveImage($request->file('image'));
             $property->propertyImages()->create([
                 'image_path' => $path,
                 'is_primary' => true,
@@ -116,7 +112,7 @@ class PropertyController extends Controller
         // Upload gallery images from files
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $path = $img->store('properties', 'public');
+                $path = $this->saveImage($img);
                 $property->propertyImages()->create([
                     'image_path' => $path,
                     'is_primary' => false,
@@ -151,10 +147,6 @@ class PropertyController extends Controller
         
         // Authorization check
         abort_if($property->owner_id !== Auth::id(), 403, 'Bạn không có quyền chỉnh sửa tin đăng này.');
-
-        if ($request->hasFile('image') || $request->hasFile('images')) {
-            $this->checkStorageWritable();
-        }
 
         // Validate total images count <= 10
         $existingCount = $property->propertyImages()->count();
@@ -236,8 +228,10 @@ class PropertyController extends Controller
         if ($request->filled('image_url')) {
             $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
             if ($oldPrimary) {
-                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
-                    Storage::disk('public')->delete($oldPrimary->image_path);
+                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL) && stripos($oldPrimary->image_path, 'data:') !== 0) {
+                    try {
+                        Storage::disk('public')->delete($oldPrimary->image_path);
+                    } catch (\Exception $e) {}
                 }
                 $oldPrimary->delete();
             }
@@ -249,13 +243,15 @@ class PropertyController extends Controller
         } elseif ($request->hasFile('image')) {
             $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
             if ($oldPrimary) {
-                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
-                    Storage::disk('public')->delete($oldPrimary->image_path);
+                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL) && stripos($oldPrimary->image_path, 'data:') !== 0) {
+                    try {
+                        Storage::disk('public')->delete($oldPrimary->image_path);
+                    } catch (\Exception $e) {}
                 }
                 $oldPrimary->delete();
             }
 
-            $path = $request->file('image')->store('properties', 'public');
+            $path = $this->saveImage($request->file('image'));
             $property->propertyImages()->create([
                 'image_path' => $path,
                 'is_primary' => true,
@@ -271,8 +267,10 @@ class PropertyController extends Controller
                     ->orWhere('image_path', $delPath)
                     ->first();
                 if ($imgRecord) {
-                    if (!filter_var($imgRecord->image_path, FILTER_VALIDATE_URL)) {
-                        Storage::disk('public')->delete($imgRecord->image_path);
+                    if (!filter_var($imgRecord->image_path, FILTER_VALIDATE_URL) && stripos($imgRecord->image_path, 'data:') !== 0) {
+                        try {
+                            Storage::disk('public')->delete($imgRecord->image_path);
+                        } catch (\Exception $e) {}
                     }
                     $imgRecord->delete();
                 }
@@ -296,7 +294,7 @@ class PropertyController extends Controller
         // Upload new gallery images from files
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $path = $img->store('properties', 'public');
+                $path = $this->saveImage($img);
                 $property->propertyImages()->create([
                     'image_path' => $path,
                     'is_primary' => false,
@@ -320,7 +318,11 @@ class PropertyController extends Controller
 
         // Delete image files physically
         foreach ($property->propertyImages as $img) {
-            Storage::disk('public')->delete($img->image_path);
+            if (stripos($img->image_path, 'data:') !== 0) {
+                try {
+                    Storage::disk('public')->delete($img->image_path);
+                } catch (\Exception $e) {}
+            }
         }
 
         // Delete from database (SoftDeletes is configured, so this will soft delete)
@@ -382,16 +384,21 @@ class PropertyController extends Controller
         return number_format($price) . 'đ' . $suffix;
     }
 
-    private function checkStorageWritable()
+    private function saveImage($file)
     {
+        // 1. Try to save as file (local storage)
         try {
             $testPath = 'properties/.test_write';
             Storage::disk('public')->put($testPath, 'test');
             Storage::disk('public')->delete($testPath);
+            
+            // Writable, save as file
+            return $file->store('properties', 'public');
         } catch (\Exception $e) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'image' => 'Máy chủ hiện tại không hỗ trợ tải lên tệp tin trực tiếp (Hệ thống tập tin Read-only trên Vercel). Vui lòng sử dụng tùy chọn "Nhập link" để sử dụng liên kết ảnh trực tuyến.'
-            ]);
+            // 2. Read-only filesystem fallback: convert to base64
+            $mime = $file->getMimeType();
+            $base64 = base64_encode(file_get_contents($file->getRealPath()));
+            return 'data:' . $mime . ';base64,' . $base64;
         }
     }
 }
