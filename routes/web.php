@@ -210,7 +210,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 // Route trang chi tiết bất động sản
 Route::get('/property/{id}', [App\Http\Controllers\PropertyController::class, 'show'])->name('properties.show');
 
-Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+Route::post('/wishlist/toggle', [\App\Http\Controllers\Tenant\WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
 // Route trang hồ sơ thành viên (Bảo vệ bởi middleware auth)
 Route::middleware('auth')->group(function () {
@@ -224,9 +224,9 @@ Route::middleware('auth')->group(function () {
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Đặt lịch xem nhà
-    Route::post('/appointments', [App\Http\Controllers\AppointmentController::class, 'book'])->name('appointments.book');
+    Route::post('/appointments', [\App\Http\Controllers\Tenant\AppointmentController::class, 'book'])->name('appointments.book');
     // Hủy lịch hẹn
-    Route::post('/appointments/{id}/cancel', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::post('/appointments/{id}/cancel', [\App\Http\Controllers\Tenant\AppointmentController::class, 'cancel'])->name('appointments.cancel');
 });
 
 // Route dành cho Chủ nhà (Bảo vệ bởi auth và owner middleware)

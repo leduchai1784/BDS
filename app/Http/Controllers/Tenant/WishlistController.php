@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Tenant;
 
+use App\Http\Controllers\Controller;
 use App\Services\WishlistService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
