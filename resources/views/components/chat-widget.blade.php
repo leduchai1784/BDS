@@ -10,9 +10,23 @@
             'Căn hộ chung cư Cầu Giấy',
             'Biệt thự Bình Thạnh giá tốt'
         ],
+        safeGetItem(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (e) {
+                return null;
+            }
+        },
+        safeSetItem(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                // Ignore
+            }
+        },
         init() {
             // Load chat history from localStorage or load welcome message
-            const saved = localStorage.getItem('bds_chat_history');
+            const saved = this.safeGetItem('bds_chat_history');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -44,7 +58,7 @@
             this.saveHistory();
         },
         saveHistory() {
-            localStorage.setItem('bds_chat_history', JSON.stringify(this.messages));
+            this.safeSetItem('bds_chat_history', JSON.stringify(this.messages));
         },
         clearChat() {
             if(confirm('Bạn có muốn xóa toàn bộ lịch sử trò chuyện?')) {
