@@ -51,6 +51,9 @@
         @include('components.footer')
     @endif
 
+    <!-- AI Chatbot Widget -->
+    @include('components.chat-widget')
+
     @stack('scripts')
 </body>
 </html>

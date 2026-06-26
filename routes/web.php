@@ -83,6 +83,10 @@ Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->nam
 // Route API gợi ý tìm kiếm (Autocomplete)
 Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyController::class, 'autocomplete'])->name('properties.autocomplete');
 
+// Route API AI Chatbot
+Route::post('/api/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');
+
+
 
 // Route phục vụ file vietnam_provinces.json cho Vercel (bổ sung caching)
 Route::get('/vietnam_provinces.json', function () {
