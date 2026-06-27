@@ -52,7 +52,7 @@
         loadWelcomeMessage() {
             this.messages = [{
                 role: 'assistant',
-                text: "Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:\n- Tìm kiếm bất động sản theo khu vực, giá thuê\n- Kinh nghiệm thuê nhà an toàn\n- Giải đáp các vấn đề pháp lý khi thuê nhà",
+                text: 'Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:\n- Tìm kiếm bất động sản theo khu vực, giá thuê\n- Kinh nghiệm thuê nhà an toàn\n- Giải đáp các vấn đề pháp lý khi thuê nhà',
                 properties: []
             }];
             this.saveHistory();
