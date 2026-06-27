@@ -316,17 +316,7 @@
             </div>
         </div>
 
-        <!-- Suggestion Chips -->
-        <div class="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-none">
-            <template x-for="chip in suggestedChips" :key="chip">
-                <button 
-                    @click="sendMessage(chip)"
-                    type="button"
-                    class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-primary-light text-slate-600 hover:text-primary font-medium text-[11px] transition cursor-pointer select-none"
-                    x-text="chip"
-                ></button>
-            </template>
-        </div>
+
 
         <!-- Input Box -->
         <div class="p-3 bg-white border-t border-slate-100">
