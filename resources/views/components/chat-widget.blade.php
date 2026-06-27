@@ -199,7 +199,7 @@
                     <i class="fa-solid fa-robot text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-sm leading-tight">Trợ lý AI BDS Rental</h3>
+                    <h3 class="font-bold text-sm leading-tight">Trợ lý ảo BDS NKS</h3>
                     <div class="flex items-center gap-1.5 mt-0.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span class="text-[10px] text-white/80 font-medium">Hoạt động 24/7</span>
