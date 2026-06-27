@@ -105,6 +105,19 @@ Route::get('/properties/choose-type', function () {
     return view('properties.choose_type');
 })->name('properties.choose-type');
 
+Route::get('/test-gemini-config', function() {
+    $key = config('services.gemini.key', '');
+    $envKey = env('GEMINI_API_KEY', '');
+    return response()->json([
+        'config_api_key_configured' => !empty($key),
+        'config_api_key_length' => strlen($key),
+        'config_api_key_masked' => strlen($key) > 10 ? substr($key, 0, 5) . '...' . substr($key, -5) : 'too_short',
+        'config_model' => config('services.gemini.model'),
+        'env_api_key_length' => strlen($envKey),
+        'env_api_key_masked' => strlen($envKey) > 10 ? substr($envKey, 0, 5) . '...' . substr($envKey, -5) : 'too_short',
+    ]);
+});
+
 
 // Route dành riêng cho Khách thuê (Tenant) (Bảo vệ bởi auth và tenant middleware)
 Route::middleware(['auth', 'tenant'])->group(function () {
