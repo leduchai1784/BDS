@@ -256,7 +256,7 @@
                                     <button 
                                         @click="sendMessage(opt)"
                                         type="button"
-                                        class="w-full text-left px-3.5 py-2.5 bg-slate-50 hover:bg-primary-light border border-slate-200 hover:border-primary/40 rounded-xl text-xs font-semibold text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
+                                        class="w-full text-left px-3.5 py-2.5 bg-slate-50 hover:bg-primary-light border border-slate-200 hover:border-primary/40 rounded-xl text-sm font-semibold text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
                                         x-text="opt"
                                     ></button>
                                 </template>
