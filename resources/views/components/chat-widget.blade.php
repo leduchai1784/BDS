@@ -102,7 +102,12 @@
                     history: payloadHistory
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('HTTP_ERROR_' + res.status);
+                }
+                return res.json();
+            })
             .then(data => {
                 if (data.success) {
                     this.messages.push({
@@ -120,9 +125,20 @@
             })
             .catch(err => {
                 console.error(err);
+                let errMsg = 'Xin lỗi, không thể kết nối tới máy chủ lúc này. Vui lòng kiểm tra lại kết nối mạng.';
+                if (err.message && err.message.includes('HTTP_ERROR_')) {
+                    const status = err.message.split('_').pop();
+                    if (status === '419') {
+                        errMsg = 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang (F5) để tiếp tục trò chuyện.';
+                    } else if (status === '429') {
+                        errMsg = 'Bạn đã gửi tin nhắn quá nhanh. Vui lòng đợi một lát rồi thử lại.';
+                    } else {
+                        errMsg = 'Hệ thống gặp sự cố (Lỗi ' + status + '). Vui lòng thử lại sau.';
+                    }
+                }
                 this.messages.push({
                     role: 'assistant',
-                    text: 'Xin lỗi, không thể kết nối tới máy chủ lúc này. Vui lòng kiểm tra lại kết nối mạng.',
+                    text: errMsg,
                     properties: []
                 });
             })

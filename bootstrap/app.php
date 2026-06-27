@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest_wishlist',
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'api/chat',
+        ]);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'owner' => \App\Http\Middleware\OwnerMiddleware::class,
