@@ -83,7 +83,11 @@ class ChatService
 
         // 5. Gửi request đến Gemini API
         try {
-            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
+            $cleanModel = ltrim($this->model, '/');
+            if (str_starts_with($cleanModel, 'models/')) {
+                $cleanModel = substr($cleanModel, 7);
+            }
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$cleanModel}:generateContent?key={$this->apiKey}";
             
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
