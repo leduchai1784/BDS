@@ -196,7 +196,7 @@
         x-show="open" 
         x-cloak
         x-transition
-        class="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-2rem)] h-[550px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-100"
+        class="fixed bottom-24 right-6 w-[350px] max-w-[calc(100vw-2rem)] h-[490px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-100"
     >
         <!-- Header -->
         <div class="bg-gradient-to-r from-primary to-primary-hover px-4 py-3.5 flex items-center justify-between text-white shadow-sm">
@@ -205,7 +205,7 @@
                     <i class="fa-solid fa-robot text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-sm leading-tight">Trợ lý ảo BDS NKS</h3>
+                    <h3 class="font-bold text-sm leading-tight">Trợ lý ảo BDS Rental</h3>
                     <div class="flex items-center gap-1.5 mt-0.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span class="text-[10px] text-white/80 font-medium">Hoạt động 24/7</span>
@@ -242,26 +242,27 @@
                     
                     <!-- Bubble text content -->
                     <div 
-                        class="max-w-[85%] px-4 py-2.5 rounded-2xl shadow-sm text-sm leading-relaxed"
+                        class="max-w-[85%] px-4 py-2.5 rounded-2xl shadow-sm text-sm leading-relaxed flex flex-col gap-2"
                         :class="msg.role === 'user' 
                             ? 'bg-primary text-white rounded-tr-none' 
                             : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'"
-                        x-html="formatText(msg.text)"
-                    ></div>
+                    >
+                        <div x-html="formatText(msg.text)"></div>
 
-                    <!-- Interactive Quick Options/Buttons (if any) -->
-                    <template x-if="msg.role === 'assistant' && msg.options && msg.options.length > 0">
-                        <div class="mt-2 flex flex-col gap-1.5 w-full max-w-[85%]">
-                            <template x-for="opt in msg.options" :key="opt">
-                                <button 
-                                    @click="sendMessage(opt)"
-                                    type="button"
-                                    class="w-full text-left px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 hover:border-primary/40 rounded-xl text-[12px] font-semibold text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
-                                    x-text="opt"
-                                ></button>
-                            </template>
-                        </div>
-                    </template>
+                        <!-- Interactive Quick Options/Buttons (if any) -->
+                        <template x-if="msg.role === 'assistant' && msg.options && msg.options.length > 0">
+                            <div class="mt-1 flex flex-col gap-1.5 w-full">
+                                <template x-for="opt in msg.options" :key="opt">
+                                    <button 
+                                        @click="sendMessage(opt)"
+                                        type="button"
+                                        class="w-full text-left px-3 py-2 bg-slate-50 hover:bg-primary-light border border-slate-200 hover:border-primary/30 rounded-xl text-[12px] font-semibold text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
+                                        x-text="opt"
+                                    ></button>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
 
                     <!-- Recommended Properties list (Only if it exists on bot's message) -->
                     <template x-if="msg.role === 'assistant' && msg.properties && msg.properties.length > 0">
