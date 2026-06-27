@@ -4,12 +4,7 @@
         messages: [],
         inputText: '',
         loading: false,
-        suggestedChips: [
-            'Căn hộ Quận 7 dưới 10tr',
-            'Nhà nguyên căn Thủ Đức',
-            'Căn hộ chung cư Cầu Giấy',
-            'Biệt thự Bình Thạnh giá tốt'
-        ],
+        suggestedChips: [],
         safeGetItem(key) {
             try {
                 return localStorage.getItem(key);
@@ -31,11 +26,17 @@
                 try {
                     const parsed = JSON.parse(saved);
                     if (Array.isArray(parsed) && parsed.length > 0) {
-                        this.messages = parsed.map(msg => ({
-                            role: msg.role || 'assistant',
-                            text: msg.text || '',
-                            properties: Array.isArray(msg.properties) ? msg.properties : []
-                        }));
+                        // Auto upgrade welcome message if old
+                        if (parsed[0] && parsed[0].role === 'assistant' && (!parsed[0].options || parsed[0].options.length === 0 || parsed[0].text.includes('BDS NKS'))) {
+                            this.loadWelcomeMessage();
+                        } else {
+                            this.messages = parsed.map(msg => ({
+                                role: msg.role || 'assistant',
+                                text: msg.text || '',
+                                options: Array.isArray(msg.options) ? msg.options : [],
+                                properties: Array.isArray(msg.properties) ? msg.properties : []
+                            }));
+                        }
                     } else {
                         this.loadWelcomeMessage();
                     }
@@ -53,12 +54,12 @@
             this.messages = [{
                 role: 'assistant',
                 text: 'Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:',
-                properties: [],
-                suggestions: [
+                options: [
                     'Tìm kiếm bất động sản theo khu vực, giá thuê?',
                     'Kinh nghiệm thuê nhà an toàn?',
                     'Giải đáp các vấn đề pháp lý khi thuê nhà?'
-                ]
+                ],
+                properties: []
             }];
             this.saveHistory();
         },
@@ -248,15 +249,15 @@
                         x-html="formatText(msg.text)"
                     ></div>
 
-                    <!-- Inline suggestions (e.g. on welcome message) -->
-                    <template x-if="msg.role === 'assistant' && msg.suggestions && msg.suggestions.length > 0">
+                    <!-- Interactive Quick Options/Buttons (if any) -->
+                    <template x-if="msg.role === 'assistant' && msg.options && msg.options.length > 0">
                         <div class="mt-2 flex flex-col gap-1.5 w-full max-w-[85%]">
-                            <template x-for="sug in msg.suggestions" :key="sug">
+                            <template x-for="opt in msg.options" :key="opt">
                                 <button 
-                                    @click="sendMessage(sug)"
+                                    @click="sendMessage(opt)"
                                     type="button"
-                                    class="text-left w-full px-3.5 py-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs rounded-xl border border-slate-200 transition-all duration-200 font-medium shadow-sm hover:shadow cursor-pointer"
-                                    x-text="sug"
+                                    class="w-full text-left px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 hover:border-primary/40 rounded-xl text-[12px] font-semibold text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
+                                    x-text="opt"
                                 ></button>
                             </template>
                         </div>
