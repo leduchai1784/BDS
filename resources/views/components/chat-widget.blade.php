@@ -182,11 +182,7 @@
             <i class="fa-solid fa-xmark text-2xl"></i>
         </span>
         
-        <!-- Unread badge indicator (only shown if not open and history empty/new) -->
-        <span x-show="!open && messages.length <= 1" class="absolute -top-1 -right-1 flex h-4 w-4">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-4 w-4 bg-amber-500"></span>
-        </span>
+
     </button>
 
     <!-- Chat Window Container -->
