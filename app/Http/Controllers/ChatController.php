@@ -61,6 +61,7 @@ class ChatController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('Chat validation failed: ' . json_encode($e->errors(), JSON_UNESCAPED_UNICODE));
             return response()->json([
                 'success' => false,
                 'reply'   => 'Dữ liệu không hợp lệ: ' . collect($e->errors())->flatten()->first(),
