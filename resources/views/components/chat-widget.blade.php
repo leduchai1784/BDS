@@ -52,7 +52,7 @@
         loadWelcomeMessage() {
             this.messages = [{
                 role: 'assistant',
-                text: 'Xin chào! Tôi là Trợ lý ảo AI của BDS NKS. Tôi có thể giúp bạn tìm kiếm bất động sản cho thuê theo khu vực, giá cả hoặc loại hình từ danh sách tin đăng thực tế. Bạn muốn tìm nhà ở khu vực nào hôm nay?',
+                text: "Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:\n- Tìm kiếm bất động sản theo khu vực, giá thuê\n- Kinh nghiệm thuê nhà an toàn\n- Giải đáp các vấn đề pháp lý khi thuê nhà",
                 properties: []
             }];
             this.saveHistory();
@@ -199,7 +199,7 @@
                     <i class="fa-solid fa-robot text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-sm leading-tight">Trợ lý ảo BDS NKS</h3>
+                    <h3 class="font-bold text-sm leading-tight">Trợ lý AI BDS Rental</h3>
                     <div class="flex items-center gap-1.5 mt-0.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span class="text-[10px] text-white/80 font-medium">Hoạt động 24/7</span>
