@@ -240,9 +240,8 @@
             <template x-for="(msg, index) in messages" :key="index">
                 <div class="flex flex-col" :class="msg.role === 'user' ? 'items-end' : 'items-start'">
                     
-                    <!-- Bubble text content -->
                     <div 
-                        class="max-w-[85%] px-4 py-2.5 rounded-2xl shadow-sm text-sm leading-relaxed"
+                        class="max-w-[85%] px-4 py-2.5 rounded-2xl shadow-sm text-[13px] leading-relaxed"
                         :class="msg.role === 'user' 
                             ? 'bg-primary text-white rounded-tr-none' 
                             : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'"
@@ -256,7 +255,7 @@
                                     <button 
                                         @click="sendMessage(opt)"
                                         type="button"
-                                        class="w-full text-left px-3.5 py-2.5 bg-slate-50 hover:bg-primary-light border border-slate-200 hover:border-primary/40 rounded-xl text-sm font-semibold text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
+                                        class="w-full text-left px-3.5 py-2 bg-slate-50 hover:bg-primary-light border border-slate-200 hover:border-primary/40 rounded-xl text-[13px] font-medium text-slate-700 hover:text-primary transition duration-150 shadow-sm cursor-pointer"
                                         x-text="opt"
                                     ></button>
                                 </template>
