@@ -5,9 +5,10 @@
         inputText: '',
         loading: false,
         suggestedChips: [
-            'Tìm kiếm bất động sản theo khu vực, giá thuê?',
-            'Kinh nghiệm thuê nhà an toàn?',
-            'Giải đáp các vấn đề pháp lý khi thuê nhà?'
+            'Căn hộ Quận 7 dưới 10tr',
+            'Nhà nguyên căn Thủ Đức',
+            'Căn hộ chung cư Cầu Giấy',
+            'Biệt thự Bình Thạnh giá tốt'
         ],
         safeGetItem(key) {
             try {
@@ -51,8 +52,13 @@
         loadWelcomeMessage() {
             this.messages = [{
                 role: 'assistant',
-                text: 'Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:\n- Tìm kiếm bất động sản theo khu vực, giá thuê?\n- Kinh nghiệm thuê nhà an toàn?\n- Giải đáp các vấn đề pháp lý khi thuê nhà?',
-                properties: []
+                text: 'Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:',
+                properties: [],
+                suggestions: [
+                    'Tìm kiếm bất động sản theo khu vực, giá thuê?',
+                    'Kinh nghiệm thuê nhà an toàn?',
+                    'Giải đáp các vấn đề pháp lý khi thuê nhà?'
+                ]
             }];
             this.saveHistory();
         },
@@ -241,6 +247,20 @@
                             : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'"
                         x-html="formatText(msg.text)"
                     ></div>
+
+                    <!-- Inline suggestions (e.g. on welcome message) -->
+                    <template x-if="msg.role === 'assistant' && msg.suggestions && msg.suggestions.length > 0">
+                        <div class="mt-2 flex flex-col gap-1.5 w-full max-w-[85%]">
+                            <template x-for="sug in msg.suggestions" :key="sug">
+                                <button 
+                                    @click="sendMessage(sug)"
+                                    type="button"
+                                    class="text-left w-full px-3.5 py-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs rounded-xl border border-slate-200 transition-all duration-200 font-medium shadow-sm hover:shadow cursor-pointer"
+                                    x-text="sug"
+                                ></button>
+                            </template>
+                        </div>
+                    </template>
 
                     <!-- Recommended Properties list (Only if it exists on bot's message) -->
                     <template x-if="msg.role === 'assistant' && msg.properties && msg.properties.length > 0">
