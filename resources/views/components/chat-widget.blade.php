@@ -196,8 +196,7 @@
         x-show="open" 
         x-cloak
         x-transition
-        class="fixed right-6 w-96 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-100"
-        style="bottom: 80px; height: 450px;"
+        class="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-2rem)] h-[450px] max-h-[calc(100vh-11rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden border border-slate-100"
     >
         <!-- Header -->
         <div class="bg-gradient-to-r from-primary to-primary-hover px-4 py-3.5 flex items-center justify-between text-white shadow-sm">
