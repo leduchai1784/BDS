@@ -52,7 +52,7 @@ class ChatService
         }, $allProperties);
 
         // 3. Xây dựng prompt hệ thống (System Instruction)
-        $systemInstruction = "Bạn là Trợ lý AI của BDS Rental, chuyên tư vấn và gợi ý bất động sản cho thuê tại Việt Nam.\n"
+        $systemInstruction = "Bạn là Trợ lý ảo AI của BDS NKS, chuyên tư vấn và gợi ý bất động sản cho thuê tại Việt Nam.\n"
             . "Hãy trả lời một cách tự nhiên, lịch sự, thân thiện bằng tiếng Việt và hỗ trợ khách hàng tìm kiếm bất động sản phù hợp.\n\n"
             . "Dưới đây là danh sách bất động sản hiện có trong hệ thống (dữ liệu từ API NKS):\n"
             . json_encode($compactProperties, JSON_UNESCAPED_UNICODE) . "\n\n"
