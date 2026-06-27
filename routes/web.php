@@ -77,6 +77,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 // Route trang danh sách bất động sản
 Route::get('/listings', [App\Http\Controllers\PropertyController::class, 'index'])->name('listings.index');
 
+// Route dự án
+Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'index'])->name('projects.index');
+Route::get('/projects/{slug}', [App\Http\Controllers\ProjectController::class, 'show'])->name('projects.show');
+
+// Route nhà môi giới
+Route::get('/agents', [App\Http\Controllers\AgentController::class, 'index'])->name('agents.index');
+Route::get('/agents/{id}', [App\Http\Controllers\AgentController::class, 'show'])->name('agents.show');
+
 // Route trang bản đồ tìm kiếm
 Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->name('properties.map');
 

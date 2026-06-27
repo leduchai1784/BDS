@@ -35,7 +35,7 @@
                         class="flex items-center space-x-1.5 font-bold text-sm lg:text-base cursor-pointer focus:outline-none transition duration-150 whitespace-nowrap"
                         :class="isScrolled ? '{{ request()->is('listings*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('listings*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'"
                     >
-                        <span>Kho dự án</span>
+                        <span>Nhà đất</span>
                         <i 
                             class="fa-solid fa-chevron-down text-[10px] transition duration-200" 
                             :class="rentDropdownOpen ? 'rotate-180' : ''"
@@ -62,7 +62,9 @@
                         </a>
                     </div>
                 </div>
+                <a href="{{ route('projects.index') }}" :class="isScrolled ? '{{ request()->is('projects*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('projects*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Dự án</a>
                 <a href="/map" :class="isScrolled ? '{{ request()->is('map*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('map*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
+                <a href="{{ route('agents.index') }}" :class="isScrolled ? '{{ request()->is('agents*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('agents*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Môi giới</a>
                 <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
                 <a href="#contact" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Liên hệ</a>
             </nav>
@@ -260,7 +262,7 @@
                         @click="mobileMenuOpen = false"
                         class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('listings*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition"
                     >
-                        Kho dự án
+                        Nhà đất
                     </a>
                     <button 
                         @click="mobileRentOpen = !mobileRentOpen"
@@ -282,7 +284,9 @@
                     <a href="/listings?purpose=sale" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'sale' ? 'text-orange-500 font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-orange-500' }} transition">Mua bán</a>
                 </div>
             </div>
+            <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('projects*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Dự án</a>
             <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('map*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Bản đồ</a>
+            <a href="{{ route('agents.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('agents*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Môi giới</a>
             <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
             <a href="#contact" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Liên hệ</a>
             

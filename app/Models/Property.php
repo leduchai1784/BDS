@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 #[Fillable([
     'owner_id',
     'category_id',
+    'project_id',
     'transaction_type',
     'property_type',
     'province',
@@ -101,6 +102,14 @@ class Property extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the project of the property.
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 
     /**
