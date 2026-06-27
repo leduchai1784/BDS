@@ -15,8 +15,8 @@ class ChatService
     public function __construct(PropertyService $propertyService)
     {
         $this->propertyService = $propertyService;
-        $this->apiKey = env('GEMINI_API_KEY', '');
-        $this->model = env('GEMINI_MODEL', 'gemini-2.0-flash');
+        $this->apiKey = config('services.gemini.key', '');
+        $this->model = config('services.gemini.model', 'gemini-3.1-flash-lite');
     }
 
     /**
