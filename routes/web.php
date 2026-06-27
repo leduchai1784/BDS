@@ -8,14 +8,6 @@ use App\Http\Controllers\ProfileController;
 // Route trang chủ
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Temporary route to clear cache on Vercel
-Route::get('/clear-route-cache', function () {
-    \Illuminate\Support\Facades\Artisan::call('route:clear');
-    \Illuminate\Support\Facades\Artisan::call('config:clear');
-    \Illuminate\Support\Facades\Artisan::call('view:clear');
-    return 'All caches cleared successfully!';
-});
-
 // Route trang chi tiết bất động sản
 Route::get('/property/{id}', [App\Http\Controllers\PropertyController::class, 'show'])->name('properties.show');
 
@@ -92,7 +84,7 @@ Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->nam
 Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyController::class, 'autocomplete'])->name('properties.autocomplete');
 
 // Route API AI Chatbot
-Route::post('/api/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');
+Route::post('/chatbot/send', [\App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');
 
 
 
