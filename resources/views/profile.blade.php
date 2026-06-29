@@ -1074,7 +1074,7 @@
                                                 type="button" 
                                                 :disabled="!savedConfirm || !generatedPassText"
                                                 @click="if (savedConfirm && generatedPassText) { applyGeneratedPassword(); openGen = false; }"
-                                                class="w-full py-2.5 text-xs font-bold rounded-full text-white bg-primary disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-hover active:scale-98 transition cursor-pointer text-center shadow-md"
+                                                class="w-full py-2.5 text-xs font-bold rounded-full text-white bg-primary hover:bg-primary-hover active:scale-98 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed disabled:shadow-none transition cursor-pointer text-center shadow-md"
                                             >
                                                 Xác nhận
                                             </button>
