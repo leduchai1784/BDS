@@ -1064,10 +1064,22 @@
                     });
                 }
 
-                // 3. Open Popup
-                if (this.markers[id]) {
-                    this.markers[id].togglePopup();
-                }
+                // 3. Open Active Popup and Close All Others
+                Object.keys(this.markers).forEach(markerId => {
+                    const m = this.markers[markerId];
+                    if (m) {
+                        const popup = m.getPopup();
+                        if (parseInt(markerId) === id) {
+                            if (popup && !popup.isOpen()) {
+                                m.togglePopup();
+                            }
+                        } else {
+                            if (popup && popup.isOpen()) {
+                                m.togglePopup();
+                            }
+                        }
+                    }
+                });
 
                 // 4. Scroll corresponding Listing Cards into view (Smooth)
                 this.$nextTick(() => {
