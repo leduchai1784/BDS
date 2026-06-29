@@ -1044,10 +1044,6 @@
                                             <!-- Checkboxes -->
                                             <div class="space-y-1.5 text-[10px] font-bold text-slate-600 pt-0.5">
                                                 <label class="flex items-center space-x-2 cursor-pointer">
-                                                    <input type="checkbox" x-model="hasEightChars" @change="hasEightChars = true" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
-                                                    <span>Có 8 ký tự</span>
-                                                </label>
-                                                <label class="flex items-center space-x-2 cursor-pointer">
                                                     <input type="checkbox" x-model="useNumbers" @change="generateRandomPassword()" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
                                                     <span>Có ký tự số</span>
                                                 </label>
