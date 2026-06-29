@@ -891,7 +891,7 @@
             },
 
             geocodeQuery(query) {
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+                fetch(`/api/geocode?q=${encodeURIComponent(query)}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.length > 0) {

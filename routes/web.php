@@ -94,7 +94,33 @@ Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyControl
 // Route API AI Chatbot
 Route::post('/chatbot/send', [\App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');
 
-
+// Route API Geocoding Proxy (tránh CORS và Rate Limit của OpenStreetMap Nominatim)
+Route::get('/api/geocode', function (Illuminate\Http\Request $request) {
+    $query = $request->query('q');
+    if (empty($query)) {
+        return response()->json([]);
+    }
+    $cacheKey = 'geocode_' . md5($query);
+    return Illuminate\Support\Facades\Cache::remember($cacheKey, 60 * 24 * 30, function () use ($query) {
+        try {
+            $response = Illuminate\Support\Facades\Http::withHeaders([
+                'User-Agent' => 'BdsRentalApp/1.0 (lehai17082004@gmail.com)',
+            ])
+            ->timeout(8)
+            ->get('https://nominatim.openstreetmap.org/search', [
+                'format' => 'json',
+                'q' => $query,
+                'limit' => 1,
+            ]);
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            Illuminate\Support\Facades\Log::warning('Geocoding proxy failed: ' . $e->getMessage());
+        }
+        return [];
+    });
+});
 
 // Route phục vụ file vietnam_provinces.json cho Vercel (bổ sung caching)
 Route::get('/vietnam_provinces.json', function () {
