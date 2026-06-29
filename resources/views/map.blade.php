@@ -653,6 +653,7 @@
             activeDropdown: null,
             map: null,
             markers: {},
+            popups: {},
             ignoreMobileScroll: false,
             mobileScrollTimeout: null,
 
@@ -953,6 +954,10 @@
                 Object.values(this.markers).forEach(m => m.remove());
                 this.markers = {};
 
+                // Clean existing popups
+                Object.values(this.popups).forEach(p => p.remove());
+                this.popups = {};
+
                 const filtered = this.filteredProperties();
                 
                 filtered.forEach(p => {
@@ -1006,15 +1011,14 @@
 
                     // Create popup
                     const popup = new maplibregl.Popup({ 
-                        offset: 25, 
+                        offset: 35, 
                         closeButton: false,
                         closeOnClick: true
                     }).setHTML(popupHTML);
 
-                    // Create and append marker
+                    // Create and append marker (no setPopup to control state programmatically)
                     const marker = new maplibregl.Marker({ element: el })
                         .setLngLat([p.lng, p.lat])
-                        .setPopup(popup)
                         .addTo(this.map);
 
                     // Attach click handler on the custom bubble
@@ -1023,8 +1027,9 @@
                         this.selectProperty(p.id, true);
                     });
 
-                    // Save reference
+                    // Save references
                     this.markers[p.id] = marker;
+                    this.popups[p.id] = popup;
                 });
             },
 
@@ -1077,17 +1082,17 @@
 
                 // 3. Open Active Popup and Close All Others
                 Object.keys(this.markers).forEach(markerId => {
-                    const m = this.markers[markerId];
-                    if (m) {
-                        const popup = m.getPopup();
-                        if (parseInt(markerId) === id) {
-                            if (popup && !popup.isOpen()) {
-                                m.togglePopup();
+                    const popup = this.popups[markerId];
+                    if (popup) {
+                        if (Number(markerId) === Number(id)) {
+                            // Open active popup manually
+                            const property = this.properties.find(p => p.id === id);
+                            if (property) {
+                                popup.setLngLat([property.lng, property.lat]).addTo(this.map);
                             }
                         } else {
-                            if (popup && popup.isOpen()) {
-                                m.togglePopup();
-                            }
+                            // Close other popups
+                            popup.remove();
                         }
                     }
                 });
