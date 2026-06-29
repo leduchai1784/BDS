@@ -1073,7 +1073,7 @@
                                             <button 
                                                 type="button" 
                                                 :disabled="!savedConfirm || !generatedPassText"
-                                                @click="applyGeneratedPassword(); openGen = false;"
+                                                @click="if (savedConfirm && generatedPassText) { applyGeneratedPassword(); openGen = false; }"
                                                 class="w-full py-2.5 text-xs font-bold rounded-full text-white bg-primary disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-hover active:scale-98 transition cursor-pointer text-center shadow-md"
                                             >
                                                 Xác nhận
