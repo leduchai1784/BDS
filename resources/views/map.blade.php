@@ -1039,6 +1039,38 @@
                         .setLngLat([p.lng, p.lat])
                         .addTo(this.map);
 
+                    // Attach hover (mouseenter) handler
+                    el.addEventListener('mouseenter', () => {
+                        // Close all popups first (including active)
+                        Object.values(this.popups).forEach(pop => pop.remove());
+                        
+                        // Open hovered popup
+                        popup.setLngLat([p.lng, p.lat]).addTo(this.map);
+                        
+                        // Highlight hovered marker color
+                        el.classList.remove('bg-primary', 'hover:bg-primary-hover');
+                        el.classList.add('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
+                    });
+
+                    // Attach hover (mouseleave) handler
+                    el.addEventListener('mouseleave', () => {
+                        // If it's not the active (clicked) property, reset it
+                        if (this.activeId !== p.id) {
+                            popup.remove();
+                            el.classList.add('bg-primary', 'hover:bg-primary-hover');
+                            el.classList.remove('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
+                            
+                            // Restore active property's popup if there is one
+                            if (this.activeId) {
+                                const activePopup = this.popups[this.activeId];
+                                const activeProp = this.properties.find(prop => prop.id === this.activeId);
+                                if (activePopup && activeProp) {
+                                    activePopup.setLngLat([activeProp.lng, activeProp.lat]).addTo(this.map);
+                                }
+                            }
+                        }
+                    });
+
                     // Attach click handler on the custom bubble
                     el.addEventListener('click', (e) => {
                         e.stopPropagation();
