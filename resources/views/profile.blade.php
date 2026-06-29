@@ -1000,10 +1000,10 @@
                                             x-show="openGen"
                                             @click.outside="openGen = false"
                                             x-transition
-                                            class="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-2xl p-4 z-50 text-left space-y-3.5 select-none"
+                                            class="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-2xl p-3.5 z-50 text-left space-y-2.5 select-none"
                                             x-cloak
                                         >
-                                            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                                            <div class="flex justify-between items-center pb-1.5 border-b border-slate-100">
                                                 <span class="text-xs font-bold text-primary flex items-center gap-1.5">
                                                     <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Password
                                                 </span>
@@ -1042,7 +1042,7 @@
                                             </div>
 
                                             <!-- Checkboxes -->
-                                            <div class="space-y-2 text-[10px] font-bold text-slate-600 pt-0.5">
+                                            <div class="space-y-1.5 text-[10px] font-bold text-slate-600 pt-0.5">
                                                 <label class="flex items-center space-x-2 cursor-pointer">
                                                     <input type="checkbox" x-model="hasEightChars" @change="hasEightChars = true" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
                                                     <span>Có 8 ký tự</span>
@@ -1066,7 +1066,7 @@
                                             </div>
 
                                             <!-- Save check checkbox -->
-                                            <div class="pt-2 border-t border-slate-100">
+                                            <div class="pt-1.5 border-t border-slate-100">
                                                 <label class="flex items-start space-x-2 cursor-pointer text-[10px] font-bold text-slate-600">
                                                     <input type="checkbox" x-model="savedConfirm" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5 mt-0.5">
                                                     <span class="leading-tight">Tôi đã lưu lại mật khẩu mới</span>
@@ -1078,8 +1078,8 @@
                                                 type="button" 
                                                 :disabled="!savedConfirm || !generatedPassText"
                                                 @click="applyGeneratedPassword(); openGen = false;"
-                                                :class="(!savedConfirm || !generatedPassText) ? 'opacity-50 cursor-not-allowed bg-slate-350' : 'bg-primary hover:bg-primary-hover active:scale-98'"
-                                                class="w-full py-2 text-xs font-bold rounded-xl text-white shadow-md transition cursor-pointer text-center"
+                                                :class="(!savedConfirm || !generatedPassText) ? 'opacity-40 cursor-not-allowed bg-primary' : 'bg-primary hover:bg-primary-hover active:scale-98'"
+                                                class="w-full py-2.5 text-xs font-bold rounded-full text-white shadow-md transition cursor-pointer text-center"
                                             >
                                                 Gửi
                                             </button>
