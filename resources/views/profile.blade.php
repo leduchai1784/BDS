@@ -1081,7 +1081,7 @@
                                                 :class="(!savedConfirm || !generatedPassText) ? 'opacity-40 cursor-not-allowed bg-primary' : 'bg-primary hover:bg-primary-hover active:scale-98'"
                                                 class="w-full py-2.5 text-xs font-bold rounded-full text-white shadow-md transition cursor-pointer text-center"
                                             >
-                                                Gửi
+                                                Xác nhận
                                             </button>
                                         </div>
                                     </div>
