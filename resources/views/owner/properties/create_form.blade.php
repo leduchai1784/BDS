@@ -908,7 +908,7 @@
             },
 
             geocodeQuery(query) {
-                fetch(`/api/geocode?q=${encodeURIComponent(query)}`)
+                fetch(`/location/geocode?q=${encodeURIComponent(query)}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.length > 0) {

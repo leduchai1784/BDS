@@ -95,7 +95,7 @@ Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyControl
 Route::post('/chatbot/send', [\App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');
 
 // Route API Geocoding Proxy (tránh CORS và Rate Limit của OpenStreetMap Nominatim)
-Route::get('/api/geocode', function (Illuminate\Http\Request $request) {
+Route::get('/location/geocode', function (Illuminate\Http\Request $request) {
     $query = $request->query('q');
     if (empty($query)) {
         return response()->json([]);
