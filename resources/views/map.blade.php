@@ -946,6 +946,24 @@
                 // Watch filters to dynamically update markers and fit bounds
                 this.$watch('filterType', () => this.updateMarkersAndZoom());
                 this.$watch('filterPrice', () => this.updateMarkersAndZoom());
+
+                // Map click listener to close popups and reset active styles when clicking on blank map space
+                this.map.on('click', (e) => {
+                    const targetEl = e.originalEvent?.target;
+                    if (targetEl && targetEl.closest('.custom-price-marker')) return;
+                    
+                    // Close all popups
+                    Object.values(this.popups).forEach(p => p.remove());
+                    // Reset active ID highlight
+                    this.activeId = null;
+                    Object.keys(this.markers).forEach(markerId => {
+                        const markerEl = document.getElementById('marker-' + markerId);
+                        if (markerEl) {
+                            markerEl.classList.add('bg-primary', 'hover:bg-primary-hover');
+                            markerEl.classList.remove('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
+                        }
+                    });
+                });
             },
 
             // Clear and render new markers
@@ -1013,7 +1031,7 @@
                     const popup = new maplibregl.Popup({ 
                         offset: 35, 
                         closeButton: false,
-                        closeOnClick: true
+                        closeOnClick: false
                     }).setHTML(popupHTML);
 
                     // Create and append marker (no setPopup to control state programmatically)
