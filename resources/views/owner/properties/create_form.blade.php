@@ -16,6 +16,7 @@
     method="POST" 
     enctype="multipart/form-data"
     x-data="propertyCreateForm('{{ $purpose }}', {{ isset($isModal) && $isModal ? 'true' : 'false' }})"
+    @submit="isSubmitting = true"
     class="space-y-6 text-left"
 >
     @csrf
@@ -568,6 +569,9 @@
                 @error('image')
                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                 @enderror
+                <p x-show="mainImageError" class="text-red-500 text-[10px] font-bold mt-1 px-1" x-cloak>
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i><span x-text="mainImageError"></span>
+                </p>
             </div>
 
             <!-- Nhiều ảnh phụ (Gallery) -->
@@ -600,6 +604,9 @@
                         @error('gallery_urls')
                             <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
                         @enderror
+                        <p x-show="galleryImagesError" class="text-red-500 text-[10px] font-bold mt-1 px-1" x-cloak>
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i><span x-text="galleryImagesError"></span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -633,9 +640,18 @@
         </a>
         <button 
             type="submit" 
-            class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+            :disabled="isSubmitting"
+            :class="isSubmitting ? 'opacity-70 cursor-not-allowed bg-primary/80' : 'bg-primary hover:bg-primary-hover active:scale-98'"
+            class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer min-w-[130px]"
         >
-            <span>Đăng tin ngay</span>
+            <template x-if="isSubmitting">
+                <span class="flex items-center">
+                    <i class="fa-solid fa-circle-notch fa-spin mr-1.5 text-white"></i> Đang tải ảnh...
+                </span>
+            </template>
+            <template x-if="!isSubmitting">
+                <span>Đăng tin ngay</span>
+            </template>
         </button>
     </div>
 </form>
@@ -670,6 +686,9 @@
             gallery_urls: '',
             map: null,
             marker: null,
+            isSubmitting: false,
+            mainImageError: '',
+            galleryImagesError: '',
 
             init() {
                 fetch('/vietnam_provinces.json')
@@ -963,16 +982,37 @@
 
             previewMainImage(event) {
                 const file = event.target.files[0];
+                this.mainImageError = '';
                 if (file) {
+                    if (file.size > 3145728) {
+                        this.mainImageError = 'Ảnh đại diện quá lớn (tối đa 3MB). Vui lòng chọn ảnh khác.';
+                        this.mainPreview = '';
+                        event.target.value = '';
+                        return;
+                    }
                     this.mainPreview = URL.createObjectURL(file);
                 }
             },
 
             previewGalleryImages(event) {
                 const files = event.target.files;
+                this.galleryImagesError = '';
                 this.galleryPreviews = [];
+                
+                if (files.length > 9) {
+                    this.galleryImagesError = 'Bạn chỉ được chọn tối đa 9 ảnh phụ.';
+                    event.target.value = '';
+                    return;
+                }
+
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
+                    if (file.size > 3145728) {
+                        this.galleryImagesError = `Ảnh phụ "${file.name}" quá lớn (tối đa 3MB). Vui lòng chọn các ảnh khác.`;
+                        this.galleryPreviews = [];
+                        event.target.value = '';
+                        return;
+                    }
                     this.galleryPreviews.push(URL.createObjectURL(file));
                 }
             }
