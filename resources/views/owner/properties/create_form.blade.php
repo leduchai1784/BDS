@@ -546,7 +546,7 @@
                             <p class="text-[9px] text-slate-400 leading-normal">Ảnh đại diện sẽ hiển thị làm ảnh bìa chính trên trang danh sách tìm kiếm.</p>
                             <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
                                 <i class="fa-solid fa-camera mr-1.5"></i> Chọn ảnh chính
-                                <input type="file" name="image" :required="mainImageType === 'file'" accept="image/*" @change="previewMainImage($event)" class="hidden">
+                                <input type="file" name="image" accept="image/*" @change="previewMainImage($event)" class="hidden">
                             </label>
                         </div>
                         <div x-show="mainImageType === 'url'" class="space-y-1 text-left">
