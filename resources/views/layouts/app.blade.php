@@ -55,6 +55,108 @@
     <!-- AI Chatbot Widget -->
     @include('components.chat-widget')
 
+    <!-- Global Share Listing Modal -->
+    <div 
+        x-data="{
+            open: false,
+            url: '',
+            title: '',
+            copied: false,
+            copyLink() {
+                navigator.clipboard.writeText(this.url);
+                this.copied = true;
+                setTimeout(() => this.copied = false, 2000);
+            }
+        }"
+        @open-share-modal.window="open = true; url = $event.detail.url; title = $event.detail.title; copied = false;"
+        x-show="open" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        x-cloak
+    >
+        <!-- Modal Content Card -->
+        <div 
+            @click.outside="open = false"
+            class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-5 text-left border border-slate-100"
+        >
+            <!-- Close Button -->
+            <button 
+                type="button" 
+                @click="open = false" 
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition cursor-pointer text-sm"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Title -->
+            <div class="space-y-1 pr-6">
+                <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes text-primary"></i> Chia sẻ tin đăng này
+                </h3>
+                <p class="text-xs text-slate-400 font-semibold leading-normal">Chia sẻ bất động sản này với bạn bè và người thân của bạn qua các ứng dụng sau:</p>
+            </div>
+
+            <!-- Social Links Grid -->
+            <div class="grid grid-cols-3 gap-3">
+                <!-- Facebook Share -->
+                <a 
+                    :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url)" 
+                    target="_blank"
+                    class="flex flex-col items-center justify-center p-3 rounded-2xl border border-slate-100 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/10 text-slate-655 hover:text-blue-600 transition cursor-pointer space-y-1.5"
+                >
+                    <i class="fa-brands fa-facebook text-2xl text-[#1877f2]"></i>
+                    <span class="text-[10px] font-bold">Facebook</span>
+                </a>
+                
+                <!-- Zalo Share -->
+                <a 
+                    :href="'https://sp.zalo.me/share_to_zalo?url=' + encodeURIComponent(url)" 
+                    target="_blank"
+                    class="flex flex-col items-center justify-center p-3 rounded-2xl border border-slate-100 hover:border-sky-500 bg-slate-50/50 hover:bg-sky-50/10 text-slate-655 hover:text-sky-600 transition cursor-pointer space-y-1.5"
+                >
+                    <img src="https://sp.zalo.me/favicon.ico" class="w-6 h-6 object-contain" onerror="this.src='https://res.cloudinary.com/dj8t18pke/image/upload/v1700000000/zalo-icon.png'">
+                    <span class="text-[10px] font-bold">Zalo</span>
+                </a>
+                
+                <!-- Telegram Share -->
+                <a 
+                    :href="'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title)" 
+                    target="_blank"
+                    class="flex flex-col items-center justify-center p-3 rounded-2xl border border-slate-100 hover:border-cyan-500 bg-slate-50/50 hover:bg-cyan-50/10 text-slate-655 hover:text-cyan-600 transition cursor-pointer space-y-1.5"
+                >
+                    <i class="fa-brands fa-telegram text-2xl text-[#0088cc]"></i>
+                    <span class="text-[10px] font-bold">Telegram</span>
+                </a>
+            </div>
+
+            <!-- Copy Link Section -->
+            <div class="space-y-1.5 pt-2 border-t border-slate-100">
+                <label class="block text-[9px] font-extrabold uppercase text-slate-400 mb-1 px-1">Sao chép liên kết</label>
+                <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                    <input 
+                        type="text" 
+                        readonly 
+                        :value="url" 
+                        class="w-full bg-transparent text-xs font-mono font-bold text-slate-600 outline-none pr-10 select-all"
+                    >
+                    <button 
+                        type="button" 
+                        @click="copyLink()"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 text-slate-500 transition cursor-pointer"
+                        title="Sao chép"
+                    >
+                        <i class="fa-solid text-xs" :class="copied ? 'fa-check text-green-500' : 'fa-copy'"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @stack('scripts')
 </body>
 </html>
