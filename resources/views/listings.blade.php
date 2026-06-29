@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', request('purpose') === 'rent' ? 'Kho Dự Án Bất Động Sản Cho Thuê | BDS Rental' : (request('purpose') === 'sale' ? 'Kho Dự Án Bất Động Sản Mua Bán | BDS Rental' : 'Kho Dự Án Bất Động Sản | BDS Rental'))
+@section('title', request('purpose') === 'rent' ? 'Nhà Đất Cho Thuê Giá Tốt | BDS Rental' : (request('purpose') === 'sale' ? 'Nhà Đất Mua Bán Giá Tốt | BDS Rental' : 'Danh Sách Nhà Đất Cho Thuê & Mua Bán | BDS Rental'))
 
 @section('content')
 <div class="bg-slate-50 pt-28 pb-16 min-h-screen" x-data="{ 
@@ -91,15 +91,15 @@
             <a href="/" class="hover:text-primary transition">Trang chủ</a>
             <span>/</span>
             @if(request('purpose') === 'rent')
-                <a href="/listings" class="hover:text-primary transition">Kho dự án</a>
+                <a href="/listings" class="hover:text-primary transition">Nhà đất</a>
                 <span>/</span>
                 <span class="text-slate-800 font-bold">Cho thuê</span>
             @elseif(request('purpose') === 'sale')
-                <a href="/listings" class="hover:text-primary transition">Kho dự án</a>
+                <a href="/listings" class="hover:text-primary transition">Nhà đất</a>
                 <span>/</span>
                 <span class="text-slate-800 font-bold">Mua bán</span>
             @else
-                <span class="text-slate-800 font-bold">Kho dự án</span>
+                <span class="text-slate-800 font-bold">Nhà đất</span>
             @endif
         </nav>
 
@@ -108,11 +108,11 @@
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">
                     @if(request('purpose') === 'rent')
-                        Kho dự án cho thuê
+                        Nhà đất cho thuê
                     @elseif(request('purpose') === 'sale')
-                        Kho dự án mua bán
+                        Nhà đất mua bán
                     @else
-                        Kho dự án bất động sản
+                        Danh sách nhà đất
                     @endif
                 </h1>
                 <p class="text-xs text-slate-500 mt-1">Tìm thấy <span class="font-bold text-primary">{{ $properties->total() }}</span> tin đăng phù hợp trên toàn quốc</p>

@@ -35,10 +35,10 @@
                 <h4 class="text-sm font-bold uppercase tracking-wider text-white">Liên kết nhanh</h4>
                 <ul class="space-y-2.5 text-sm">
                     <li><a href="/" class="hover:text-primary transition duration-150">Trang chủ</a></li>
-                    <li><a href="/listings" class="hover:text-primary transition duration-150">Kho dự án</a></li>
+                    <li><a href="/listings" class="hover:text-primary transition duration-150">Nhà đất cho thuê</a></li>
+                    <li><a href="{{ route('projects.index') }}" class="hover:text-primary transition duration-150">Dự án nổi bật</a></li>
                     <li><a href="/map" class="hover:text-primary transition duration-150">Bản đồ</a></li>
-                    <li><a href="#news" class="hover:text-primary transition duration-150">Tin tức</a></li>
-                    <li><a href="#contact" class="hover:text-primary transition duration-150">Liên hệ</a></li>
+                    <li><a href="{{ route('agents.index') }}" class="hover:text-primary transition duration-150">Danh sách môi giới</a></li>
                 </ul>
             </div>
 
