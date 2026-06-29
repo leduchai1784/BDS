@@ -883,13 +883,20 @@
                             class="max-w-md space-y-4"
                             x-data="{
                                 passwordLength: 8,
+                                hasEightChars: true,
                                 useUpper: true,
                                 useLower: true,
                                 useNumbers: true,
                                 useSpecial: true,
+                                savedConfirm: false,
+                                generatedPassText: '',
+                                showGenPass: true,
+                                genCopied: false,
                                 newPassword: '',
                                 showPassword: false,
                                 copied: false,
+                                openGen: false,
+                                
                                 generateRandomPassword() {
                                     let charset = '';
                                     if (this.useUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -929,13 +936,21 @@
                                         [finalPasswordArray[i], finalPasswordArray[j]] = [finalPasswordArray[j], finalPasswordArray[i]];
                                     }
                                     
-                                    let finalPassword = finalPasswordArray.join('');
-                                    this.newPassword = finalPassword;
+                                    this.generatedPassText = finalPasswordArray.join('');
+                                    this.savedConfirm = false;
+                                },
+                                copyGenPass() {
+                                    navigator.clipboard.writeText(this.generatedPassText);
+                                    this.genCopied = true;
+                                    setTimeout(() => this.genCopied = false, 2000);
+                                },
+                                applyGeneratedPassword() {
+                                    this.newPassword = this.generatedPassText;
                                     this.showPassword = true;
                                     
                                     const confirmInput = document.getElementById('new_password_confirmation');
                                     if (confirmInput) {
-                                        confirmInput.value = finalPassword;
+                                        confirmInput.value = this.generatedPassText;
                                     }
                                 },
                                 copyToClipboard() {
@@ -946,62 +961,6 @@
                             }"
                         >
                             @csrf
-                            
-                            <!-- Random Password Generator Controls Panel -->
-                            <div class="bg-slate-100/60 border border-slate-200/80 rounded-2xl p-4 space-y-3 mb-4 select-none">
-                                <div class="flex justify-between items-center">
-                                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-gears text-primary"></i> Bộ sinh mật khẩu ngẫu nhiên
-                                    </h4>
-                                    <button 
-                                        type="button" 
-                                        @click="generateRandomPassword()"
-                                        class="px-2.5 py-1 bg-primary hover:bg-primary-hover text-[10px] font-bold rounded-lg text-white shadow-sm transition cursor-pointer"
-                                    >
-                                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Tạo mật khẩu
-                                    </button>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1.5 border-t border-slate-200/40">
-                                    <!-- Length selection -->
-                                    <div class="space-y-1 text-left">
-                                        <label class="block text-[9px] font-extrabold uppercase text-slate-400">Độ dài ký tự</label>
-                                        <div class="flex items-center space-x-2">
-                                            <input 
-                                                type="range" 
-                                                min="8" 
-                                                max="32" 
-                                                x-model="passwordLength" 
-                                                class="w-full h-1 bg-slate-250 rounded-lg appearance-none cursor-pointer accent-primary"
-                                            >
-                                            <span x-text="passwordLength" class="text-xs font-bold text-slate-700 min-w-[20px] text-right"></span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Options Checkboxes -->
-                                    <div class="space-y-1 text-left">
-                                        <label class="block text-[9px] font-extrabold uppercase text-slate-400">Định dạng chữ</label>
-                                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] font-bold text-slate-600">
-                                            <label class="flex items-center space-x-1 cursor-pointer">
-                                                <input type="checkbox" x-model="useUpper" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
-                                                <span>Chữ hoa</span>
-                                            </label>
-                                            <label class="flex items-center space-x-1 cursor-pointer">
-                                                <input type="checkbox" x-model="useLower" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
-                                                <span>Chữ thường</span>
-                                            </label>
-                                            <label class="flex items-center space-x-1 cursor-pointer">
-                                                <input type="checkbox" x-model="useNumbers" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
-                                                <span>Chữ số</span>
-                                            </label>
-                                            <label class="flex items-center space-x-1 cursor-pointer">
-                                                <input type="checkbox" x-model="useSpecial" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
-                                                <span>Ký tự đặc biệt</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Old Password -->
                             <div class="space-y-1">
@@ -1023,7 +982,111 @@
 
                             <!-- New Password -->
                             <div class="space-y-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu mới</label>
+                                <div class="flex justify-between items-center px-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Mật khẩu mới</label>
+                                    
+                                    <!-- Popover Dropdown for Generating Password -->
+                                    <div class="relative">
+                                        <button 
+                                            type="button" 
+                                            @click="openGen = !openGen; if(openGen) { generateRandomPassword(); }"
+                                            class="text-[10px] font-bold text-primary hover:text-primary-hover flex items-center gap-1 transition cursor-pointer"
+                                        >
+                                            <i class="fa-solid fa-wand-magic-sparkles"></i> Mật khẩu ngẫu nhiên
+                                        </button>
+                                        
+                                        <!-- The Popover Panel -->
+                                        <div 
+                                            x-show="openGen"
+                                            @click.outside="openGen = false"
+                                            x-transition
+                                            class="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-2xl p-4 z-50 text-left space-y-3.5 select-none"
+                                            x-cloak
+                                        >
+                                            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                                                <span class="text-xs font-bold text-primary flex items-center gap-1.5">
+                                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Password
+                                                </span>
+                                                <button type="button" @click="openGen = false" class="text-slate-400 hover:text-slate-650 text-xs">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Password Display Area -->
+                                            <div class="relative bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex items-center justify-between min-h-[38px]">
+                                                <span x-text="generatedPassText ? (showGenPass ? generatedPassText : '•'.repeat(generatedPassText.length)) : '***'" class="text-xs font-mono font-bold text-slate-700 tracking-wide break-all select-all"></span>
+                                                <div class="flex items-center space-x-1.5 flex-shrink-0 ml-2">
+                                                    <button type="button" @click="showGenPass = !showGenPass" class="text-slate-400 hover:text-slate-605 p-0.5" title="Hiện/Ẩn">
+                                                        <i class="fa-solid text-[10px]" :class="showGenPass ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                                    </button>
+                                                    <button type="button" x-show="generatedPassText" @click="copyGenPass()" class="text-slate-400 hover:text-slate-605 p-0.5" title="Sao chép">
+                                                        <i class="fa-solid text-[10px]" :class="genCopied ? 'fa-check text-green-500' : 'fa-copy'"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Length control slider -->
+                                            <div class="space-y-1">
+                                                <div class="flex justify-between items-center text-[9px] font-extrabold uppercase text-slate-400">
+                                                    <span>Số lượng ký tự</span>
+                                                    <span x-text="passwordLength" class="text-xs font-bold text-slate-700"></span>
+                                                </div>
+                                                <input 
+                                                    type="range" 
+                                                    min="8" 
+                                                    max="32" 
+                                                    x-model="passwordLength" 
+                                                    @input="generateRandomPassword()"
+                                                    class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                                                >
+                                            </div>
+
+                                            <!-- Checkboxes -->
+                                            <div class="space-y-2 text-[10px] font-bold text-slate-600 pt-0.5">
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input type="checkbox" x-model="hasEightChars" @change="hasEightChars = true" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
+                                                    <span>Có 8 ký tự</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input type="checkbox" x-model="useNumbers" @change="generateRandomPassword()" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
+                                                    <span>Có ký tự số</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input type="checkbox" x-model="useLower" @change="generateRandomPassword()" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
+                                                    <span>Có ký tự thường</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input type="checkbox" x-model="useUpper" @change="generateRandomPassword()" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
+                                                    <span>Có ký tự hoa</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input type="checkbox" x-model="useSpecial" @change="generateRandomPassword()" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5">
+                                                    <span>Có ký tự đặc biệt</span>
+                                                </label>
+                                            </div>
+
+                                            <!-- Save check checkbox -->
+                                            <div class="pt-2 border-t border-slate-100">
+                                                <label class="flex items-start space-x-2 cursor-pointer text-[10px] font-bold text-slate-600">
+                                                    <input type="checkbox" x-model="savedConfirm" class="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5 mt-0.5">
+                                                    <span class="leading-tight">Tôi đã lưu lại mật khẩu mới</span>
+                                                </label>
+                                            </div>
+
+                                            <!-- Submit (Apply) Button -->
+                                            <button 
+                                                type="button" 
+                                                :disabled="!savedConfirm || !generatedPassText"
+                                                @click="applyGeneratedPassword(); openGen = false;"
+                                                :class="(!savedConfirm || !generatedPassText) ? 'opacity-50 cursor-not-allowed bg-slate-350' : 'bg-primary hover:bg-primary-hover active:scale-98'"
+                                                class="w-full py-2 text-xs font-bold rounded-xl text-white shadow-md transition cursor-pointer text-center"
+                                            >
+                                                Gửi
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="relative">
                                     <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <input 
