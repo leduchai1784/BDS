@@ -810,6 +810,12 @@ class PropertyService
         $direction = isset($item['direction']) ? $item['direction'] : 'Đông Nam';
         $description = "Căn nhà/căn hộ tọa lạc tại vị trí đắc địa tại khu vực " . $location . ". Bất động sản này sở hữu hướng " . $direction . " thông thoáng, đón gió tự nhiên. Diện tích rộng rãi " . $area . "m2 phù hợp làm không gian sinh sống hoặc văn phòng kinh doanh.\n\nTiện ích xung quanh đầy đủ, giao thông thuận tiện di chuyển nhanh chóng. Liên hệ ngay với môi giới phụ trách để biết thêm chi tiết và đặt lịch xem nhà trực tiếp.";
         
+        // Determine transaction type (rent vs sale)
+        $isRent = (stripos($priceFormatted, 'tháng') !== false) || 
+                  (stripos($priceLabel, 'tháng') !== false) || 
+                  ($priceRaw <= 150000000); // 150M threshold
+        $transactionType = $isRent ? 'rent' : 'sale';
+
         return [
             'id' => $id,
             'title' => $title,
@@ -817,6 +823,7 @@ class PropertyService
             'price' => $priceFormatted,
             'price_label' => $priceLabel,
             'price_raw' => $priceRaw,
+            'transaction_type' => $transactionType,
             'area' => $area,
             'bedrooms' => isset($item['bed']) ? (int)$item['bed'] : 0,
             'bathrooms' => isset($item['bath']) ? (int)$item['bath'] : 0,

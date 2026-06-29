@@ -803,6 +803,9 @@
             // Filter properties based on select criteria
             filteredProperties() {
                 return this.properties.filter(p => {
+                    // 0. Match Purpose (Rent vs Sale)
+                    const matchPurpose = !this.filterPurpose || p.transaction_type === this.filterPurpose;
+
                     // 1. Match Property Type
                     const matchType = !this.filterType || p.property_type === this.filterType;
 
@@ -827,7 +830,7 @@
                         }
                     }
 
-                    return matchType && matchPrice;
+                    return matchPurpose && matchType && matchPrice;
                 });
             },
 
@@ -918,10 +921,7 @@
                 this.map.on('load', () => {
                     this.renderMarkers();
                     
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const hasSearchParams = urlParams.get('keyword') || urlParams.get('city') || urlParams.get('district') || urlParams.get('ward') || urlParams.get('price') || urlParams.get('property_type');
-                    
-                    if (hasSearchParams && this.properties.length > 0) {
+                    if (this.properties.length > 0) {
                         const bounds = new maplibregl.LngLatBounds();
                         this.properties.forEach(p => bounds.extend([p.lng, p.lat]));
                         this.map.fitBounds(bounds, { 
