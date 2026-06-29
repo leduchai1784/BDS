@@ -13,11 +13,10 @@
 <style>
     /* Custom MapLibre Popups Style to match premium design */
     .maplibregl-popup-content {
-        padding: 0 !important;
-        border-radius: 16px !important;
-        overflow: hidden !important;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
-        border: none !important;
+        padding: 8px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
         font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif !important;
     }
     .maplibregl-popup-close-button {
@@ -653,7 +652,6 @@
             activeDropdown: null,
             map: null,
             markers: {},
-            popups: {},
             ignoreMobileScroll: false,
             mobileScrollTimeout: null,
 
@@ -946,24 +944,6 @@
                 // Watch filters to dynamically update markers and fit bounds
                 this.$watch('filterType', () => this.updateMarkersAndZoom());
                 this.$watch('filterPrice', () => this.updateMarkersAndZoom());
-
-                // Map click listener to close popups and reset active styles when clicking on blank map space
-                this.map.on('click', (e) => {
-                    const targetEl = e.originalEvent?.target;
-                    if (targetEl && targetEl.closest('.custom-price-marker')) return;
-                    
-                    // Close all popups
-                    Object.values(this.popups).forEach(p => p.remove());
-                    // Reset active ID highlight
-                    this.activeId = null;
-                    Object.keys(this.markers).forEach(markerId => {
-                        const markerEl = document.getElementById('marker-' + markerId);
-                        if (markerEl) {
-                            markerEl.classList.add('bg-primary', 'hover:bg-primary-hover');
-                            markerEl.classList.remove('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
-                        }
-                    });
-                });
             },
 
             // Clear and render new markers
@@ -971,10 +951,6 @@
                 // Clean existing markers
                 Object.values(this.markers).forEach(m => m.remove());
                 this.markers = {};
-
-                // Clean existing popups
-                Object.values(this.popups).forEach(p => p.remove());
-                this.popups = {};
 
                 const filtered = this.filteredProperties();
                 
@@ -990,86 +966,46 @@
                         ? p.image
                         : (p.image ? (p.image.startsWith('/') ? p.image : '/' + p.image) : '/images/apartment_1.png');
 
-                    // Detail popup markup inside map (matching reference style)
+                    // Detail popup markup inside map
                     const popupHTML = `
-                        <a href="/property/${p.id}" class="block relative w-[260px] h-[160px] overflow-hidden group">
-                            <!-- Background Image -->
-                            <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out">
-                            
-                            <!-- Dark Gradient Overlay for text readability -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10"></div>
-                            
-                            <!-- Top Badges -->
-                            <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20">
-                                <span class="bg-black/60 backdrop-blur-md text-white text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                                    <span class="w-1.5 h-1.5 rounded-full ${p.transaction_type === 'rent' ? 'bg-emerald-400' : 'bg-amber-400'}"></span>
-                                    ${p.transaction_type === 'rent' ? 'Cho thuê' : 'Đang bán'}
-                                </span>
-                                <span class="bg-[#0077bb]/80 backdrop-blur-md text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-sm">
-                                    ${p.type}
-                                </span>
-                            </div>
-
-                            <!-- Bottom Content (Overlaid Text) -->
-                            <div class="absolute bottom-3 left-3 right-3 text-white z-20">
-                                <h4 class="text-[12px] font-extrabold line-clamp-1 leading-snug mb-0.5 text-white drop-shadow-md">
-                                    ${p.title}
+                        <div class="p-1 min-w-[210px] text-left">
+                            <a href="/property/${p.id}" class="block overflow-hidden rounded-xl mb-2 group">
+                                <img src="${imgUrl}" class="w-full h-24 object-cover group-hover:scale-105 transition duration-300">
+                            </a>
+                            <div class="px-1.5 pb-1">
+                                <div class="flex items-center gap-1.5 mb-1.5">
+                                    <span class="inline-block bg-[#0077bb]/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded-lg">${p.type}</span>
+                                    <span class="text-[9px] font-bold text-slate-500">${p.area}m²</span>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-800 line-clamp-2 hover:text-primary transition leading-snug mb-1">
+                                    <a href="/property/${p.id}">${p.title}</a>
                                 </h4>
-                                <p class="text-[9px] text-white/80 flex items-center gap-0.5 mb-1.5">
-                                    <i class="fa-solid fa-location-dot text-white/50 text-[8px]"></i>
-                                    <span class="truncate">${p.location}</span>
+                                <p class="text-[10px] text-slate-400 flex items-center gap-1 mb-2">
+                                    <i class="fa-solid fa-location-dot text-slate-300"></i> <span class="truncate">${p.location}</span>
                                 </p>
-                                <div class="flex items-center justify-between border-t border-white/20 pt-1.5 mt-1.5">
-                                    <span class="text-[12px] font-black text-amber-300 drop-shadow">${p.price}</span>
-                                    <span class="text-[9px] text-white/70 font-bold bg-white/10 px-1.5 py-0.5 rounded">${p.area} m²</span>
+                                <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-100">
+                                    <span class="text-xs font-black text-primary">${p.price}</span>
+                                    <a href="/property/${p.id}" class="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5">
+                                        Xem <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                                    </a>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     `;
 
                     // Create popup
                     const popup = new maplibregl.Popup({ 
-                        offset: 35, 
+                        offset: 25, 
                         closeButton: false,
-                        closeOnClick: false
+                        closeOnClick: true,
+                        anchor: 'bottom'
                     }).setHTML(popupHTML);
 
-                    // Create and append marker (no setPopup to control state programmatically)
+                    // Create and append marker
                     const marker = new maplibregl.Marker({ element: el })
                         .setLngLat([p.lng, p.lat])
+                        .setPopup(popup)
                         .addTo(this.map);
-
-                    // Attach hover (mouseenter) handler
-                    el.addEventListener('mouseenter', () => {
-                        // Close all popups first (including active)
-                        Object.values(this.popups).forEach(pop => pop.remove());
-                        
-                        // Open hovered popup
-                        popup.setLngLat([p.lng, p.lat]).addTo(this.map);
-                        
-                        // Highlight hovered marker color
-                        el.classList.remove('bg-primary', 'hover:bg-primary-hover');
-                        el.classList.add('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
-                    });
-
-                    // Attach hover (mouseleave) handler
-                    el.addEventListener('mouseleave', () => {
-                        // If it's not the active (clicked) property, reset it
-                        if (this.activeId !== p.id) {
-                            popup.remove();
-                            el.classList.add('bg-primary', 'hover:bg-primary-hover');
-                            el.classList.remove('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
-                            
-                            // Restore active property's popup if there is one
-                            if (this.activeId) {
-                                const activePopup = this.popups[this.activeId];
-                                const activeProp = this.properties.find(prop => prop.id === this.activeId);
-                                if (activePopup && activeProp) {
-                                    activePopup.setLngLat([activeProp.lng, activeProp.lat]).addTo(this.map);
-                                }
-                            }
-                        }
-                    });
 
                     // Attach click handler on the custom bubble
                     el.addEventListener('click', (e) => {
@@ -1077,9 +1013,8 @@
                         this.selectProperty(p.id, true);
                     });
 
-                    // Save references
+                    // Save reference
                     this.markers[p.id] = marker;
-                    this.popups[p.id] = popup;
                 });
             },
 
@@ -1130,22 +1065,10 @@
                     });
                 }
 
-                // 3. Open Active Popup and Close All Others
-                Object.keys(this.markers).forEach(markerId => {
-                    const popup = this.popups[markerId];
-                    if (popup) {
-                        if (Number(markerId) === Number(id)) {
-                            // Open active popup manually
-                            const property = this.properties.find(p => p.id === id);
-                            if (property) {
-                                popup.setLngLat([property.lng, property.lat]).addTo(this.map);
-                            }
-                        } else {
-                            // Close other popups
-                            popup.remove();
-                        }
-                    }
-                });
+                // 3. Open Popup
+                if (this.markers[id]) {
+                    this.markers[id].togglePopup();
+                }
 
                 // 4. Scroll corresponding Listing Cards into view (Smooth)
                 this.$nextTick(() => {
