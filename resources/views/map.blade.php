@@ -13,11 +13,12 @@
 <style>
     /* Custom MapLibre Popups Style to match premium design */
     .maplibregl-popup-content {
-        padding: 8px !important;
+        padding: 0 !important;
         border-radius: 20px !important;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
         border: 1px solid rgba(226, 232, 240, 0.8) !important;
         font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif !important;
+        overflow: hidden !important;
     }
     .maplibregl-popup-close-button {
         display: none !important; /* Hide default close button for cleaner look */
@@ -968,25 +969,34 @@
 
                     // Detail popup markup inside map
                     const popupHTML = `
-                        <div class="p-1 min-w-[210px] text-left">
-                            <a href="/property/${p.id}" class="block overflow-hidden rounded-xl mb-2 group">
-                                <img src="${imgUrl}" class="w-full h-24 object-cover group-hover:scale-105 transition duration-300">
-                            </a>
-                            <div class="px-1.5 pb-1">
-                                <div class="flex items-center gap-1.5 mb-1.5">
-                                    <span class="inline-block bg-[#0077bb]/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded-lg">${p.type}</span>
-                                    <span class="text-[9px] font-bold text-slate-500">${p.area}m²</span>
-                                </div>
-                                <h4 class="text-xs font-bold text-slate-800 line-clamp-2 hover:text-primary transition leading-snug mb-1">
+                        <div class="w-[240px] text-left relative bg-white">
+                            <!-- Image Container with Absolute Badges -->
+                            <div class="relative w-full h-28 overflow-hidden rounded-t-2xl">
+                                <a href="/property/${p.id}" class="block w-full h-full">
+                                    <img src="${imgUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                                </a>
+                                <!-- Property Type Badge -->
+                                <span class="absolute top-2 left-2 bg-[#0077bb] text-white text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-wide">
+                                    ${p.type}
+                                </span>
+                                <!-- Close Button Mock -->
+                                <button onclick="window.activeMapPopup?.remove()" class="absolute top-2 right-2 w-6 h-6 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 shadow-md transition focus:outline-none z-10">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Body Info -->
+                            <div class="p-3.5">
+                                <h4 class="text-[13px] font-black text-slate-800 line-clamp-1 hover:text-[#0077bb] transition mb-1">
                                     <a href="/property/${p.id}">${p.title}</a>
                                 </h4>
-                                <p class="text-[10px] text-slate-400 flex items-center gap-1 mb-2">
-                                    <i class="fa-solid fa-location-dot text-slate-300"></i> <span class="truncate">${p.location}</span>
+                                <p class="text-[10px] font-medium text-slate-400 truncate mb-3">
+                                    ${p.location}
                                 </p>
-                                <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-100">
-                                    <span class="text-xs font-black text-primary">${p.price}</span>
-                                    <a href="/property/${p.id}" class="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5">
-                                        Xem <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                                    <span class="text-[13px] font-black text-[#0077bb]">${p.price}</span>
+                                    <a href="/property/${p.id}" class="text-[10px] font-black text-[#0077bb] hover:underline flex items-center gap-0.5">
+                                        Chi tiết <i class="fa-solid fa-arrow-right text-[8px]"></i>
                                     </a>
                                 </div>
                             </div>
@@ -1000,6 +1010,11 @@
                         closeOnClick: true,
                         anchor: 'bottom'
                     }).setHTML(popupHTML);
+
+                    // Track active popup globally
+                    popup.on('open', () => {
+                        window.activeMapPopup = popup;
+                    });
 
                     // Create and append marker
                     const marker = new maplibregl.Marker({ element: el })
@@ -1045,12 +1060,17 @@
                 Object.keys(this.markers).forEach(markerId => {
                     const markerEl = document.getElementById('marker-' + markerId);
                     if (markerEl) {
-                        if (parseInt(markerId) === id) {
-                            markerEl.classList.remove('bg-primary', 'hover:bg-primary-hover');
-                            markerEl.classList.add('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
-                        } else {
-                            markerEl.classList.add('bg-primary', 'hover:bg-primary-hover');
-                            markerEl.classList.remove('bg-orange-500', 'scale-115', 'z-[999]', 'border-orange-200');
+                        const property = this.properties.find(prop => prop.id === parseInt(markerId));
+                        if (property) {
+                            if (parseInt(markerId) === id) {
+                                markerEl.classList.remove('bg-primary', 'hover:bg-primary-hover', 'text-white', 'border-white');
+                                markerEl.classList.add('bg-white', 'text-slate-800', 'border-[#0077bb]', 'scale-110', 'z-[999]');
+                                markerEl.innerHTML = `<span class="flex items-center text-xs font-black"><i class="fa-solid fa-circle-check text-emerald-500 mr-1 text-[13px]"></i>${property.price_label}</span>`;
+                            } else {
+                                markerEl.classList.add('bg-primary', 'hover:bg-primary-hover', 'text-white', 'border-white');
+                                markerEl.classList.remove('bg-white', 'text-slate-800', 'border-[#0077bb]', 'scale-110', 'z-[999]');
+                                markerEl.innerHTML = property.price_label;
+                            }
                         }
                     }
                 });
