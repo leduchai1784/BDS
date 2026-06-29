@@ -881,8 +881,128 @@
                             action="{{ route('profile.password') }}"
                             method="POST"
                             class="max-w-md space-y-4"
+                            x-data="{
+                                passwordLength: 8,
+                                useUpper: true,
+                                useLower: true,
+                                useNumbers: true,
+                                useSpecial: true,
+                                newPassword: '',
+                                showPassword: false,
+                                copied: false,
+                                generateRandomPassword() {
+                                    let charset = '';
+                                    if (this.useUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                                    if (this.useLower) charset += 'abcdefghijklmnopqrstuvwxyz';
+                                    if (this.useNumbers) charset += '0123456789';
+                                    if (this.useSpecial) charset += '!@#$%^&*()_+~|{}[]:;?';
+                                    
+                                    if (charset.length === 0) {
+                                        this.useLower = true;
+                                        this.useNumbers = true;
+                                        charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
+                                    }
+                                    
+                                    let password = '';
+                                    let guaranteed = [];
+                                    if (this.useUpper) guaranteed.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(Math.floor(Math.random() * 26)));
+                                    if (this.useLower) guaranteed.push('abcdefghijklmnopqrstuvwxyz'.charAt(Math.floor(Math.random() * 26)));
+                                    if (this.useNumbers) guaranteed.push('0123456789'.charAt(Math.floor(Math.random() * 10)));
+                                    if (this.useSpecial) {
+                                        const specials = '!@#$%^&*()_+~|{}[]:;?';
+                                        guaranteed.push(specials.charAt(Math.floor(Math.random() * specials.length)));
+                                    }
+
+                                    let remainingLength = this.passwordLength - guaranteed.length;
+                                    if (remainingLength < 0) {
+                                        guaranteed = guaranteed.slice(0, this.passwordLength);
+                                        remainingLength = 0;
+                                    }
+
+                                    for (let i = 0; i < remainingLength; i++) {
+                                        password += charset.charAt(Math.floor(Math.random() * charset.length));
+                                    }
+                                    
+                                    let finalPasswordArray = guaranteed.concat(password.split(''));
+                                    for (let i = finalPasswordArray.length - 1; i > 0; i--) {
+                                        const j = Math.floor(Math.random() * (i + 1));
+                                        [finalPasswordArray[i], finalPasswordArray[j]] = [finalPasswordArray[j], finalPasswordArray[i]];
+                                    }
+                                    
+                                    let finalPassword = finalPasswordArray.join('');
+                                    this.newPassword = finalPassword;
+                                    this.showPassword = true;
+                                    
+                                    const confirmInput = document.getElementById('new_password_confirmation');
+                                    if (confirmInput) {
+                                        confirmInput.value = finalPassword;
+                                    }
+                                },
+                                copyToClipboard() {
+                                    navigator.clipboard.writeText(this.newPassword);
+                                    this.copied = true;
+                                    setTimeout(() => this.copied = false, 2000);
+                                }
+                            }"
                         >
                             @csrf
+                            
+                            <!-- Random Password Generator Controls Panel -->
+                            <div class="bg-slate-100/60 border border-slate-200/80 rounded-2xl p-4 space-y-3 mb-4 select-none">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-gears text-primary"></i> Bộ sinh mật khẩu ngẫu nhiên
+                                    </h4>
+                                    <button 
+                                        type="button" 
+                                        @click="generateRandomPassword()"
+                                        class="px-2.5 py-1 bg-primary hover:bg-primary-hover text-[10px] font-bold rounded-lg text-white shadow-sm transition cursor-pointer"
+                                    >
+                                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Tạo mật khẩu
+                                    </button>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1.5 border-t border-slate-200/40">
+                                    <!-- Length selection -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[9px] font-extrabold uppercase text-slate-400">Độ dài ký tự</label>
+                                        <div class="flex items-center space-x-2">
+                                            <input 
+                                                type="range" 
+                                                min="8" 
+                                                max="32" 
+                                                x-model="passwordLength" 
+                                                class="w-full h-1 bg-slate-250 rounded-lg appearance-none cursor-pointer accent-primary"
+                                            >
+                                            <span x-text="passwordLength" class="text-xs font-bold text-slate-700 min-w-[20px] text-right"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Options Checkboxes -->
+                                    <div class="space-y-1 text-left">
+                                        <label class="block text-[9px] font-extrabold uppercase text-slate-400">Định dạng chữ</label>
+                                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] font-bold text-slate-600">
+                                            <label class="flex items-center space-x-1 cursor-pointer">
+                                                <input type="checkbox" x-model="useUpper" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
+                                                <span>Chữ hoa</span>
+                                            </label>
+                                            <label class="flex items-center space-x-1 cursor-pointer">
+                                                <input type="checkbox" x-model="useLower" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
+                                                <span>Chữ thường</span>
+                                            </label>
+                                            <label class="flex items-center space-x-1 cursor-pointer">
+                                                <input type="checkbox" x-model="useNumbers" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
+                                                <span>Chữ số</span>
+                                            </label>
+                                            <label class="flex items-center space-x-1 cursor-pointer">
+                                                <input type="checkbox" x-model="useSpecial" class="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3">
+                                                <span>Ký tự đặc biệt</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Old Password -->
                             <div class="space-y-1">
                                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Mật khẩu hiện tại</label>
@@ -907,12 +1027,35 @@
                                 <div class="relative">
                                     <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <input 
-                                        type="password" 
+                                        :type="showPassword ? 'text' : 'password'" 
                                         name="new_password"
+                                        x-model="newPassword"
                                         required
+                                        id="new_password"
                                         placeholder="Tối thiểu 8 ký tự..."
-                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                                        class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                     >
+                                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+                                        <!-- Show/Hide Button -->
+                                        <button 
+                                            type="button" 
+                                            @click="showPassword = !showPassword"
+                                            class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-650 transition cursor-pointer"
+                                            title="Hiện/Ẩn mật khẩu"
+                                        >
+                                            <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
+                                        <!-- Copy Button -->
+                                        <button 
+                                            type="button" 
+                                            x-show="newPassword.length > 0"
+                                            @click="copyToClipboard()"
+                                            class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-650 transition cursor-pointer"
+                                            title="Sao chép"
+                                        >
+                                            <i class="fa-solid" :class="copied ? 'fa-check text-green-500' : 'fa-copy'"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 @error('new_password')
                                     <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
@@ -925,9 +1068,10 @@
                                 <div class="relative">
                                     <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                     <input 
-                                        type="password" 
+                                        :type="showPassword ? 'text' : 'password'" 
                                         name="new_password_confirmation"
                                         required
+                                        id="new_password_confirmation"
                                         placeholder="Nhập lại mật khẩu mới..."
                                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
                                     >
