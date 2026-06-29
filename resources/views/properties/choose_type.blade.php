@@ -10,7 +10,7 @@
     x-data="{ 
         showWarning: false, 
         warningMessage: '',
-        activeModal: null,
+        activeModal: {{ old('purpose') ? "'" . old('purpose') . "'" : 'null' }},
         checkRole(role, purpose) {
             if (!role) {
                 window.location.href = '{{ route('login') }}';
