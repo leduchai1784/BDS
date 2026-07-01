@@ -23,6 +23,9 @@ class Wishlist extends Model
      */
     public function property()
     {
-        return $this->belongsTo(Property::class);
+        $instance = $this->newRelatedInstance(Property::class);
+        return new \App\Relations\SafeUuidBelongsTo(
+            $instance->newQuery(), $this, 'property_id', 'id', 'property'
+        );
     }
 }
