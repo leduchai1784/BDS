@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\PropertyService;
 use App\Models\Appointment;
 use App\Models\Property;
 use App\Models\User;
@@ -15,16 +16,20 @@ use App\Mail\OwnerAppointmentCancellation;
 
 class AppointmentService
 {
+    protected PropertyService $propertyService;
+
+    public function __construct(PropertyService $propertyService)
+    {
+        $this->propertyService = $propertyService;
+    }
+
     /**
      * Create a new viewing appointment request.
      */
     public function createAppointment(array $data): Appointment
     {
-        // Validate property exists
-        if (!\Illuminate\Support\Str::isUuid($data['property_id'])) {
-            throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(Property::class, [$data['property_id']]);
-        }
-        $property = Property::findOrFail($data['property_id']);
+        // Validate property exists (handles both database and NKS API properties)
+        $propertyData = $this->propertyService->getPropertyById($data['property_id']);
 
         $appointment = Appointment::create([
             'user_id' => $data['user_id'] ?? null,
@@ -43,9 +48,12 @@ class AppointmentService
             // 1. Send to Khách hàng (tenant)
             Mail::to($appointment->email)->send(new TenantAppointmentConfirmation($appointment));
 
-            // 2. Send to Chủ nhà (owner)
-            if ($property->owner && $property->owner->email) {
-                Mail::to($property->owner->email)->send(new OwnerAppointmentNotification($appointment));
+            // 2. Send to Chủ nhà (owner) - only if it is a local property
+            if (\Illuminate\Support\Str::isUuid($data['property_id'])) {
+                $property = Property::find($data['property_id']);
+                if ($property && $property->owner && $property->owner->email) {
+                    Mail::to($property->owner->email)->send(new OwnerAppointmentNotification($appointment));
+                }
             }
 
             // 3. Send to Admin(s)

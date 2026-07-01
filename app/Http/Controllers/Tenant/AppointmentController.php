@@ -23,7 +23,7 @@ class AppointmentController extends Controller
     public function book(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|uuid|exists:properties,id',
+            'property_id' => 'required|string',
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:255',
@@ -40,15 +40,17 @@ class AppointmentController extends Controller
             'time.required' => 'Vui lòng chọn khung giờ xem nhà.'
         ]);
 
-        $property = Property::findOrFail($request->property_id);
-        if (Auth::check() && Auth::id() === $property->owner_id) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Bạn không thể tự đặt lịch xem nhà trên tin đăng của chính mình.'
-                ], 403);
+        if (\Illuminate\Support\Str::isUuid($request->property_id)) {
+            $property = Property::find($request->property_id);
+            if ($property && Auth::check() && Auth::id() === $property->owner_id) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Bạn không thể tự đặt lịch xem nhà trên tin đăng của chính mình.'
+                    ], 403);
+                }
+                return redirect()->back()->withErrors(['property_id' => 'Bạn không thể tự đặt lịch xem nhà trên tin đăng của chính mình.']);
             }
-            return redirect()->back()->withErrors(['property_id' => 'Bạn không thể tự đặt lịch xem nhà trên tin đăng của chính mình.']);
         }
 
         $data = $request->only('property_id', 'name', 'phone', 'email', 'date', 'time', 'message');
