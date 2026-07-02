@@ -61,9 +61,46 @@
                         </a>
                     </div>
                 </div>
-                <a href="{{ route('projects.index') }}" :class="isScrolled ? '{{ request()->is('projects*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('projects*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Dự án</a>
                 <a href="/map" :class="isScrolled ? '{{ request()->is('map*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('map*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
-                <a href="{{ route('agents.index') }}" :class="isScrolled ? '{{ request()->is('agents*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('agents*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Môi giới</a>
+                <a href="{{ route('projects.index') }}" :class="isScrolled ? '{{ request()->is('projects*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('projects*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Dự án</a>
+                <div 
+                    class="relative" 
+                    x-data="{ partnerDropdownOpen: false }"
+                    @mouseenter="partnerDropdownOpen = true"
+                    @mouseleave="partnerDropdownOpen = false"
+                >
+                    <a 
+                        href="{{ route('agents.index') }}"
+                        class="flex items-center space-x-1.5 font-bold text-sm lg:text-base cursor-pointer focus:outline-none transition duration-150 whitespace-nowrap"
+                        :class="isScrolled ? '{{ request()->is('agents*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('agents*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'"
+                    >
+                        <span>Đối tác</span>
+                        <i 
+                            class="fa-solid fa-chevron-down text-[10px] transition duration-200" 
+                            :class="partnerDropdownOpen ? 'rotate-180' : ''"
+                        ></i>
+                    </a>
+                    
+                    <!-- Dropdown Panel -->
+                    <div 
+                        x-show="partnerDropdownOpen"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left"
+                        x-cloak
+                    >
+                        <a href="{{ route('agents.index') }}" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap {{ request()->is('agents') && !request('type') ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary' }}">
+                            Nhà môi giới
+                        </a>
+                        <a href="/agents?type=company" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap {{ request('type') === 'company' ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary' }}">
+                            Doanh nghiệp
+                        </a>
+                    </div>
+                </div>
                 <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
             </nav>
 
@@ -335,9 +372,40 @@
                     <a href="/listings?purpose=sale" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'sale' ? 'text-primary font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-primary' }} transition">Mua bán</a>
                 </div>
             </div>
-            <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('projects*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Dự án</a>
             <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('map*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Bản đồ</a>
-            <a href="{{ route('agents.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('agents*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Môi giới</a>
+            <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('projects*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Dự án</a>
+            
+            <!-- Đối tác (Dropdown Mobile) -->
+            <div x-data="{ mobilePartnerOpen: {{ request()->is('agents*') ? 'true' : 'false' }} }" class="space-y-1">
+                <div class="flex items-center justify-between w-full rounded-xl {{ request()->is('agents*') ? 'bg-primary-light' : 'hover:bg-slate-50' }} transition group">
+                    <a 
+                        href="{{ route('agents.index') }}" 
+                        @click="mobileMenuOpen = false"
+                        class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('agents*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition"
+                    >
+                        Đối tác
+                    </a>
+                    <button 
+                        @click="mobilePartnerOpen = !mobilePartnerOpen"
+                        type="button"
+                        class="px-4 py-3 text-slate-500 hover:text-primary transition focus:outline-none cursor-pointer"
+                    >
+                        <i class="fa-solid fa-chevron-down text-xs transition duration-200" :class="mobilePartnerOpen ? 'rotate-180' : ''"></i>
+                    </button>
+                </div>
+                <div 
+                    x-show="mobilePartnerOpen" 
+                    x-transition:enter="transition ease-out duration-100" 
+                    x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                    x-transition:enter-end="opacity-100 transform translate-y-0" 
+                    class="pl-4 space-y-1" 
+                    x-cloak
+                >
+                    <a href="{{ route('agents.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request()->is('agents') && !request('type') ? 'text-primary font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-primary' }} transition">Nhà môi giới</a>
+                    <a href="/agents?type=company" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('type') === 'company' ? 'text-primary font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-primary' }} transition">Doanh nghiệp</a>
+                </div>
+            </div>
+
             <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
             
             <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
