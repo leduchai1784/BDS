@@ -71,190 +71,183 @@
         </div>
     </section>
 
-    <!-- Section 2.7: Dự án nổi bật (Featured Projects) -->
+    <!-- Section 2.7: Kho dự án nổi bật (Featured Projects Slider) -->
     <section class="py-16 bg-white border-t border-slate-100 text-left">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Section Header -->
-            <div class="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-                <div class="text-left">
-                    <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Dự án trọng điểm</span>
-                    <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Dự Án Nổi Bật</h2>
+            <div 
+                x-data="{ 
+                    slideNext() {
+                        const container = $refs.projectContainer;
+                        container.scrollBy({ left: 384, behavior: 'smooth' });
+                    },
+                    slidePrev() {
+                        const container = $refs.projectContainer;
+                        container.scrollBy({ left: -384, behavior: 'smooth' });
+                    }
+                }"
+                class="text-left"
+            >
+                <!-- Section Header -->
+                <div class="mb-8 flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-slate-900">Kho dự án nổi bật</h2>
+                    <!-- Slider Navigation arrows -->
+                    <div class="flex items-center space-x-2.5">
+                        <button 
+                            @click="slidePrev()" 
+                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary hover:border-primary transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
+                        >
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button 
+                            @click="slideNext()" 
+                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary hover:border-primary transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
+                        >
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
                 </div>
-                <a href="{{ route('projects.index') }}" class="inline-flex items-center text-sm font-bold text-primary hover:text-primary-hover hover:underline transition">
-                    Xem tất cả dự án <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
-                </a>
-            </div>
 
-            <!-- Grid of Projects -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                @if(isset($featuredProjects) && $featuredProjects->count() > 0)
-                    @foreach($featuredProjects as $project)
-                        <div class="group bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl hover:shadow-slate-100/50 transition-all duration-300 flex flex-col h-full">
-                            <!-- Project Image -->
-                            <div class="relative aspect-video bg-slate-100 overflow-hidden flex-shrink-0">
-                                @if(is_array($project->images) && count($project->images) > 0)
-                                    <img 
-                                        src="{{ $project->images[0] }}" 
-                                        alt="{{ $project->title }}" 
-                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                                    >
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
-                                        <i class="fa-regular fa-image text-4xl"></i>
-                                    </div>
-                                @endif
+                <!-- Projects Slides Container -->
+                <div 
+                    x-ref="projectContainer" 
+                    class="flex space-x-6 overflow-x-auto [&::-webkit-scrollbar]:hidden scrollbar-none scroll-smooth pb-4"
+                    style="-ms-overflow-style: none; scrollbar-width: none;"
+                >
+                    @if(isset($featuredProjects) && $featuredProjects->count() > 0)
+                        @foreach($featuredProjects as $project)
+                            @php
+                                $imgUrl = (is_array($project->images) && count($project->images) > 0) 
+                                    ? $project->images[0] 
+                                    : 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg';
                                 
-                                <!-- Status Badge -->
-                                <div class="absolute top-4 left-4 z-10">
-                                    @if($project->status === 'selling')
-                                        <span class="bg-emerald-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đang mở bán</span>
-                                    @elseif($project->status === 'upcoming')
-                                        <span class="bg-orange-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Sắp mở bán</span>
-                                    @else
-                                        <span class="bg-blue-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đã bàn giao</span>
-                                    @endif
+                                $statusDotColor = 'bg-blue-500';
+                                $statusText = 'Đang mở bán';
+                                if($project->status === 'upcoming') {
+                                    $statusDotColor = 'bg-orange-500';
+                                    $statusText = 'Sắp mở bán';
+                                } elseif($project->status === 'handed_over' || $project->status === 'completed') {
+                                    $statusDotColor = 'bg-emerald-500';
+                                    $statusText = 'Đã bàn giao';
+                                }
+                            @endphp
+                            <!-- Project Card -->
+                            <div class="w-96 h-64 rounded-[24px] overflow-hidden relative flex-shrink-0 group shadow-sm hover:shadow-lg transition-all duration-300">
+                                <!-- Background Image -->
+                                <img 
+                                    src="{{ $imgUrl }}" 
+                                    alt="{{ $project->title }}" 
+                                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-103 transition duration-500"
+                                >
+                                <!-- Dark Overlay at the bottom -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent z-1"></div>
+                                
+                                <!-- Top Badges -->
+                                <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                                    <!-- Status Pill -->
+                                    <div class="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-xs flex items-center">
+                                        <span class="w-2 h-2 rounded-full {{ $statusDotColor }} mr-1.5"></span>
+                                        <span class="text-[10px] text-white font-extrabold uppercase tracking-wider">{{ $statusText }}</span>
+                                    </div>
+                                    <!-- Action Icons -->
+                                    <div class="flex space-x-2">
+                                        <button class="w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition backdrop-blur-xs cursor-pointer">
+                                            <i class="fa-solid fa-scale-balanced text-xs"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition backdrop-blur-xs cursor-pointer">
+                                            <i class="fa-regular fa-heart text-xs"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Project Content -->
-                            <div class="p-6 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span class="text-xs font-black uppercase text-primary tracking-widest block mb-2">{{ $project->investor }}</span>
-                                    <h3 class="text-xl font-bold text-slate-900 group-hover:text-primary transition duration-150 mb-3 line-clamp-1">
+                                <!-- Bottom Info -->
+                                <div class="absolute bottom-5 left-5 right-5 text-left z-10">
+                                    <h3 class="text-lg font-bold text-white group-hover:text-primary transition duration-150 uppercase tracking-wide line-clamp-1 mb-1">
                                         <a href="{{ route('projects.show', $project->slug) }}">{{ $project->title }}</a>
                                     </h3>
-                                    <p class="text-slate-500 text-sm mb-5 line-clamp-3 leading-relaxed">
-                                        {{ $project->description }}
+                                    <p class="text-xs text-slate-200/90 font-medium line-clamp-1 mb-1.5">
+                                        {{ $project->location }}
                                     </p>
-                                </div>
-
-                                <!-- Highlights info -->
-                                <div class="pt-5 border-t border-slate-50 grid grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fa-solid fa-money-bill-wave text-primary"></i>
-                                        <span class="truncate">{{ $project->price_range ?? 'Liên hệ' }}</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fa-solid fa-ruler-combined text-primary"></i>
-                                        <span class="truncate">{{ $project->scale ?? 'Đang cập nhật' }}</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2 col-span-2">
-                                        <i class="fa-solid fa-location-dot text-primary"></i>
-                                        <span class="truncate">{{ $project->location }}</span>
-                                    </div>
+                                    <span class="text-sm font-extrabold text-white">
+                                        {{ $project->price_range ?? 'Liên hệ' }}
+                                    </span>
                                 </div>
                             </div>
-
-                            <!-- View details CTA -->
-                            <div class="px-6 pb-6 pt-2">
-                                <a 
-                                    href="{{ route('projects.show', $project->slug) }}"
-                                    class="w-full inline-flex items-center justify-center px-4 py-3 border border-slate-100 text-sm font-extrabold rounded-2xl text-slate-700 bg-slate-50 hover:bg-primary hover:text-white hover:border-transparent transition-all duration-200"
-                                >
-                                    Xem chi tiết dự án <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
-                @else
-                    <!-- Fallback / Mock Projects if database is empty -->
-                    @php
-                        $mocks = [
-                            [
-                                'title' => 'Vinhomes Grand Park',
-                                'investor' => 'Vingroup',
-                                'description' => 'Đại đô thị thông minh đẳng cấp quốc tế tại trung tâm Quận 9, TP. Hồ Chí Minh với quy mô lên đến 271 ha.',
-                                'price_range' => '35 - 55 triệu/m²',
-                                'scale' => '44.000 căn hộ',
-                                'location' => 'Quận 9, TP. Hồ Chí Minh',
-                                'status' => 'selling',
-                                'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg'
-                            ],
-                            [
-                                'title' => 'Masteri Centre Point',
-                                'investor' => 'Masterise Homes',
-                                'description' => 'Khu căn hộ compound cao cấp bậc nhất nằm tại trung tâm đại đô thị Vinhomes Grand Park Quận 9.',
-                                'price_range' => '50 - 70 triệu/m²',
-                                'scale' => '5.000 căn hộ',
-                                'location' => 'Quận 9, TP. Hồ Chí Minh',
-                                'status' => 'upcoming',
-                                'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg'
-                            ],
-                            [
-                                'title' => 'Eco Green Saigon',
-                                'investor' => 'Xuân Mai Corp',
-                                'description' => 'Tổ hợp thương mại dịch vụ và căn hộ cao cấp tọa lạc ngay mặt tiền đại lộ Nguyễn Văn Linh, Quận 7.',
-                                'price_range' => '45 - 60 triệu/m²',
-                                'scale' => '4.000 căn hộ',
-                                'location' => 'Quận 7, TP. Hồ Chí Minh',
-                                'status' => 'handed_over',
-                                'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg'
-                            ]
-                        ];
-                    @endphp
-                    @foreach($mocks as $mock)
-                        <div class="group bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl hover:shadow-slate-100/50 transition-all duration-300 flex flex-col h-full">
-                            <!-- Project Image -->
-                            <div class="relative aspect-video bg-slate-100 overflow-hidden flex-shrink-0">
+                        @endforeach
+                    @else
+                        <!-- Fallback / Mock Projects if database is empty -->
+                        @php
+                            $mocks = [
+                                [
+                                    'title' => 'THE PRIVÉ',
+                                    'location' => 'An Phú, Quận Thủ Đức, Hồ Chí Minh',
+                                    'price' => '4,9 tỷ - 15 tỷ',
+                                    'status_dot' => 'bg-blue-500',
+                                    'status_text' => 'Đang mở bán',
+                                    'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg'
+                                ],
+                                [
+                                    'title' => 'THE EMERALD GARDEN VIEW',
+                                    'location' => 'Hưng Định, Quận Thuận An, Bình Dương',
+                                    'price' => '1,3 tỷ - 3,2 tỷ',
+                                    'status_dot' => 'bg-blue-500',
+                                    'status_text' => 'Đang mở bán',
+                                    'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg'
+                                ],
+                                [
+                                    'title' => 'Ansana by Kita',
+                                    'location' => 'An Lạc, Quận Bình Tân, Hồ Chí Minh',
+                                    'price' => '90 triệu - 100 triệu',
+                                    'status_dot' => 'bg-emerald-500',
+                                    'status_text' => 'Đang nhận booking',
+                                    'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg'
+                                ]
+                            ];
+                        @endphp
+                        @foreach($mocks as $mock)
+                            <div class="w-96 h-64 rounded-[24px] overflow-hidden relative flex-shrink-0 group shadow-sm hover:shadow-lg transition-all duration-300">
+                                <!-- Background Image -->
                                 <img 
                                     src="{{ $mock['image'] }}" 
                                     alt="{{ $mock['title'] }}" 
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-103 transition duration-500"
                                 >
+                                <!-- Dark Overlay at the bottom -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent z-1"></div>
                                 
-                                <!-- Status Badge -->
-                                <div class="absolute top-4 left-4 z-10">
-                                    @if($mock['status'] === 'selling')
-                                        <span class="bg-emerald-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đang mở bán</span>
-                                    @elseif($mock['status'] === 'upcoming')
-                                        <span class="bg-orange-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Sắp mở bán</span>
-                                    @else
-                                        <span class="bg-blue-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đã bàn giao</span>
-                                    @endif
+                                <!-- Top Badges -->
+                                <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                                    <!-- Status Pill -->
+                                    <div class="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-xs flex items-center">
+                                        <span class="w-2 h-2 rounded-full {{ $mock['status_dot'] }} mr-1.5"></span>
+                                        <span class="text-[10px] text-white font-extrabold uppercase tracking-wider">{{ $mock['status_text'] }}</span>
+                                    </div>
+                                    <!-- Action Icons -->
+                                    <div class="flex space-x-2">
+                                        <button class="w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition backdrop-blur-xs cursor-pointer">
+                                            <i class="fa-solid fa-scale-balanced text-xs"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition backdrop-blur-xs cursor-pointer">
+                                            <i class="fa-regular fa-heart text-xs"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Project Content -->
-                            <div class="p-6 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span class="text-xs font-black uppercase text-primary tracking-widest block mb-2">{{ $mock['investor'] }}</span>
-                                    <h3 class="text-xl font-bold text-slate-900 group-hover:text-primary transition duration-150 mb-3 line-clamp-1">
+                                <!-- Bottom Info -->
+                                <div class="absolute bottom-5 left-5 right-5 text-left z-10">
+                                    <h3 class="text-lg font-bold text-white group-hover:text-primary transition duration-150 uppercase tracking-wide line-clamp-1 mb-1">
                                         <a href="/projects">{{ $mock['title'] }}</a>
                                     </h3>
-                                    <p class="text-slate-500 text-sm mb-5 line-clamp-3 leading-relaxed">
-                                        {{ $mock['description'] }}
+                                    <p class="text-xs text-slate-200/90 font-medium line-clamp-1 mb-1.5">
+                                        {{ $mock['location'] }}
                                     </p>
-                                </div>
-
-                                <!-- Highlights info -->
-                                <div class="pt-5 border-t border-slate-50 grid grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fa-solid fa-money-bill-wave text-primary"></i>
-                                        <span class="truncate">{{ $mock['price_range'] }}</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fa-solid fa-ruler-combined text-primary"></i>
-                                        <span class="truncate">{{ $mock['scale'] }}</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2 col-span-2">
-                                        <i class="fa-solid fa-location-dot text-primary"></i>
-                                        <span class="truncate">{{ $mock['location'] }}</span>
-                                    </div>
+                                    <span class="text-sm font-extrabold text-white">
+                                        {{ $mock['price'] }}
+                                    </span>
                                 </div>
                             </div>
-
-                            <!-- View details CTA -->
-                            <div class="px-6 pb-6 pt-2">
-                                <a 
-                                    href="/projects"
-                                    class="w-full inline-flex items-center justify-center px-4 py-3 border border-slate-100 text-sm font-extrabold rounded-2xl text-slate-700 bg-slate-50 hover:bg-primary hover:text-white hover:border-transparent transition-all duration-200"
-                                >
-                                    Xem chi tiết dự án <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
-                @endif
+                        @endforeach
+                    @endif
+                </div>
             </div>
         </div>
     </section>
