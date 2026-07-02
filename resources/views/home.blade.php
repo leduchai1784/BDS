@@ -284,13 +284,13 @@
                     <div class="flex items-center space-x-2.5">
                         <button 
                             @click="slidePrev()" 
-                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-[#0068ff] hover:border-[#0068ff] transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
+                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary hover:border-primary transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
                         >
                             <i class="fa-solid fa-chevron-left text-xs"></i>
                         </button>
                         <button 
                             @click="slideNext()" 
-                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-[#0068ff] hover:border-[#0068ff] transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
+                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary hover:border-primary transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
                         >
                             <i class="fa-solid fa-chevron-right text-xs"></i>
                         </button>
@@ -304,19 +304,19 @@
                     style="-ms-overflow-style: none; scrollbar-width: none;"
                 >
                     <!-- Card 1: Tạo nhu cầu -->
-                    <div class="w-64 h-48 rounded-[24px] border-2 border-dashed border-[#d2e4f9] hover:border-[#0068ff] bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
-                        <div class="w-10 h-10 rounded-full bg-[#0068ff] text-white flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-115 transition duration-300 mb-3">
+                    <div class="w-64 h-48 rounded-[24px] border-2 border-dashed border-primary-light hover:border-primary bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
+                        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-115 transition duration-300 mb-3">
                             <i class="fa-solid fa-plus text-base"></i>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-850 group-hover:text-[#0068ff] transition duration-150 mb-0.5">Tạo nhu cầu</h4>
+                        <h4 class="text-sm font-bold text-slate-850 group-hover:text-primary transition duration-150 mb-0.5">Tạo nhu cầu</h4>
                         <p class="text-xs text-slate-400 font-medium">Chia sẻ điều bạn đang tìm</p>
                     </div>
 
                     <!-- Mock Card 2 -->
                     <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">HT</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-primary-light text-primary font-bold text-xs flex items-center justify-center">HT</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-primary-light text-primary text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
                         <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê nhà hẻm Thanh Huy 1 Quận Thanh Khê, TP. Đ...
@@ -330,8 +330,8 @@
                     <!-- Mock Card 3 -->
                     <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">HT</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-primary-light text-primary font-bold text-xs flex items-center justify-center">HT</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-primary-light text-primary text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
                         <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê nhà hẻm Mai Thúc Lân Quận Ngũ Hành...
@@ -345,8 +345,8 @@
                     <!-- Mock Card 4 -->
                     <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">KL</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-primary-light text-primary font-bold text-xs flex items-center justify-center">KL</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-primary-light text-primary text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
                         <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê phòng trọ Trần Cao Vân Quận Thanh Khê,...
@@ -360,8 +360,8 @@
                     <!-- Mock Card 5 -->
                     <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">LV</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-primary-light text-primary font-bold text-xs flex items-center justify-center">LV</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-primary-light text-primary text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
                         <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê phòng trọ Hải Phòng Quận Hải Châu,...
