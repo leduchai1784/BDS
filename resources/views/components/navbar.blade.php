@@ -65,7 +65,6 @@
                 <a href="/map" :class="isScrolled ? '{{ request()->is('map*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('map*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Bản đồ</a>
                 <a href="{{ route('agents.index') }}" :class="isScrolled ? '{{ request()->is('agents*') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('agents*') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Môi giới</a>
                 <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
-                <a href="#contact" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Liên hệ</a>
             </nav>
 
             <!-- Actions (Profile & CTA) -->
@@ -340,7 +339,6 @@
             <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('map*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Bản đồ</a>
             <a href="{{ route('agents.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('agents*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Môi giới</a>
             <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
-            <a href="#contact" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Liên hệ</a>
             
             <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
                 @auth
