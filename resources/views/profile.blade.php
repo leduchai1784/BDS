@@ -257,7 +257,7 @@
                         >
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-calendar-days text-sm"></i>
-                                <span>Lịch hẹn xem nhà</span>
+                                <span>Lịch hẹn</span>
                             </div>
                             <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
                                 {{ $stats['total_appointments'] }}
@@ -396,7 +396,7 @@
                                 <i class="fa-solid fa-calendar-days"></i>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn xem nhà</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn</span>
                                 <span class="text-xl font-black text-slate-800">{{ $stats['total_appointments'] }} cuộc</span>
                             </div>
                         </div>
