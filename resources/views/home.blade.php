@@ -381,7 +381,7 @@
         </div>
     </section>
 
-    <!-- Section 4: Video Nhà Đất (Real Estate Video Showcase) -->
+    <!-- Section 4: Video Nhà Đất (Real Estate Video Showcase Slider) -->
     <section 
         x-data="{ 
             videoModalOpen: false, 
@@ -393,120 +393,116 @@
             closeVideo() {
                 this.videoModalOpen = false;
                 this.activeVideoUrl = '';
+            },
+            slideNext() {
+                const container = $refs.videoContainer;
+                container.scrollBy({ left: 280, behavior: 'smooth' });
+            },
+            slidePrev() {
+                const container = $refs.videoContainer;
+                container.scrollBy({ left: -280, behavior: 'smooth' });
             }
         }"
-        class="py-20 bg-white text-left"
+        class="py-16 bg-white text-left"
     >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-10 text-center">
-                <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Trải nghiệm thực tế</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Video Review Nhà Đất</h2>
-                <p class="text-slate-500 mt-2 max-w-xl mx-auto">Cùng khám phá các dự án căn hộ, nhà phố và không gian sống thực tế qua các thước phim sống động.</p>
+            <!-- Section Header -->
+            <div class="mb-8 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-slate-900">Video nhà đất</h2>
+                <!-- Slider Navigation arrows -->
+                <div class="flex items-center space-x-2.5">
+                    <button 
+                        @click="slidePrev()" 
+                        class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary hover:border-primary transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
+                    >
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <button 
+                        @click="slideNext()" 
+                        class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary hover:border-primary transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
+                    >
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Main Featured Video (8 cols) -->
-                <div class="lg:col-span-8">
+            <!-- Videos Slides Container -->
+            <div 
+                x-ref="videoContainer" 
+                class="flex space-x-6 overflow-x-auto [&::-webkit-scrollbar]:hidden scrollbar-none scroll-smooth pb-4"
+                style="-ms-overflow-style: none; scrollbar-width: none;"
+            >
+                @php
+                    $videos = [
+                        [
+                            'youtube_id' => 'dQw4w9WgXcQ',
+                            'title' => 'Căn hộ Studio dịch vụ tách bếp Phú Nhuận',
+                            'location' => 'Phú Nhuận, TPHCM',
+                            'badge' => 'CHO THUÊ',
+                            'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg'
+                        ],
+                        [
+                            'youtube_id' => 'dQw4w9WgXcQ',
+                            'title' => 'Biệt thự song lập compound Thảo Điền Quận 2',
+                            'location' => 'Quận 2, TPHCM',
+                            'badge' => 'ĐANG BÁN',
+                            'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg'
+                        ],
+                        [
+                            'youtube_id' => 'dQw4w9WgXcQ',
+                            'title' => 'Nhà phố mặt tiền kinh doanh 222 Lê Văn Sỹ',
+                            'location' => 'Phú Nhuận, TPHCM',
+                            'badge' => 'ĐANG BÁN',
+                            'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg'
+                        ],
+                        [
+                            'youtube_id' => 'dQw4w9WgXcQ',
+                            'title' => 'Căn hộ Landmark 81 Full nội thất view sông',
+                            'location' => 'Bình Thạnh, TPHCM',
+                            'badge' => 'CHO THUÊ',
+                            'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/mvt1mwpuj5vo4qm538rb.jpg'
+                        ]
+                    ];
+                @endphp
+                @foreach($videos as $video)
                     <div 
-                        @click="openVideo('dQw4w9WgXcQ')" 
-                        class="group relative rounded-3xl overflow-hidden aspect-video shadow-lg border border-slate-100 cursor-pointer"
+                        @click="openVideo('{{ $video['youtube_id'] }}')" 
+                        class="w-64 h-80 rounded-[24px] overflow-hidden relative flex-shrink-0 group shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
                     >
-                        <!-- Video Thumbnail -->
+                        <!-- Background Image -->
                         <img 
-                            src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" 
-                            alt="Featured Real Estate Tour" 
-                            class="w-full h-full object-cover group-hover:scale-103 transition duration-500"
+                            src="{{ $video['image'] }}" 
+                            alt="{{ $video['title'] }}" 
+                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-103 transition duration-500"
                         >
-                        <!-- Dark overlay -->
-                        <div class="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/40 transition duration-300"></div>
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent z-1"></div>
                         
-                        <!-- Play Button Overlay -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/45 group-hover:scale-110 active:scale-95 transition duration-300">
-                                <i class="fa-solid fa-play text-xl ml-1"></i>
-                            </div>
-                        </div>
-
-                        <!-- Video info -->
-                        <div class="absolute bottom-6 left-6 right-6 text-left">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black bg-primary text-white mb-3">
-                                <i class="fa-solid fa-eye mr-1"></i> XEM REVIEW CHI TIẾT
+                        <!-- Top-left category badge -->
+                        <div class="absolute top-4 left-4 z-10">
+                            <span class="px-2.5 py-1 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-wider">
+                                {{ $video['badge'] }}
                             </span>
-                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
-                                Khám Phá Căn Hộ Penthouse Cao Cấp Giữa Lòng Thành Phố
-                            </h3>
-                            <p class="text-xs text-slate-200 line-clamp-1 font-medium">
-                                Review thực tế căn hộ Penthouse 3 phòng ngủ sang trọng bậc nhất với tầm nhìn Landmark 81 cực đỉnh.
-                            </p>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Side video playlist (4 cols) -->
-                <div class="lg:col-span-4 flex flex-col justify-between gap-4">
-                    <!-- Video item 1 -->
-                    <div 
-                        @click="openVideo('dQw4w9WgXcQ')" 
-                        class="group flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition cursor-pointer"
-                    >
-                        <div class="relative w-28 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                            <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg" alt="Video 1" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
-                                <div class="w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md">
-                                    <i class="fa-solid fa-play text-[9px] ml-0.5"></i>
-                                </div>
+                        <!-- Center Play Button icon -->
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                            <div class="w-12 h-12 rounded-full border border-white/40 bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition duration-300 transform group-hover:scale-110 shadow-lg">
+                                <i class="fa-solid fa-play text-sm ml-0.5"></i>
                             </div>
                         </div>
-                        <div class="text-left flex-1 min-w-0">
-                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-primary transition line-clamp-2 leading-snug mb-1">
-                                Tour Căn Hộ Studio Tiện Nghi Quận 1 Giá Chỉ 8 Triệu
-                            </h4>
-                            <span class="text-[10px] text-slate-400 font-semibold block">Thời lượng: 5:45</span>
-                        </div>
-                    </div>
 
-                    <!-- Video item 2 -->
-                    <div 
-                        @click="openVideo('dQw4w9WgXcQ')" 
-                        class="group flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition cursor-pointer"
-                    >
-                        <div class="relative w-28 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                            <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg" alt="Video 2" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
-                                <div class="w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md">
-                                    <i class="fa-solid fa-play text-[9px] ml-0.5"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-left flex-1 min-w-0">
-                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-primary transition line-clamp-2 leading-snug mb-1">
-                                Cận Cảnh Biệt Thự Sân Vườn Đáng Sống Tại Khu Phú Mỹ Hưng
+                        <!-- Bottom Title and Location -->
+                        <div class="absolute bottom-5 left-5 right-5 text-left z-10">
+                            <h4 class="text-sm font-bold text-white leading-snug line-clamp-2 mb-1.5">
+                                {{ $video['title'] }}
                             </h4>
-                            <span class="text-[10px] text-slate-400 font-semibold block">Thời lượng: 12:30</span>
+                            <span class="text-[10px] text-slate-200/90 font-medium block">
+                                {{ $video['location'] }}
+                            </span>
                         </div>
                     </div>
-
-                    <!-- Video item 3 -->
-                    <div 
-                        @click="openVideo('dQw4w9WgXcQ')" 
-                        class="group flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition cursor-pointer"
-                    >
-                        <div class="relative w-28 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                            <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/mvt1mwpuj5vo4qm538rb.jpg" alt="Video 3" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
-                                <div class="w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md">
-                                    <i class="fa-solid fa-play text-[9px] ml-0.5"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-left flex-1 min-w-0">
-                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-primary transition line-clamp-2 leading-snug mb-1">
-                                Đánh Giá Chung Cư Cao Cấp Đầy Đủ Nội Thất Ở Đà Nẵng
-                            </h4>
-                            <span class="text-[10px] text-slate-400 font-semibold block">Thời lượng: 8:15</span>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
 
