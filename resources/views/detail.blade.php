@@ -737,7 +737,7 @@
         
         const map = new maplibregl.Map({
             container: 'property-detail-map',
-            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
             center: [lng, lat],
             zoom: 14.5,
             scrollZoom: true

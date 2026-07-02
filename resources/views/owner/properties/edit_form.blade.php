@@ -727,7 +727,7 @@
                 if (this.map) return;
                 this.map = new maplibregl.Map({
                     container: 'picker-map-edit',
-                    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+                    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
                     center: [this.lng, this.lat],
                     zoom: 13.5
                 });

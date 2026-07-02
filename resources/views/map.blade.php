@@ -901,7 +901,7 @@
                 // Instantiating MapLibre
                 this.map = new maplibregl.Map({
                     container: 'map',
-                    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', // Vector style Positron
+                    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json', // Vector style Voyager
                     center: centerCoords,
                     zoom: zoomLevel
                 });
