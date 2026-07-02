@@ -641,12 +641,12 @@
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Bất Động Sản Tương Tự</h2>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             @php
-                // Filter similar properties (exclude current property, showing up to 3 listings)
+                // Filter similar properties (exclude current property, showing up to 4 listings)
                 $similarProperties = collect($properties)
                     ->filter(fn($p) => $p['id'] !== $property['id'])
-                    ->take(3);
+                    ->take(4);
             @endphp
             @foreach($similarProperties as $simProperty)
                 @include('components.property-card', ['property' => $simProperty])
