@@ -111,181 +111,182 @@
                 </div>
             </div>
 
-            <!-- 2. Specifications Details Grid -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-info text-primary"></i>
-                    <span>Thông số kỹ thuật</span>
-                </h3>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                    <!-- Area -->
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-ruler-combined text-base"></i>
+            <!-- Unified Details Block: Specifications, Description & Location Map -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left space-y-8">
+                <!-- 2. Specifications Details Grid -->
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-primary"></i>
+                        <span>Thông số kỹ thuật</span>
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                        <!-- Area -->
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-ruler-combined text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Diện tích</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ $property['area'] }} m²</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Diện tích</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ $property['area'] }} m²</span>
-                        </div>
-                    </div>
 
-                    <!-- Bedrooms -->
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-bed text-base"></i>
+                        <!-- Bedrooms -->
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-bed text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Phòng ngủ</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ $property['bedrooms'] > 0 ? $property['bedrooms'] . ' PN' : 'N/A' }}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Phòng ngủ</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ $property['bedrooms'] > 0 ? $property['bedrooms'] . ' PN' : 'N/A' }}</span>
-                        </div>
-                    </div>
 
-                    <!-- Bathrooms -->
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-bath text-base"></i>
+                        <!-- Bathrooms -->
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-bath text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Phòng tắm</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ $property['bathrooms'] > 0 ? $property['bathrooms'] . ' WC' : 'N/A' }}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Phòng tắm</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ $property['bathrooms'] > 0 ? $property['bathrooms'] . ' WC' : 'N/A' }}</span>
-                        </div>
-                    </div>
 
-                    <!-- Direction -->
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-compass text-base"></i>
+                        <!-- Direction -->
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-compass text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Hướng</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ $property['direction'] }}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Hướng</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ $property['direction'] }}</span>
-                        </div>
-                    </div>
 
-                    <!-- Furniture -->
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-chair text-base"></i>
+                        <!-- Furniture -->
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-chair text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Nội thất</span>
+                                <span class="text-sm font-extrabold text-slate-800 truncate block max-w-[150px]" title="{{ $property['furniture'] }}">{{ $property['furniture'] }}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Nội thất</span>
-                            <span class="text-sm font-extrabold text-slate-800 truncate block max-w-[150px]" title="{{ $property['furniture'] }}">{{ $property['furniture'] }}</span>
-                        </div>
-                    </div>
 
-                    <!-- Legal / Deposit -->
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-file-contract text-base"></i>
+                        <!-- Legal / Deposit -->
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-file-contract text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Pháp lý</span>
+                                <span class="text-sm font-extrabold text-slate-800 truncate block max-w-[150px]" title="{{ $property['legal'] }}">{{ $property['legal'] }}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Pháp lý</span>
-                            <span class="text-sm font-extrabold text-slate-800 truncate block max-w-[150px]" title="{{ $property['legal'] }}">{{ $property['legal'] }}</span>
-                        </div>
-                    </div>
 
-                    <!-- Additional Details for Sale -->
-                    @if(isset($property['floors']) && $property['floors'] > 0)
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-layer-group text-base"></i>
+                        <!-- Additional Details for Sale -->
+                        @if(isset($property['floors']) && $property['floors'] > 0)
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-layer-group text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Số tầng</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ $property['floors'] }} tầng</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Số tầng</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ $property['floors'] }} tầng</span>
-                        </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    @if(isset($property['frontage']) && $property['frontage'] > 0)
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-arrows-left-right text-base"></i>
+                        @if(isset($property['frontage']) && $property['frontage'] > 0)
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-arrows-left-right text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Mặt tiền</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ floatval($property['frontage']) }} m</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Mặt tiền</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ floatval($property['frontage']) }} m</span>
-                        </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    @if(isset($property['road_width']) && $property['road_width'] > 0)
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-road text-base"></i>
+                        @if(isset($property['road_width']) && $property['road_width'] > 0)
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-road text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Đường rộng</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ floatval($property['road_width']) }} m</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Đường rộng</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ floatval($property['road_width']) }} m</span>
-                        </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    <!-- Additional Details for Rent -->
-                    @if(isset($property['deposit']) && $property['deposit'] > 0)
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+                        <!-- Additional Details for Rent -->
+                        @if(isset($property['deposit']) && $property['deposit'] > 0)
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Tiền đặt cọc</span>
+                                <span class="text-sm font-extrabold text-slate-800">
+                                    @if($property['deposit'] >= 1000000000)
+                                        {{ round($property['deposit'] / 1000000000, 1) }} tỷ
+                                    @elseif($property['deposit'] >= 1000000)
+                                        {{ round($property['deposit'] / 1000000, 1) }} triệu
+                                    @else
+                                        {{ number_format($property['deposit']) }} đ
+                                    @endif
+                                </span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Tiền đặt cọc</span>
-                            <span class="text-sm font-extrabold text-slate-800">
-                                @if($property['deposit'] >= 1000000000)
-                                    {{ round($property['deposit'] / 1000000000, 1) }} tỷ
-                                @elseif($property['deposit'] >= 1000000)
-                                    {{ round($property['deposit'] / 1000000, 1) }} triệu
-                                @else
-                                    {{ number_format($property['deposit']) }} đ
-                                @endif
-                            </span>
-                        </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    @if(isset($property['lease_term']) && $property['lease_term'])
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
-                            <i class="fa-solid fa-clock text-base"></i>
+                        @if(isset($property['lease_term']) && $property['lease_term'])
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa-solid fa-clock text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-semibold block mb-0.5">Thời hạn HĐ</span>
+                                <span class="text-sm font-extrabold text-slate-800">{{ $property['lease_term'] }}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-400 font-semibold block mb-0.5">Thời hạn HĐ</span>
-                            <span class="text-sm font-extrabold text-slate-800">{{ $property['lease_term'] }}</span>
-                        </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
-            </div>
 
-            <!-- 3. Description -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
-                <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <i class="fa-solid fa-align-left text-primary"></i>
-                    <span>Mô tả chi tiết</span>
-                </h3>
-                <div class="text-slate-600 text-sm leading-relaxed space-y-4 font-medium">
-                    {!! nl2br(e(str_replace('\n', "\n", $property['description']))) !!}
+                <!-- 3. Description -->
+                <div class="border-t border-slate-100/80 pt-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-align-left text-primary"></i>
+                        <span>Mô tả chi tiết</span>
+                    </h3>
+                    <div class="text-slate-600 text-sm leading-relaxed space-y-4 font-medium">
+                        {!! nl2br(e(str_replace('\n', "\n", $property['description']))) !!}
+                    </div>
                 </div>
-            </div>
 
-
-
-            <!-- 5. Real Interactive Map Section -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
-                <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot text-primary"></i>
-                    <span>Bản đồ vị trí</span>
-                </h3>
-                <div class="relative rounded-2xl overflow-hidden border border-slate-150 shadow-sm">
-                    <div id="property-detail-map" class="h-[250px] sm:h-[320px] bg-slate-100"></div>
-                    <!-- View on Large Map Floating Button -->
-                    <a 
-                        href="/map?lat={{ $property['lat'] }}&lng={{ $property['lng'] }}&id={{ $property['id'] }}" 
-                        class="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-xs px-4 py-2.5 rounded-xl text-[11px] font-extrabold text-slate-700 hover:text-white bg-white hover:bg-primary border border-slate-200/60 shadow-lg transition duration-200 flex items-center gap-2"
-                    >
-                        <i class="fa-solid fa-expand text-xs"></i>
-                        <span>Xem bản đồ lớn</span>
-                    </a>
+                <!-- 5. Real Interactive Map Section -->
+                <div class="border-t border-slate-100/80 pt-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-primary"></i>
+                        <span>Bản đồ vị trí</span>
+                    </h3>
+                    <div class="relative rounded-2xl overflow-hidden border border-slate-150 shadow-sm">
+                        <div id="property-detail-map" class="h-[250px] sm:h-[320px] bg-slate-100"></div>
+                        <!-- View on Large Map Floating Button -->
+                        <a 
+                            href="/map?lat={{ $property['lat'] }}&lng={{ $property['lng'] }}&id={{ $property['id'] }}" 
+                            class="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-xs px-4 py-2.5 rounded-xl text-[11px] font-extrabold text-slate-700 hover:text-white bg-white hover:bg-primary border border-slate-200/60 shadow-lg transition duration-200 flex items-center gap-2"
+                        >
+                            <i class="fa-solid fa-expand text-xs"></i>
+                            <span>Xem bản đồ lớn</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
