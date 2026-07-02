@@ -71,158 +71,436 @@
         </div>
     </section>
 
-    <!-- Section 2.7: Thống Kê Hệ Thống (Giai đoạn 3) -->
-    <section class="py-16 bg-gradient-to-r from-primary to-primary-hover text-white relative overflow-hidden">
-        <!-- Background Decor circles -->
-        <div class="absolute -top-24 -left-24 w-60 h-60 rounded-full bg-white/5 blur-2xl"></div>
-        <div class="absolute -bottom-24 -right-24 w-60 h-60 rounded-full bg-white/10 blur-2xl"></div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 text-center">
-                <!-- Stat 1 -->
-                <div class="space-y-2">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 text-white mb-2">
-                        <i class="fa-solid fa-building-circle-check text-xl"></i>
-                    </div>
-                    <div class="text-3xl sm:text-4xl font-black tracking-tight">50,000+</div>
-                    <div class="text-xs font-bold text-slate-200 uppercase tracking-wider">Bất động sản cho thuê</div>
+    <!-- Section 2.7: Dự án nổi bật (Featured Projects) -->
+    <section class="py-16 bg-white border-t border-slate-100 text-left">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div class="text-left">
+                    <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Dự án trọng điểm</span>
+                    <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Dự Án Nổi Bật</h2>
                 </div>
+                <a href="{{ route('projects.index') }}" class="inline-flex items-center text-sm font-bold text-primary hover:text-primary-hover hover:underline transition">
+                    Xem tất cả dự án <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                </a>
+            </div>
 
-                <!-- Stat 2 -->
-                <div class="space-y-2">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 text-white mb-2">
-                        <i class="fa-solid fa-users text-xl"></i>
-                    </div>
-                    <div class="text-3xl sm:text-4xl font-black tracking-tight">100,000+</div>
-                    <div class="text-xs font-bold text-slate-200 uppercase tracking-wider">Khách hàng tin dùng</div>
-                </div>
+            <!-- Grid of Projects -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @if(isset($featuredProjects) && $featuredProjects->count() > 0)
+                    @foreach($featuredProjects as $project)
+                        <div class="group bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl hover:shadow-slate-100/50 transition-all duration-300 flex flex-col h-full">
+                            <!-- Project Image -->
+                            <div class="relative aspect-video bg-slate-100 overflow-hidden flex-shrink-0">
+                                @if(is_array($project->images) && count($project->images) > 0)
+                                    <img 
+                                        src="{{ $project->images[0] }}" 
+                                        alt="{{ $project->title }}" 
+                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                    >
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                        <i class="fa-regular fa-image text-4xl"></i>
+                                    </div>
+                                @endif
+                                
+                                <!-- Status Badge -->
+                                <div class="absolute top-4 left-4 z-10">
+                                    @if($project->status === 'selling')
+                                        <span class="bg-emerald-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đang mở bán</span>
+                                    @elseif($project->status === 'upcoming')
+                                        <span class="bg-orange-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Sắp mở bán</span>
+                                    @else
+                                        <span class="bg-blue-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đã bàn giao</span>
+                                    @endif
+                                </div>
+                            </div>
 
-                <!-- Stat 3 -->
-                <div class="space-y-2">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 text-white mb-2">
-                        <i class="fa-solid fa-handshake text-xl"></i>
-                    </div>
-                    <div class="text-3xl sm:text-4xl font-black tracking-tight">15,000+</div>
-                    <div class="text-xs font-bold text-slate-200 uppercase tracking-wider">Đối tác chủ nhà & môi giới</div>
-                </div>
+                            <!-- Project Content -->
+                            <div class="p-6 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <span class="text-xs font-black uppercase text-primary tracking-widest block mb-2">{{ $project->investor }}</span>
+                                    <h3 class="text-xl font-bold text-slate-900 group-hover:text-primary transition duration-150 mb-3 line-clamp-1">
+                                        <a href="{{ route('projects.show', $project->slug) }}">{{ $project->title }}</a>
+                                    </h3>
+                                    <p class="text-slate-500 text-sm mb-5 line-clamp-3 leading-relaxed">
+                                        {{ $project->description }}
+                                    </p>
+                                </div>
 
-                <!-- Stat 4 -->
-                <div class="space-y-2">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 text-white mb-2">
-                        <i class="fa-solid fa-shield-halved text-xl"></i>
-                    </div>
-                    <div class="text-3xl sm:text-4xl font-black tracking-tight">99.8%</div>
-                    <div class="text-xs font-bold text-slate-200 uppercase tracking-wider">Giao dịch an toàn</div>
-                </div>
+                                <!-- Highlights info -->
+                                <div class="pt-5 border-t border-slate-50 grid grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-money-bill-wave text-primary"></i>
+                                        <span class="truncate">{{ $project->price_range ?? 'Liên hệ' }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-ruler-combined text-primary"></i>
+                                        <span class="truncate">{{ $project->scale ?? 'Đang cập nhật' }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 col-span-2">
+                                        <i class="fa-solid fa-location-dot text-primary"></i>
+                                        <span class="truncate">{{ $project->location }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- View details CTA -->
+                            <div class="px-6 pb-6 pt-2">
+                                <a 
+                                    href="{{ route('projects.show', $project->slug) }}"
+                                    class="w-full inline-flex items-center justify-center px-4 py-3 border border-slate-100 text-sm font-extrabold rounded-2xl text-slate-700 bg-slate-50 hover:bg-primary hover:text-white hover:border-transparent transition-all duration-200"
+                                >
+                                    Xem chi tiết dự án <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <!-- Fallback / Mock Projects if database is empty -->
+                    @php
+                        $mocks = [
+                            [
+                                'title' => 'Vinhomes Grand Park',
+                                'investor' => 'Vingroup',
+                                'description' => 'Đại đô thị thông minh đẳng cấp quốc tế tại trung tâm Quận 9, TP. Hồ Chí Minh với quy mô lên đến 271 ha.',
+                                'price_range' => '35 - 55 triệu/m²',
+                                'scale' => '44.000 căn hộ',
+                                'location' => 'Quận 9, TP. Hồ Chí Minh',
+                                'status' => 'selling',
+                                'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg'
+                            ],
+                            [
+                                'title' => 'Masteri Centre Point',
+                                'investor' => 'Masterise Homes',
+                                'description' => 'Khu căn hộ compound cao cấp bậc nhất nằm tại trung tâm đại đô thị Vinhomes Grand Park Quận 9.',
+                                'price_range' => '50 - 70 triệu/m²',
+                                'scale' => '5.000 căn hộ',
+                                'location' => 'Quận 9, TP. Hồ Chí Minh',
+                                'status' => 'upcoming',
+                                'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg'
+                            ],
+                            [
+                                'title' => 'Eco Green Saigon',
+                                'investor' => 'Xuân Mai Corp',
+                                'description' => 'Tổ hợp thương mại dịch vụ và căn hộ cao cấp tọa lạc ngay mặt tiền đại lộ Nguyễn Văn Linh, Quận 7.',
+                                'price_range' => '45 - 60 triệu/m²',
+                                'scale' => '4.000 căn hộ',
+                                'location' => 'Quận 7, TP. Hồ Chí Minh',
+                                'status' => 'handed_over',
+                                'image' => 'https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg'
+                            ]
+                        ];
+                    @endphp
+                    @foreach($mocks as $mock)
+                        <div class="group bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl hover:shadow-slate-100/50 transition-all duration-300 flex flex-col h-full">
+                            <!-- Project Image -->
+                            <div class="relative aspect-video bg-slate-100 overflow-hidden flex-shrink-0">
+                                <img 
+                                    src="{{ $mock['image'] }}" 
+                                    alt="{{ $mock['title'] }}" 
+                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                >
+                                
+                                <!-- Status Badge -->
+                                <div class="absolute top-4 left-4 z-10">
+                                    @if($mock['status'] === 'selling')
+                                        <span class="bg-emerald-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đang mở bán</span>
+                                    @elseif($mock['status'] === 'upcoming')
+                                        <span class="bg-orange-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Sắp mở bán</span>
+                                    @else
+                                        <span class="bg-blue-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">Đã bàn giao</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Project Content -->
+                            <div class="p-6 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <span class="text-xs font-black uppercase text-primary tracking-widest block mb-2">{{ $mock['investor'] }}</span>
+                                    <h3 class="text-xl font-bold text-slate-900 group-hover:text-primary transition duration-150 mb-3 line-clamp-1">
+                                        <a href="/projects">{{ $mock['title'] }}</a>
+                                    </h3>
+                                    <p class="text-slate-500 text-sm mb-5 line-clamp-3 leading-relaxed">
+                                        {{ $mock['description'] }}
+                                    </p>
+                                </div>
+
+                                <!-- Highlights info -->
+                                <div class="pt-5 border-t border-slate-50 grid grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-money-bill-wave text-primary"></i>
+                                        <span class="truncate">{{ $mock['price_range'] }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-ruler-combined text-primary"></i>
+                                        <span class="truncate">{{ $mock['scale'] }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 col-span-2">
+                                        <i class="fa-solid fa-location-dot text-primary"></i>
+                                        <span class="truncate">{{ $mock['location'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- View details CTA -->
+                            <div class="px-6 pb-6 pt-2">
+                                <a 
+                                    href="/projects"
+                                    class="w-full inline-flex items-center justify-center px-4 py-3 border border-slate-100 text-sm font-extrabold rounded-2xl text-slate-700 bg-slate-50 hover:bg-primary hover:text-white hover:border-transparent transition-all duration-200"
+                                >
+                                    Xem chi tiết dự án <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
         </div>
     </section>
 
-
-    <!-- Section 3: Điểm đến phổ biến -->
-    <section class="py-16 bg-slate-50 border-t border-b border-slate-100">
+    <!-- Section 3: Tìm kiếm theo nhu cầu (Demands/Needs) -->
+    <section class="py-16 bg-slate-50 border-t border-b border-slate-100 text-left">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-10 text-center">
-                <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Khu vực nổi bật</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Bất Động Sản Theo Tỉnh Thành</h2>
-                <p class="text-slate-500 mt-2 max-w-xl mx-auto">Tìm kiếm căn hộ, phòng trọ cho thuê tại các thành phố lớn sầm uất trên cả nước.</p>
+                <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Lựa chọn đa dạng</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tìm Kiếm Theo Nhu Cầu</h2>
+                <p class="text-slate-500 mt-2 max-w-xl mx-auto">Nhanh chóng lựa chọn phân khúc bất động sản phù hợp nhất với nhu cầu tài chính và phong cách sống của bạn.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- City 1 -->
-                <a href="/listings?province=Hà Nội" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
-                    <div class="absolute inset-0">
-                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" alt="Hà Nội" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Need 1: Chung cư giá tốt -->
+                <a href="/listings?type=Căn+hộ+chung+cư&price_max=7000000" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-building text-lg"></i>
                     </div>
-                    <div class="relative z-10 text-left">
-                        <h3 class="text-xl font-bold text-white mb-1">Hà Nội</h3>
-                        <span class="text-xs font-semibold text-slate-300">12,450 tin đăng</span>
-                    </div>
-                </a>
-
-                <!-- City 2 -->
-                <a href="/listings?province=Thành phố Hồ Chí Minh" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
-                    <div class="absolute inset-0">
-                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg" alt="TP. Hồ Chí Minh" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                    </div>
-                    <div class="relative z-10 text-left">
-                        <h3 class="text-xl font-bold text-white mb-1">TP. Hồ Chí Minh</h3>
-                        <span class="text-xs font-semibold text-slate-300">18,320 tin đăng</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Chung cư giá tốt dưới 7Tr</h4>
+                        <p class="text-xs text-slate-400 font-semibold">Căn hộ tiện nghi, giá cả phải chăng</p>
                     </div>
                 </a>
 
-                <!-- City 3 -->
-                <a href="/listings?province=Đà Nẵng" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
-                    <div class="absolute inset-0">
-                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg" alt="Đà Nẵng" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                <!-- Need 2: Phòng trọ sinh viên -->
+                <a href="/listings?type=Phòng+trọ&price_max=3000000" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
                     </div>
-                    <div class="relative z-10 text-left">
-                        <h3 class="text-xl font-bold text-white mb-1">Đà Nẵng</h3>
-                        <span class="text-xs font-semibold text-slate-300">3,850 tin đăng</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Phòng trọ sinh viên dưới 3Tr</h4>
+                        <p class="text-xs text-slate-400 font-semibold">Gần các trường đại học lớn</p>
                     </div>
                 </a>
 
-                <!-- City 4 -->
-                <a href="/listings?province=Bình Dương" class="group relative rounded-3xl overflow-hidden h-72 shadow-sm flex items-end p-6">
-                    <div class="absolute inset-0">
-                        <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/mvt1mwpuj5vo4qm538rb.jpg" alt="Bình Dương" class="w-full h-full object-cover group-hover:scale-108 transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                <!-- Need 3: Nhà riêng nguyên căn -->
+                <a href="/listings?type=Nhà+riêng" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-house-chimney text-lg"></i>
                     </div>
-                    <div class="relative z-10 text-left">
-                        <h3 class="text-xl font-bold text-white mb-1">Bình Dương</h3>
-                        <span class="text-xs font-semibold text-slate-300">2,410 tin đăng</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Nhà nguyên căn hộ gia đình</h4>
+                        <p class="text-xs text-slate-400 font-semibold">Không gian riêng tư, rộng rãi</p>
+                    </div>
+                </a>
+
+                <!-- Need 4: Căn hộ dịch vụ tiện nghi -->
+                <a href="/listings?type=Căn+hộ+dịch+vụ" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-bell-concierge text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Căn hộ dịch vụ đầy đủ tiện nghi</h4>
+                        <p class="text-xs text-slate-400 font-semibold">Dịch vụ dọn dẹp, giặt ủi trọn gói</p>
+                    </div>
+                </a>
+
+                <!-- Need 5: Văn phòng mặt bằng kinh doanh -->
+                <a href="/listings?type=Văn+phòng" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-briefcase text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Văn phòng / Mặt bằng kinh doanh</h4>
+                        <p class="text-xs text-slate-400 font-semibold">Vị trí đắc địa, giao thương thuận lợi</p>
+                    </div>
+                </a>
+
+                <!-- Need 6: Phòng trọ giá rẻ cực sốc -->
+                <a href="/listings?type=Phòng+trọ&price_max=2000000" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-tags text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Nhà trọ giá rẻ dưới 2Tr</h4>
+                        <p class="text-xs text-slate-400 font-semibold">Tiết kiệm tối đa chi phí</p>
                     </div>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Section 4: Tại sao chọn chúng tôi -->
-    <section class="py-20 bg-white">
+    <!-- Section 4: Video Nhà Đất (Real Estate Video Showcase) -->
+    <section 
+        x-data="{ 
+            videoModalOpen: false, 
+            activeVideoUrl: '', 
+            openVideo(id) { 
+                this.activeVideoUrl = 'https://www.youtube.com/embed/' + id + '?autoplay=1'; 
+                this.videoModalOpen = true; 
+            },
+            closeVideo() {
+                this.videoModalOpen = false;
+                this.activeVideoUrl = '';
+            }
+        }"
+        class="py-20 bg-white text-left"
+    >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-14 text-center">
-                <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Dịch vụ tin cậy</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Giải Pháp Thuê Bất Động Sản Hoàn Hảo</h2>
+            <div class="mb-10 text-center">
+                <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Trải nghiệm thực tế</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Video Review Nhà Đất</h2>
+                <p class="text-slate-500 mt-2 max-w-xl mx-auto">Cùng khám phá các dự án căn hộ, nhà phố và không gian sống thực tế qua các thước phim sống động.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Item 1 -->
-                <div class="p-8 rounded-3xl border border-slate-100/80 hover:shadow-xl hover:shadow-slate-100 transition duration-300 text-left">
-                    <div class="w-14 h-14 rounded-2xl bg-primary-light text-primary flex items-center justify-center text-xl font-bold mb-6">
-                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Main Featured Video (8 cols) -->
+                <div class="lg:col-span-8">
+                    <div 
+                        @click="openVideo('dQw4w9WgXcQ')" 
+                        class="group relative rounded-3xl overflow-hidden aspect-video shadow-lg border border-slate-100 cursor-pointer"
+                    >
+                        <!-- Video Thumbnail -->
+                        <img 
+                            src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" 
+                            alt="Featured Real Estate Tour" 
+                            class="w-full h-full object-cover group-hover:scale-103 transition duration-500"
+                        >
+                        <!-- Dark overlay -->
+                        <div class="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/40 transition duration-300"></div>
+                        
+                        <!-- Play Button Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/45 group-hover:scale-110 active:scale-95 transition duration-300">
+                                <i class="fa-solid fa-play text-xl ml-1"></i>
+                            </div>
+                        </div>
+
+                        <!-- Video info -->
+                        <div class="absolute bottom-6 left-6 right-6 text-left">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black bg-primary text-white mb-3">
+                                <i class="fa-solid fa-eye mr-1"></i> XEM REVIEW CHI TIẾT
+                            </span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+                                Khám Phá Căn Hộ Penthouse Cao Cấp Giữa Lòng Thành Phố
+                            </h3>
+                            <p class="text-xs text-slate-200 line-clamp-1 font-medium">
+                                Review thực tế căn hộ Penthouse 3 phòng ngủ sang trọng bậc nhất với tầm nhìn Landmark 81 cực đỉnh.
+                            </p>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-3">Tin đăng được xác thực</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Mọi tin đăng trên BDS Rental đều được kiểm duyệt chặt chẽ, đảm bảo thông tin hình ảnh, vị trí và giá thuê chính xác tuyệt đối.
-                    </p>
                 </div>
 
-                <!-- Item 2 -->
-                <div class="p-8 rounded-3xl border border-slate-100/80 hover:shadow-xl hover:shadow-slate-100 transition duration-300 text-left">
-                    <div class="w-14 h-14 rounded-2xl bg-primary-light text-primary flex items-center justify-center text-xl font-bold mb-6">
-                        <i class="fa-solid fa-bolt text-2xl"></i>
+                <!-- Side video playlist (4 cols) -->
+                <div class="lg:col-span-4 flex flex-col justify-between gap-4">
+                    <!-- Video item 1 -->
+                    <div 
+                        @click="openVideo('dQw4w9WgXcQ')" 
+                        class="group flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition cursor-pointer"
+                    >
+                        <div class="relative w-28 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg" alt="Video 1" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                <div class="w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md">
+                                    <i class="fa-solid fa-play text-[9px] ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-left flex-1 min-w-0">
+                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-primary transition line-clamp-2 leading-snug mb-1">
+                                Tour Căn Hộ Studio Tiện Nghi Quận 1 Giá Chỉ 8 Triệu
+                            </h4>
+                            <span class="text-[10px] text-slate-400 font-semibold block">Thời lượng: 5:45</span>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-3">Tìm kiếm siêu tốc</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Với bộ lọc nâng cao thông minh cùng công cụ gợi ý AI, bạn có thể tìm thấy không gian sống ưng ý chỉ trong 5 phút.
-                    </p>
-                </div>
 
-                <!-- Item 3 -->
-                <div class="p-8 rounded-3xl border border-slate-100/80 hover:shadow-xl hover:shadow-slate-100 transition duration-300 text-left">
-                    <div class="w-14 h-14 rounded-2xl bg-primary-light text-primary flex items-center justify-center text-xl font-bold mb-6">
-                        <i class="fa-solid fa-headset text-2xl"></i>
+                    <!-- Video item 2 -->
+                    <div 
+                        @click="openVideo('dQw4w9WgXcQ')" 
+                        class="group flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition cursor-pointer"
+                    >
+                        <div class="relative w-28 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg" alt="Video 2" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                <div class="w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md">
+                                    <i class="fa-solid fa-play text-[9px] ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-left flex-1 min-w-0">
+                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-primary transition line-clamp-2 leading-snug mb-1">
+                                Cận Cảnh Biệt Thự Sân Vườn Đáng Sống Tại Khu Phú Mỹ Hưng
+                            </h4>
+                            <span class="text-[10px] text-slate-400 font-semibold block">Thời lượng: 12:30</span>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-3">Hỗ trợ tận tình 24/7</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">
-                        Đội ngũ chăm sóc khách hàng và chuyên viên bất động sản của chúng tôi luôn sẵn sàng hỗ trợ tư vấn pháp lý và thủ tục thuê.
-                    </p>
+
+                    <!-- Video item 3 -->
+                    <div 
+                        @click="openVideo('dQw4w9WgXcQ')" 
+                        class="group flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition cursor-pointer"
+                    >
+                        <div class="relative w-28 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/mvt1mwpuj5vo4qm538rb.jpg" alt="Video 3" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                <div class="w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md">
+                                    <i class="fa-solid fa-play text-[9px] ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-left flex-1 min-w-0">
+                            <h4 class="text-xs font-extrabold text-slate-800 group-hover:text-primary transition line-clamp-2 leading-snug mb-1">
+                                Đánh Giá Chung Cư Cao Cấp Đầy Đủ Nội Thất Ở Đà Nẵng
+                            </h4>
+                            <span class="text-[10px] text-slate-400 font-semibold block">Thời lượng: 8:15</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Video Modal Overlay -->
+        <template x-teleport="body">
+            <div 
+                x-show="videoModalOpen" 
+                class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 p-4 sm:p-6"
+                x-transition
+                x-cloak
+            >
+                <div 
+                    @click.away="closeVideo()" 
+                    class="relative w-full max-w-4xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-800"
+                >
+                    <!-- Close button -->
+                    <button 
+                        @click="closeVideo()" 
+                        class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition border border-white/10"
+                    >
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+
+                    <!-- Iframe Container -->
+                    <div class="aspect-video w-full bg-black">
+                        <template x-if="videoModalOpen">
+                            <iframe 
+                                :src="activeVideoUrl" 
+                                class="w-full h-full border-0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                            ></iframe>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
     </section>
 
     <!-- Section 5: Call to Action (CTA) -->
