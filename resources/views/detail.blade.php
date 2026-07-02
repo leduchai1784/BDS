@@ -739,7 +739,7 @@
             style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
             center: [lng, lat],
             zoom: 14.5,
-            scrollZoom: false
+            scrollZoom: true
         });
 
         // Add controls
@@ -747,7 +747,7 @@
 
         // Custom HTML element for Marker (Price Bubble)
         const el = document.createElement('div');
-        el.className = 'w-9 h-9 rounded-full bg-primary border-4 border-white shadow-xl flex items-center justify-center cursor-pointer hover:scale-110 transition duration-200';
+        el.className = 'w-9 h-9 rounded-full bg-primary border-4 border-white shadow-xl flex items-center justify-center cursor-pointer transition duration-200';
         el.innerHTML = '<i class="fa-solid fa-house-chimney text-xs text-white"></i>';
 
         const popup = new maplibregl.Popup({ 
