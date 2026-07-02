@@ -259,416 +259,123 @@
         </div>
     </section>
 
-    <!-- Section 3: Tìm kiếm theo nhu cầu (Demands/Needs) -->
+    <!-- Section 3: Nhu cầu cộng đồng (Community Demands Slider) -->
     <section class="py-16 bg-slate-50 border-t border-b border-slate-100 text-left">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-10 text-center">
-                <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Lựa chọn đa dạng</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tìm Kiếm Theo Nhu Cầu</h2>
-                <p class="text-slate-500 mt-2 max-w-xl mx-auto">Nhanh chóng lựa chọn phân khúc bất động sản phù hợp nhất với nhu cầu tài chính và phong cách sống của bạn.</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Need 1: Chung cư giá tốt -->
-                <a href="/listings?type=Căn+hộ+chung+cư&price_max=7000000" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-building text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Chung cư giá tốt dưới 7Tr</h4>
-                        <p class="text-xs text-slate-400 font-semibold">Căn hộ tiện nghi, giá cả phải chăng</p>
-                    </div>
-                </a>
-
-                <!-- Need 2: Phòng trọ sinh viên -->
-                <a href="/listings?type=Phòng+trọ&price_max=3000000" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-graduation-cap text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Phòng trọ sinh viên dưới 3Tr</h4>
-                        <p class="text-xs text-slate-400 font-semibold">Gần các trường đại học lớn</p>
-                    </div>
-                </a>
-
-                <!-- Need 3: Nhà riêng nguyên căn -->
-                <a href="/listings?type=Nhà+riêng" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-house-chimney text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Nhà nguyên căn hộ gia đình</h4>
-                        <p class="text-xs text-slate-400 font-semibold">Không gian riêng tư, rộng rãi</p>
-                    </div>
-                </a>
-
-                <!-- Need 4: Căn hộ dịch vụ tiện nghi -->
-                <a href="/listings?type=Căn+hộ+dịch+vụ" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-bell-concierge text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Căn hộ dịch vụ đầy đủ tiện nghi</h4>
-                        <p class="text-xs text-slate-400 font-semibold">Dịch vụ dọn dẹp, giặt ủi trọn gói</p>
-                    </div>
-                </a>
-
-                <!-- Need 5: Văn phòng mặt bằng kinh doanh -->
-                <a href="/listings?type=Văn+phòng" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-briefcase text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Văn phòng / Mặt bằng kinh doanh</h4>
-                        <p class="text-xs text-slate-400 font-semibold">Vị trí đắc địa, giao thương thuận lợi</p>
-                    </div>
-                </a>
-
-                <!-- Need 6: Phòng trọ giá rẻ cực sốc -->
-                <a href="/listings?type=Phòng+trọ&price_max=2000000" class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-xs hover:shadow-lg hover:shadow-slate-100/80 transition-all duration-300 flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-primary group-hover:text-white transition duration-300">
-                        <i class="fa-solid fa-tags text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition mb-0.5">Nhà trọ giá rẻ dưới 2Tr</h4>
-                        <p class="text-xs text-slate-400 font-semibold">Tiết kiệm tối đa chi phí</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 3.5: Nhu cầu cộng đồng (Community Demands) -->
-    <section 
-        x-data="{ 
-            scrollContainer: null,
-            scrollLeft() {
-                if (this.scrollContainer) {
-                    this.scrollContainer.scrollBy({ left: -320, behavior: 'smooth' });
-                }
-            },
-            scrollRight() {
-                if (this.scrollContainer) {
-                    this.scrollContainer.scrollBy({ left: 320, behavior: 'smooth' });
-                }
-            },
-            createDemandModalOpen: false,
-            // Form state
-            form: {
-                title: '',
-                type: 'rent',
-                location: '',
-                budget: '',
-                description: '',
-                contact_name: '{{ Auth::check() ? Auth::user()->name : '' }}',
-                contact_phone: '{{ Auth::check() ? Auth::user()->phone : '' }}'
-            },
-            isSubmitting: false,
-            submitMessage: '',
-            submitSuccess: false,
-            submitForm() {
-                if (this.isSubmitting) return;
-                this.isSubmitting = true;
-                this.submitMessage = '';
-                
-                fetch('{{ route('demands.store') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            <div 
+                x-data="{ 
+                    scrollVal: 0,
+                    slideNext() {
+                        const container = $refs.demandContainer;
+                        container.scrollBy({ left: 300, behavior: 'smooth' });
                     },
-                    body: JSON.stringify(this.form)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    this.isSubmitting = false;
-                    if (data.success) {
-                        this.submitSuccess = true;
-                        this.submitMessage = data.message;
-                        
-                        // Push new demand card to the list dynamically
-                        const container = document.getElementById('demands-list-container');
-                        if (container) {
-                            const newCard = document.createElement('div');
-                            newCard.className = 'w-72 bg-white p-5 rounded-3xl border border-slate-100 hover:shadow-lg hover:shadow-slate-100/50 transition duration-300 flex flex-col justify-between flex-shrink-0 h-64 text-left';
-                            
-                            const initials = data.demand.contact_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                            const typeText = data.demand.type === 'rent' ? 'CẦN THUÊ' : 'CẦN MUA';
-                            
-                            newCard.innerHTML = `
-                                <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-black">
-                                            ${initials}
-                                        </div>
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[9px] font-black bg-primary/10 text-primary uppercase">
-                                            ${typeText}
-                                        </span>
-                                    </div>
-                                    <h4 class="text-sm font-bold text-slate-800 line-clamp-3 mb-2 leading-snug">
-                                        ${data.demand.title}
-                                    </h4>
-                                    ${data.demand.budget ? `<span class="inline-block text-[11px] font-extrabold text-primary bg-primary-light px-2 py-0.5 rounded-md mb-3">${data.demand.budget}</span>` : ''}
-                                </div>
-                                <div class="pt-4 border-t border-slate-50 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
-                                    <span>${data.demand.time_ago}</span>
-                                    <span class="truncate max-w-[150px]"><i class="fa-solid fa-location-dot mr-1"></i>${data.demand.location}</span>
-                                </div>
-                            `;
-                            
-                            // Insert card right after the '+' Create Demand card (which is index 0)
-                            if (container.children.length > 1) {
-                                container.insertBefore(newCard, container.children[1]);
-                            } else {
-                                container.appendChild(newCard);
-                            }
-                        }
-                        
-                        // Close modal after delay
-                        setTimeout(() => {
-                            this.createDemandModalOpen = false;
-                            // Reset form
-                            this.form.title = '';
-                            this.form.location = '';
-                            this.form.budget = '';
-                            this.form.description = '';
-                            this.submitSuccess = false;
-                            this.submitMessage = '';
-                        }, 1500);
-                    } else {
-                        this.submitSuccess = false;
-                        this.submitMessage = 'Có lỗi xảy ra, vui lòng kiểm tra lại.';
+                    slidePrev() {
+                        const container = $refs.demandContainer;
+                        container.scrollBy({ left: -300, behavior: 'smooth' });
                     }
-                })
-                .catch(error => {
-                    this.isSubmitting = false;
-                    this.submitSuccess = false;
-                    this.submitMessage = 'Lỗi hệ thống, vui lòng thử lại sau.';
-                    console.error('Error:', error);
-                });
-            }
-        }"
-        class="py-16 bg-white text-left relative overflow-hidden border-b border-slate-100"
-    >
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header with Slider Arrows -->
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <span class="text-xs font-bold text-primary tracking-widest uppercase mb-1.5 block">Hỗ trợ cộng đồng</span>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Nhu Cầu Tìm Kiếm</h2>
-                    <p class="text-slate-500 text-sm mt-1">Khám phá nhu cầu mua, bán, thuê mới nhất từ cộng đồng hoặc chia sẻ nhu cầu của riêng bạn.</p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button 
-                        @click="scrollLeft()" 
-                        class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition flex items-center justify-center cursor-pointer active:scale-95 shadow-sm"
-                        title="Trượt sang trái"
-                    >
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
-                    <button 
-                        @click="scrollRight()" 
-                        class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition flex items-center justify-center cursor-pointer active:scale-95 shadow-sm"
-                        title="Trượt sang phải"
-                    >
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Horizontal Scrollable Container -->
-            <div 
-                x-init="scrollContainer = $el"
-                id="demands-list-container"
-                class="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
-                style="-ms-overflow-style: none; scrollbar-width: none;"
+                }"
+                class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left relative"
             >
-                <!-- Card 1: Tạo nhu cầu -->
-                <div 
-                    @click="createDemandModalOpen = true"
-                    class="w-72 bg-white rounded-3xl border border-dashed border-slate-200 hover:border-primary/50 hover:shadow-md hover:shadow-slate-50/50 transition-all duration-300 flex flex-col items-center justify-center p-6 h-64 text-center cursor-pointer flex-shrink-0 group active:scale-98"
-                >
-                    <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition duration-300 mb-4">
-                        <i class="fa-solid fa-plus text-lg"></i>
+                <!-- Header row -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-905">Nhu cầu</h2>
+                        <p class="text-xs text-slate-400 font-bold mt-1">Khám phá nhu cầu mua, bán, thuê mới nhất từ cộng đồng</p>
                     </div>
-                    <h4 class="text-base font-bold text-slate-800 mb-1 group-hover:text-primary transition">Đăng nhu cầu</h4>
-                    <p class="text-xs text-slate-400 font-semibold max-w-[180px]">Chia sẻ thông tin căn hộ, phòng trọ bạn đang cần tìm kiếm</p>
+                    <!-- Slider Navigation arrows -->
+                    <div class="flex items-center space-x-2">
+                        <button 
+                            @click="slidePrev()" 
+                            class="w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-primary transition flex items-center justify-center shadow-xs cursor-pointer"
+                        >
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button 
+                            @click="slideNext()" 
+                            class="w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-primary transition flex items-center justify-center shadow-xs cursor-pointer"
+                        >
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Seeded Demands list -->
-                @if(isset($demands) && count($demands) > 0)
-                    @foreach($demands as $demand)
-                        @php
-                            $words = explode(' ', $demand->contact_name);
-                            $initials = '';
-                            foreach ($words as $w) {
-                                $initials .= mb_substr($w, 0, 1, 'UTF-8');
-                            }
-                            $initials = mb_strtoupper(mb_substr($initials, 0, 2, 'UTF-8'), 'UTF-8');
-                        @endphp
-                        <div class="w-72 bg-white p-5 rounded-3xl border border-slate-100 hover:shadow-lg hover:shadow-slate-100/50 transition duration-300 flex flex-col justify-between flex-shrink-0 h-64 text-left snap-start">
-                            <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-black">
-                                        {{ $initials }}
-                                    </div>
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[9px] font-black {{ $demand->type === 'rent' ? 'bg-sky-50 text-sky-600' : 'bg-emerald-50 text-emerald-600' }} uppercase">
-                                        {{ $demand->type === 'rent' ? 'CẦN THUÊ' : 'CẦN MUA' }}
-                                    </span>
-                                </div>
-                                <h4 class="text-sm font-bold text-slate-800 line-clamp-3 mb-2 leading-snug" title="{{ $demand->title }}">
-                                    {{ $demand->title }}
-                                </h4>
-                                @if($demand->budget)
-                                    <span class="inline-block text-[11px] font-extrabold text-primary bg-primary-light px-2 py-0.5 rounded-md mb-3">
-                                        {{ $demand->budget }}
-                                    </span>
-                                @endif
-                            </div>
-                            <div class="pt-4 border-t border-slate-50 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
-                                <span>{{ $demand->created_at->diffForHumans() }}</span>
-                                <span class="truncate max-w-[150px]"><i class="fa-solid fa-location-dot mr-1"></i>{{ $demand->location }}</span>
-                            </div>
+                <!-- Slides Container -->
+                <div 
+                    x-ref="demandContainer" 
+                    class="flex space-x-5 overflow-x-auto scrollbar-none scroll-smooth pb-2"
+                    style="-ms-overflow-style: none; scrollbar-width: none;"
+                >
+                    <!-- Card 1: Tạo nhu cầu -->
+                    <div class="w-72 h-44 rounded-3xl border-2 border-dashed border-sky-100 hover:border-primary bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
+                        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 transition duration-300 mb-3">
+                            <i class="fa-solid fa-plus text-base"></i>
                         </div>
-                    @endforeach
-                @endif
+                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150 mb-0.5">Tạo nhu cầu</h4>
+                        <p class="text-xs text-slate-400 font-medium">Chia sẻ điều bạn đang tìm</p>
+                    </div>
+
+                    <!-- Mock Card 2 -->
+                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div class="w-8 h-8 rounded-full bg-sky-50 text-primary font-bold text-xs flex items-center justify-center">TT</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-primary text-[9px] font-black uppercase tracking-wider">Cho thuê</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                            Cho thuê phòng trọ Đường Đỗ Đốc Chấn Quận Tân Phú
+                        </h4>
+                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                            <span>5 days ago</span>
+                            <span class="truncate max-w-[140px]">Quận Tân Phú, Thành phố...</span>
+                        </div>
+                    </div>
+
+                    <!-- Mock Card 3 -->
+                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div class="w-8 h-8 rounded-full bg-sky-50 text-primary font-bold text-xs flex items-center justify-center">QA</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-primary text-[9px] font-black uppercase tracking-wider">Cho thuê</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                            Cho thuê nhà hẻm Long Thuận Quận 9, TP.HCM – 7 triệu/tháng
+                        </h4>
+                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                            <span>5 days ago</span>
+                            <span class="truncate max-w-[140px]">Quận 9, Thành phố Hồ C...</span>
+                        </div>
+                    </div>
+
+                    <!-- Mock Card 4 -->
+                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div class="w-8 h-8 rounded-full bg-sky-50 text-primary font-bold text-xs flex items-center justify-center">DP</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-primary text-[9px] font-black uppercase tracking-wider">Cho thuê</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                            Cho thuê căn hộ chung cư Hoàng văn thụ Quận Tân Bình
+                        </h4>
+                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                            <span>5 days ago</span>
+                            <span class="truncate max-w-[140px]">Quận Tân Bình, Thành ph...</span>
+                        </div>
+                    </div>
+
+                    <!-- Mock Card 5 -->
+                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 font-bold text-xs flex items-center justify-center">NL</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-wider">Cần thuê</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                            Tìm căn hộ dịch vụ 1 phòng ngủ đầy đủ tiện nghi tại Quận 3
+                        </h4>
+                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                            <span>1 day ago</span>
+                            <span class="truncate max-w-[140px]">Quận 3, Thành phố Hồ C...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Create Demand Modal overlay -->
-        <template x-teleport="body">
-            <div 
-                x-show="createDemandModalOpen" 
-                class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 sm:p-6"
-                x-transition
-                x-cloak
-            >
-                <div 
-                    @click.away="if(!isSubmitting) createDemandModalOpen = false" 
-                    class="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 text-left max-h-[90vh] overflow-y-auto"
-                >
-                    <!-- Close button -->
-                    <button 
-                        @click="createDemandModalOpen = false" 
-                        class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition cursor-pointer"
-                        :disabled="isSubmitting"
-                    >
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
-
-                    <h3 class="text-xl font-bold text-slate-900 mb-1.5 flex items-center gap-2">
-                        <i class="fa-solid fa-bullhorn text-primary"></i>
-                        <span>Đăng Nhu Cầu Tìm Kiếm</span>
-                    </h3>
-                    <p class="text-xs text-slate-400 font-medium mb-6">Điền thông tin chi tiết nhu cầu thuê/mua bất động sản để cộng đồng kết nối tốt nhất.</p>
-
-                    <!-- Form submission -->
-                    <form @submit.prevent="submitForm()" class="space-y-4">
-                        
-                        <!-- Title input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Tôi đang cần tìm... (Tiêu đề ngắn)</label>
-                            <input 
-                                type="text" 
-                                x-model="form.title" 
-                                required 
-                                placeholder="Ví dụ: Cần thuê căn hộ dịch vụ Quận 1 gần Đại học Hoa Sen" 
-                                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-                            >
-                        </div>
-
-                        <!-- Type & Budget inputs -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Loại nhu cầu</label>
-                                <select 
-                                    x-model="form.type" 
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary transition"
-                                >
-                                    <option value="rent">Cần Thuê</option>
-                                    <option value="buy">Cần Mua</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Ngân sách dự kiến</label>
-                                <input 
-                                    type="text" 
-                                    x-model="form.budget" 
-                                    placeholder="Ví dụ: 5 - 8 triệu/tháng" 
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Location input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Khu vực mong muốn (Địa chỉ/Quận/Huyện)</label>
-                            <input 
-                                type="text" 
-                                x-model="form.location" 
-                                required
-                                placeholder="Ví dụ: Quận 1, TP. Hồ Chí Minh" 
-                                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-                            >
-                        </div>
-
-                        <!-- Contact details -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Tên liên hệ</label>
-                                <input 
-                                    type="text" 
-                                    x-model="form.contact_name" 
-                                    required 
-                                    placeholder="Họ và tên của bạn" 
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-                                >
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Số điện thoại liên hệ</label>
-                                <input 
-                                    type="text" 
-                                    x-model="form.contact_phone" 
-                                    required 
-                                    placeholder="Ví dụ: 0912345678" 
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Description input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Mô tả thêm chi tiết nhu cầu</label>
-                            <textarea 
-                                x-model="form.description" 
-                                rows="3" 
-                                placeholder="Càng chi tiết (tiện ích xung quanh, diện tích tối thiểu, ngày dọn vào...) sẽ nhận được phản hồi chính xác nhất." 
-                                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
-                            ></textarea>
-                        </div>
-
-                        <!-- Feedback messages -->
-                        <div x-show="submitMessage" class="p-3.5 rounded-xl text-xs font-semibold" :class="submitSuccess ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'">
-                            <span x-text="submitMessage"></span>
-                        </div>
-
-                        <!-- Submit button -->
-                        <div class="pt-2">
-                            <button 
-                                type="submit" 
-                                class="w-full py-3.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-sm font-bold shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer flex items-center justify-center gap-2"
-                                :disabled="isSubmitting"
-                            >
-                                <template x-if="isSubmitting">
-                                    <i class="fa-solid fa-spinner animate-spin text-sm"></i>
-                                </template>
-                                <span>Gửi Yêu Cầu Đăng</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </template>
     </section>
 
     <!-- Section 4: Video Nhà Đất (Real Estate Video Showcase) -->
