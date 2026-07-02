@@ -29,13 +29,16 @@
             
             <!-- 1. Interactive Image Gallery & Title Info Card -->
             <div 
-                x-data="{ activeImage: '{{ asset($property['images'][0]) }}' }" 
+                x-data="{ 
+                    images: {{ json_encode(array_map(fn($img) => asset($img), $property['images'])) }}, 
+                    activeIndex: 0 
+                }" 
                 class="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm p-4 sm:p-6 space-y-6"
             >
-                <!-- Large Primary Image View -->
-                <div class="relative h-[280px] sm:h-[450px] w-full rounded-2xl overflow-hidden bg-slate-100">
+                <!-- Large Primary Image View / Slider -->
+                <div class="relative h-[280px] sm:h-[450px] w-full rounded-2xl overflow-hidden bg-slate-100 group">
                     <img 
-                        :src="activeImage" 
+                        :src="images[activeIndex]" 
                         alt="Property view" 
                         class="w-full h-full object-cover object-center transition-all duration-300"
                     >
@@ -48,19 +51,34 @@
                             </span>
                         @endif
                     </div>
-                </div>
 
-                <!-- Gallery Thumbnails -->
-                <div class="grid grid-cols-4 gap-3.5">
-                    @foreach($property['images'] as $img)
-                        <button 
-                            @click="activeImage = '{{ asset($img) }}'"
-                            :class="activeImage === '{{ asset($img) }}' ? 'border-primary ring-2 ring-primary/20' : 'border-slate-100 hover:border-slate-350'"
-                            class="relative h-16 sm:h-24 rounded-xl overflow-hidden border-2 bg-slate-50 transition duration-150 cursor-pointer"
-                        >
-                            <img src="{{ asset($img) }}" alt="Thumbnail" class="w-full h-full object-cover">
-                        </button>
-                    @endforeach
+                    <!-- Slide Navigation Buttons (Only if > 1 image) -->
+                    <template x-if="images.length > 1">
+                        <div>
+                            <!-- Prev Button -->
+                            <button 
+                                type="button"
+                                @click="activeIndex = (activeIndex - 1 + images.length) % images.length"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/45 hover:bg-black/60 text-white flex items-center justify-center transition shadow-md backdrop-blur-sm z-10 cursor-pointer active:scale-90 opacity-0 group-hover:opacity-100 duration-200"
+                            >
+                                <i class="fa-solid fa-chevron-left text-sm"></i>
+                            </button>
+                            
+                            <!-- Next Button -->
+                            <button 
+                                type="button"
+                                @click="activeIndex = (activeIndex + 1) % images.length"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/45 hover:bg-black/60 text-white flex items-center justify-center transition shadow-md backdrop-blur-sm z-10 cursor-pointer active:scale-90 opacity-0 group-hover:opacity-100 duration-200"
+                            >
+                                <i class="fa-solid fa-chevron-right text-sm"></i>
+                            </button>
+
+                            <!-- Slide Indicator -->
+                            <span class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full z-10 select-none">
+                                <span x-text="activeIndex + 1"></span> / <span x-text="images.length"></span>
+                            </span>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Title, Address, Price, Area Info Block -->
