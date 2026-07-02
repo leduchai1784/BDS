@@ -51,7 +51,8 @@ class User extends Authenticatable
      */
     public function ownerAppointments()
     {
-        return $this->hasManyThrough(Appointment::class, Property::class, 'owner_id', 'property_id');
+        $propertyIds = $this->properties()->pluck('id')->toArray();
+        return Appointment::whereIn('property_id', $propertyIds);
     }
 
     /**
