@@ -264,7 +264,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div 
                 x-data="{ 
-                    scrollVal: 0,
                     slideNext() {
                         const container = $refs.demandContainer;
                         container.scrollBy({ left: 300, behavior: 'smooth' });
@@ -274,25 +273,25 @@
                         container.scrollBy({ left: -300, behavior: 'smooth' });
                     }
                 }"
-                class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left relative"
+                class="bg-white rounded-[32px] p-8 sm:p-10 border border-slate-100 shadow-sm text-left relative"
             >
                 <!-- Header row -->
                 <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-905">Nhu cầu</h2>
-                        <p class="text-xs text-slate-400 font-bold mt-1">Khám phá nhu cầu mua, bán, thuê mới nhất từ cộng đồng</p>
+                        <h2 class="text-2xl font-bold text-slate-900">Nhu cầu</h2>
+                        <p class="text-sm text-slate-500 mt-1">Khám phá nhu cầu mua, bán, thuê mới nhất từ cộng đồng</p>
                     </div>
                     <!-- Slider Navigation arrows -->
-                    <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-2.5">
                         <button 
                             @click="slidePrev()" 
-                            class="w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-primary transition flex items-center justify-center shadow-xs cursor-pointer"
+                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-[#0068ff] transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
                         >
                             <i class="fa-solid fa-chevron-left text-xs"></i>
                         </button>
                         <button 
                             @click="slideNext()" 
-                            class="w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-primary transition flex items-center justify-center shadow-xs cursor-pointer"
+                            class="w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-[#0068ff] transition flex items-center justify-center shadow-xs cursor-pointer active:scale-95"
                         >
                             <i class="fa-solid fa-chevron-right text-xs"></i>
                         </button>
@@ -302,75 +301,75 @@
                 <!-- Slides Container -->
                 <div 
                     x-ref="demandContainer" 
-                    class="flex space-x-5 overflow-x-auto scrollbar-none scroll-smooth pb-2"
+                    class="flex space-x-6 overflow-x-auto [&::-webkit-scrollbar]:hidden scrollbar-none scroll-smooth pb-3"
                     style="-ms-overflow-style: none; scrollbar-width: none;"
                 >
                     <!-- Card 1: Tạo nhu cầu -->
-                    <div class="w-72 h-44 rounded-3xl border-2 border-dashed border-sky-100 hover:border-primary bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
-                        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 transition duration-300 mb-3">
+                    <div class="w-72 h-48 rounded-[24px] border-2 border-dashed border-[#d2e4f9] hover:border-[#0068ff] bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
+                        <div class="w-10 h-10 rounded-full bg-[#0068ff] text-white flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-115 transition duration-300 mb-3">
                             <i class="fa-solid fa-plus text-base"></i>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800 group-hover:text-primary transition duration-150 mb-0.5">Tạo nhu cầu</h4>
+                        <h4 class="text-sm font-bold text-slate-850 group-hover:text-[#0068ff] transition duration-150 mb-0.5">Tạo nhu cầu</h4>
                         <p class="text-xs text-slate-400 font-medium">Chia sẻ điều bạn đang tìm</p>
                     </div>
 
                     <!-- Mock Card 2 -->
-                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-sky-50 text-primary font-bold text-xs flex items-center justify-center">TT</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-primary text-[9px] font-black uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">TT</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê phòng trọ Đường Đỗ Đốc Chấn Quận Tân Phú
                         </h4>
-                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                        <div class="border-t border-slate-100 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold mt-auto">
                             <span>5 days ago</span>
-                            <span class="truncate max-w-[140px]">Quận Tân Phú, Thành phố...</span>
+                            <span class="truncate max-w-[130px]">Quận Tân Phú, Thành ph...</span>
                         </div>
                     </div>
 
                     <!-- Mock Card 3 -->
-                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-sky-50 text-primary font-bold text-xs flex items-center justify-center">QA</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-primary text-[9px] font-black uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">QA</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê nhà hẻm Long Thuận Quận 9, TP.HCM – 7 triệu/tháng
                         </h4>
-                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                        <div class="border-t border-slate-100 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold mt-auto">
                             <span>5 days ago</span>
-                            <span class="truncate max-w-[140px]">Quận 9, Thành phố Hồ C...</span>
+                            <span class="truncate max-w-[130px]">Quận 9, Thành phố Hồ C...</span>
                         </div>
                     </div>
 
                     <!-- Mock Card 4 -->
-                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-sky-50 text-primary font-bold text-xs flex items-center justify-center">DP</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-primary text-[9px] font-black uppercase tracking-wider">Cho thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">DP</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Cho thuê căn hộ chung cư Hoàng văn thụ Quận Tân Bình
                         </h4>
-                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                        <div class="border-t border-slate-100 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold mt-auto">
                             <span>5 days ago</span>
-                            <span class="truncate max-w-[140px]">Quận Tân Bình, Thành ph...</span>
+                            <span class="truncate max-w-[130px]">Quận Tân Bình, Thành ph...</span>
                         </div>
                     </div>
 
                     <!-- Mock Card 5 -->
-                    <div class="w-72 h-44 bg-white rounded-3xl border border-slate-150 p-6 flex flex-col justify-between flex-shrink-0 shadow-xs hover:shadow-md transition">
+                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
-                            <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 font-bold text-xs flex items-center justify-center">NL</div>
-                            <span class="px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-wider">Cần thuê</span>
+                            <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">NL</div>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cần thuê</span>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-3">
+                        <h4 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug mt-2">
                             Tìm căn hộ dịch vụ 1 phòng ngủ đầy đủ tiện nghi tại Quận 3
                         </h4>
-                        <div class="border-t border-slate-50 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                        <div class="border-t border-slate-100 pt-2 flex items-center justify-between text-[10px] text-slate-400 font-semibold mt-auto">
                             <span>1 day ago</span>
-                            <span class="truncate max-w-[140px]">Quận 3, Thành phố Hồ C...</span>
+                            <span class="truncate max-w-[130px]">Quận 3, Thành phố Hồ C...</span>
                         </div>
                     </div>
                 </div>
