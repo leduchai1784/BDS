@@ -304,7 +304,7 @@
                     style="-ms-overflow-style: none; scrollbar-width: none;"
                 >
                     <!-- Card 1: Tạo nhu cầu -->
-                    <div class="w-72 h-48 rounded-[24px] border-2 border-dashed border-[#d2e4f9] hover:border-[#0068ff] bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
+                    <div class="w-64 h-48 rounded-[24px] border-2 border-dashed border-[#d2e4f9] hover:border-[#0068ff] bg-white flex flex-col items-center justify-center p-6 flex-shrink-0 cursor-pointer group transition duration-300">
                         <div class="w-10 h-10 rounded-full bg-[#0068ff] text-white flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-115 transition duration-300 mb-3">
                             <i class="fa-solid fa-plus text-base"></i>
                         </div>
@@ -313,7 +313,7 @@
                     </div>
 
                     <!-- Mock Card 2 -->
-                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
+                    <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
                             <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">HT</div>
                             <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
@@ -328,7 +328,7 @@
                     </div>
 
                     <!-- Mock Card 3 -->
-                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
+                    <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
                             <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">HT</div>
                             <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
@@ -343,7 +343,7 @@
                     </div>
 
                     <!-- Mock Card 4 -->
-                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
+                    <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
                             <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">KL</div>
                             <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
@@ -358,7 +358,7 @@
                     </div>
 
                     <!-- Mock Card 5 -->
-                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
+                    <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
                             <div class="w-8 h-8 rounded-full bg-[#e6f0fa] text-[#0068ff] font-bold text-xs flex items-center justify-center">LV</div>
                             <span class="px-2.5 py-0.5 rounded-lg bg-[#e8f2ff] text-[#0068ff] text-[10px] font-extrabold uppercase tracking-wider">Cho thuê</span>
@@ -373,7 +373,7 @@
                     </div>
 
                     <!-- Mock Card 6 -->
-                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
+                    <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
                             <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg" class="w-8 h-8 rounded-full object-cover">
                             <span class="px-2.5 py-0.5 rounded-lg bg-orange-50 text-orange-600 text-[10px] font-extrabold uppercase tracking-wider">Cần bán</span>
@@ -388,7 +388,7 @@
                     </div>
 
                     <!-- Mock Card 7 -->
-                    <div class="w-72 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
+                    <div class="w-64 h-48 bg-white rounded-[24px] border border-slate-200/60 p-6 flex flex-col justify-between flex-shrink-0 hover:shadow-md transition duration-300">
                         <div class="flex items-center justify-between">
                             <img src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg" class="w-8 h-8 rounded-full object-cover">
                             <span class="px-2.5 py-0.5 rounded-lg bg-orange-50 text-orange-600 text-[10px] font-extrabold uppercase tracking-wider">Cần bán</span>
