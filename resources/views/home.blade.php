@@ -493,13 +493,13 @@
                         </div>
 
                         <!-- Bottom Title and Location -->
-                        <div class="absolute bottom-5 left-5 right-5 text-left z-10">
-                            <h4 class="text-sm font-bold text-white leading-snug line-clamp-2 mb-1.5">
+                        <div class="absolute bottom-5 left-5 right-5 z-10" style="text-align: left !important;">
+                            <h4 class="text-sm font-bold text-white leading-snug line-clamp-2 mb-1.5" style="text-align: left !important; color: #ffffff !important;">
                                 {{ $video['title'] }}
                             </h4>
-                            <span class="text-[10px] text-slate-200/90 font-medium block">
+                            <p class="text-[10px] font-medium block" style="text-align: left !important; color: rgba(255, 255, 255, 0.85) !important;">
                                 {{ $video['location'] }}
-                            </span>
+                            </p>
                         </div>
                     </div>
                 @endforeach
