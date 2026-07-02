@@ -151,14 +151,14 @@
                                 </div>
 
                                 <!-- Bottom Info -->
-                                <div class="absolute bottom-5 left-5 right-5 text-left z-10">
-                                    <h3 class="text-lg font-bold text-white uppercase tracking-wide line-clamp-1 mb-1">
+                                <div class="absolute bottom-5 left-5 right-5 z-10" style="text-align: left !important;">
+                                    <h3 class="text-lg font-bold text-white uppercase tracking-wide line-clamp-1 mb-1" style="text-align: left !important;">
                                         <a href="{{ route('projects.show', $project->slug) }}" class="text-white hover:text-white hover:underline">{{ $project->title }}</a>
                                     </h3>
-                                    <p class="text-xs text-slate-100 font-medium line-clamp-1 mb-1.5">
+                                    <p class="text-xs text-white/90 font-medium line-clamp-1 mb-1.5" style="text-align: left !important;">
                                         {{ $project->location }}
                                     </p>
-                                    <span class="text-sm font-extrabold text-white">
+                                    <span class="text-sm font-extrabold text-white block" style="text-align: left !important;">
                                         {{ $project->price_range ?? 'Liên hệ' }}
                                     </span>
                                 </div>
@@ -215,14 +215,14 @@
                                 </div>
 
                                 <!-- Bottom Info -->
-                                <div class="absolute bottom-5 left-5 right-5 text-left z-10">
-                                    <h3 class="text-lg font-bold text-white uppercase tracking-wide line-clamp-1 mb-1">
+                                <div class="absolute bottom-5 left-5 right-5 z-10" style="text-align: left !important;">
+                                    <h3 class="text-lg font-bold text-white uppercase tracking-wide line-clamp-1 mb-1" style="text-align: left !important;">
                                         <a href="/projects" class="text-white hover:text-white hover:underline">{{ $mock['title'] }}</a>
                                     </h3>
-                                    <p class="text-xs text-slate-100 font-medium line-clamp-1 mb-1.5">
+                                    <p class="text-xs text-white/90 font-medium line-clamp-1 mb-1.5" style="text-align: left !important;">
                                         {{ $mock['location'] }}
                                     </p>
-                                    <span class="text-sm font-extrabold text-white">
+                                    <span class="text-sm font-extrabold text-white block" style="text-align: left !important;">
                                         {{ $mock['price'] }}
                                     </span>
                                 </div>
