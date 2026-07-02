@@ -248,48 +248,7 @@
                 </div>
             </div>
 
-            <!-- 4. Amenities list -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <i class="fa-solid fa-star text-primary"></i>
-                    <span>Tiện ích xung quanh</span>
-                </h3>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-shield text-green-500 text-base"></i>
-                        <span>Bảo vệ 24/7</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-square-p text-primary text-base"></i>
-                        <span>Bãi đỗ xe rộng</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-wifi text-cyan-500 text-base"></i>
-                        <span>Internet tốc độ cao</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-store text-orange-500 text-base"></i>
-                        <span>Cửa hàng tiện lợi</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-dumbbell text-purple-500 text-base"></i>
-                        <span>Phòng Gym hiện đại</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-swimming-pool text-blue-500 text-base"></i>
-                        <span>Hồ bơi nội khu</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-school text-emerald-500 text-base"></i>
-                        <span>Trường học gần kề</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-slate-700 font-bold text-xs bg-slate-50 p-3 rounded-2xl">
-                        <i class="fa-solid fa-tree text-green-600 text-base"></i>
-                        <span>Công viên cây xanh</span>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- 5. Real Interactive Map Section -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
