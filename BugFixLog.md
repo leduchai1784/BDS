@@ -55,3 +55,13 @@ Tài liệu này lưu trữ thông tin chi tiết về các lỗi đã được 
   * Thay đổi toàn bộ nút thành "Đăng tin" ở tất cả các khu vực navbar (máy tính, mobile, guest).
   * Thu nhỏ khoảng đệm và cỡ chữ của nút: padding ngang chuyển thành `px-2.5 lg:px-3.5`, dọc thành `py-1.5 lg:py-2`, cỡ chữ thành `text-xs lg:text-sm` để nút gọn gàng và tinh tế hơn.
   * Tích hợp thêm nút gạt **"Địa chỉ mới"** thiết kế dạng chuyển mạch iOS, sử dụng Alpine.js quản lý trạng thái, tự động lưu lựa chọn vào `localStorage` (`diaChiMoi`) và kích hoạt sự kiện window `dia-chi-moi-toggled`. Nút gạt tự động đồng bộ màu nền xanh dương (`bg-primary`) khi bật và đổi màu chữ linh hoạt theo trạng thái cuộn trang của thanh điều hướng.
+
+### 7. Lỗi giới hạn độ dài Quận/Huyện khi đăng tin mới & Tích hợp Log Debug
+* **Vấn đề**: Người dùng điền đầy đủ thông tin đăng tin mới nhưng nhấn gửi tin thì không có phản hồi/thất bại mà không biết lý do.
+* **Nguyên nhân**:
+  * Trường `district` trong [StorePropertyRequest.php](file:///c:/ThucTap/BDS/app/Http/Requests/Owner/StorePropertyRequest.php#L23) thiết lập quy tắc xác thực độ dài tối đa quá ngắn: `max:10`. Khi người dùng chọn những quận có tên dài hơn 10 ký tự như "Quận Gò Vấp" (11 ký tự), "Quận Bình Thạnh" (15 ký tự), hay "Quận Tân Bình" (13 ký tự), Validator của Laravel sẽ chặn lại và trả về lỗi khiến người dùng không đăng được tin.
+* **Cách khắc phục**:
+  * Tăng độ dài tối đa của trường `district` từ `10` lên `255` trong [StorePropertyRequest.php](file:///c:/ThucTap/BDS/app/Http/Requests/Owner/StorePropertyRequest.php#L23) để hỗ trợ đầy đủ các quận/huyện trên toàn quốc.
+  * Tích hợp ghi đè phương thức `failedValidation` trong [StorePropertyRequest.php](file:///c:/ThucTap/BDS/app/Http/Requests/Owner/StorePropertyRequest.php#L47) để ghi nhận chi tiết danh sách lỗi validator và dữ liệu đầu vào (loại trừ tệp tin ảnh) vào hệ thống Log của Laravel (`Log::warning`).
+  * Bao bọc toàn bộ logic lưu tin đăng `store()` trong [PropertyController.php](file:///c:/ThucTap/BDS/app/Http/Controllers/Owner/PropertyController.php#L27) bằng khối lệnh `try-catch`. Khi xảy ra lỗi ngoại lệ (DB, Cloudinary, ...), hệ thống sẽ tự động bắt lỗi, ghi lại đầy đủ vết lỗi (stack trace) vào file Log (`Log::error`) và quay về trang form hiển thị thông báo lỗi chi tiết thay vì bị màn hình trắng (White Screen of Death).
+

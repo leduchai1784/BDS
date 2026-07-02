@@ -20,7 +20,7 @@ class StorePropertyRequest extends FormRequest
             'area' => 'required|numeric|gt:0',
             'address' => 'required|string|max:255',
             'ward' => 'required|string|max:255',
-            'district' => 'required|string|max:10',
+            'district' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
@@ -43,6 +43,15 @@ class StorePropertyRequest extends FormRequest
             'road_width' => 'nullable|numeric|min:0',
             'floors' => 'nullable|integer|min:0',
         ];
+    }
+
+    /**
+     * Log validation errors for easier debugging.
+     */
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        \Illuminate\Support\Facades\Log::warning('Create Property Validation Failed: ' . json_encode($validator->errors()->toArray()) . ' | Input: ' . json_encode($this->except(['image', 'images'])));
+        parent::failedValidation($validator);
     }
 
     public function messages(): array

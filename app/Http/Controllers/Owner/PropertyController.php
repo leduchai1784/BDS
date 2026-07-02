@@ -26,119 +26,131 @@ class PropertyController extends Controller
      */
     public function store(StorePropertyRequest $request)
     {
-        // Format price label
-        $priceLabel = $this->formatPriceLabel($request->price);
+        \Illuminate\Support\Facades\Log::info('Store property request started. Title: ' . $request->title . ' | Owner: ' . Auth::id());
 
-        // Resolve category_id based on type
-        $categoryId = $request->category_id;
-        if (empty($categoryId) && !empty($request->type)) {
-            $categorySlug = match($request->type) {
-                'Căn hộ chung cư' => 'chung-cu',
-                'Nhà nguyên căn' => 'nha-nguyen-can',
-                'Phòng trọ' => 'phong-tro',
-                'Đất' => 'dat',
-                'Mặt bằng' => 'mat-bang',
-                'Văn phòng' => 'van-phong',
-                'Kho, nhà xưởng' => 'kho-nha-xuong',
-                default => 'chung-cu',
-            };
-            $category = Category::where('slug', $categorySlug)->first();
-            if ($category) {
-                $categoryId = $category->id;
-            }
-        }
+        try {
+            // Format price label
+            $priceLabel = $this->formatPriceLabel($request->price);
 
-        // Create Property
-        $property = Property::create([
-            'owner_id' => Auth::id(),
-            'category_id' => $categoryId,
-            'title' => $request->title,
-            'description' => $request->description,
-            'price' => $request->price,
-            'price_label' => $priceLabel,
-            'deposit' => $request->deposit,
-            'lease_term' => $request->lease_term,
-            'frontage' => $request->frontage,
-            'road_width' => $request->road_width,
-            'floors' => $request->floors,
-            'area' => $request->area,
-            'bedroom' => $request->bedroom ?? 0,
-            'bathroom' => $request->bathroom ?? 0,
-            'direction' => $request->direction,
-            'furniture' => $request->furniture,
-            'legal' => $request->legal,
-            'address' => $request->address,
-            'ward' => $request->ward,
-            'district' => $request->district,
-            'city' => $request->city,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'phone' => $request->phone,
-            'zalo' => $request->zalo,
-            'status' => 'approved', // Auto-approved by default
-            'is_vip' => false,
-            'is_new' => true,
-            'views_count' => 0,
-        ]);
-
-        // Upload main image
-        if ($request->filled('image_url')) {
-            $property->propertyImages()->create([
-                'image_path' => $request->image_url,
-                'is_primary' => true,
-            ]);
-        } elseif ($request->hasFile('image')) {
-            $uploadedUrl = app(\App\Services\CloudinaryService::class)->upload($request->file('image'));
-            if ($uploadedUrl) {
-                $property->propertyImages()->create([
-                    'image_path' => $uploadedUrl,
-                    'is_primary' => true,
-                ]);
-            } else {
-                $path = $request->file('image')->store('properties', 'public');
-                $property->propertyImages()->create([
-                    'image_path' => $path,
-                    'is_primary' => true,
-                ]);
-            }
-        }
-
-        // Upload gallery images from URLs
-        if ($request->filled('gallery_urls')) {
-            $urls = preg_split('/[\n,\r]+/', $request->gallery_urls);
-            foreach ($urls as $url) {
-                $url = trim($url);
-                if (!empty($url)) {
-                    $property->propertyImages()->create([
-                        'image_path' => $url,
-                        'is_primary' => false,
-                    ]);
+            // Resolve category_id based on type
+            $categoryId = $request->category_id;
+            if (empty($categoryId) && !empty($request->type)) {
+                $categorySlug = match($request->type) {
+                    'Căn hộ chung cư' => 'chung-cu',
+                    'Nhà nguyên căn' => 'nha-nguyen-can',
+                    'Phòng trọ' => 'phong-tro',
+                    'Đất' => 'dat',
+                    'Mặt bằng' => 'mat-bang',
+                    'Văn phòng' => 'van-phong',
+                    'Kho, nhà xưởng' => 'kho-nha-xuong',
+                    default => 'chung-cu',
+                };
+                $category = Category::where('slug', $categorySlug)->first();
+                if ($category) {
+                    $categoryId = $category->id;
                 }
             }
-        }
 
-        // Upload gallery images from files
-        if ($request->hasFile('images')) {
-            $cloudinary = app(\App\Services\CloudinaryService::class);
-            foreach ($request->file('images') as $img) {
-                $uploadedUrl = $cloudinary->upload($img);
+            // Create Property
+            $property = Property::create([
+                'owner_id' => Auth::id(),
+                'category_id' => $categoryId,
+                'title' => $request->title,
+                'description' => $request->description,
+                'price' => $request->price,
+                'price_label' => $priceLabel,
+                'deposit' => $request->deposit,
+                'lease_term' => $request->lease_term,
+                'frontage' => $request->frontage,
+                'road_width' => $request->road_width,
+                'floors' => $request->floors,
+                'area' => $request->area,
+                'bedroom' => $request->bedroom ?? 0,
+                'bathroom' => $request->bathroom ?? 0,
+                'direction' => $request->direction,
+                'furniture' => $request->furniture,
+                'legal' => $request->legal,
+                'address' => $request->address,
+                'ward' => $request->ward,
+                'district' => $request->district,
+                'city' => $request->city,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'phone' => $request->phone,
+                'zalo' => $request->zalo,
+                'status' => 'approved', // Auto-approved by default
+                'is_vip' => false,
+                'is_new' => true,
+                'views_count' => 0,
+            ]);
+
+            // Upload main image
+            if ($request->filled('image_url')) {
+                $property->propertyImages()->create([
+                    'image_path' => $request->image_url,
+                    'is_primary' => true,
+                ]);
+            } elseif ($request->hasFile('image')) {
+                $uploadedUrl = app(\App\Services\CloudinaryService::class)->upload($request->file('image'));
                 if ($uploadedUrl) {
                     $property->propertyImages()->create([
                         'image_path' => $uploadedUrl,
-                        'is_primary' => false,
+                        'is_primary' => true,
                     ]);
                 } else {
-                    $path = $img->store('properties', 'public');
+                    $path = $request->file('image')->store('properties', 'public');
                     $property->propertyImages()->create([
                         'image_path' => $path,
-                        'is_primary' => false,
+                        'is_primary' => true,
                     ]);
                 }
             }
-        }
 
-        return redirect()->route('profile.index', ['tab' => 'properties'])
-            ->with('success', 'Đăng tin mới thành công! Tin của bạn đã được tự động duyệt và hiển thị.');
+            // Upload gallery images from URLs
+            if ($request->filled('gallery_urls')) {
+                $urls = preg_split('/[\n,\r]+/', $request->gallery_urls);
+                foreach ($urls as $url) {
+                    $url = trim($url);
+                    if (!empty($url)) {
+                        $property->propertyImages()->create([
+                            'image_path' => $url,
+                            'is_primary' => false,
+                        ]);
+                    }
+                }
+            }
+
+            // Upload gallery images from files
+            if ($request->hasFile('images')) {
+                $cloudinary = app(\App\Services\CloudinaryService::class);
+                foreach ($request->file('images') as $img) {
+                    $uploadedUrl = $cloudinary->upload($img);
+                    if ($uploadedUrl) {
+                        $property->propertyImages()->create([
+                            'image_path' => $uploadedUrl,
+                            'is_primary' => false,
+                        ]);
+                    } else {
+                        $path = $img->store('properties', 'public');
+                        $property->propertyImages()->create([
+                            'image_path' => $path,
+                            'is_primary' => false,
+                        ]);
+                    }
+                }
+            }
+
+            \Illuminate\Support\Facades\Log::info('Store property request completed successfully. Property ID: ' . $property->id);
+
+            return redirect()->route('profile.index', ['tab' => 'properties'])
+                ->with('success', 'Đăng tin mới thành công! Tin của bạn đã được tự động duyệt và hiển thị.');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Store property request failed: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['title' => 'Đã xảy ra lỗi hệ thống khi đăng tin: ' . $e->getMessage()]);
+        }
     }
 
     /**
