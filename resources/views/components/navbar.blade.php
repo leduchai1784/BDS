@@ -72,13 +72,40 @@
             <!-- Actions (Profile & CTA) -->
             @auth
             <div class="hidden md:flex items-center space-x-2.5 lg:space-x-4" x-data="{ userDropdownOpen: false }">
-                <!-- Đăng tin miễn phí Button -->
+                <!-- Địa chỉ mới Toggle -->
+                <div 
+                    x-data="{ 
+                        diaChiMoi: localStorage.getItem('diaChiMoi') === 'true' 
+                    }" 
+                    x-init="$watch('diaChiMoi', val => {
+                        localStorage.setItem('diaChiMoi', val);
+                        window.dispatchEvent(new CustomEvent('dia-chi-moi-toggled', { detail: { active: val } }));
+                    })"
+                    class="flex items-center space-x-2 mr-1"
+                >
+                    <span :class="isScrolled ? 'text-slate-700' : 'text-slate-100'" class="text-xs font-extrabold transition-colors duration-300 select-none">
+                        Địa chỉ mới
+                    </span>
+                    <button 
+                        type="button" 
+                        @click="diaChiMoi = !diaChiMoi" 
+                        :class="diaChiMoi ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-750'" 
+                        class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                    >
+                        <span 
+                            :class="diaChiMoi ? 'translate-x-5' : 'translate-x-0'" 
+                            class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                        ></span>
+                    </button>
+                </div>
+
+                <!-- Đăng tin Button -->
                 <div class="relative flex-shrink-0">
                     <a 
                         href="{{ route('properties.choose-type') }}"
                         class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0 cursor-pointer"
                     >
-                        <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
+                        <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin
                     </a>
                 </div>
 
@@ -161,13 +188,40 @@
 
             @guest
             <div class="hidden md:flex items-center space-x-3.5 lg:space-x-5" x-data="{ guestDropdownOpen: false }">
-                <!-- Đăng tin miễn phí Button -->
+                <!-- Địa chỉ mới Toggle -->
+                <div 
+                    x-data="{ 
+                        diaChiMoi: localStorage.getItem('diaChiMoi') === 'true' 
+                    }" 
+                    x-init="$watch('diaChiMoi', val => {
+                        localStorage.setItem('diaChiMoi', val);
+                        window.dispatchEvent(new CustomEvent('dia-chi-moi-toggled', { detail: { active: val } }));
+                    })"
+                    class="flex items-center space-x-2 mr-1"
+                >
+                    <span :class="isScrolled ? 'text-slate-700' : 'text-slate-100'" class="text-xs font-extrabold transition-colors duration-300 select-none">
+                        Địa chỉ mới
+                    </span>
+                    <button 
+                        type="button" 
+                        @click="diaChiMoi = !diaChiMoi" 
+                        :class="diaChiMoi ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-750'" 
+                        class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                    >
+                        <span 
+                            :class="diaChiMoi ? 'translate-x-5' : 'translate-x-0'" 
+                            class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                        ></span>
+                    </button>
+                </div>
+
+                <!-- Đăng tin Button -->
                 <div class="relative flex-shrink-0">
                     <a 
                         href="{{ route('properties.choose-type') }}"
                         class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap cursor-pointer"
                     >
-                        <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin miễn phí
+                        <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin
                     </a>
                 </div>
 
@@ -323,15 +377,45 @@
                 <a href="{{ route('register') }}" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Đăng ký</a>
                 @endguest
 
-                <!-- Đăng tin miễn phí Button (Mobile) -->
-                <div class="w-full">
-                    <a 
-                        href="{{ route('properties.choose-type') }}"
-                        @click="mobileMenuOpen = false"
-                        class="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
+                <!-- Mobile Toggle & Button -->
+                <div class="flex flex-col items-center justify-between gap-3 pt-2 w-full">
+                    <!-- Địa chỉ mới Toggle (Mobile) -->
+                    <div 
+                        x-data="{ 
+                            diaChiMoi: localStorage.getItem('diaChiMoi') === 'true' 
+                        }" 
+                        x-init="$watch('diaChiMoi', val => {
+                            localStorage.setItem('diaChiMoi', val);
+                            window.dispatchEvent(new CustomEvent('dia-chi-moi-toggled', { detail: { active: val } }));
+                        })"
+                        class="flex items-center justify-between w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700"
                     >
-                        <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin miễn phí
-                    </a>
+                        <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200 select-none">
+                            Địa chỉ mới
+                        </span>
+                        <button 
+                            type="button" 
+                            @click="diaChiMoi = !diaChiMoi" 
+                            :class="diaChiMoi ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-750'" 
+                            class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                        >
+                            <span 
+                                :class="diaChiMoi ? 'translate-x-5' : 'translate-x-0'" 
+                                class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                            ></span>
+                        </button>
+                    </div>
+
+                    <!-- Đăng tin Button (Mobile) -->
+                    <div class="w-full">
+                        <a 
+                            href="{{ route('properties.choose-type') }}"
+                            @click="mobileMenuOpen = false"
+                            class="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
+                        >
+                            <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
