@@ -739,7 +739,8 @@
 
         const popup = new maplibregl.Popup({ 
             offset: 15,
-            closeOnClick: false
+            closeOnClick: false,
+            focusAfterOpen: false
         }).setHTML('<a href="/map?lat={{ $property['lat'] }}&lng={{ $property['lng'] }}&id={{ $property['id'] }}" class="text-[11px] font-extrabold text-slate-800 p-1 leading-snug hover:text-primary transition block text-left">{{ $property['title'] }}</a>');
 
         // Add Marker
