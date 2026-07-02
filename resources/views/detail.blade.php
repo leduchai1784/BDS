@@ -616,6 +616,7 @@
                                 x-model="message"
                                 placeholder="Ghi chú thêm cho chủ nhà (nếu có)..." 
                                 rows="2"
+                                maxlength="1000"
                                 class="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl px-4 py-2 text-xs font-medium outline-none transition resize-none"
                             ></textarea>
                         </div>
