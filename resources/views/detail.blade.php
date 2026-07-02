@@ -509,7 +509,29 @@
                         <i class="fa-solid fa-circle-check text-green-500 text-2xl mb-2"></i>
                         <h6 class="text-xs font-bold text-green-800 mb-1">Gửi lịch hẹn thành công!</h6>
                         <p class="text-[10px] text-green-600 leading-normal font-medium">Môi giới <span class="font-bold">{{ $property['agent']['name'] }}</span> sẽ liên hệ lại qua SĐT của bạn trong ít phút để xác nhận.</p>
-                        <button @click="submitted = false" class="text-[10px] font-bold text-primary hover:underline mt-3">Đặt lịch hẹn khác</button>
+                        <div class="flex items-center justify-center gap-2 mt-4">
+                            @auth
+                                <a 
+                                    href="{{ route('profile.index', ['tab' => 'appointments']) }}" 
+                                    class="inline-flex items-center justify-center px-3 py-1.5 bg-primary text-white text-[10px] font-bold rounded-lg shadow-sm hover:bg-primary-hover transition cursor-pointer"
+                                >
+                                    <i class="fa-regular fa-calendar-check mr-1"></i> Xem lịch hẹn
+                                </a>
+                            @else
+                                <a 
+                                    href="{{ route('login') }}" 
+                                    class="inline-flex items-center justify-center px-3 py-1.5 bg-primary text-white text-[10px] font-bold rounded-lg shadow-sm hover:bg-primary-hover transition cursor-pointer"
+                                >
+                                    Đăng nhập xem lịch hẹn
+                                </a>
+                            @endauth
+                            <button 
+                                @click="submitted = false" 
+                                class="inline-flex items-center justify-center px-3 py-1.5 border border-slate-200 text-[10px] font-bold rounded-lg text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+                            >
+                                Đặt lịch hẹn khác
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Form State -->
