@@ -396,11 +396,11 @@
             },
             slideNext() {
                 const container = $refs.videoContainer;
-                container.scrollBy({ left: 280, behavior: 'smooth' });
+                container.scrollBy({ left: 384, behavior: 'smooth' });
             },
             slidePrev() {
                 const container = $refs.videoContainer;
-                container.scrollBy({ left: -280, behavior: 'smooth' });
+                container.scrollBy({ left: -384, behavior: 'smooth' });
             }
         }"
         class="py-16 bg-white text-left"
@@ -467,7 +467,7 @@
                 @foreach($videos as $video)
                     <div 
                         @click="openVideo('{{ $video['youtube_id'] }}')" 
-                        class="w-64 h-80 rounded-[24px] overflow-hidden relative flex-shrink-0 group shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
+                        class="w-96 h-64 rounded-[24px] overflow-hidden relative flex-shrink-0 group shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
                     >
                         <!-- Background Image -->
                         <img 
@@ -493,7 +493,7 @@
                         </div>
 
                         <!-- Bottom Title and Location -->
-                        <div class="absolute bottom-5 left-5 right-5 z-10" style="text-align: left !important;">
+                        <div class="absolute bottom-5 left-6 right-6 z-10" style="text-align: left !important; left: 24px !important; right: 24px !important;">
                             <h4 class="text-sm font-bold text-white leading-snug line-clamp-2 mb-1.5" style="text-align: left !important; color: #ffffff !important;">
                                 {{ $video['title'] }}
                             </h4>
