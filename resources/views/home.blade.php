@@ -13,7 +13,7 @@
         <!-- Section Header -->
         <div class="mb-10 text-left">
             <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Dành riêng cho bạn</span>
-            <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tin Đăng Cho Thuê Nổi Bật</h2>
+            <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tin đăng nổi bật</h2>
         </div>
 
         @php
@@ -52,7 +52,7 @@
             <div class="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
                 <div class="text-left">
                     <span class="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">Cập nhật liên tục</span>
-                    <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tin Đăng Cho Thuê Mới Nhất</h2>
+                    <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Tin đăng mới nhất</h2>
                 </div>
                 <a href="/listings" class="inline-flex items-center text-sm font-bold text-primary hover:text-primary-hover hover:underline transition">
                     Xem tất cả tin mới <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
