@@ -79,7 +79,7 @@
                         localStorage.setItem('diaChiMoi', val);
                         window.dispatchEvent(new CustomEvent('dia-chi-moi-toggled', { detail: { active: val } }));
                     })"
-                    class="flex items-center space-x-2 mr-1"
+                    class="flex items-center space-x-2 mr-3.5"
                 >
                     <span :class="isScrolled ? 'text-slate-700' : 'text-slate-100'" class="text-xs font-extrabold transition-colors duration-300 select-none">
                         Địa chỉ mới
@@ -195,7 +195,7 @@
                         localStorage.setItem('diaChiMoi', val);
                         window.dispatchEvent(new CustomEvent('dia-chi-moi-toggled', { detail: { active: val } }));
                     })"
-                    class="flex items-center space-x-2 mr-1"
+                    class="flex items-center space-x-2 mr-3.5"
                 >
                     <span :class="isScrolled ? 'text-slate-700' : 'text-slate-100'" class="text-xs font-extrabold transition-colors duration-300 select-none">
                         Địa chỉ mới
