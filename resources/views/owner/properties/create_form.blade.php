@@ -16,7 +16,7 @@
     method="POST" 
     enctype="multipart/form-data"
     x-data="propertyCreateForm('{{ $purpose }}', {{ isset($isModal) && $isModal ? 'true' : 'false' }})"
-    @submit="isSubmitting = true"
+    @submit.prevent="submitForm($event)"
     class="space-y-6 text-left"
 >
     @csrf
@@ -1015,6 +1015,39 @@
                     }
                     this.galleryPreviews.push(URL.createObjectURL(file));
                 }
+            },
+
+            submitForm(event) {
+                this.mainImageError = '';
+                this.galleryImagesError = '';
+
+                // Calculate total file size
+                let totalSize = 0;
+
+                // Main image file size check
+                const mainFileInput = document.querySelector('input[name="image"]');
+                if (mainFileInput && mainFileInput.files.length > 0) {
+                    totalSize += mainFileInput.files[0].size;
+                }
+
+                // Gallery files size check
+                const galleryFileInput = document.querySelector('input[name="images[]"]');
+                if (galleryFileInput && galleryFileInput.files.length > 0) {
+                    for (let i = 0; i < galleryFileInput.files.length; i++) {
+                        totalSize += galleryFileInput.files[i].size;
+                    }
+                }
+
+                // Limit is 4.0 MB (4 * 1024 * 1024 bytes) to leave buffer for other request params
+                const limitBytes = 4 * 1024 * 1024;
+                if (totalSize > limitBytes) {
+                    const mbSize = (totalSize / (1024 * 1024)).toFixed(2);
+                    this.galleryImagesError = `Tổng dung lượng tất cả ảnh chọn là ${mbSize}MB, vượt quá giới hạn hệ thống (tối đa 4MB). Vui lòng giảm bớt số ảnh hoặc nén ảnh lại trước khi đăng tin.`;
+                    return;
+                }
+
+                this.isSubmitting = true;
+                event.target.submit();
             }
         }
     }
