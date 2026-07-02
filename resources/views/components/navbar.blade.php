@@ -23,7 +23,6 @@
 
             <!-- Desktop Navigation Menu -->
             <nav class="hidden md:flex space-x-3 lg:space-x-5 items-center">
-                <a href="/" :class="isScrolled ? '{{ request()->is('/') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->is('/') ? 'text-white' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base transition duration-150 whitespace-nowrap">Trang chủ</a>
                 <div 
                     class="relative" 
                     x-data="{ rentDropdownOpen: false }"
@@ -308,7 +307,6 @@
         x-cloak
     >
         <div class="px-4 pt-2 pb-6 space-y-2">
-            <a href="/" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('/') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Trang chủ</a>
             <div x-data="{ mobileRentOpen: {{ request()->is('listings*') ? 'true' : 'false' }} }" class="space-y-1">
                 <div class="flex items-center justify-between w-full rounded-xl {{ request()->is('listings*') ? 'bg-primary-light' : 'hover:bg-slate-50' }} transition group">
                     <a 

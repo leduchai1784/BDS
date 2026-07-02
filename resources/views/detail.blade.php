@@ -96,7 +96,7 @@
                                 @endif
                                 {{ $property['title'] }}
                             </h1>
-                            <div class="flex items-center text-slate-500 text-xs font-semibold">
+                            <div class="flex items-center text-slate-400 text-xs font-medium">
                                 <i class="fa-solid fa-location-dot text-slate-400 mr-2 text-sm flex-shrink-0"></i>
                                 <span>{{ $property['location'] }}</span>
                             </div>
