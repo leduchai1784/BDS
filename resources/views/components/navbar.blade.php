@@ -103,9 +103,9 @@
                 <div class="relative flex-shrink-0">
                     <a 
                         href="{{ route('properties.choose-type') }}"
-                        class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0 cursor-pointer"
+                        class="inline-flex items-center justify-center px-2.5 lg:px-3.5 py-1.5 lg:py-2 border border-transparent text-xs lg:text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-primary/30 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0 cursor-pointer"
                     >
-                        <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin
+                        <i class="fa-solid fa-circle-plus mr-1 lg:mr-1.5"></i> Đăng tin
                     </a>
                 </div>
 
@@ -219,9 +219,9 @@
                 <div class="relative flex-shrink-0">
                     <a 
                         href="{{ route('properties.choose-type') }}"
-                        class="inline-flex items-center justify-center px-3 lg:px-5 py-2 lg:py-2.5 border border-transparent text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/35 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap cursor-pointer"
+                        class="inline-flex items-center justify-center px-2.5 lg:px-3.5 py-1.5 lg:py-2 border border-transparent text-xs lg:text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-primary/30 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap cursor-pointer"
                     >
-                        <i class="fa-solid fa-circle-plus mr-1.5 lg:mr-2"></i> Đăng tin
+                        <i class="fa-solid fa-circle-plus mr-1 lg:mr-1.5"></i> Đăng tin
                     </a>
                 </div>
 
@@ -411,9 +411,9 @@
                         <a 
                             href="{{ route('properties.choose-type') }}"
                             @click="mobileMenuOpen = false"
-                            class="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
+                            class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
                         >
-                            <i class="fa-solid fa-circle-plus mr-2"></i> Đăng tin
+                            <i class="fa-solid fa-circle-plus mr-1.5"></i> Đăng tin
                         </a>
                     </div>
                 </div>
