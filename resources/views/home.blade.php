@@ -151,7 +151,7 @@
                                 </div>
 
                                 <!-- Bottom Info -->
-                                <div class="absolute bottom-5 left-5 right-5 z-10" style="text-align: left !important;">
+                                <div class="absolute bottom-5 left-6 right-6 z-10" style="text-align: left !important; left: 24px !important; right: 24px !important;">
                                     <h3 class="text-lg font-bold text-white uppercase tracking-wide line-clamp-1 mb-1" style="text-align: left !important;">
                                         <a href="{{ route('projects.show', $project->slug) }}" class="text-white hover:text-white hover:underline">{{ $project->title }}</a>
                                     </h3>
@@ -215,7 +215,7 @@
                                 </div>
 
                                 <!-- Bottom Info -->
-                                <div class="absolute bottom-5 left-5 right-5 z-10" style="text-align: left !important;">
+                                <div class="absolute bottom-5 left-6 right-6 z-10" style="text-align: left !important; left: 24px !important; right: 24px !important;">
                                     <h3 class="text-lg font-bold text-white uppercase tracking-wide line-clamp-1 mb-1" style="text-align: left !important;">
                                         <a href="/projects" class="text-white hover:text-white hover:underline">{{ $mock['title'] }}</a>
                                     </h3>
