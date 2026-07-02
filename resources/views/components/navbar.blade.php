@@ -53,10 +53,10 @@
                         class="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left"
                         x-cloak
                     >
-                        <a href="/listings?purpose=rent" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap {{ request('purpose') === 'rent' ? 'bg-slate-100 text-orange-500' : 'text-slate-800 hover:bg-slate-100 hover:text-orange-500' }}">
+                        <a href="/listings?purpose=rent" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap {{ request('purpose') === 'rent' ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary' }}">
                             Cho thuê
                         </a>
-                        <a href="/listings?purpose=sale" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap {{ request('purpose') === 'sale' ? 'bg-slate-100 text-orange-500' : 'text-slate-800 hover:bg-slate-100 hover:text-orange-500' }}">
+                        <a href="/listings?purpose=sale" class="block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap {{ request('purpose') === 'sale' ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary' }}">
                             Mua bán
                         </a>
                     </div>
@@ -332,8 +332,8 @@
                     class="pl-4 space-y-1" 
                     x-cloak
                 >
-                    <a href="/listings?purpose=rent" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'rent' ? 'text-orange-500 font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-orange-500' }} transition">Cho thuê</a>
-                    <a href="/listings?purpose=sale" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'sale' ? 'text-orange-500 font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-orange-500' }} transition">Mua bán</a>
+                    <a href="/listings?purpose=rent" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'rent' ? 'text-primary font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-primary' }} transition">Cho thuê</a>
+                    <a href="/listings?purpose=sale" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'sale' ? 'text-primary font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-primary' }} transition">Mua bán</a>
                 </div>
             </div>
             <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('projects*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Dự án</a>
