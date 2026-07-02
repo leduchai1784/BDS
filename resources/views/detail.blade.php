@@ -295,99 +295,94 @@
         <div id="booking-section" class="lg:col-span-4 lg:sticky lg:top-24 space-y-6 z-20">
             
             <!-- Agent Profile Card -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-md text-left">
-                <!-- Profile Header -->
-                <div class="flex items-center space-x-4 pb-4 border-b border-slate-100 mb-5">
-                    <img 
-                        src="{{ $property['agent']['avatar'] }}" 
-                        alt="{{ $property['agent']['name'] }}" 
-                        class="w-14 h-14 rounded-full object-cover border border-slate-150 shadow-sm"
-                    >
-                    <div>
-                        <h4 class="text-base font-bold text-slate-800 leading-none mb-1.5">{{ $property['agent']['name'] }}</h4>
-                        <span class="text-xs font-semibold text-slate-400 block mb-1">Môi giới chuyên nghiệp</span>
-                        <div class="flex items-center text-amber-500 text-xs">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <span class="text-slate-500 font-bold ml-1.5">5.0</span>
-                        </div>
-                    </div>
-                </div>
+            <div 
+                x-data="{ 
+                    liked: {{ app(App\Services\WishlistService::class)->isFavorite(Auth::id(), $property['id']) ? 'true' : 'false' }},
+                    isProcessing: false,
+                    toggleLike() {
+                        if (this.isProcessing) return;
+                        this.isProcessing = true;
 
-                <!-- Action Buttons: Phone & Zalo & Save -->
-                <div 
-                    x-data="{ 
-                        liked: {{ app(App\Services\WishlistService::class)->isFavorite(Auth::id(), $property['id']) ? 'true' : 'false' }},
-                        isProcessing: false,
-                        toggleLike() {
-                            if (this.isProcessing) return;
-                            this.isProcessing = true;
-
-                            fetch('{{ route('wishlist.toggle') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({
-                                    property_id: '{{ $property['id'] }}'
-                                })
+                        fetch('{{ route('wishlist.toggle') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                property_id: '{{ $property['id'] }}'
                             })
-                            .then(response => response.json())
-                            .then(data => {
-                                this.isProcessing = false;
-                                if (data.success) {
-                                    this.liked = data.is_favorite;
-                                }
-                            })
-                            .catch(error => {
-                                this.isProcessing = false;
-                                console.error('Error:', error);
-                            });
-                        }
-                    }"
-                    class="grid grid-cols-12 gap-3 mb-6"
-                >
-                    <!-- Call Button -->
-                    <a 
-                        href="tel:{{ $property['agent']['phone'] }}" 
-                        class="col-span-4 inline-flex items-center justify-center px-2 py-3 rounded-2xl text-white bg-green-500 hover:bg-green-600 shadow-md shadow-green-500/25 hover:shadow-green-600/35 transition font-bold text-xs cursor-pointer truncate"
-                    >
-                        <i class="fa-solid fa-phone mr-1"></i> Gọi ngay
-                    </a>
-                    
-                    <!-- Zalo Button -->
-                    <a 
-                        href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', !empty($property['agent']['zalo']) ? $property['agent']['zalo'] : $property['agent']['phone']) }}" 
-                        target="_blank"
-                        class="col-span-4 inline-flex items-center justify-center px-2 py-3 rounded-2xl text-white bg-[#0068ff] hover:bg-[#0055d0] shadow-md shadow-[#0068ff]/25 hover:shadow-[#0055d0]/35 transition font-bold text-xs cursor-pointer truncate"
-                    >
-                        Chat Zalo
-                    </a>
-
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.isProcessing = false;
+                            if (data.success) {
+                                this.liked = data.is_favorite;
+                            }
+                        })
+                        .catch(error => {
+                            this.isProcessing = false;
+                            console.error('Error:', error);
+                        });
+                    }
+                }"
+                class="bg-white rounded-3xl p-6 border border-slate-100 shadow-md text-left relative"
+            >
+                <!-- Absolute top-right action buttons (Heart & Share) -->
+                <div class="absolute top-4 right-4 flex items-center space-x-1.5 z-10">
                     <!-- Wishlist Save Button -->
                     <button 
                         @click="toggleLike()"
                         type="button"
-                        :class="liked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-slate-50 hover:bg-slate-100 text-slate-500 border-slate-200'"
-                        class="col-span-2 rounded-2xl flex items-center justify-center border transition cursor-pointer active:scale-95 h-[48px]"
+                        :class="liked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-slate-50 hover:bg-slate-100 text-slate-400 border-slate-200'"
+                        class="w-8 h-8 rounded-full flex items-center justify-center border transition cursor-pointer active:scale-95"
                         title="Lưu yêu thích"
                     >
-                        <i class="fa-solid fa-heart text-base transition" :class="liked ? 'text-red-500' : 'text-slate-400'"></i>
+                        <i class="fa-solid fa-heart text-xs transition" :class="liked ? 'text-red-500' : 'text-slate-400'"></i>
                     </button>
 
                     <!-- Share Button -->
                     <button 
                         @click="$dispatch('open-share-modal', { url: '{{ request()->fullUrl() }}', title: '{{ addslashes($property['title']) }}' })"
                         type="button"
-                        class="col-span-2 rounded-2xl flex items-center justify-center border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-500 transition cursor-pointer active:scale-95 h-[48px]"
+                        class="w-8 h-8 rounded-full flex items-center justify-center border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-400 transition cursor-pointer active:scale-95"
                         title="Chia sẻ tin đăng"
                     >
-                        <i class="fa-solid fa-share-nodes text-base text-slate-400"></i>
+                        <i class="fa-solid fa-share-nodes text-xs text-slate-400"></i>
                     </button>
+                </div>
+
+                <!-- Profile Header -->
+                <div class="flex items-center space-x-4 pb-4 border-b border-slate-100 mb-5 pr-20">
+                    <img 
+                        src="{{ $property['agent']['avatar'] }}" 
+                        alt="{{ $property['agent']['name'] }}" 
+                        class="w-14 h-14 rounded-full object-cover border border-slate-150 shadow-sm"
+                    >
+                    <div>
+                        <h4 class="text-base font-bold text-slate-800 leading-tight mb-0.5">{{ $property['agent']['name'] }}</h4>
+                        <span class="text-xs font-semibold text-slate-400 block">Chủ nhà chính chủ</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons: Phone & Zalo -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <!-- Call Button -->
+                    <a 
+                        href="tel:{{ $property['agent']['phone'] }}" 
+                        class="inline-flex items-center justify-center px-2 py-3 rounded-2xl text-white bg-green-500 hover:bg-green-600 shadow-md shadow-green-500/25 hover:shadow-green-600/35 transition font-bold text-xs cursor-pointer truncate"
+                    >
+                        <i class="fa-solid fa-phone mr-1.5"></i> Gọi ngay
+                    </a>
+                    
+                    <!-- Zalo Button -->
+                    <a 
+                        href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', !empty($property['agent']['zalo']) ? $property['agent']['zalo'] : $property['agent']['phone']) }}" 
+                        target="_blank"
+                        class="inline-flex items-center justify-center px-2 py-3 rounded-2xl text-white bg-[#0068ff] hover:bg-[#0055d0] shadow-md shadow-[#0068ff]/25 hover:shadow-[#0055d0]/35 transition font-bold text-xs cursor-pointer truncate"
+                    >
+                        Chat Zalo
+                    </a>
                 </div>
 
                 <!-- Booking Appointment Form ("Đặt lịch xem nhà") -->
