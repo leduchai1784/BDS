@@ -4,11 +4,11 @@
 @section('meta_description', Str::limit(strip_tags(str_replace('\n', ' ', $property['description'])), 150))
 
 @section('content')
-<!-- Breadcrumbs & Title Section -->
-<div class="bg-slate-100/50 pt-28 pb-8 border-b border-slate-200/50">
+<!-- Breadcrumbs Section -->
+<div class="bg-slate-100/50 pt-24 pb-4 border-b border-slate-200/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumbs -->
-        <nav class="flex text-xs font-semibold text-slate-500 mb-4 space-x-2" aria-label="Breadcrumb">
+        <nav class="flex text-[11px] font-bold text-slate-500 space-x-2" aria-label="Breadcrumb">
             <a href="/" class="hover:text-primary transition">Trang chủ</a>
             <span>/</span>
             <a href="/listings" class="hover:text-primary transition">Nhà đất</a>
@@ -17,33 +17,6 @@
             <span>/</span>
             <span class="text-slate-800 truncate max-w-[200px] sm:max-w-none">{{ $property['title'] }}</span>
         </nav>
-
-        <!-- Title and Address -->
-        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-            <div class="max-w-4xl text-left">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug mb-3">
-                    @php
-                        $isSale = $property['price_label'] && stripos($property['price_label'], 'tháng') === false;
-                    @endphp
-                    @if($isSale)
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-black bg-orange-500 text-white mr-2 align-middle"><i class="fa-solid fa-tags mr-1"></i> BÁN</span>
-                    @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-black bg-blue-500 text-white mr-2 align-middle"><i class="fa-solid fa-key mr-1"></i> THUÊ</span>
-                    @endif
-                    {{ $property['title'] }}
-                </h1>
-                <div class="flex items-center text-slate-500 text-sm font-medium">
-                    <i class="fa-solid fa-location-dot text-slate-400 mr-2.5 text-base"></i>
-                    <span>{{ $property['location'] }}</span>
-                </div>
-            </div>
-            
-            <!-- Price and Area (Desktop Right side) -->
-            <div class="flex-shrink-0 text-left md:text-right flex md:flex-col items-baseline md:items-end gap-3 md:gap-1 mt-2 md:mt-0">
-                <div class="text-2xl sm:text-3xl font-black text-primary">{{ $property['price'] }}</div>
-                <div class="text-sm font-bold text-slate-500 bg-slate-200 px-3 py-1 rounded-xl">{{ $property['area'] }} m²</div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -88,6 +61,35 @@
                             <img src="{{ asset($img) }}" alt="Thumbnail" class="w-full h-full object-cover">
                         </button>
                     @endforeach
+                </div>
+            </div>
+
+            <!-- Title, Address, Price, Area Info Block -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm text-left">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div class="flex-grow space-y-3">
+                        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
+                            @php
+                                $isSale = $property['price_label'] && stripos($property['price_label'], 'tháng') === false;
+                            @endphp
+                            @if($isSale)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-orange-500 text-white mr-2 align-middle"><i class="fa-solid fa-tags mr-1"></i> BÁN</span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-blue-500 text-white mr-2 align-middle"><i class="fa-solid fa-key mr-1"></i> THUÊ</span>
+                            @endif
+                            {{ $property['title'] }}
+                        </h1>
+                        <div class="flex items-center text-slate-500 text-xs font-semibold">
+                            <i class="fa-solid fa-location-dot text-slate-400 mr-2 text-sm flex-shrink-0"></i>
+                            <span>{{ $property['location'] }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Price and Area -->
+                    <div class="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                        <div class="text-xl sm:text-2xl font-black text-primary">{{ $property['price'] }}</div>
+                        <div class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">{{ $property['area'] }} m²</div>
+                    </div>
                 </div>
             </div>
 
