@@ -14,8 +14,7 @@
 <form 
     action="{{ route('properties.update', $property->id) }}" 
     method="POST" 
-    enctype="multipart/form-data"
-    x-data="propertyEditForm()"
+    x-data="propertyEditForm('{{ $property->purpose }}')"
     @submit="isSubmitting = true"
     class="space-y-6 text-left"
 >
@@ -519,90 +518,51 @@
 
     <div class="border-t border-slate-100 my-6"></div>
 
-    <!-- Section 4: Hình ảnh bất động sản -->
+    <!-- Section 4: Hình ảnh bất động sản (Chỉ dùng Link ảnh online) -->
     <div class="space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider text-primary">4. Hình ảnh bất động sản</h3>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <!-- Ảnh đại diện chính -->
             <div class="space-y-2">
-                <div class="flex items-center justify-between px-1">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Ảnh đại diện chính</label>
-                    <div class="flex bg-slate-100 p-0.5 rounded-lg text-[9px] font-bold select-none">
-                        <button type="button" @click="mainImageType = 'file'; mainPreview = ''; image_url = '';" :class="mainImageType === 'file' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Upload file</button>
-                        <button type="button" @click="mainImageType = 'url'; mainPreview = '';" :class="mainImageType === 'url' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Nhập link</button>
-                    </div>
-                </div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Thay đổi liên kết ảnh đại diện chính</label>
                 
                 <div class="flex items-start space-x-4">
                     <div class="w-24 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center flex-shrink-0">
-                        <img :src="mainPreview ? mainPreview : '{{ asset($property->image) }}'" class="w-full h-full object-cover">
+                        <img :src="image_url ? image_url : '{{ asset($property->image) }}'" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex-grow space-y-2">
-                        <div x-show="mainImageType === 'file'" class="space-y-2">
-                            <p class="text-[9px] text-slate-400 leading-normal">Chọn ảnh mới nếu muốn thay đổi ảnh đại diện hiện tại từ máy tính.</p>
-                            <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
-                                <i class="fa-solid fa-camera mr-1.5"></i> Thay ảnh đại diện
-                                <input type="file" name="image" accept="image/*" @change="previewMainImage($event)" class="hidden">
-                            </label>
-                        </div>
-                        <div x-show="mainImageType === 'url'" class="space-y-1 text-left">
-                            <p class="text-[9px] text-slate-400 leading-normal">Nhập liên kết ảnh chính mới từ URL để thay đổi:</p>
-                            <input 
-                                type="text" 
-                                name="image_url" 
-                                x-model="image_url"
-                                placeholder="Dán link ảnh đại diện mới vào đây..." 
-                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                            >
-                            @error('image_url')
-                                <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="flex-grow space-y-1 text-left">
+                        <p class="text-[9px] text-slate-400 leading-normal mb-1">Nhập liên kết ảnh chính mới từ URL để thay đổi (để trống nếu muốn giữ ảnh cũ):</p>
+                        <input 
+                            type="text" 
+                            name="image_url" 
+                            x-model="image_url"
+                            placeholder="https://example.com/anh-dai-dien-moi.jpg" 
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                        >
+                        @error('image_url')
+                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
-                @error('image')
-                    <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                @enderror
-                <p x-show="mainImageError" class="text-red-500 text-[10px] font-bold mt-1 px-1" x-cloak>
-                    <i class="fa-solid fa-circle-exclamation mr-1"></i><span x-text="mainImageError"></span>
-                </p>
             </div>
 
             <!-- Thêm ảnh phụ (Gallery) -->
             <div class="space-y-2">
-                <div class="flex items-center justify-between px-1">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tải lên thêm ảnh phụ</label>
-                    <div class="flex bg-slate-100 p-0.5 rounded-lg text-[9px] font-bold select-none">
-                        <button type="button" @click="galleryImageType = 'file'; galleryPreviews = []; gallery_urls = '';" :class="galleryImageType === 'file' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Upload file</button>
-                        <button type="button" @click="galleryImageType = 'url'; galleryPreviews = [];" :class="galleryImageType === 'url' ? 'bg-white text-primary shadow-sm' : 'text-slate-500'" class="px-2 py-1 rounded-md transition cursor-pointer">Nhập link</button>
-                    </div>
-                </div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Thêm liên kết ảnh phụ mới (Gallery)</label>
                 
-                <div class="space-y-2">
-                    <div x-show="galleryImageType === 'file'" class="space-y-2">
-                        <p class="text-[9px] text-slate-400 leading-normal">Chọn các ảnh phụ mới từ máy tính để tải thêm lên thư viện ảnh.</p>
-                        <label class="inline-flex items-center justify-center px-3 py-2 border border-slate-200 hover:border-primary text-[10px] font-bold rounded-xl text-slate-700 hover:text-white bg-slate-50 hover:bg-primary shadow-sm transition cursor-pointer">
-                            <i class="fa-solid fa-images mr-1.5"></i> Chọn ảnh phụ mới
-                            <input type="file" name="images[]" multiple accept="image/*" @change="previewGalleryImages($event)" class="hidden">
-                        </label>
-                    </div>
-                    <div x-show="galleryImageType === 'url'" class="space-y-1 text-left">
-                        <p class="text-[9px] text-slate-400 leading-normal">Dán link các ảnh phụ mới vào đây (mỗi dòng một link hoặc cách nhau bằng dấu phẩy):</p>
-                        <textarea 
-                            name="gallery_urls" 
-                            x-model="gallery_urls"
-                            rows="2"
-                            placeholder="Ví dụ:&#10;https://cloudinary.com/image_new1.jpg&#10;https://cloudinary.com/image_new2.jpg" 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                        ></textarea>
-                        @error('gallery_urls')
-                            <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
-                        @enderror
-                        <p x-show="galleryImagesError" class="text-red-500 text-[10px] font-bold mt-1 px-1" x-cloak>
-                            <i class="fa-solid fa-circle-exclamation mr-1"></i><span x-text="galleryImagesError"></span>
-                        </p>
-                    </div>
+                <div class="space-y-1 text-left">
+                    <p class="text-[9px] text-slate-400 leading-normal mb-1">Dán thêm link các ảnh phụ mới vào đây (mỗi dòng một link hoặc phân tách bằng dấu phẩy):</p>
+                    <textarea 
+                        name="gallery_urls" 
+                        x-model="gallery_urls"
+                        rows="3"
+                        placeholder="Ví dụ:&#10;https://example.com/anh-phu-moi-1.jpg&#10;https://example.com/anh-phu-moi-2.jpg" 
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+                    ></textarea>
+                    @error('gallery_urls')
+                        <p class="text-red-500 text-[10px] font-bold mt-1 px-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
         </div>
@@ -637,14 +597,11 @@
         <!-- Newly chosen gallery previews -->
         <template x-if="galleryPreviews.length > 0">
             <div class="space-y-2 pt-2">
-                <p class="text-[10px] font-bold text-slate-500 px-1">Ảnh phụ mới đã chọn để upload (<span x-text="galleryPreviews.length"></span> ảnh):</p>
+                <p class="text-[10px] font-bold text-slate-500 px-1">Xem trước ảnh phụ mới (<span x-text="galleryPreviews.length"></span> ảnh):</p>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
                     <template x-for="(src, index) in galleryPreviews" :key="index">
                         <div class="aspect-video bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-sm relative group">
                             <img :src="src" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                <span class="text-[9px] text-white font-bold font-sans">Sẵn sàng tải lên</span>
-                            </div>
                         </div>
                     </template>
                 </div>
@@ -668,7 +625,7 @@
         >
             <template x-if="isSubmitting">
                 <span class="flex items-center">
-                    <i class="fa-solid fa-circle-notch fa-spin mr-1.5 text-white"></i> Đang tải ảnh...
+                    <i class="fa-solid fa-circle-notch fa-spin mr-1.5 text-white"></i> Đang xử lý...
                 </span>
             </template>
             <template x-if="!isSubmitting">

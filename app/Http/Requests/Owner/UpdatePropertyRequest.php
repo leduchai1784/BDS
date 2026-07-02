@@ -20,17 +20,14 @@ class UpdatePropertyRequest extends FormRequest
             'area' => 'required|numeric|gt:0',
             'address' => 'required|string|max:255',
             'ward' => 'required|string|max:255',
-            'district' => 'required|string|max:10',
+            'district' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'category_id' => 'nullable|exists:categories,id',
             'phone' => 'required|string|max:20',
             'zalo' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
             'image_url' => 'nullable|url',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:3072',
             'gallery_urls' => 'nullable|string',
             'bedroom' => 'nullable|integer|min:0',
             'bathroom' => 'nullable|integer|min:0',
@@ -44,6 +41,15 @@ class UpdatePropertyRequest extends FormRequest
             'floors' => 'nullable|integer|min:0',
             'delete_images' => 'nullable|array',
         ];
+    }
+
+    /**
+     * Log validation errors for easier debugging.
+     */
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        \Illuminate\Support\Facades\Log::warning('Update Property Validation Failed: ' . json_encode($validator->errors()->toArray()) . ' | Input: ' . json_encode($this->except(['image', 'images'])));
+        parent::failedValidation($validator);
     }
 
     public function messages(): array

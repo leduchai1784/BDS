@@ -84,29 +84,15 @@ class PropertyController extends Controller
                 'views_count' => 0,
             ]);
 
-            // Upload main image
+            // Save main image URL
             if ($request->filled('image_url')) {
                 $property->propertyImages()->create([
                     'image_path' => $request->image_url,
                     'is_primary' => true,
                 ]);
-            } elseif ($request->hasFile('image')) {
-                $uploadedUrl = app(\App\Services\CloudinaryService::class)->upload($request->file('image'));
-                if ($uploadedUrl) {
-                    $property->propertyImages()->create([
-                        'image_path' => $uploadedUrl,
-                        'is_primary' => true,
-                    ]);
-                } else {
-                    $path = $request->file('image')->store('properties', 'public');
-                    $property->propertyImages()->create([
-                        'image_path' => $path,
-                        'is_primary' => true,
-                    ]);
-                }
             }
 
-            // Upload gallery images from URLs
+            // Save gallery images from URLs
             if ($request->filled('gallery_urls')) {
                 $urls = preg_split('/[\n,\r]+/', $request->gallery_urls);
                 foreach ($urls as $url) {
@@ -114,26 +100,6 @@ class PropertyController extends Controller
                     if (!empty($url)) {
                         $property->propertyImages()->create([
                             'image_path' => $url,
-                            'is_primary' => false,
-                        ]);
-                    }
-                }
-            }
-
-            // Upload gallery images from files
-            if ($request->hasFile('images')) {
-                $cloudinary = app(\App\Services\CloudinaryService::class);
-                foreach ($request->file('images') as $img) {
-                    $uploadedUrl = $cloudinary->upload($img);
-                    if ($uploadedUrl) {
-                        $property->propertyImages()->create([
-                            'image_path' => $uploadedUrl,
-                            'is_primary' => false,
-                        ]);
-                    } else {
-                        $path = $img->store('properties', 'public');
-                        $property->propertyImages()->create([
-                            'image_path' => $path,
                             'is_primary' => false,
                         ]);
                     }
@@ -179,7 +145,6 @@ class PropertyController extends Controller
 
         // Validate total images count <= 10
         $existingCount = $property->propertyImages()->count();
-        $newFilesCount = $request->hasFile('images') ? count($request->file('images')) : 0;
         
         $newUrlsCount = 0;
         if ($request->filled('gallery_urls')) {
@@ -190,19 +155,18 @@ class PropertyController extends Controller
                 }
             }
         }
-        $newCount = $newFilesCount + $newUrlsCount;
         $deletedCount = $request->filled('delete_images') ? count($request->delete_images) : 0;
-        $totalCount = $existingCount + $newCount - $deletedCount;
+        $totalCount = $existingCount + $newUrlsCount - $deletedCount;
 
         if ($totalCount > 10) {
             return back()->withErrors(['images' => 'Tổng số hình ảnh của tin đăng không được vượt quá 10.'])->withInput();
         }
 
         // Ensure at least 1 image remains
-        $newPrimaryUploaded = $request->hasFile('image') || $request->filled('image_url');
+        $newPrimaryUploaded = $request->filled('image_url');
         $hasPrimaryRemaining = $property->propertyImages()->where('is_primary', true)->exists();
         if (!$newPrimaryUploaded && !$hasPrimaryRemaining) {
-            return back()->withErrors(['image' => 'Tin đăng phải có ít nhất 1 ảnh đại diện.'])->withInput();
+            return back()->withErrors(['image_url' => 'Tin đăng phải có ít nhất 1 ảnh đại diện.'])->withInput();
         }
 
         // Resolve category_id based on type
@@ -253,7 +217,7 @@ class PropertyController extends Controller
             'status' => in_array($property->status, ['approved', 'rented']) ? $property->status : 'approved',
         ]);
 
-        // Update main image if new one is uploaded or URL is provided
+        // Update main image if new URL is provided
         if ($request->filled('image_url')) {
             $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
             if ($oldPrimary) {
@@ -267,28 +231,6 @@ class PropertyController extends Controller
                 'image_path' => $request->image_url,
                 'is_primary' => true,
             ]);
-        } elseif ($request->hasFile('image')) {
-            $oldPrimary = $property->propertyImages()->where('is_primary', true)->first();
-            if ($oldPrimary) {
-                if (!filter_var($oldPrimary->image_path, FILTER_VALIDATE_URL)) {
-                    Storage::disk('public')->delete($oldPrimary->image_path);
-                }
-                $oldPrimary->delete();
-            }
-
-            $uploadedUrl = app(\App\Services\CloudinaryService::class)->upload($request->file('image'));
-            if ($uploadedUrl) {
-                $property->propertyImages()->create([
-                    'image_path' => $uploadedUrl,
-                    'is_primary' => true,
-                ]);
-            } else {
-                $path = $request->file('image')->store('properties', 'public');
-                $property->propertyImages()->create([
-                    'image_path' => $path,
-                    'is_primary' => true,
-                ]);
-            }
         }
 
         // Delete requested gallery images
@@ -316,26 +258,6 @@ class PropertyController extends Controller
                 if (!empty($url)) {
                     $property->propertyImages()->create([
                         'image_path' => $url,
-                        'is_primary' => false,
-                    ]);
-                }
-            }
-        }
-
-        // Upload new gallery images from files
-        if ($request->hasFile('images')) {
-            $cloudinary = app(\App\Services\CloudinaryService::class);
-            foreach ($request->file('images') as $img) {
-                $uploadedUrl = $cloudinary->upload($img);
-                if ($uploadedUrl) {
-                    $property->propertyImages()->create([
-                        'image_path' => $uploadedUrl,
-                        'is_primary' => false,
-                    ]);
-                } else {
-                    $path = $img->store('properties', 'public');
-                    $property->propertyImages()->create([
-                        'image_path' => $path,
                         'is_primary' => false,
                     ]);
                 }

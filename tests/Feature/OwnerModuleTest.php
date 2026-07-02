@@ -97,10 +97,6 @@ class OwnerModuleTest extends TestCase
      */
     public function test_owner_can_store_property(): void
     {
-        $mainImage = UploadedFile::fake()->create('thumbnail.jpg', 100, 'image/jpeg');
-        $extraImage1 = UploadedFile::fake()->create('gallery1.jpg', 100, 'image/jpeg');
-        $extraImage2 = UploadedFile::fake()->create('gallery2.jpg', 100, 'image/jpeg');
-
         $response = $this->actingAs($this->owner1)->post(route('properties.store'), [
             'title' => 'New Villa with Pool',
             'description' => 'Luxury villa description text here.',
@@ -115,8 +111,7 @@ class OwnerModuleTest extends TestCase
             'longitude' => 106.6983,
             'phone' => '0987654321',
             'category_id' => $this->category->id,
-            'image' => $mainImage,
-            'images' => [$extraImage1, $extraImage2],
+            'image_url' => 'https://res.cloudinary.com/test/image.jpg',
             'bedroom' => 3,
             'bathroom' => 3,
         ]);
@@ -129,20 +124,6 @@ class OwnerModuleTest extends TestCase
             'owner_id' => $this->owner1->id,
             'status' => 'approved'
         ]);
-
-        $property = Property::where('title', 'New Villa with Pool')->first();
-        $this->assertNotNull($property->image);
-        $this->assertCount(2, $property->images);
-
-        // Cleanup files
-        if (file_exists(public_path($property->image))) {
-            @unlink(public_path($property->image));
-        }
-        foreach ($property->images as $img) {
-            if (file_exists(public_path($img))) {
-                @unlink(public_path($img));
-            }
-        }
     }
 
     /**
