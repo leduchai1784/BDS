@@ -105,7 +105,7 @@
             <button 
                 @click="$dispatch('open-share-modal', { url: '{{ route('properties.show', $property['id']) }}', title: '{{ addslashes($property['title']) }}' })"
                 type="button" 
-                class="w-9 h-9 rounded-xl flex items-center justify-center border border-slate-100 bg-white/80 hover:bg-white text-slate-600 hover:text-primary shadow-sm transition active:scale-90 cursor-pointer"
+                class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-100 bg-white/80 hover:bg-white text-slate-400 hover:text-primary shadow-sm transition active:scale-90 cursor-pointer"
                 title="Chia sẻ tin đăng"
             >
                 <i class="fa-solid fa-share-nodes text-xs"></i>
@@ -115,8 +115,8 @@
             <button 
                 @click="toggleLike()"
                 type="button" 
-                :class="liked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-white/80 hover:bg-white text-slate-600 border-slate-100'"
-                class="w-9 h-9 rounded-xl flex items-center justify-center border shadow-sm transition active:scale-90 cursor-pointer"
+                :class="liked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-white/80 hover:bg-white text-slate-400 border-slate-100'"
+                class="w-9 h-9 rounded-full flex items-center justify-center border shadow-sm transition active:scale-90 cursor-pointer"
             >
                 <i class="fa-solid fa-heart transition" :class="liked ? 'text-red-500' : 'text-slate-400'"></i>
             </button>
