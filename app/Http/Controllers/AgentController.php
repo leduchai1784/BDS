@@ -9,6 +9,7 @@ class AgentController extends Controller
 {
     /**
      * Display a listing of agents/owners.
+     */
     public function index(Request $request)
     {
         // Fetch active users with the role of 'owner' (agents/owners)
@@ -19,7 +20,7 @@ class AgentController extends Controller
             if ($request->type === 'company') {
                 $query->whereNotNull('company')->where('company', '!=', '');
             } else {
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->whereNull('company')->orWhere('company', '');
                 });
             }
@@ -28,7 +29,7 @@ class AgentController extends Controller
         // Search by name, phone, or company
         if ($request->has('q') && !empty($request->q)) {
             $search = $request->q;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('company', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%");
@@ -38,7 +39,7 @@ class AgentController extends Controller
         // Filter by location
         if ($request->has('location') && !empty($request->location)) {
             $loc = $request->location;
-            $query->where(function($q) use ($loc) {
+            $query->where(function ($q) use ($loc) {
                 $q->where('add_province', 'like', "%{$loc}%")
                   ->orWhere('add_district', 'like', "%{$loc}%");
             });
