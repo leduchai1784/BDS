@@ -643,6 +643,7 @@
                                         <i class="fa-solid fa-map-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         {{-- Hidden input gửi province ID lên server --}}
                                         <input type="hidden" name="add_province" :value="selectedProvinceId">
+                                        <input type="hidden" name="province" :value="selectedProvince">
                                         <input 
                                             type="text" 
                                             placeholder="Chọn Tỉnh/Thành phố..."
@@ -698,6 +699,7 @@
                                         <i class="fa-solid fa-tree-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                         {{-- Hidden input gửi ward ID lên server --}}
                                         <input type="hidden" name="add_ward" :value="selectedWardId">
+                                        <input type="hidden" name="ward" :value="selectedWard">
                                         <input 
                                             type="text" 
                                             placeholder="Chọn Phường/Xã..."

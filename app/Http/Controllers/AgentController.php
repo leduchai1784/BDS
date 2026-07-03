@@ -41,7 +41,9 @@ class AgentController extends Controller
             $loc = $request->location;
             $query->where(function ($q) use ($loc) {
                 $q->where('add_province', 'like', "%{$loc}%")
-                  ->orWhere('add_district', 'like', "%{$loc}%");
+                  ->orWhere('add_district', 'like', "%{$loc}%")
+                  ->orWhere('province', 'like', "%{$loc}%")
+                  ->orWhere('district', 'like', "%{$loc}%");
             });
         }
 

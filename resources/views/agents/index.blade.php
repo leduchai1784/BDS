@@ -298,7 +298,7 @@
                                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-slate-500">
                                                     <span class="flex items-center gap-1">
                                                         <i class="fa-solid fa-location-dot text-primary/70"></i>
-                                                        {{ $agent->add_province ?? 'Toàn quốc' }}
+                                                        {{ $agent->province ?? ($agent->add_province ?? 'Toàn quốc') }}
                                                     </span>
                                                     <span class="flex items-center gap-1">
                                                         <i class="fa-solid fa-newspaper text-primary/70"></i>
@@ -388,7 +388,8 @@
                                             </p>
                                             <p class="text-xs text-slate-400 mt-0.5">
                                                 <i class="fa-solid fa-location-dot mr-1"></i>
-                                                {{ $agent->add_province ? str_replace(['Tỉnh ', 'Thành phố '], '', $agent->add_province) : 'Toàn quốc' }}
+                                                @php $provName = $agent->province ?? $agent->add_province; @endphp
+                                                {{ $provName ? str_replace(['Tỉnh ', 'Thành phố '], '', $provName) : 'Toàn quốc' }}
                                             </p>
                                         </div>
 

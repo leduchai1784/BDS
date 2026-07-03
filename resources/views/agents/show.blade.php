@@ -67,10 +67,14 @@
                     </p>
                 @endif
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-sm text-slate-400">
-                    @if($agent->add_province)
+                    @php 
+                        $provName = $agent->province ?? $agent->add_province; 
+                        $distName = $agent->district ?? $agent->add_district;
+                    @endphp
+                    @if($provName)
                         <span class="flex items-center gap-1.5">
                             <i class="fa-solid fa-location-dot text-primary/80"></i>
-                            {{ $agent->add_district ? $agent->add_district . ', ' : '' }}{{ $agent->add_province }}
+                            {{ $distName ? $distName . ', ' : '' }}{{ $provName }}
                         </span>
                     @endif
                     <span class="flex items-center gap-1.5">
@@ -164,7 +168,7 @@
                             <div>
                                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Khu vực</div>
                                 <span class="text-sm font-semibold text-slate-800">
-                                    {{ $agent->add_province ?? 'Toàn quốc' }}
+                                    {{ $agent->province ?? ($agent->add_province ?? 'Toàn quốc') }}
                                 </span>
                             </div>
                         </div>
