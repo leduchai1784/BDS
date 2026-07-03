@@ -415,10 +415,11 @@
                                 provinces: [],
                                 wards: [],
                                 selectedProvinceId: null,
-                                selectedProvince: '{{ old('add_province', $user['add_province'] ?? '') }}',
-                                provinceSearch: '{{ old('add_province', $user['add_province'] ?? '') }}',
-                                selectedWard: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
-                                wardSearch: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
+                                selectedWardId: null,
+                                selectedProvince: '',
+                                provinceSearch: '',
+                                selectedWard: '',
+                                wardSearch: '',
                                 isEditing: {{ $errors->any() ? 'true' : 'false' }},
                                 loadWards(provinceId) {
                                     if (!provinceId) { this.wards = []; return; }
@@ -426,41 +427,47 @@
                                         .then(res => res.json())
                                         .then(data => {
                                             this.wards = data;
-                                            // Re-match ward if we have a saved value
-                                            if (this.wardSearch) {
-                                                const match = data.find(w =>
-                                                    w.title.toLowerCase() === this.wardSearch.toLowerCase()
-                                                );
+                                            // Re-match saved ward by ID (numeric) or by title (legacy text)
+                                            const savedWard = '{{ old('add_ward', $user['add_ward'] ?? '') }}';
+                                            if (savedWard) {
+                                                const isId = /^\d+$/.test(savedWard);
+                                                const match = isId
+                                                    ? data.find(w => String(w.id) === savedWard)
+                                                    : data.find(w => w.title.toLowerCase() === savedWard.toLowerCase());
                                                 if (match) {
-                                                    this.selectedWard = match.title;
-                                                    this.wardSearch = match.title;
+                                                    this.selectedWard   = match.title;
+                                                    this.wardSearch     = match.title;
+                                                    this.selectedWardId = match.id;
                                                 }
                                             }
                                         })
                                         .catch(err => console.error('Error loading wards:', err));
                                 },
                                 selectProvince(p) {
-                                    this.selectedProvince = p.title;
-                                    this.provinceSearch = p.title;
+                                    this.selectedProvince   = p.title;
+                                    this.provinceSearch     = p.title;
                                     this.selectedProvinceId = p.id;
-                                    this.selectedWard = '';
-                                    this.wardSearch = '';
+                                    this.selectedWard   = '';
+                                    this.wardSearch     = '';
+                                    this.selectedWardId = null;
                                     this.wards = [];
                                     this.loadWards(p.id);
                                 },
                                 init() {
+                                    const savedProvince = '{{ old('add_province', $user['add_province'] ?? '') }}';
                                     fetch('/locations/provinces')
                                         .then(res => res.json())
                                         .then(data => {
                                             this.provinces = data;
-                                            // Match saved province and load its wards
-                                            if (this.provinceSearch) {
-                                                const match = data.find(p =>
-                                                    p.title.toLowerCase() === this.provinceSearch.toLowerCase()
-                                                );
+                                            if (savedProvince) {
+                                                // Match by numeric ID (new format) or by title text (legacy)
+                                                const isId = /^\d+$/.test(savedProvince);
+                                                const match = isId
+                                                    ? data.find(p => String(p.id) === savedProvince)
+                                                    : data.find(p => p.title.toLowerCase() === savedProvince.toLowerCase());
                                                 if (match) {
-                                                    this.selectedProvince = match.title;
-                                                    this.provinceSearch = match.title;
+                                                    this.selectedProvince   = match.title;
+                                                    this.provinceSearch     = match.title;
                                                     this.selectedProvinceId = match.id;
                                                     this.loadWards(match.id);
                                                 }
@@ -634,9 +641,10 @@
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh / Thành phố</label>
                                     <div class="relative">
                                         <i class="fa-solid fa-map-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        {{-- Hidden input gửi province ID lên server --}}
+                                        <input type="hidden" name="add_province" :value="selectedProvinceId">
                                         <input 
                                             type="text" 
-                                            name="add_province"
                                             placeholder="Chọn Tỉnh/Thành phố..."
                                             x-model="provinceSearch"
                                             @focus="open = true; $el.select()"
@@ -688,9 +696,10 @@
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường / Xã</label>
                                     <div class="relative">
                                         <i class="fa-solid fa-tree-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        {{-- Hidden input gửi ward ID lên server --}}
+                                        <input type="hidden" name="add_ward" :value="selectedWardId">
                                         <input 
                                             type="text" 
-                                            name="add_ward"
                                             placeholder="Chọn Phường/Xã..."
                                             x-model="wardSearch"
                                             @focus="open = true; $el.select()"
@@ -709,8 +718,9 @@
                                             <template x-for="w in wards.filter(ward => !wardSearch || ward.title.toLowerCase().includes(wardSearch.toLowerCase()))" :key="w.id">
                                                 <div 
                                                     @click="
-                                                        selectedWard = w.title;
-                                                        wardSearch = w.title;
+                                                        selectedWard   = w.title;
+                                                        wardSearch     = w.title;
+                                                        selectedWardId = w.id;
                                                         open = false;
                                                     "
                                                     class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
@@ -775,9 +785,10 @@
                                         isEditing = false;
                                         $el.form.reset();
                                         // Reset Alpine province/ward state (form.reset() won't trigger x-model)
-                                        provinceSearch = selectedProvince = '{{ old('add_province', $user['add_province'] ?? '') }}';
-                                        wardSearch = selectedWard = '{{ old('add_ward', $user['add_ward'] ?? '') }}';
+                                        provinceSearch = selectedProvince = '';
+                                        wardSearch = selectedWard = '';
                                         selectedProvinceId = null;
+                                        selectedWardId = null;
                                         wards = [];
                                     "
                                     class="inline-flex items-center justify-center px-6 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer active:scale-98 min-w-[100px]"
