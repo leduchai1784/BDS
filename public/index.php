@@ -27,6 +27,10 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/api/loc
         /** @var Application $app */
         $app = require_once __DIR__.'/../bootstrap/app.php';
         
+        // Bind the request to prevent UrlGenerator exception
+        $request = Request::capture();
+        $app->instance('request', $request);
+        
         // Boot kernel
         $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
         $kernel->bootstrap();
