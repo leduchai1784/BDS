@@ -35,13 +35,18 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         
-        // Self-healing sync: pull latest profile & CCCD details from NKS if logged in via NKS
+        // Self-healing sync: pull latest profile from NKS — cached 3 min to avoid blocking on every page load
         if ($user->nks_token) {
-            $nksInfo = $this->nksAuthService->getUserInfo($user->nks_token);
-            if ($nksInfo['success'] && !empty($nksInfo['user'])) {
-                $localData = $this->nksAuthService->mapNksUserToLocal($nksInfo['user'], $user->nks_token);
-                $user->update($localData);
-                $user->refresh();
+            $cacheKey = 'nks_profile_sync_' . $user->id;
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                $nksInfo = $this->nksAuthService->getUserInfo($user->nks_token);
+                if ($nksInfo['success'] && !empty($nksInfo['user'])) {
+                    $localData = $this->nksAuthService->mapNksUserToLocal($nksInfo['user'], $user->nks_token);
+                    $user->update($localData);
+                    $user->refresh();
+                }
+                // Mark synced — skip NKS call for next 3 minutes
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, 180);
             }
         }
 
@@ -200,7 +205,10 @@ class ProfileController extends Controller
         // ✅ 1. Save to local DB immediately (fast, no external calls)
         $this->profileService->updateProfile($user->id, $updateData);
 
-        // ✅ 2. Sync to NKS AFTER response is sent — user doesn't wait for this
+        // ✅ 2. Invalidate NKS profile cache so next page load gets fresh data from NKS
+        \Illuminate\Support\Facades\Cache::forget('nks_profile_sync_' . $user->id);
+
+        // ✅ 3. Sync to NKS AFTER response is sent — user doesn't wait for this
         if ($user->nks_token) {
             $nksUpdateData = $updateData;
             if (!empty($nksUpdateData['dob']) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksUpdateData['dob'])) {

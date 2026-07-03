@@ -55,13 +55,6 @@ class NksAuthService
     public function updateInfo(string $token, array $data): array
     {
         try {
-            // First, fetch current NKS user details to prevent partial updates from resetting/nullifying other fields
-            $currentNksData = [];
-            $nksInfo = $this->getUserInfo($token);
-            if ($nksInfo['success'] && !empty($nksInfo['user'])) {
-                $currentNksData = $nksInfo['user'];
-            }
-
             // Updatable fields on NKS
             $updatableKeys = [
                 'name', 'firstname', 'lastname', 'phone', 'email', 'gender', 'dob', 'pob',
@@ -70,16 +63,10 @@ class NksAuthService
                 'intro', 'website', 'zalo_id', 'zalo_key'
             ];
 
-            // Build merged payload
+            // Build base payload from local authenticated user data (fast, no HTTP call)
+            // This prevents partial updates from nullifying other fields on NKS side
             $mergedData = [];
-            foreach ($updatableKeys as $key) {
-                if (array_key_exists($key, $currentNksData)) {
-                    $mergedData[$key] = $currentNksData[$key];
-                }
-            }
-
-            // If NKS user fetch failed or returned empty, we can fallback to the local authenticated user's data to merge
-            if (empty($mergedData) && auth()->check()) {
+            if (auth()->check()) {
                 $localUser = auth()->user();
                 if ($localUser->nks_token === $token) {
                     $localUserMap = $this->mapLocalUserToNks($localUser);
@@ -115,9 +102,9 @@ class NksAuthService
             $json = $response->json();
 
             Log::info('NKS updateInfo Request:', [
-                'url' => "{$this->baseUrl}/updateInfo",
-                'payload' => $payload,
-                'status' => $response->status(),
+                'url'      => "{$this->baseUrl}/updateInfo",
+                'payload'  => $payload,
+                'status'   => $response->status(),
                 'response' => $json
             ]);
 
