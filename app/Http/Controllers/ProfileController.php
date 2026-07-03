@@ -195,12 +195,12 @@ class ProfileController extends Controller
             'add_street', 'add_ward', 'add_district', 'add_province', 'intro', 'website'
         ]);
         $updateData['firstname'] = $firstname;
-        $updateData['lastname'] = $lastname;
+        $updateData['lastname']  = $lastname;
 
-        // Update fields locally
+        // ✅ 1. Save to local DB immediately (fast, no external calls)
         $this->profileService->updateProfile($user->id, $updateData);
 
-        // Sync to NKS if user has a token
+        // ✅ 2. Sync to NKS AFTER response is sent — user doesn't wait for this
         if ($user->nks_token) {
             $nksUpdateData = $updateData;
             if (!empty($nksUpdateData['dob']) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksUpdateData['dob'])) {
@@ -208,11 +208,19 @@ class ProfileController extends Controller
                     $nksUpdateData['dob'] = \Carbon\Carbon::createFromFormat('d/m/Y', $nksUpdateData['dob'])->format('Y-m-d');
                 } catch (\Exception $e) {}
             }
-            $this->nksAuthService->updateInfo($user->nks_token, $nksUpdateData);
+
+            $nksAuthService = $this->nksAuthService;
+            $nksToken       = $user->nks_token;
+
+            // terminating() runs after response is flushed to browser
+            app()->terminating(function () use ($nksAuthService, $nksToken, $nksUpdateData) {
+                $nksAuthService->updateInfo($nksToken, $nksUpdateData);
+            });
         }
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'info'])->with('success', 'Hồ sơ cá nhân đã được cập nhật thành công!');
     }
+
 
     /**
      * Update user avatar separately.
