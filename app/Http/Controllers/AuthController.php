@@ -91,6 +91,9 @@ class AuthController extends Controller
             }
 
             Auth::login($user, $remember);
+            if ($remember) {
+                $this->saveRememberedAccount($user->email, $user->name, $user->avatar);
+            }
             $request->session()->regenerate();
 
             if ($user->role === 'admin') {
@@ -119,6 +122,9 @@ class AuthController extends Controller
                 \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('guest_wishlist'));
             }
 
+            if ($remember) {
+                $this->saveRememberedAccount($user->email, $user->name, $user->avatar);
+            }
             $request->session()->regenerate();
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
@@ -185,5 +191,69 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Remove an account from the remembered accounts list.
+     */
+    public function forgetAccount(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+        ]);
+
+        $email = $request->email;
+        $accounts = [];
+        $cookieValue = $request->cookie('remembered_accounts');
+        if ($cookieValue) {
+            $accounts = json_decode($cookieValue, true) ?: [];
+        }
+
+        $accounts = array_filter($accounts, function ($acc) use ($email) {
+            return ($acc['email'] ?? '') !== $email;
+        });
+
+        // Save back to cookie
+        if (empty($accounts)) {
+            \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remembered_accounts'));
+        } else {
+            \Illuminate\Support\Facades\Cookie::queue('remembered_accounts', json_encode(array_values($accounts)), 43200);
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
+
+        return back();
+    }
+
+    /**
+     * Save account details into remembered_accounts cookie.
+     */
+    private function saveRememberedAccount($email, $name, $avatar)
+    {
+        $accounts = [];
+        $cookieValue = request()->cookie('remembered_accounts');
+        if ($cookieValue) {
+            $accounts = json_decode($cookieValue, true) ?: [];
+        }
+
+        // Remove if email already exists to re-add at the top
+        $accounts = array_filter($accounts, function ($acc) use ($email) {
+            return ($acc['email'] ?? '') !== $email;
+        });
+
+        // Add to the beginning of the array
+        array_unshift($accounts, [
+            'email' => $email,
+            'name' => $name,
+            'avatar' => $avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=0077bb&color=fff'
+        ]);
+
+        // Keep maximum of 5 accounts
+        $accounts = array_slice($accounts, 0, 5);
+
+        // Queue cookie for 30 days (43200 minutes)
+        \Illuminate\Support\Facades\Cookie::queue('remembered_accounts', json_encode($accounts), 43200);
     }
 }

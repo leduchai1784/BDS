@@ -152,6 +152,7 @@ Route::middleware(['auth', 'tenant'])->group(function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login/forget-account', [AuthController::class, 'forgetAccount'])->name('login.forget-account');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 });
