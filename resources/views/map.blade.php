@@ -622,6 +622,112 @@
         </div>
     </main>
 </div>
+
+{{-- ===================== PROPERTY DETAIL MODAL ===================== --}}
+<div
+    id="property-detail-modal"
+    style="display:none"
+    class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+    onclick="if(event.target===this) closePropertyModal()"
+>
+    {{-- Backdrop --}}
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+    {{-- Modal Card --}}
+    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto z-10">
+        {{-- Close button --}}
+        <button onclick="closePropertyModal()" class="absolute top-4 right-4 z-20 w-9 h-9 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        {{-- Image --}}
+        <div class="relative w-full h-56 bg-slate-100 rounded-t-3xl overflow-hidden">
+            <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+
+            {{-- Type + Purpose badge --}}
+            <div class="absolute top-4 left-4 flex items-center gap-2">
+                <span id="modal-type-badge" class="bg-primary text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wide"></span>
+                <span id="modal-purpose-badge" class="bg-white/90 text-slate-800 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wide"></span>
+            </div>
+
+            {{-- Price over image --}}
+            <div class="absolute bottom-4 left-4">
+                <span id="modal-price" class="text-2xl font-black text-white drop-shadow-lg"></span>
+            </div>
+        </div>
+
+        {{-- Content --}}
+        <div class="p-6">
+            {{-- Title --}}
+            <h2 id="modal-title" class="text-xl font-black text-slate-900 mb-1 leading-snug"></h2>
+
+            {{-- Location --}}
+            <p id="modal-location" class="text-sm text-slate-500 flex items-center gap-1.5 mb-5">
+                <i class="fa-solid fa-location-dot text-primary"></i>
+                <span></span>
+            </p>
+
+            {{-- Stats grid --}}
+            <div class="grid grid-cols-4 gap-3 mb-6">
+                <div class="bg-slate-50 rounded-2xl p-3 text-center">
+                    <div class="text-lg mb-1">📐</div>
+                    <div id="modal-area" class="text-sm font-black text-slate-800"></div>
+                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Diện tích</div>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-3 text-center">
+                    <div class="text-lg mb-1">🛏️</div>
+                    <div id="modal-bedrooms" class="text-sm font-black text-slate-800"></div>
+                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Phòng ngủ</div>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-3 text-center">
+                    <div class="text-lg mb-1">🚿</div>
+                    <div id="modal-bathrooms" class="text-sm font-black text-slate-800"></div>
+                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Phòng tắm</div>
+                </div>
+                <div class="bg-slate-50 rounded-2xl p-3 text-center">
+                    <div class="text-lg mb-1">🧭</div>
+                    <div id="modal-direction" class="text-sm font-black text-slate-800"></div>
+                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Hướng</div>
+                </div>
+            </div>
+
+            {{-- Description --}}
+            <div id="modal-desc-wrap" class="mb-6 hidden">
+                <h4 class="text-sm font-black text-slate-800 mb-2">Mô tả</h4>
+                <p id="modal-desc" class="text-sm text-slate-600 leading-relaxed line-clamp-4"></p>
+            </div>
+
+            {{-- Divider --}}
+            <hr class="border-slate-100 mb-5">
+
+            {{-- Agent info --}}
+            <div class="flex items-center gap-3 mb-5">
+                <img id="modal-agent-avatar" src="" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-slate-100">
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs text-slate-400 font-semibold">Đăng bởi</div>
+                    <div id="modal-agent-name" class="text-sm font-extrabold text-slate-900 truncate"></div>
+                </div>
+                <a id="modal-agent-phone-btn" href="#" class="flex-shrink-0 inline-flex items-center gap-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-bold px-3 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-phone text-[10px]"></i> Gọi ngay
+                </a>
+            </div>
+
+            {{-- CTA Buttons --}}
+            <div class="flex gap-3">
+                <a id="modal-detail-link" href="#" target="_blank"
+                   class="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl transition shadow shadow-primary/20 text-sm">
+                    <i class="fa-solid fa-expand"></i> Xem trang chi tiết
+                </a>
+                <a id="modal-zalo-btn" href="#" target="_blank"
+                   class="inline-flex items-center justify-center gap-2 py-3 px-5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition text-sm">
+                    <i class="fa-solid fa-comment"></i> Zalo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -655,6 +761,9 @@
             markers: {},
             ignoreMobileScroll: false,
             mobileScrollTimeout: null,
+
+            // Modal state
+            modalProperty: null,
 
             isSale() {
                 return this.filterPurpose === 'sale';
@@ -972,14 +1081,14 @@
                         <div class="w-[240px] text-left relative bg-white">
                             <!-- Image Container with Absolute Badges -->
                             <div class="relative w-full h-28 overflow-hidden rounded-t-2xl">
-                                <a href="/property/${p.id}" class="block w-full h-full">
+                                <div class="block w-full h-full cursor-pointer" onclick="openPropertyModal(${p.id})">
                                     <img src="${imgUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                                </a>
+                                </div>
                                 <!-- Property Type Badge -->
                                 <span class="absolute top-2 left-2 bg-[#0077bb] text-white text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-wide">
                                     ${p.type}
                                 </span>
-                                <!-- Close Button Mock -->
+                                <!-- Close Button -->
                                 <button onclick="window.activeMapPopup?.remove()" class="absolute top-2 right-2 w-6 h-6 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 shadow-md transition focus:outline-none z-10">
                                     <i class="fa-solid fa-xmark text-xs"></i>
                                 </button>
@@ -987,17 +1096,17 @@
                             
                             <!-- Body Info -->
                             <div class="p-3.5">
-                                <h4 class="text-[13px] font-black text-slate-800 line-clamp-1 hover:text-[#0077bb] transition mb-1">
-                                    <a href="/property/${p.id}">${p.title}</a>
+                                <h4 class="text-[13px] font-black text-slate-800 line-clamp-1 hover:text-[#0077bb] transition mb-1 cursor-pointer" onclick="openPropertyModal(${p.id})">
+                                    ${p.title}
                                 </h4>
                                 <p class="text-[10px] font-medium text-slate-400 truncate mb-3">
-                                    ${p.location}
+                                    <i class="fa-solid fa-location-dot mr-0.5"></i>${p.location}
                                 </p>
                                 <div class="flex items-center justify-between pt-2 border-t border-slate-100">
                                     <span class="text-[13px] font-black text-[#0077bb]">${p.price}</span>
-                                    <a href="/property/${p.id}" class="text-[10px] font-black text-[#0077bb] hover:underline flex items-center gap-0.5">
-                                        Chi tiết <i class="fa-solid fa-arrow-right text-[8px]"></i>
-                                    </a>
+                                    <button onclick="openPropertyModal(${p.id})" class="text-[10px] font-black text-white bg-[#0077bb] hover:bg-[#0066aa] px-2.5 py-1 rounded-lg flex items-center gap-0.5 transition cursor-pointer">
+                                        <i class="fa-solid fa-expand text-[8px]"></i> Chi tiết
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1182,4 +1291,104 @@
         };
     }
 </script>
+
+<script>
+    // ===== Property Detail Modal Functions =====
+
+    // All properties data (shared with Alpine)
+    const __mapProperties = @json($properties);
+
+    function openPropertyModal(id) {
+        const p = __mapProperties.find(x => x.id === id);
+        if (!p) return;
+
+        // Close any open map popup
+        if (window.activeMapPopup) window.activeMapPopup.remove();
+
+        // Fill image
+        const imgUrl = (p.image && (p.image.startsWith('http://') || p.image.startsWith('https://')))
+            ? p.image
+            : (p.image ? (p.image.startsWith('/') ? p.image : '/' + p.image) : '/images/apartment_1.png');
+        document.getElementById('modal-img').src = imgUrl;
+        document.getElementById('modal-img').alt = p.title;
+
+        // Badges
+        document.getElementById('modal-type-badge').textContent = p.type || '';
+        document.getElementById('modal-purpose-badge').textContent =
+            (p.transaction_type === 'sale' || p.purpose === 'sale') ? 'Đang bán' : 'Cho thuê';
+
+        // Price
+        document.getElementById('modal-price').textContent = p.price || '';
+
+        // Title & location
+        document.getElementById('modal-title').textContent = p.title || '';
+        const locSpan = document.querySelector('#modal-location span');
+        if (locSpan) locSpan.textContent = p.location || p.address || '';
+
+        // Stats
+        document.getElementById('modal-area').textContent     = p.area   ? p.area + ' m²'  : '—';
+        document.getElementById('modal-bedrooms').textContent  = p.bedrooms  ? p.bedrooms + ' PN'  : '—';
+        document.getElementById('modal-bathrooms').textContent = p.bathrooms ? p.bathrooms + ' WC'  : '—';
+        document.getElementById('modal-direction').textContent = p.direction || '—';
+
+        // Description
+        const descWrap = document.getElementById('modal-desc-wrap');
+        const descEl   = document.getElementById('modal-desc');
+        if (p.description) {
+            descEl.textContent = p.description;
+            descWrap.classList.remove('hidden');
+        } else {
+            descWrap.classList.add('hidden');
+        }
+
+        // Agent
+        const agentAvatar = p.agent_avatar || p.owner_avatar ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(p.agent_name || 'Agent')}&background=0077bb&color=fff`;
+        document.getElementById('modal-agent-avatar').src  = agentAvatar;
+        document.getElementById('modal-agent-name').textContent = p.agent_name || p.owner_name || 'Chủ nhà';
+
+        const agentPhone = p.agent_phone || p.owner_phone || '';
+        const phoneBtn = document.getElementById('modal-agent-phone-btn');
+        phoneBtn.href = agentPhone ? 'tel:' + agentPhone : '#';
+
+        const zaloBtn = document.getElementById('modal-zalo-btn');
+        zaloBtn.href = agentPhone ? 'https://zalo.me/' + agentPhone : '#';
+
+        // Detail link
+        document.getElementById('modal-detail-link').href = '/property/' + p.id;
+
+        // Show modal with animation
+        const modal = document.getElementById('property-detail-modal');
+        modal.style.display = 'flex';
+        requestAnimationFrame(() => {
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.2s ease';
+            requestAnimationFrame(() => { modal.style.opacity = '1'; });
+        });
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePropertyModal() {
+        const modal = document.getElementById('property-detail-modal');
+        modal.style.transition = 'opacity 0.2s ease';
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modal.style.opacity = '1';
+        }, 200);
+        document.body.style.overflow = '';
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closePropertyModal();
+    });
+
+    // Expose globally for inline onclick
+    window.openPropertyModal = openPropertyModal;
+    window.closePropertyModal = closePropertyModal;
+</script>
 @endpush
+
