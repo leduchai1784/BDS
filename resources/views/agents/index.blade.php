@@ -15,21 +15,21 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-8">
             @if(request('type') === 'company')
-                <div class="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 text-primary-hover text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">
+                <div class="inline-flex items-center gap-2 border text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider" style="background:rgba(0,119,187,0.2);border-color:rgba(0,119,187,0.4);color:#60c8ff">
                     <i class="fa-solid fa-building"></i> Đối tác doanh nghiệp
                 </div>
                 <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
-                    Danh Bạ <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-hover to-orange-400">Doanh Nghiệp</span> BĐS
+                    Danh Bạ <span style="color:#60c8ff">Doanh Nghiệp</span> BĐS
                 </h1>
                 <p class="text-slate-300 text-lg max-w-2xl mx-auto">
                     Kết nối với các chủ đầu tư, công ty phân phối và đơn vị phát triển dự án bất động sản uy tín hàng đầu.
                 </p>
             @else
-                <div class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">
+                <div class="inline-flex items-center gap-2 border text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider" style="background:rgba(0,119,187,0.2);border-color:rgba(0,119,187,0.4);color:#60c8ff">
                     <i class="fa-solid fa-user-tie"></i> Chuyên viên môi giới
                 </div>
                 <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
-                    Danh Bạ <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Nhà Môi Giới</span> Uy Tín
+                    Danh Bạ <span style="color:#60c8ff">Nhà Môi Giới</span> Uy Tín
                 </h1>
                 <p class="text-slate-300 text-lg max-w-2xl mx-auto">
                     Kết nối trực tiếp với các nhà môi giới và chủ nhà chuyên nghiệp, giao dịch an toàn và tối ưu nhất.
@@ -94,18 +94,26 @@
 {{-- ===================== TAB NAVIGATION ===================== --}}
 <div class="bg-white border-b border-slate-100 shadow-sm sticky top-[70px] z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-1">
+        <div class="flex items-center">
+            {{-- Tab: Nhà Môi Giới --}}
             <a href="{{ route('agents.index') }}"
-               class="flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors duration-150
-               {{ !request('type') || request('type') !== 'company' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
-                <i class="fa-solid fa-user-tie"></i>
+               class="flex items-center gap-2 px-7 py-4 text-sm font-bold border-b-2 transition-colors duration-150
+               {{ request('type') !== 'company' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50' }}">
+                <i class="fa-solid fa-user-tie {{ request('type') !== 'company' ? 'text-primary' : 'text-slate-400' }}"></i>
                 Nhà Môi Giới
+                @if(request('type') !== 'company')
+                    <span class="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">ON</span>
+                @endif
             </a>
+            {{-- Tab: Doanh Nghiệp --}}
             <a href="{{ route('agents.index', ['type' => 'company']) }}"
-               class="flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 transition-colors duration-150
-               {{ request('type') === 'company' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
-                <i class="fa-solid fa-building"></i>
+               class="flex items-center gap-2 px-7 py-4 text-sm font-bold border-b-2 transition-colors duration-150
+               {{ request('type') === 'company' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50' }}">
+                <i class="fa-solid fa-building {{ request('type') === 'company' ? 'text-primary' : 'text-slate-400' }}"></i>
                 Doanh Nghiệp
+                @if(request('type') === 'company')
+                    <span class="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">ON</span>
+                @endif
             </a>
         </div>
     </div>

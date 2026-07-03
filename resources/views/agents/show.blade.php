@@ -43,7 +43,7 @@
             <div class="flex-1 text-center md:text-left">
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
                     @if(!empty($agent->company))
-                        <span class="inline-flex items-center gap-1 bg-primary/30 text-primary-hover border border-primary/40 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                        <span class="inline-flex items-center gap-1 border text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider" style="background:rgba(0,119,187,0.25);border-color:rgba(0,119,187,0.4);color:#60c8ff">
                             <i class="fa-solid fa-building text-[10px]"></i> Doanh nghiệp
                         </span>
                     @else
