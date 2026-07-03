@@ -61,13 +61,16 @@
                 });
             },
             removeAccount(email) {
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('_token', '{{ csrf_token() }}');
+
                 fetch('{{ route('login.forget-account') }}', {
                     method: 'POST',
+                    body: formData,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ email: email })
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -77,7 +80,8 @@
                             this.showForm = true;
                         }
                     }
-                });
+                })
+                .catch(err => console.error(err));
             }
         }">
             <!-- Form Header -->
@@ -134,15 +138,39 @@
                 <form action="{{ route('login') }}" method="POST" class="space-y-4">
                     @csrf
 
-                    <!-- Selected Account Banner -->
+                    <!-- Selected Account Banner with Dropdown -->
                     <template x-if="selectedEmail">
-                        <div class="flex items-center space-x-3.5 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl mb-4 text-left">
-                            <img :src="selectedAvatar" :alt="selectedName" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0">
-                            <div class="flex-grow min-w-0">
-                                <h4 class="text-xs font-extrabold text-slate-800 truncate" x-text="selectedName"></h4>
-                                <p class="text-[10px] font-semibold text-slate-400 truncate" x-text="selectedEmail"></p>
+                        <div class="relative mb-5" x-data="{ openDropdown: false }" @click.away="openDropdown = false">
+                            <div class="flex items-center space-x-3.5 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-left">
+                                <img :src="selectedAvatar" :alt="selectedName" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0">
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-xs font-extrabold text-slate-800 truncate" x-text="selectedName"></h4>
+                                    <p class="text-[10px] font-semibold text-slate-400 truncate" x-text="selectedEmail"></p>
+                                </div>
+                                <button type="button" @click="openDropdown = !openDropdown" class="text-xs font-bold text-primary hover:underline cursor-pointer flex items-center gap-1 select-none">
+                                    Thay đổi <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="openDropdown ? 'rotate-180' : ''"></i>
+                                </button>
                             </div>
-                            <button type="button" @click="showForm = false; selectedEmail = ''; selectedName = ''; selectedAvatar = ''" class="text-xs font-bold text-primary hover:underline cursor-pointer">Thay đổi</button>
+
+                            <!-- Dropdown accounts list -->
+                            <div x-show="openDropdown" x-transition class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-2 space-y-1 max-h-[220px] overflow-y-auto">
+                                <template x-for="acc in accounts.filter(a => a.email !== selectedEmail)" :key="acc.email">
+                                    <div class="flex items-center justify-between p-2.5 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-xl transition cursor-pointer" @click="selectAccount(acc.email, acc.name, acc.avatar); openDropdown = false">
+                                        <div class="flex items-center space-x-3 min-w-0">
+                                            <img :src="acc.avatar" :alt="acc.name" class="w-8 h-8 rounded-full object-cover border border-slate-100 flex-shrink-0">
+                                            <div class="min-w-0 text-left">
+                                                <h5 class="text-[11px] font-extrabold text-slate-800 truncate" x-text="acc.name"></h5>
+                                                <p class="text-[9px] font-semibold text-slate-400 truncate" x-text="acc.email"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div class="border-t border-slate-100 my-1"></div>
+                                <div class="flex items-center p-2.5 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-xl transition cursor-pointer text-slate-600 hover:text-primary text-left" @click="useDifferentAccount(); openDropdown = false">
+                                    <i class="fa-solid fa-user-plus text-[10px] mr-2 text-primary"></i>
+                                    <span class="text-[11px] font-bold">Sử dụng tài khoản khác</span>
+                                </div>
+                            </div>
                         </div>
                     </template>
 
