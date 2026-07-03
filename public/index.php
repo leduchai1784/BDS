@@ -29,6 +29,7 @@ if (isset($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/api/loc
         
         // Boot kernel
         $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+        $kernel->bootstrap();
         
         echo "Checking LocationController class existence...\n";
         if (class_exists(\App\Http\Controllers\LocationController::class)) {
