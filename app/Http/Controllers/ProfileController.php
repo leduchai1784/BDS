@@ -212,7 +212,7 @@ class ProfileController extends Controller
         // ✅ 2. Invalidate NKS profile cache so next page load gets fresh data from NKS
         \Illuminate\Support\Facades\Cache::forget('nks_profile_sync_' . $user->id);
 
-        // ✅ 3. Sync to NKS AFTER response is sent — user doesn't wait for this
+        // ✅ 3. Sync to NKS synchronously (required for Vercel serverless execution)
         if ($user->nks_token) {
             $nksUpdateData = $updateData;
             if (!empty($nksUpdateData['dob']) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $nksUpdateData['dob'])) {
@@ -220,14 +220,7 @@ class ProfileController extends Controller
                     $nksUpdateData['dob'] = \Carbon\Carbon::createFromFormat('d/m/Y', $nksUpdateData['dob'])->format('Y-m-d');
                 } catch (\Exception $e) {}
             }
-
-            $nksAuthService = $this->nksAuthService;
-            $nksToken       = $user->nks_token;
-
-            // terminating() runs after response is flushed to browser
-            app()->terminating(function () use ($nksAuthService, $nksToken, $nksUpdateData) {
-                $nksAuthService->updateInfo($nksToken, $nksUpdateData);
-            });
+            $this->nksAuthService->updateInfo($user->nks_token, $nksUpdateData);
         }
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'info'])->with('success', 'Hồ sơ cá nhân đã được cập nhật thành công!');
