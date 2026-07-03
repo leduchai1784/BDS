@@ -39,4 +39,12 @@ if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/api/loca
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+try {
+    $app->handleRequest(Request::capture());
+} catch (\Throwable $e) {
+    header('Content-Type: text/plain');
+    echo "GLOBAL EXCEPTION CAUGHT: " . $e->getMessage() . "\n";
+    echo "Exception class: " . get_class($e) . "\n";
+    echo "Trace:\n" . $e->getTraceAsString() . "\n";
+    exit;
+}
