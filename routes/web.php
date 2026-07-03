@@ -94,6 +94,7 @@ Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->nam
 
 // Route API gợi ý tìm kiếm (Autocomplete)
 Route::get('/api/properties/autocomplete', [App\Http\Controllers\PropertyController::class, 'autocomplete'])->name('properties.autocomplete');
+Route::get('/api/properties/{id}/json', [App\Http\Controllers\PropertyController::class, 'getDetailsJson'])->name('properties.details-json');
 
 // Route API AI Chatbot
 Route::post('/chatbot/send', [\App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');

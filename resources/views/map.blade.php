@@ -495,9 +495,18 @@
                             </h4>
                         </div>
                         
-                        <div class="flex items-center text-slate-400 text-[10px] font-medium mt-1">
-                            <i class="fa-solid fa-location-dot text-[9px] mr-1 flex-shrink-0"></i>
-                            <span class="truncate">{{ $property['location'] }}</span>
+                        <div class="flex items-center justify-between mt-1">
+                            <div class="flex items-center text-slate-400 text-[10px] font-medium min-w-0">
+                                <i class="fa-solid fa-location-dot text-[9px] mr-1 flex-shrink-0"></i>
+                                <span class="truncate">{{ $property['location'] }}</span>
+                            </div>
+                            <button 
+                                type="button"
+                                @click.stop="window.dispatchEvent(new CustomEvent('open-property-modal', { detail: { id: {{ $property['id'] }} } }))"
+                                class="text-[10px] font-black text-primary hover:underline ml-2 flex-shrink-0 cursor-pointer"
+                            >
+                                Chi tiết
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -611,9 +620,18 @@
                                 </h4>
                             </div>
                             
-                            <div class="flex items-center text-slate-400 text-[9px] font-medium">
-                                <i class="fa-solid fa-location-dot mr-1 flex-shrink-0"></i>
-                                <span class="truncate">{{ $property['location'] }}</span>
+                            <div class="flex items-center justify-between text-slate-400 text-[9px] font-medium">
+                                <div class="flex items-center min-w-0">
+                                    <i class="fa-solid fa-location-dot mr-1 flex-shrink-0"></i>
+                                    <span class="truncate">{{ $property['location'] }}</span>
+                                </div>
+                                <button 
+                                    type="button"
+                                    @click.stop="window.dispatchEvent(new CustomEvent('open-property-modal', { detail: { id: {{ $property['id'] }} } }))"
+                                    class="text-[9px] font-black text-primary hover:underline ml-2 flex-shrink-0 cursor-pointer"
+                                >
+                                    Chi tiết
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -621,113 +639,339 @@
             </div>
         </div>
     </main>
-</div>
 
-{{-- ===================== PROPERTY DETAIL MODAL ===================== --}}
-<div
-    id="property-detail-modal"
-    style="display:none"
-    class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-    onclick="if(event.target===this) closePropertyModal()"
->
-    {{-- Backdrop --}}
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-
-    {{-- Modal Card --}}
-    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto z-10">
-        {{-- Close button --}}
-        <button onclick="closePropertyModal()" class="absolute top-4 right-4 z-20 w-9 h-9 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md text-slate-600 hover:text-slate-900 transition cursor-pointer">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        {{-- Image --}}
-        <div class="relative w-full h-56 bg-slate-100 rounded-t-3xl overflow-hidden">
-            <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-
-            {{-- Type + Purpose badge --}}
-            <div class="absolute top-4 left-4 flex items-center gap-2">
-                <span id="modal-type-badge" class="bg-primary text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wide"></span>
-                <span id="modal-purpose-badge" class="bg-white/90 text-slate-800 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wide"></span>
+    <!-- PREMIUM PROPERTY DETAIL MODAL -->
+    <div 
+        x-show="showModal" 
+        @open-property-modal.window="openModal($event.detail.id)"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-350"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        x-cloak
+    >
+        <!-- Modal Content Container -->
+        <div 
+            @click.outside="closeModal()"
+            class="bg-white rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100 relative"
+            x-show="showModal"
+            x-transition:enter="transition ease-out duration-350 transform"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+        >
+            <!-- Modal Header (Sticky) -->
+            <div class="bg-slate-50 border-b border-slate-100 py-3.5 px-6 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center space-x-2 text-xs font-bold text-slate-500">
+                    <span class="bg-primary/10 text-primary px-2.5 py-1 rounded-lg" x-text="modalProperty?.type"></span>
+                    <span class="text-slate-300">/</span>
+                    <span class="text-slate-700 truncate max-w-[200px] sm:max-w-md" x-text="modalProperty?.title"></span>
+                </div>
+                <button 
+                    type="button"
+                    @click="closeModal()" 
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer"
+                >
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
             </div>
 
-            {{-- Price over image --}}
-            <div class="absolute bottom-4 left-4">
-                <span id="modal-price" class="text-2xl font-black text-white drop-shadow-lg"></span>
-            </div>
-        </div>
-
-        {{-- Content --}}
-        <div class="p-6">
-            {{-- Title --}}
-            <h2 id="modal-title" class="text-xl font-black text-slate-900 mb-1 leading-snug"></h2>
-
-            {{-- Location --}}
-            <p id="modal-location" class="text-sm text-slate-500 flex items-center gap-1.5 mb-5">
-                <i class="fa-solid fa-location-dot text-primary"></i>
-                <span></span>
-            </p>
-
-            {{-- Stats grid --}}
-            <div class="grid grid-cols-4 gap-3 mb-6">
-                <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                    <div class="text-lg mb-1">📐</div>
-                    <div id="modal-area" class="text-sm font-black text-slate-800"></div>
-                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Diện tích</div>
-                </div>
-                <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                    <div class="text-lg mb-1">🛏️</div>
-                    <div id="modal-bedrooms" class="text-sm font-black text-slate-800"></div>
-                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Phòng ngủ</div>
-                </div>
-                <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                    <div class="text-lg mb-1">🚿</div>
-                    <div id="modal-bathrooms" class="text-sm font-black text-slate-800"></div>
-                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Phòng tắm</div>
-                </div>
-                <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                    <div class="text-lg mb-1">🧭</div>
-                    <div id="modal-direction" class="text-sm font-black text-slate-800"></div>
-                    <div class="text-[10px] text-slate-400 font-semibold mt-0.5">Hướng</div>
-                </div>
+            <!-- Loader State -->
+            <div x-show="modalLoading" class="flex-grow flex flex-col items-center justify-center bg-slate-50">
+                <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
+                <p class="text-xs font-bold text-slate-500">Đang tải chi tiết nhà đất...</p>
             </div>
 
-            {{-- Description --}}
-            <div id="modal-desc-wrap" class="mb-6 hidden">
-                <h4 class="text-sm font-black text-slate-800 mb-2">Mô tả</h4>
-                <p id="modal-desc" class="text-sm text-slate-600 leading-relaxed line-clamp-4"></p>
-            </div>
+            <!-- Scrollable Content Area -->
+            <div x-show="!modalLoading && modalProperty" class="flex-grow overflow-y-auto p-6 md:p-8 bg-slate-50 scrollbar-none" x-cloak>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- LEFT COLUMN (Gallery, Specifications, Description) -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <!-- Image Gallery component -->
+                        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm space-y-4">
+                            <!-- Large view -->
+                            <div class="relative h-[250px] sm:h-[380px] w-full rounded-xl overflow-hidden bg-slate-100 group">
+                                <img 
+                                    :src="modalImages[modalActiveImageIndex]" 
+                                    alt="Property view" 
+                                    class="w-full h-full object-cover object-center transition-all duration-300"
+                                >
+                                <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                                    <template x-if="modalProperty?.is_vip">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-red-500 text-white shadow-lg">
+                                            <i class="fa-solid fa-crown mr-1"></i> VIP NỔI BẬT
+                                        </span>
+                                    </template>
+                                </div>
+                                
+                                <template x-if="modalImages.length > 1">
+                                    <div>
+                                        <button 
+                                            type="button"
+                                            @click="modalActiveImageIndex = (modalActiveImageIndex - 1 + modalImages.length) % modalImages.length"
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/60 text-white flex items-center justify-center transition shadow-md backdrop-blur-sm z-10 cursor-pointer opacity-0 group-hover:opacity-100 duration-200"
+                                        >
+                                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            @click="modalActiveImageIndex = (modalActiveImageIndex + 1) % modalImages.length"
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/60 text-white flex items-center justify-center transition shadow-md backdrop-blur-sm z-10 cursor-pointer opacity-0 group-hover:opacity-100 duration-200"
+                                        >
+                                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                                        </button>
+                                        <span class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full z-10 select-none">
+                                            <span x-text="modalActiveImageIndex + 1"></span> / <span x-text="modalImages.length"></span>
+                                        </span>
+                                    </div>
+                                </template>
+                            </div>
 
-            {{-- Divider --}}
-            <hr class="border-slate-100 mb-5">
+                            <!-- Thumbnail View (only if > 1 image) -->
+                            <template x-if="modalImages.length > 1">
+                                <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                                    <template x-for="(img, idx) in modalImages" :key="idx">
+                                        <button 
+                                            type="button"
+                                            @click="modalActiveImageIndex = idx"
+                                            class="relative w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 transition cursor-pointer"
+                                            :class="modalActiveImageIndex === idx ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'"
+                                        >
+                                            <img :src="img" class="w-full h-full object-cover">
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
 
-            {{-- Agent info --}}
-            <div class="flex items-center gap-3 mb-5">
-                <img id="modal-agent-avatar" src="" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-slate-100">
-                <div class="flex-1 min-w-0">
-                    <div class="text-xs text-slate-400 font-semibold">Đăng bởi</div>
-                    <div id="modal-agent-name" class="text-sm font-extrabold text-slate-900 truncate"></div>
+                            <!-- Title & Price Block -->
+                            <div class="border-t border-slate-100 pt-4 text-left">
+                                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                    <div class="space-y-2">
+                                        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
+                                            <span 
+                                                class="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black text-white mr-1.5 align-middle"
+                                                :class="modalProperty?.transaction_type === 'sale' ? 'bg-orange-500' : 'bg-blue-500'"
+                                            >
+                                                <i class="fa-solid mr-1" :class="modalProperty?.transaction_type === 'sale' ? 'fa-tags' : 'fa-key'"></i>
+                                                <span x-text="modalProperty?.transaction_type === 'sale' ? 'BÁN' : 'THUÊ'"></span>
+                                            </span>
+                                            <span x-text="modalProperty?.title"></span>
+                                        </h2>
+                                        <div class="flex items-center text-slate-400 text-xs font-medium">
+                                            <i class="fa-solid fa-location-dot text-slate-400 mr-1.5 text-sm flex-shrink-0"></i>
+                                            <span x-text="modalProperty?.location"></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1 flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                                        <div class="text-lg sm:text-xl font-black text-primary" x-text="modalProperty?.price"></div>
+                                        <div class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg"><span x-text="modalProperty?.area"></span> m²</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Specifications Grid -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-left">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-primary"></i>
+                                <span>Thông số kỹ thuật</span>
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                <div class="flex items-start space-x-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                        <i class="fa-solid fa-ruler-combined text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Diện tích</span>
+                                        <span class="text-xs font-extrabold text-slate-800"><span x-text="modalProperty?.area"></span> m²</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                        <i class="fa-solid fa-bed text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Phòng ngủ</span>
+                                        <span class="text-xs font-extrabold text-slate-800" x-text="modalProperty?.bedrooms > 0 ? modalProperty?.bedrooms + ' PN' : 'N/A'"></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                        <i class="fa-solid fa-bath text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Phòng tắm</span>
+                                        <span class="text-xs font-extrabold text-slate-800" x-text="modalProperty?.bathrooms > 0 ? modalProperty?.bathrooms + ' WC' : 'N/A'"></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                        <i class="fa-solid fa-compass text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Hướng</span>
+                                        <span class="text-xs font-extrabold text-slate-800" x-text="modalProperty?.direction"></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                        <i class="fa-solid fa-chair text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Nội thất</span>
+                                        <span class="text-xs font-extrabold text-slate-800 truncate block max-w-[130px]" x-text="modalProperty?.furniture" :title="modalProperty?.furniture"></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary flex-shrink-0">
+                                        <i class="fa-solid fa-file-contract text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Pháp lý</span>
+                                        <span class="text-xs font-extrabold text-slate-800 truncate block max-w-[130px]" x-text="modalProperty?.legal" :title="modalProperty?.legal"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-left">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-align-left text-primary"></i>
+                                <span>Mô tả chi tiết</span>
+                            </h3>
+                            <div class="text-slate-650 text-xs leading-relaxed space-y-3 font-semibold whitespace-pre-line" x-html="modalPropertyDescription"></div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN (Agent & Booking Appointment) -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <!-- Agent details card -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-left relative">
+                            <!-- Wishlist Like Button -->
+                            <button 
+                                @click="modalToggleLike()"
+                                type="button"
+                                :class="modalLiked ? 'bg-red-50 text-red-500 border-red-100' : 'bg-slate-50 hover:bg-slate-100 text-slate-400 border-slate-200'"
+                                class="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center border transition cursor-pointer active:scale-95 z-10"
+                                title="Lưu yêu thích"
+                            >
+                                <i class="fa-solid fa-heart text-xs" :class="modalLiked ? 'text-red-500' : 'text-slate-400'"></i>
+                            </button>
+
+                            <div class="flex items-center space-x-3 pb-4 border-b border-slate-100 mb-4 pr-10">
+                                <img 
+                                    :src="modalProperty?.agent?.avatar || 'https://ui-avatars.com/api/?name=' + urlencode(modalProperty?.agent?.name || 'Agent') + '&background=0077bb&color=fff'" 
+                                    alt="Agent" 
+                                    class="w-12 h-12 rounded-full object-cover border border-slate-150 shadow-sm flex-shrink-0"
+                                >
+                                <div class="min-w-0">
+                                    <h4 class="text-sm font-bold text-slate-800 truncate" x-text="modalProperty?.agent?.name"></h4>
+                                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" x-text="modalProperty?.agent?.company || 'Chủ nhà chính chủ'"></span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <a 
+                                    :href="'tel:' + modalProperty?.agent?.phone"
+                                    class="inline-flex items-center justify-center px-2 py-2.5 rounded-xl text-white bg-green-500 hover:bg-green-600 transition font-bold text-xs cursor-pointer truncate"
+                                >
+                                    <i class="fa-solid fa-phone mr-1"></i> Gọi ngay
+                                </a>
+                                <a 
+                                    :href="'https://zalo.me/' + modalProperty?.agent?.phone"
+                                    target="_blank"
+                                    class="inline-flex items-center justify-center px-2 py-2.5 rounded-xl text-white bg-[#0068ff] hover:bg-[#0055d0] transition font-bold text-xs cursor-pointer truncate"
+                                >
+                                    Chat Zalo
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Appointment Booking Card -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-left">
+                            <div class="flex justify-between items-center mb-4">
+                                <h5 class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                                    <span>Đặt lịch xem nhà</span>
+                                </h5>
+                                <button 
+                                    type="button"
+                                    @click="modalResetBooking()"
+                                    class="text-[9px] font-bold text-slate-400 hover:text-primary transition cursor-pointer flex items-center gap-1"
+                                >
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                                    <span>Đặt lại</span>
+                                </button>
+                            </div>
+
+                            <!-- Success State -->
+                            <div x-show="modalBookingSubmitted" class="bg-green-50 border border-green-150 rounded-xl p-4 text-center" x-cloak>
+                                <i class="fa-solid fa-circle-check text-green-500 text-xl mb-1.5"></i>
+                                <h6 class="text-xs font-bold text-green-800 mb-0.5">Gửi thành công!</h6>
+                                <p class="text-[9px] text-green-600 leading-normal font-medium">Lịch hẹn đã được lưu. Môi giới sẽ sớm liên hệ xác nhận.</p>
+                                <button type="button" @click="modalBookingSubmitted = false" class="mt-3 bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer">
+                                    Đặt lịch hẹn khác
+                                </button>
+                            </div>
+
+                            <!-- Form State -->
+                            <form x-show="!modalBookingSubmitted" @submit.prevent="modalSubmitBooking()" class="space-y-3">
+                                <div x-show="modalBookingError" class="p-2.5 bg-red-50 text-red-500 rounded-lg text-[10px] font-bold" x-cloak>
+                                    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                                    <span x-text="modalBookingError"></span>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Ngày hẹn</label>
+                                        <input type="date" x-model="modalBookingDate" class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Giờ hẹn</label>
+                                        <input type="time" x-model="modalBookingTime" class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Tên của bạn</label>
+                                    <input type="text" x-model="modalBookingName" placeholder="Họ và tên..." class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Số điện thoại</label>
+                                    <input type="tel" x-model="modalBookingPhone" placeholder="Số điện thoại..." class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Lời nhắn</label>
+                                    <textarea x-model="modalBookingMessage" rows="2" placeholder="Tôi muốn xem nhà lúc..." class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none"></textarea>
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    :disabled="modalBookingProcessing"
+                                    class="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition shadow shadow-primary/20 disabled:bg-slate-350 cursor-pointer"
+                                >
+                                    <span x-show="!modalBookingProcessing"><i class="fa-solid fa-paper-plane mr-1 text-[10px]"></i> Gửi yêu cầu hẹn</span>
+                                    <span x-show="modalBookingProcessing" class="flex items-center gap-1.5"><i class="fa-solid fa-spinner animate-spin"></i> Đang gửi...</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
-                <a id="modal-agent-phone-btn" href="#" class="flex-shrink-0 inline-flex items-center gap-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-bold px-3 py-2 rounded-xl transition">
-                    <i class="fa-solid fa-phone text-[10px]"></i> Gọi ngay
-                </a>
-            </div>
-
-            {{-- CTA Buttons --}}
-            <div class="flex gap-3">
-                <a id="modal-detail-link" href="#" target="_blank"
-                   class="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl transition shadow shadow-primary/20 text-sm">
-                    <i class="fa-solid fa-expand"></i> Xem trang chi tiết
-                </a>
-                <a id="modal-zalo-btn" href="#" target="_blank"
-                   class="inline-flex items-center justify-center gap-2 py-3 px-5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition text-sm">
-                    <i class="fa-solid fa-comment"></i> Zalo
-                </a>
             </div>
         </div>
     </div>
+</main>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -762,8 +1006,24 @@
             ignoreMobileScroll: false,
             mobileScrollTimeout: null,
 
-            // Modal state
+            // Modal state variables
+            showModal: false,
+            modalLoading: false,
             modalProperty: null,
+            modalImages: [],
+            modalActiveImageIndex: 0,
+            modalLiked: false,
+            modalPropertyDescription: '',
+            modalBookingName: '{{ Auth::check() ? Auth::user()->name : "" }}',
+            modalBookingPhone: '{{ Auth::check() ? Auth::user()->phone : "" }}',
+            modalBookingEmail: '{{ Auth::check() ? Auth::user()->email : "" }}',
+            modalBookingDate: '',
+            modalBookingTime: '',
+            modalBookingMessage: '',
+            modalBookingSubmitted: false,
+            modalBookingError: '',
+            modalBookingProcessing: false,
+            modalWishlistProcessing: false,
 
             isSale() {
                 return this.filterPurpose === 'sale';
@@ -1081,14 +1341,14 @@
                         <div class="w-[240px] text-left relative bg-white">
                             <!-- Image Container with Absolute Badges -->
                             <div class="relative w-full h-28 overflow-hidden rounded-t-2xl">
-                                <div class="block w-full h-full cursor-pointer" onclick="openPropertyModal(${p.id})">
+                                <a href="javascript:void(0)" onclick="window.dispatchEvent(new CustomEvent('open-property-modal', { detail: { id: ${p.id} } }))" class="block w-full h-full">
                                     <img src="${imgUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                                </div>
+                                </a>
                                 <!-- Property Type Badge -->
                                 <span class="absolute top-2 left-2 bg-[#0077bb] text-white text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-wide">
                                     ${p.type}
                                 </span>
-                                <!-- Close Button -->
+                                <!-- Close Button Mock -->
                                 <button onclick="window.activeMapPopup?.remove()" class="absolute top-2 right-2 w-6 h-6 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 shadow-md transition focus:outline-none z-10">
                                     <i class="fa-solid fa-xmark text-xs"></i>
                                 </button>
@@ -1096,17 +1356,17 @@
                             
                             <!-- Body Info -->
                             <div class="p-3.5">
-                                <h4 class="text-[13px] font-black text-slate-800 line-clamp-1 hover:text-[#0077bb] transition mb-1 cursor-pointer" onclick="openPropertyModal(${p.id})">
-                                    ${p.title}
+                                <h4 class="text-[13px] font-black text-slate-800 line-clamp-1 hover:text-[#0077bb] transition mb-1">
+                                    <a href="javascript:void(0)" onclick="window.dispatchEvent(new CustomEvent('open-property-modal', { detail: { id: ${p.id} } }))">${p.title}</a>
                                 </h4>
                                 <p class="text-[10px] font-medium text-slate-400 truncate mb-3">
-                                    <i class="fa-solid fa-location-dot mr-0.5"></i>${p.location}
+                                    ${p.location}
                                 </p>
                                 <div class="flex items-center justify-between pt-2 border-t border-slate-100">
                                     <span class="text-[13px] font-black text-[#0077bb]">${p.price}</span>
-                                    <button onclick="openPropertyModal(${p.id})" class="text-[10px] font-black text-white bg-[#0077bb] hover:bg-[#0066aa] px-2.5 py-1 rounded-lg flex items-center gap-0.5 transition cursor-pointer">
-                                        <i class="fa-solid fa-expand text-[8px]"></i> Chi tiết
-                                    </button>
+                                    <a href="javascript:void(0)" onclick="window.dispatchEvent(new CustomEvent('open-property-modal', { detail: { id: ${p.id} } }))" class="text-[10px] font-black text-[#0077bb] hover:underline flex items-center gap-0.5">
+                                        Chi tiết <i class="fa-solid fa-arrow-right text-[8px]"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1285,110 +1545,145 @@
                                 }
                             }
                         }
-                    }
                 }, 100); // Debounce scroll detection slightly for smoothness
+            },
+
+            // Modal methods
+            openModal(id) {
+                this.showModal = true;
+                this.modalLoading = true;
+                this.modalResetBooking();
+                this.modalActiveImageIndex = 0;
+                
+                fetch(`/api/properties/${id}/json`)
+                    .then(res => res.json())
+                    .then(data => {
+                        this.modalLoading = false;
+                        if (data.success) {
+                            this.modalProperty = data.property;
+                            this.modalLiked = data.isLiked;
+                            
+                            // Format images
+                            this.modalImages = (data.property.images || []).map(img => {
+                                return (img.startsWith('http://') || img.startsWith('https://')) ? img : '/' + img.replace(/^\//, '');
+                            });
+                            if (this.modalImages.length === 0) {
+                                this.modalImages.push('/images/apartment_1.png');
+                            }
+                            
+                            // Format description
+                            const desc = data.property.description || '';
+                            this.modalPropertyDescription = desc.replace(/\\n/g, "\n").replace(/\n/g, '<br>');
+                        } else {
+                            this.closeModal();
+                            alert('Không thể tải thông tin bất động sản này.');
+                        }
+                    })
+                    .catch(err => {
+                        this.modalLoading = false;
+                        this.closeModal();
+                        console.error('Error fetching property details:', err);
+                        alert('Lỗi kết nối mạng, vui lòng thử lại.');
+                    });
+            },
+            closeModal() {
+                this.showModal = false;
+                this.modalProperty = null;
+            },
+            modalToggleLike() {
+                if (!this.modalProperty || this.modalWishlistProcessing) return;
+                this.modalWishlistProcessing = true;
+
+                fetch('{{ route('wishlist.toggle') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        property_id: this.modalProperty.id
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    this.modalWishlistProcessing = false;
+                    if (data.success) {
+                        this.modalLiked = data.is_favorite;
+                    }
+                })
+                .catch(err => {
+                    this.modalWishlistProcessing = false;
+                    console.error('Error:', err);
+                });
+            },
+            modalResetBooking() {
+                this.modalBookingDate = '';
+                this.modalBookingTime = '';
+                this.modalBookingMessage = '';
+                this.modalBookingSubmitted = false;
+                this.modalBookingError = '';
+                this.modalBookingProcessing = false;
+            },
+            modalSubmitBooking() {
+                @guest
+                    window.location.href = '{{ route('login') }}';
+                    return;
+                @endguest
+
+                if ({{ Auth::check() ? Auth::id() : 0 }} === this.modalProperty?.owner_id) {
+                    alert('Bạn không thể tự đặt lịch xem nhà trên tin đăng của chính mình.');
+                    return;
+                }
+
+                if (!this.modalBookingDate) {
+                    this.modalBookingError = 'Vui lòng chọn ngày hẹn.';
+                    return;
+                }
+                if (!this.modalBookingTime) {
+                    this.modalBookingError = 'Vui lòng chọn giờ hẹn.';
+                    return;
+                }
+
+                if (this.modalBookingProcessing) return;
+                this.modalBookingProcessing = true;
+                this.modalBookingError = '';
+
+                fetch('{{ route('appointments.book') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        property_id: this.modalProperty.id,
+                        name: this.modalBookingName,
+                        phone: this.modalBookingPhone,
+                        email: this.modalBookingEmail,
+                        date: this.modalBookingDate,
+                        time: this.modalBookingTime,
+                        message: this.modalBookingMessage
+                    })
+                })
+                .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                .then(res => {
+                    this.modalBookingProcessing = false;
+                    if (res.status === 200 || res.status === 201 || res.body.success) {
+                        this.modalBookingSubmitted = true;
+                    } else {
+                        this.modalBookingError = res.body.message || 'Có lỗi xảy ra, vui lòng thử lại.';
+                    }
+                })
+                .catch(err => {
+                    this.modalBookingProcessing = false;
+                    this.modalBookingError = 'Lỗi kết nối mạng, vui lòng thử lại.';
+                    console.error('Error:', err);
+                });
+            },
+            urlencode(str) {
+                return encodeURIComponent(str || '');
             }
         };
     }
 </script>
-
-<script>
-    // ===== Property Detail Modal Functions =====
-
-    // All properties data (shared with Alpine)
-    const __mapProperties = @json($properties);
-
-    function openPropertyModal(id) {
-        const p = __mapProperties.find(x => x.id === id);
-        if (!p) return;
-
-        // Close any open map popup
-        if (window.activeMapPopup) window.activeMapPopup.remove();
-
-        // Fill image
-        const imgUrl = (p.image && (p.image.startsWith('http://') || p.image.startsWith('https://')))
-            ? p.image
-            : (p.image ? (p.image.startsWith('/') ? p.image : '/' + p.image) : '/images/apartment_1.png');
-        document.getElementById('modal-img').src = imgUrl;
-        document.getElementById('modal-img').alt = p.title;
-
-        // Badges
-        document.getElementById('modal-type-badge').textContent = p.type || '';
-        document.getElementById('modal-purpose-badge').textContent =
-            (p.transaction_type === 'sale' || p.purpose === 'sale') ? 'Đang bán' : 'Cho thuê';
-
-        // Price
-        document.getElementById('modal-price').textContent = p.price || '';
-
-        // Title & location
-        document.getElementById('modal-title').textContent = p.title || '';
-        const locSpan = document.querySelector('#modal-location span');
-        if (locSpan) locSpan.textContent = p.location || p.address || '';
-
-        // Stats
-        document.getElementById('modal-area').textContent     = p.area   ? p.area + ' m²'  : '—';
-        document.getElementById('modal-bedrooms').textContent  = p.bedrooms  ? p.bedrooms + ' PN'  : '—';
-        document.getElementById('modal-bathrooms').textContent = p.bathrooms ? p.bathrooms + ' WC'  : '—';
-        document.getElementById('modal-direction').textContent = p.direction || '—';
-
-        // Description
-        const descWrap = document.getElementById('modal-desc-wrap');
-        const descEl   = document.getElementById('modal-desc');
-        if (p.description) {
-            descEl.textContent = p.description;
-            descWrap.classList.remove('hidden');
-        } else {
-            descWrap.classList.add('hidden');
-        }
-
-        // Agent
-        const agentAvatar = p.agent_avatar || p.owner_avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(p.agent_name || 'Agent')}&background=0077bb&color=fff`;
-        document.getElementById('modal-agent-avatar').src  = agentAvatar;
-        document.getElementById('modal-agent-name').textContent = p.agent_name || p.owner_name || 'Chủ nhà';
-
-        const agentPhone = p.agent_phone || p.owner_phone || '';
-        const phoneBtn = document.getElementById('modal-agent-phone-btn');
-        phoneBtn.href = agentPhone ? 'tel:' + agentPhone : '#';
-
-        const zaloBtn = document.getElementById('modal-zalo-btn');
-        zaloBtn.href = agentPhone ? 'https://zalo.me/' + agentPhone : '#';
-
-        // Detail link
-        document.getElementById('modal-detail-link').href = '/property/' + p.id;
-
-        // Show modal with animation
-        const modal = document.getElementById('property-detail-modal');
-        modal.style.display = 'flex';
-        requestAnimationFrame(() => {
-            modal.style.opacity = '0';
-            modal.style.transition = 'opacity 0.2s ease';
-            requestAnimationFrame(() => { modal.style.opacity = '1'; });
-        });
-
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closePropertyModal() {
-        const modal = document.getElementById('property-detail-modal');
-        modal.style.transition = 'opacity 0.2s ease';
-        modal.style.opacity = '0';
-        setTimeout(() => {
-            modal.style.display = 'none';
-            modal.style.opacity = '1';
-        }, 200);
-        document.body.style.overflow = '';
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closePropertyModal();
-    });
-
-    // Expose globally for inline onclick
-    window.openPropertyModal = openPropertyModal;
-    window.closePropertyModal = closePropertyModal;
-</script>
 @endpush
-
