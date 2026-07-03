@@ -85,6 +85,9 @@ Route::get('/projects/{slug}', [App\Http\Controllers\ProjectController::class, '
 Route::get('/agents', [App\Http\Controllers\AgentController::class, 'index'])->name('agents.index');
 Route::get('/agents/{id}', [App\Http\Controllers\AgentController::class, 'show'])->name('agents.show');
 
+// Route trang tin tức
+Route::get('/news', [App\Http\Controllers\HomeController::class, 'news'])->name('news');
+
 // Route trang bản đồ tìm kiếm
 Route::get('/map', [App\Http\Controllers\PropertyController::class, 'map'])->name('properties.map');
 

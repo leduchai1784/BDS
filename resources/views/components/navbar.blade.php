@@ -101,7 +101,7 @@
                         </a>
                     </div>
                 </div>
-                <a href="#news" :class="isScrolled ? 'text-slate-600 hover:text-primary' : 'text-slate-200 hover:text-white'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
+                <a href="{{ route('news') }}" :class="isScrolled ? '{{ request()->routeIs('news') ? 'text-primary' : 'text-slate-600 hover:text-primary' }}' : '{{ request()->routeIs('news') ? 'text-primary' : 'text-slate-200 hover:text-white' }}'" class="font-bold text-sm lg:text-base hover:text-primary transition duration-150 whitespace-nowrap">Tin tức</a>
             </nav>
 
             <!-- Actions (Profile & CTA) -->
@@ -406,7 +406,7 @@
                 </div>
             </div>
 
-            <a href="#news" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition">Tin tức</a>
+            <a href="{{ route('news') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('news') ? 'text-primary font-bold bg-slate-50' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }} transition">Tin tức</a>
             
             <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
                 @auth

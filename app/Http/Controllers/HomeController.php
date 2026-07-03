@@ -32,4 +32,12 @@ class HomeController extends Controller
             'featuredProjects' => $featuredProjects
         ]);
     }
+
+    /**
+     * Display the news page.
+     */
+    public function news()
+    {
+        return view('news');
+    }
 }
