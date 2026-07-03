@@ -414,54 +414,59 @@
                             x-data="{
                                 provinces: [],
                                 wards: [],
+                                selectedProvinceId: null,
                                 selectedProvince: '{{ old('add_province', $user['add_province'] ?? '') }}',
                                 provinceSearch: '{{ old('add_province', $user['add_province'] ?? '') }}',
                                 selectedWard: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
                                 wardSearch: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
                                 isEditing: {{ $errors->any() ? 'true' : 'false' }},
+                                loadWards(provinceId) {
+                                    if (!provinceId) { this.wards = []; return; }
+                                    fetch('/api/locations/wards?province_id=' + provinceId)
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            this.wards = data;
+                                            // Re-match ward if we have a saved value
+                                            if (this.wardSearch) {
+                                                const match = data.find(w =>
+                                                    w.title.toLowerCase() === this.wardSearch.toLowerCase()
+                                                );
+                                                if (match) {
+                                                    this.selectedWard = match.title;
+                                                    this.wardSearch = match.title;
+                                                }
+                                            }
+                                        })
+                                        .catch(err => console.error('Error loading wards:', err));
+                                },
+                                selectProvince(p) {
+                                    this.selectedProvince = p.title;
+                                    this.provinceSearch = p.title;
+                                    this.selectedProvinceId = p.id;
+                                    this.selectedWard = '';
+                                    this.wardSearch = '';
+                                    this.wards = [];
+                                    this.loadWards(p.id);
+                                },
                                 init() {
                                     fetch('/api/locations/provinces')
                                         .then(res => res.json())
                                         .then(data => {
                                             this.provinces = data;
-                                            this.initializeDropdowns();
+                                            // Match saved province and load its wards
+                                            if (this.provinceSearch) {
+                                                const match = data.find(p =>
+                                                    p.title.toLowerCase() === this.provinceSearch.toLowerCase()
+                                                );
+                                                if (match) {
+                                                    this.selectedProvince = match.title;
+                                                    this.provinceSearch = match.title;
+                                                    this.selectedProvinceId = match.id;
+                                                    this.loadWards(match.id);
+                                                }
+                                            }
                                         })
                                         .catch(err => console.error('Error loading provinces:', err));
-
-                                    fetch('/api/locations/wards')
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            this.wards = data;
-                                            this.initializeDropdowns();
-                                        })
-                                        .catch(err => console.error('Error loading wards:', err));
-                                },
-                                initializeDropdowns() {
-                                    if (!this.provinces || !this.provinces.length) return;
-                                    
-                                    // 1. Match province
-                                    if (this.provinceSearch) {
-                                        const matchProv = this.provinces.find(p => 
-                                            p.title.toLowerCase() === this.provinceSearch.toLowerCase() ||
-                                            p.title.toLowerCase().replace(/^(thành phố|tỉnh|thủ đô)\s+/i, '') === this.provinceSearch.toLowerCase()
-                                        );
-                                        if (matchProv) {
-                                            this.selectedProvince = matchProv.title;
-                                            this.provinceSearch = matchProv.title;
-                                        }
-                                    }
-                                    
-                                    // 2. Match ward
-                                    if (this.wardSearch && this.wards && this.wards.length) {
-                                        const matchWard = this.wards.find(w => 
-                                            w.title.toLowerCase() === this.wardSearch.toLowerCase() ||
-                                            w.title.toLowerCase().replace(/^(phường|xã|thị trấn)\s+/i, '') === this.wardSearch.toLowerCase()
-                                        );
-                                        if (matchWard) {
-                                            this.selectedWard = matchWard.title;
-                                            this.wardSearch = matchWard.title;
-                                        }
-                                    }
                                 }
                             }"
                         >
@@ -650,10 +655,7 @@
                                             <template x-for="p in provinces.filter(prov => !provinceSearch || prov.title.toLowerCase().includes(provinceSearch.toLowerCase()))" :key="p.id">
                                                 <div 
                                                     @click="
-                                                        selectedProvince = p.title;
-                                                        provinceSearch = p.title;
-                                                        selectedWard = '';
-                                                        wardSearch = '';
+                                                        selectProvince(p);
                                                         open = false;
                                                     "
                                                     class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"

@@ -119,11 +119,13 @@ class PropertyService
     }
 
     /**
-     * Fetch and cache wards/administratives from NKS API.
+     * Fetch wards/administratives for a specific province from NKS API.
+     * Uses nks/provinces endpoint with province_id + slcBox=true param.
      */
-    public function getNksWards(): array
+    public function getNksWardsByProvince(int $provinceId): array
     {
-        $cached = Cache::get('nks_wards');
+        $cacheKey = 'nks_wards_province_' . $provinceId;
+        $cached = Cache::get($cacheKey);
         if (is_array($cached) && !empty($cached)) {
             return $cached;
         }
@@ -131,17 +133,21 @@ class PropertyService
         try {
             $response = Http::withoutVerifying()
                 ->timeout(15)
-                ->post('https://online.nks.vn/api/nks/administratives', []);
+                ->post('https://online.nks.vn/api/nks/provinces', [
+                    'province_id' => $provinceId,
+                    'slcBox'      => true,
+                ]);
 
             if ($response->successful()) {
                 $json = $response->json();
                 if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
-                    Cache::put('nks_wards', $json['data'], 86400);
+                    // data is a flat list of wards for this province
+                    Cache::put($cacheKey, $json['data'], 86400);
                     return $json['data'];
                 }
             }
         } catch (\Exception $e) {
-            Log::warning('Failed to fetch administratives from NKS API: ' . $e->getMessage());
+            Log::warning('Failed to fetch wards for province ' . $provinceId . ' from NKS API: ' . $e->getMessage());
         }
         return [];
     }

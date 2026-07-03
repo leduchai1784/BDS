@@ -15,30 +15,42 @@ class LocationController extends Controller
     }
 
     /**
-     * Get provinces and districts from NKS API.
+     * Get provinces list from NKS API.
+     * Returns [{id, title}] array.
      */
     public function getProvinces()
     {
         $provinces = $this->propertyService->getNksProvinces();
-        return response()->json($provinces);
+
+        // Return only id and title to keep payload small
+        $simplified = array_map(fn($p) => [
+            'id'    => $p['id'],
+            'title' => $p['title'],
+        ], $provinces);
+
+        return response()->json($simplified);
     }
 
     /**
-     * Get wards (flat list) from NKS API.
+     * Get wards for a given province_id from NKS API.
+     * Example: GET /api/locations/wards?province_id=1
+     * Returns [{id, title}] array.
      */
-    public function getWards()
+    public function getWards(Request $request)
     {
-        $wards = $this->propertyService->getNksWards();
-        
-        // Filter out districts and provinces to keep only actual wards
-        $filteredWards = array_values(array_filter($wards, function($item) {
-            $title = $item['title'] ?? '';
-            return stripos($title, 'Thị xã') === false 
-                && stripos($title, 'Huyện') === false 
-                && stripos($title, 'Quận') === false 
-                && stripos($title, 'Thành phố') === false;
-        }));
+        $provinceId = (int) $request->query('province_id', 0);
 
-        return response()->json($filteredWards);
+        if ($provinceId <= 0) {
+            return response()->json([]);
+        }
+
+        $wards = $this->propertyService->getNksWardsByProvince($provinceId);
+
+        $simplified = array_map(fn($w) => [
+            'id'    => $w['id'],
+            'title' => $w['title'],
+        ], $wards);
+
+        return response()->json($simplified);
     }
 }
