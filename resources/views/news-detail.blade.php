@@ -32,10 +32,10 @@
 <!-- Main Body Grid -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Grid with Left Sidebar (33%) and Right Content (66%) -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
         
         <!-- LEFT COLUMN: Sidebar (33% width / lg:col-span-1) -->
-        <div class="space-y-8 lg:col-span-1">
+        <div class="space-y-8 lg:col-span-1 lg:sticky lg:top-28 lg:self-start lg:border-r lg:border-slate-100 lg:pr-12">
             
             <!-- Search Box Widget -->
             <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4 text-left">
