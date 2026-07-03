@@ -413,6 +413,7 @@
                             class="space-y-6"
                             x-data="{
                                 provinces: [],
+                                wards: [],
                                 selectedProvince: '{{ old('add_province', $user['add_province'] ?? '') }}',
                                 provinceSearch: '{{ old('add_province', $user['add_province'] ?? '') }}',
                                 selectedDistrict: '{{ old('add_district', $user['add_district'] ?? '') }}',
@@ -421,13 +422,21 @@
                                 wardSearch: '{{ old('add_ward', $user['add_ward'] ?? '') }}',
                                 isEditing: {{ $errors->any() ? 'true' : 'false' }},
                                 init() {
-                                    fetch('/vietnam_provinces.json')
+                                    fetch('/api/locations/provinces')
                                         .then(res => res.json())
                                         .then(data => {
                                             this.provinces = data;
                                             this.initializeDropdowns();
                                         })
                                         .catch(err => console.error('Error loading provinces:', err));
+
+                                    fetch('/api/locations/wards')
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            this.wards = data;
+                                            this.initializeDropdowns();
+                                        })
+                                        .catch(err => console.error('Error loading wards:', err));
                                 },
                                 initializeDropdowns() {
                                     if (!this.provinces || !this.provinces.length) return;
@@ -435,45 +444,39 @@
                                     // 1. Match province
                                     if (this.provinceSearch) {
                                         const matchProv = this.provinces.find(p => 
-                                            p.Name.toLowerCase() === this.provinceSearch.toLowerCase() ||
-                                            p.Name.toLowerCase().replace(/^(thành phố|tỉnh)\s+/i, '') === this.provinceSearch.toLowerCase()
+                                            p.title.toLowerCase() === this.provinceSearch.toLowerCase() ||
+                                            p.title.toLowerCase().replace(/^(thành phố|tỉnh|thủ đô)\s+/i, '') === this.provinceSearch.toLowerCase()
                                         );
                                         if (matchProv) {
-                                            this.selectedProvince = matchProv.Name;
-                                            this.provinceSearch = matchProv.Name;
+                                            this.selectedProvince = matchProv.title;
+                                            this.provinceSearch = matchProv.title;
                                         }
                                     }
                                     
                                     // 2. Match district
                                     if (this.districtSearch && this.selectedProvince) {
-                                        const prov = this.provinces.find(p => p.Name === this.selectedProvince);
-                                        if (prov) {
-                                            const matchDist = prov.Districts.find(d => 
-                                                d.Name.toLowerCase() === this.districtSearch.toLowerCase() ||
-                                                d.Name.toLowerCase().replace(/^(quận|huyện|thị xã|thành phố)\s+/i, '') === this.districtSearch.toLowerCase()
+                                        const prov = this.provinces.find(p => p.title === this.selectedProvince);
+                                        if (prov && prov.administratives) {
+                                            const matchDist = prov.administratives.find(d => 
+                                                d.title.toLowerCase() === this.districtSearch.toLowerCase() ||
+                                                d.title.toLowerCase().replace(/^(quận|huyện|thị xã|thành phố)\s+/i, '') === this.districtSearch.toLowerCase()
                                             );
                                             if (matchDist) {
-                                                this.selectedDistrict = matchDist.Name;
-                                                this.districtSearch = matchDist.Name;
+                                                this.selectedDistrict = matchDist.title;
+                                                this.districtSearch = matchDist.title;
                                             }
                                         }
                                     }
                                     
                                     // 3. Match ward
-                                    if (this.wardSearch && this.selectedProvince && this.selectedDistrict) {
-                                        const prov = this.provinces.find(p => p.Name === this.selectedProvince);
-                                        if (prov) {
-                                            const dist = prov.Districts.find(d => d.Name === this.selectedDistrict);
-                                            if (dist) {
-                                                const matchWard = dist.Wards.find(w => 
-                                                    w.Name.toLowerCase() === this.wardSearch.toLowerCase() ||
-                                                    w.Name.toLowerCase().replace(/^(phường|xã|thị trấn)\s+/i, '') === this.wardSearch.toLowerCase()
-                                                );
-                                                if (matchWard) {
-                                                    this.selectedWard = matchWard.Name;
-                                                    this.wardSearch = matchWard.Name;
-                                                }
-                                            }
+                                    if (this.wardSearch && this.wards && this.wards.length) {
+                                        const matchWard = this.wards.find(w => 
+                                            w.title.toLowerCase() === this.wardSearch.toLowerCase() ||
+                                            w.title.toLowerCase().replace(/^(phường|xã|thị trấn)\s+/i, '') === this.wardSearch.toLowerCase()
+                                        );
+                                        if (matchWard) {
+                                            this.selectedWard = matchWard.title;
+                                            this.wardSearch = matchWard.title;
                                         }
                                     }
                                 }
@@ -632,10 +635,10 @@
                                         selectedWard = '';
                                         wardSearch = '';
                                     } else {
-                                        const found = provinces.find(p => p.Name.toLowerCase() === provinceSearch.toLowerCase());
+                                        const found = provinces.find(p => p.title.toLowerCase() === provinceSearch.toLowerCase());
                                         if (found) {
-                                            selectedProvince = found.Name;
-                                            provinceSearch = found.Name;
+                                            selectedProvince = found.title;
+                                            provinceSearch = found.title;
                                         } else {
                                             provinceSearch = selectedProvince;
                                         }
@@ -663,11 +666,11 @@
                                             class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
                                             x-cloak
                                         >
-                                            <template x-for="p in provinces.filter(prov => !provinceSearch || prov.Name.toLowerCase().includes(provinceSearch.toLowerCase()))" :key="p.Id">
+                                            <template x-for="p in provinces.filter(prov => !provinceSearch || prov.title.toLowerCase().includes(provinceSearch.toLowerCase()))" :key="p.id">
                                                 <div 
                                                     @click="
-                                                        selectedProvince = p.Name;
-                                                        provinceSearch = p.Name;
+                                                        selectedProvince = p.title;
+                                                        provinceSearch = p.title;
                                                         selectedDistrict = '';
                                                         districtSearch = '';
                                                         selectedWard = '';
@@ -675,10 +678,10 @@
                                                         open = false;
                                                     "
                                                     class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
-                                                    x-text="p.Name"
+                                                    x-text="p.title"
                                                 ></div>
                                             </template>
-                                            <div x-show="provinces.filter(prov => !provinceSearch || prov.Name.toLowerCase().includes(provinceSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                                            <div x-show="provinces.filter(prov => !provinceSearch || prov.title.toLowerCase().includes(provinceSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
                                                 Không tìm thấy kết quả
                                             </div>
                                         </div>
@@ -693,11 +696,11 @@
                                         selectedWard = '';
                                         wardSearch = '';
                                     } else {
-                                        const prov = provinces.find(p => p.Name === selectedProvince);
-                                        const found = prov ? prov.Districts.find(d => d.Name.toLowerCase() === districtSearch.toLowerCase()) : null;
+                                        const prov = provinces.find(p => p.title === selectedProvince);
+                                        const found = prov && prov.administratives ? prov.administratives.find(d => d.title.toLowerCase() === districtSearch.toLowerCase()) : null;
                                         if (found) {
-                                            selectedDistrict = found.Name;
-                                            districtSearch = found.Name;
+                                            selectedDistrict = found.title;
+                                            districtSearch = found.title;
                                         } else {
                                             districtSearch = selectedDistrict;
                                         }
@@ -725,20 +728,20 @@
                                             class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
                                             x-cloak
                                         >
-                                            <template x-for="d in (provinces.find(p => p.Name === selectedProvince)?.Districts || []).filter(dist => !districtSearch || dist.Name.toLowerCase().includes(districtSearch.toLowerCase()))" :key="d.Id">
+                                            <template x-for="d in (provinces.find(p => p.title === selectedProvince)?.administratives || []).filter(dist => !districtSearch || dist.title.toLowerCase().includes(districtSearch.toLowerCase()))" :key="d.id">
                                                 <div 
                                                     @click="
-                                                        selectedDistrict = d.Name;
-                                                        districtSearch = d.Name;
+                                                        selectedDistrict = d.title;
+                                                        districtSearch = d.title;
                                                         selectedWard = '';
                                                         wardSearch = '';
                                                         open = false;
                                                     "
                                                     class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
-                                                    x-text="d.Name"
+                                                    x-text="d.title"
                                                 ></div>
                                             </template>
-                                            <div x-show="(provinces.find(p => p.Name === selectedProvince)?.Districts || []).filter(dist => !districtSearch || dist.Name.toLowerCase().includes(districtSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                                            <div x-show="(provinces.find(p => p.title === selectedProvince)?.administratives || []).filter(dist => !districtSearch || dist.title.toLowerCase().includes(districtSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
                                                 Không tìm thấy kết quả
                                             </div>
                                         </div>
@@ -751,12 +754,10 @@
                                         selectedWard = '';
                                         wardSearch = '';
                                     } else {
-                                        const prov = provinces.find(p => p.Name === selectedProvince);
-                                        const dist = prov ? prov.Districts.find(d => d.Name === selectedDistrict) : null;
-                                        const found = dist ? dist.Wards.find(w => w.Name.toLowerCase() === wardSearch.toLowerCase()) : null;
+                                        const found = wards ? wards.find(w => w.title.toLowerCase() === wardSearch.toLowerCase()) : null;
                                         if (found) {
-                                            selectedWard = found.Name;
-                                            wardSearch = found.Name;
+                                            selectedWard = found.title;
+                                            wardSearch = found.title;
                                         } else {
                                             wardSearch = selectedWard;
                                         }
@@ -784,18 +785,18 @@
                                             class="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left"
                                             x-cloak
                                         >
-                                            <template x-for="w in (provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).filter(ward => !wardSearch || ward.Name.toLowerCase().includes(wardSearch.toLowerCase()))" :key="w.Id">
+                                            <template x-for="w in wards.filter(ward => !wardSearch || ward.title.toLowerCase().includes(wardSearch.toLowerCase()))" :key="w.id">
                                                 <div 
                                                     @click="
-                                                        selectedWard = w.Name;
-                                                        wardSearch = w.Name;
+                                                        selectedWard = w.title;
+                                                        wardSearch = w.title;
                                                         open = false;
                                                     "
                                                     class="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
-                                                    x-text="w.Name"
+                                                    x-text="w.title"
                                                 ></div>
                                             </template>
-                                            <div x-show="(provinces.find(p => p.Name === selectedProvince)?.Districts.find(d => d.Name === selectedDistrict)?.Wards || []).filter(ward => !wardSearch || ward.Name.toLowerCase().includes(wardSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
+                                            <div x-show="wards.filter(ward => !wardSearch || ward.title.toLowerCase().includes(wardSearch.toLowerCase())).length === 0" class="px-4 py-2.5 text-xs text-slate-400 font-semibold">
                                                 Không tìm thấy kết quả
                                             </div>
                                         </div>

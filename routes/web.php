@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LocationController;
 
 
 // Route trang chủ
@@ -156,3 +157,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 });
+
+// API địa chỉ lấy từ NKS
+Route::get('/api/locations/provinces', [LocationController::class, 'getProvinces']);
+Route::get('/api/locations/wards', [LocationController::class, 'getWards']);
