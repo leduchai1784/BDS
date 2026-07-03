@@ -203,7 +203,7 @@
                     <!-- Remember Me & Submit -->
                     <div class="flex items-center justify-between pt-1">
                         <label class="inline-flex items-center cursor-pointer select-none">
-                            <input type="checkbox" name="remember" class="w-4 h-4 rounded text-primary focus:ring-primary border-slate-200 cursor-pointer" {{ old('remember', 'on') ? 'checked' : '' }}>
+                            <input type="checkbox" name="remember" class="w-4 h-4 rounded text-primary focus:ring-primary border-slate-200 cursor-pointer" {{ old('remember') ? 'checked' : '' }}>
                             <span class="ml-2 text-xs font-bold text-slate-500">Ghi nhớ đăng nhập</span>
                         </label>
                     </div>
