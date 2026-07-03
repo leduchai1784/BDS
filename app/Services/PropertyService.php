@@ -120,7 +120,7 @@ class PropertyService
 
     /**
      * Fetch wards/administratives for a specific province from NKS API.
-     * Uses nks/provinces endpoint with province_id + slcBox=true param.
+     * Uses nks/administratives endpoint with province_id + slcBox=true param.
      */
     public function getNksWardsByProvince(int $provinceId): array
     {
@@ -133,7 +133,7 @@ class PropertyService
         try {
             $response = Http::withoutVerifying()
                 ->timeout(15)
-                ->post('https://online.nks.vn/api/nks/provinces', [
+                ->post('https://online.nks.vn/api/nks/administratives', [
                     'province_id' => $provinceId,
                     'slcBox'      => true,
                 ]);
@@ -141,7 +141,6 @@ class PropertyService
             if ($response->successful()) {
                 $json = $response->json();
                 if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
-                    // data is a flat list of wards for this province
                     Cache::put($cacheKey, $json['data'], 86400);
                     return $json['data'];
                 }
