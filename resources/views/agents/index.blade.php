@@ -101,9 +101,6 @@
                {{ request('type') !== 'company' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50' }}">
                 <i class="fa-solid fa-user-tie {{ request('type') !== 'company' ? 'text-primary' : 'text-slate-400' }}"></i>
                 Nhà Môi Giới
-                @if(request('type') !== 'company')
-                    <span class="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">ON</span>
-                @endif
             </a>
             {{-- Tab: Doanh Nghiệp --}}
             <a href="{{ route('agents.index', ['type' => 'company']) }}"
@@ -111,9 +108,6 @@
                {{ request('type') === 'company' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50' }}">
                 <i class="fa-solid fa-building {{ request('type') === 'company' ? 'text-primary' : 'text-slate-400' }}"></i>
                 Doanh Nghiệp
-                @if(request('type') === 'company')
-                    <span class="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">ON</span>
-                @endif
             </a>
         </div>
     </div>
