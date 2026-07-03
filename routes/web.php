@@ -159,5 +159,5 @@ Route::middleware('guest')->group(function () {
 });
 
 // API địa chỉ lấy từ NKS
-Route::get('/api/locations/provinces', [LocationController::class, 'getProvinces']);
-Route::get('/api/locations/wards', [LocationController::class, 'getWards']);
+Route::get('/locations/provinces', [LocationController::class, 'getProvinces']);
+Route::get('/locations/wards', [LocationController::class, 'getWards']);

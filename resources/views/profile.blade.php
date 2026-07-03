@@ -422,7 +422,7 @@
                                 isEditing: {{ $errors->any() ? 'true' : 'false' }},
                                 loadWards(provinceId) {
                                     if (!provinceId) { this.wards = []; return; }
-                                    fetch('/api/locations/wards?province_id=' + provinceId)
+                                    fetch('/locations/wards?province_id=' + provinceId)
                                         .then(res => res.json())
                                         .then(data => {
                                             this.wards = data;
@@ -449,7 +449,7 @@
                                     this.loadWards(p.id);
                                 },
                                 init() {
-                                    fetch('/api/locations/provinces')
+                                    fetch('/locations/provinces')
                                         .then(res => res.json())
                                         .then(data => {
                                             this.provinces = data;
