@@ -85,6 +85,13 @@ class NksAuthService
                 }
             }
 
+            // Cast location IDs to integer for NKS API compatibility
+            foreach (['add_province', 'add_district', 'add_ward'] as $idKey) {
+                if (isset($mergedData[$idKey]) && is_numeric($mergedData[$idKey])) {
+                    $mergedData[$idKey] = (int) $mergedData[$idKey];
+                }
+            }
+
             // Sanitize values
             if (isset($mergedData['id_place'])) {
                 $mergedData['id_place'] = $this->sanitizeNksString($mergedData['id_place'], 50);
