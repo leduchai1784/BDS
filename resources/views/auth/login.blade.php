@@ -142,7 +142,7 @@
                                 <h4 class="text-xs font-extrabold text-slate-800 truncate" x-text="selectedName"></h4>
                                 <p class="text-[10px] font-semibold text-slate-400 truncate" x-text="selectedEmail"></p>
                             </div>
-                            <button type="button" @click="useDifferentAccount()" class="text-xs font-bold text-primary hover:underline cursor-pointer">Thay đổi</button>
+                            <button type="button" @click="showForm = false; selectedEmail = ''; selectedName = ''; selectedAvatar = ''" class="text-xs font-bold text-primary hover:underline cursor-pointer">Thay đổi</button>
                         </div>
                     </template>
 
