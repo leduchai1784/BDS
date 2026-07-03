@@ -34,10 +34,10 @@
         <!-- Right Side: Form Login -->
         <div class="md:w-1/2 p-8 sm:p-12 flex flex-col justify-center text-left" x-data="{
             accounts: {{ json_encode($rememberedAccounts) }},
-            selectedEmail: '',
-            selectedName: '',
-            selectedAvatar: '',
-            showForm: {{ (count($errors) > 0 || old('email')) ? 'true' : (empty($rememberedAccounts) ? 'true' : 'false') }},
+            selectedEmail: '{{ !empty($rememberedAccounts) ? $rememberedAccounts[0]['email'] : '' }}',
+            selectedName: '{{ !empty($rememberedAccounts) ? $rememberedAccounts[0]['name'] : '' }}',
+            selectedAvatar: '{{ !empty($rememberedAccounts) ? $rememberedAccounts[0]['avatar'] : '' }}',
+            showForm: true,
             selectAccount(email, name, avatar) {
                 this.selectedEmail = email;
                 this.selectedName = name;
@@ -76,8 +76,12 @@
                 .then(data => {
                     if (data.success) {
                         this.accounts = this.accounts.filter(a => a.email !== email);
-                        if (this.accounts.length === 0) {
-                            this.showForm = true;
+                        if (this.selectedEmail === email) {
+                            if (this.accounts.length > 0) {
+                                this.selectAccount(this.accounts[0].email, this.accounts[0].name, this.accounts[0].avatar);
+                            } else {
+                                this.useDifferentAccount();
+                            }
                         }
                     }
                 })
@@ -96,7 +100,7 @@
                     </span>
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 leading-tight">Chào mừng quay trở lại!</h3>
-                <p class="text-xs text-slate-400 mt-1 font-semibold" x-text="showForm ? 'Đăng nhập tài khoản của bạn để tiếp tục sử dụng dịch vụ.' : 'Chọn một tài khoản đã ghi nhớ trên thiết bị này.'"></p>
+                <p class="text-xs text-slate-400 mt-1 font-semibold">Đăng nhập tài khoản của bạn để tiếp tục sử dụng dịch vụ.</p>
             </div>
 
             @if (session('success'))
@@ -108,30 +112,6 @@
                     </div>
                 </div>
             @endif
-
-            <!-- Account Chooser view -->
-            <div x-show="!showForm" class="space-y-4">
-                <div class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
-                    <template x-for="acc in accounts" :key="acc.email">
-                        <div class="group/item flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 hover:border-primary/20 rounded-2xl transition cursor-pointer" @click="selectAccount(acc.email, acc.name, acc.avatar)">
-                            <div class="flex items-center space-x-3.5 min-w-0">
-                                <img :src="acc.avatar" :alt="acc.name" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0">
-                                <div class="min-w-0 text-left">
-                                    <h4 class="text-xs font-extrabold text-slate-800 truncate" x-text="acc.name"></h4>
-                                    <p class="text-[10px] font-semibold text-slate-400 truncate" x-text="acc.email"></p>
-                                </div>
-                            </div>
-                            <button type="button" @click.stop="removeAccount(acc.email)" class="flex items-center justify-center w-7 h-7 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-200/50 transition cursor-pointer" title="Xóa ghi nhớ">
-                                <i class="fa-solid fa-xmark text-xs"></i>
-                            </button>
-                        </div>
-                    </template>
-                </div>
-
-                <button type="button" @click="useDifferentAccount()" class="w-full inline-flex justify-center items-center py-3.5 px-4 border border-slate-200 hover:border-slate-350 bg-white rounded-xl text-xs font-bold text-slate-600 transition cursor-pointer">
-                    <i class="fa-solid fa-user-plus mr-2 text-primary"></i> Sử dụng tài khoản khác
-                </button>
-            </div>
 
             <!-- Login Form view -->
             <div x-show="showForm" x-cloak>
@@ -163,6 +143,9 @@
                                                 <p class="text-[9px] font-semibold text-slate-400 truncate" x-text="acc.email"></p>
                                             </div>
                                         </div>
+                                        <button type="button" @click.stop="removeAccount(acc.email)" class="flex items-center justify-center w-6 h-6 text-slate-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition cursor-pointer" title="Xóa ghi nhớ">
+                                            <i class="fa-solid fa-xmark text-[10px]"></i>
+                                        </button>
                                     </div>
                                 </template>
                                 <div class="border-t border-slate-100 my-1"></div>
@@ -176,7 +159,33 @@
 
                     <!-- Input Email (Hidden if selected account is active) -->
                     <div class="space-y-1" x-show="!selectedEmail">
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Địa chỉ Email</label>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 px-1">Địa chỉ Email</label>
+                            <template x-if="accounts.length > 0">
+                                <div class="relative" x-data="{ openSelector: false }" @click.away="openSelector = false">
+                                    <button type="button" @click="openSelector = !openSelector" class="text-[10px] font-bold text-primary hover:underline cursor-pointer">
+                                        Chọn tài khoản đã lưu <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="openSelector ? 'rotate-180' : ''"></i>
+                                    </button>
+                                    <!-- Popover account list -->
+                                    <div x-show="openSelector" x-transition class="absolute right-0 top-full mt-1 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-2 space-y-1">
+                                        <template x-for="acc in accounts" :key="acc.email">
+                                            <div class="flex items-center justify-between p-2 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-xl transition cursor-pointer" @click="selectAccount(acc.email, acc.name, acc.avatar); openSelector = false">
+                                                <div class="flex items-center space-x-3 min-w-0">
+                                                    <img :src="acc.avatar" :alt="acc.name" class="w-8 h-8 rounded-full object-cover border border-slate-100 flex-shrink-0">
+                                                    <div class="min-w-0 text-left">
+                                                        <h5 class="text-[11px] font-extrabold text-slate-800 truncate" x-text="acc.name"></h5>
+                                                        <p class="text-[9px] font-semibold text-slate-400 truncate" x-text="acc.email"></p>
+                                                    </div>
+                                                </div>
+                                                <button type="button" @click.stop="removeAccount(acc.email)" class="flex items-center justify-center w-6 h-6 text-slate-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition cursor-pointer" title="Xóa ghi nhớ">
+                                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
                         <div class="relative">
                             <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                             <input 
@@ -243,13 +252,6 @@
                         Đăng nhập tài khoản
                     </button>
                 </form>
-
-                <!-- Back button to list if accounts list is not empty -->
-                <template x-if="accounts.length > 0">
-                    <button type="button" @click="showForm = false; selectedEmail = ''" class="w-full inline-flex justify-center items-center py-3 px-4 border border-slate-200 hover:border-slate-350 bg-white rounded-xl text-xs font-bold text-slate-600 transition cursor-pointer mt-3">
-                        <i class="fa-solid fa-arrow-left-long mr-2"></i> Quay lại chọn tài khoản
-                    </button>
-                </template>
             </div>
 
             <!-- Social Login Options -->
