@@ -55,7 +55,7 @@ class NksAuthService
     public function updateInfo(string $token, array $data): array
     {
         try {
-            // Updatable fields on NKS
+            // Updatable fields accepted by our system
             $updatableKeys = [
                 'name', 'firstname', 'lastname', 'phone', 'email', 'gender', 'dob', 'pob',
                 'id_number', 'id_date', 'id_place', 'permanent_address',
@@ -85,11 +85,14 @@ class NksAuthService
                 }
             }
 
-            // Cast location IDs to integer for NKS API compatibility
-            foreach (['add_province', 'add_district', 'add_ward'] as $idKey) {
-                if (isset($mergedData[$idKey]) && is_numeric($mergedData[$idKey])) {
-                    $mergedData[$idKey] = (int) $mergedData[$idKey];
+            // NKS API uses 'province', 'ward', 'district' (integer IDs) — NOT 'add_province' etc.
+            // Remap add_* keys to the short form NKS actually accepts
+            foreach (['province' => 'add_province', 'ward' => 'add_ward', 'district' => 'add_district'] as $nksKey => $ourKey) {
+                if (isset($mergedData[$ourKey]) && is_numeric($mergedData[$ourKey])) {
+                    $mergedData[$nksKey] = (int) $mergedData[$ourKey];
                 }
+                // Remove the add_* key — NKS ignores it
+                unset($mergedData[$ourKey]);
             }
 
             // Sanitize values
