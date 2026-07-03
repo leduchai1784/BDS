@@ -611,133 +611,133 @@
                     $tabData = [
                         'baocao' => [
                             [
-                                'title' => 'Hướng Dẫn Đăng Tin Nhà Đất Chuẩn SEO và AI Lên Xu hướng NKS',
-                                'image' => 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'title' => 'Báo cáo thị trường căn hộ cho thuê TP.HCM Quý 2/2026',
+                                'image' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=600&q=80',
+                                'date' => '28/06/2026'
+                            ],
+                            [
+                                'title' => 'Xu hướng dịch chuyển dòng vốn bất động sản nửa cuối năm 2026',
+                                'image' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80',
+                                'date' => '25/06/2026'
+                            ],
+                            [
+                                'title' => 'Báo cáo tiêu chuẩn sống và xu hướng lựa chọn căn hộ của giới trẻ',
+                                'image' => 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80',
+                                'date' => '18/06/2026'
                             ],
                             [
                                 'title' => 'Các Yếu Tố Ảnh Hưởng Đến Giá Trị Bất Động Sản Năm 2026',
-                                'image' => 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
-                            ],
-                            [
-                                'title' => 'Nhà Đầu Tư Phía Bắc Nam Tiến Thị Trường Bất Động Sản',
-                                'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
-                            ],
-                            [
-                                'title' => 'Cách Tối Ưu Hóa Quy Trình Mua Nhà Qua Nền Tảng Online 2026',
-                                'image' => 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=600&q=80',
+                                'date' => '28/06/2026'
                             ]
                         ],
                         'gocnhin' => [
                             [
-                                'title' => 'Góc nhìn NKS: Tại sao mô hình Studio tách bếp lại đắt khách?',
-                                'image' => 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'title' => 'Góc Nhìn NKS: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
+                                'image' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600',
+                                'date' => '27/06/2026'
+                            ],
+                            [
+                                'title' => 'Góc nhìn NKS: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
+                                'image' => 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=600',
+                                'date' => '26/06/2026'
                             ],
                             [
                                 'title' => 'Làm thế nào để tối ưu hóa doanh thu từ căn hộ dịch vụ cho thuê?',
-                                'image' => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
+                                'date' => '29/06/2026'
                             ],
                             [
                                 'title' => 'Đánh giá tiềm năng tăng trưởng của các căn hộ ven sông Sài Gòn',
-                                'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
-                            ],
-                            [
-                                'title' => 'Chiến lược phát triển thị trường căn hộ mini tại TP.HCM',
-                                'image' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80',
+                                'date' => '20/06/2026'
                             ]
                         ],
                         'noithat' => [
                             [
                                 'title' => '5 xu hướng thiết kế nội thất căn hộ Studio tối giản năm 2026',
-                                'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80',
+                                'date' => '01/07/2026'
                             ],
                             [
                                 'title' => 'Bí quyết lựa chọn vật liệu chống ẩm mốc cho toilet căn hộ dịch vụ',
-                                'image' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
+                                'date' => '27/06/2026'
                             ],
                             [
                                 'title' => 'Cách bài trí hệ thống chiếu sáng giúp không gian sống trở nên ấm cúng',
-                                'image' => 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80',
+                                'date' => '15/06/2026'
                             ],
                             [
                                 'title' => 'Bố trí sofa phòng khách thông minh cho căn hộ nhỏ hẹp',
-                                'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=500&q=80',
+                                'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
                         ],
                         'phongthuy' => [
                             [
                                 'title' => 'Phong thủy phòng ngủ: Những lỗi đại kỵ cần tránh khi bố trí giường',
-                                'image' => 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80',
+                                'date' => '03/07/2026'
                             ],
                             [
                                 'title' => 'Lựa chọn hướng nhà và màu sơn hợp tuổi mệnh Thổ năm Bính Ngọ 2026',
-                                'image' => 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80',
+                                'date' => '28/06/2026'
                             ],
                             [
                                 'title' => 'Bố trí cây xanh hợp phong thủy giúp thu hút vượng khí cho phòng khách',
-                                'image' => 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=600&q=80',
+                                'date' => '19/06/2026'
                             ],
                             [
                                 'title' => 'Cách hóa giải gương đối diện cửa phòng ngủ chuẩn phong thủy',
-                                'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=500&q=80',
+                                'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
                         ],
                         'tintuc' => [
                             [
                                 'title' => 'Đề xuất quy định mới về quản lý vận hành chung cư mini và nhà trọ',
-                                'image' => 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
+                                'date' => '03/07/2026'
                             ],
                             [
                                 'title' => 'Thành phố Hồ Chí Minh khởi công xây dựng 3 dự án nhà ở xã hội mới',
-                                'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80',
+                                'date' => '30/06/2026'
                             ],
                             [
-                                'title' => 'Khởi động dự án cải tạo hạ tầng giao thông và mở rộng lộ giới trục đường',
-                                'image' => 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'title' => 'Khởi động dự án cải tạo hạ tầng giao thông trục đường chính',
+                                'image' => 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80',
+                                'date' => '22/06/2026'
                             ],
                             [
                                 'title' => 'Giá căn hộ cho thuê tiếp tục tăng trưởng nhẹ dịp cuối năm',
-                                'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=500&q=80',
+                                'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
                         ],
                         'kienthuc' => [
                             [
                                 'title' => 'Quy trình và thủ tục chuyển nhượng hợp đồng thuê nhà chuẩn pháp lý',
-                                'image' => 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80',
+                                'date' => '02/07/2026'
                             ],
                             [
                                 'title' => 'Kinh nghiệm vàng giúp phân biệt sổ hồng thật và giả khi giao dịch đặt cọc',
-                                'image' => 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=600&q=80',
+                                'date' => '26/06/2026'
                             ],
                             [
                                 'title' => 'Các loại thuế phí phải nộp khi mua bán và chuyển nhượng nhà đất',
-                                'image' => 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=500&q=80',
-                                'date' => '26/6/2026'
+                                'image' => 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
+                                'date' => '17/06/2026'
                             ],
                             [
                                 'title' => 'Kinh nghiệm quản lý tài chính khi mua nhà trả góp cho gia đình trẻ',
-                                'image' => 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=500&q=80',
+                                'image' => 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
                         ]

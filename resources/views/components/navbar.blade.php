@@ -348,9 +348,10 @@
                     <a 
                         href="/listings" 
                         @click="mobileMenuOpen = false"
-                        class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('listings*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition"
+                        class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('listings*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition flex items-center"
                     >
-                        Nhà đất
+                        <i class="fa-solid fa-house-laptop text-slate-400 mr-3 text-base w-5 text-center group-hover:text-primary transition-colors"></i>
+                        <span>Nhà đất</span>
                     </a>
                     <button 
                         @click="mobileRentOpen = !mobileRentOpen"
@@ -372,8 +373,16 @@
                     <a href="/listings?purpose=sale" @click="mobileMenuOpen = false" class="block px-3 py-2.5 rounded-lg text-sm font-semibold {{ request('purpose') === 'sale' ? 'text-primary font-bold bg-slate-50' : 'text-slate-650 hover:bg-slate-50 hover:text-primary' }} transition">Mua bán</a>
                 </div>
             </div>
-            <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('map*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Bản đồ</a>
-            <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition {{ request()->is('projects*') ? 'text-primary bg-primary-light' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">Dự án</a>
+            
+            <a href="/map" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition flex items-center {{ request()->is('map*') ? 'text-primary bg-primary-light font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">
+                <i class="fa-solid fa-map-location-dot text-slate-400 mr-3 text-base w-5 text-center transition-colors"></i>
+                <span>Bản đồ</span>
+            </a>
+            
+            <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition flex items-center {{ request()->is('projects*') ? 'text-primary bg-primary-light font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">
+                <i class="fa-solid fa-building-user text-slate-400 mr-3 text-base w-5 text-center transition-colors"></i>
+                <span>Dự án</span>
+            </a>
             
             <!-- Đối tác (Dropdown Mobile) -->
             <div x-data="{ mobilePartnerOpen: {{ request()->is('agents*') ? 'true' : 'false' }} }" class="space-y-1">
@@ -381,9 +390,10 @@
                     <a 
                         href="{{ route('agents.index') }}" 
                         @click="mobileMenuOpen = false"
-                        class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('agents*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition"
+                        class="flex-1 text-left px-3 py-3 text-base font-semibold {{ request()->is('agents*') ? 'text-primary' : 'text-slate-700 hover:text-primary' }} transition flex items-center"
                     >
-                        Đối tác
+                        <i class="fa-solid fa-handshake text-slate-400 mr-3 text-base w-5 text-center group-hover:text-primary transition-colors"></i>
+                        <span>Đối tác</span>
                     </a>
                     <button 
                         @click="mobilePartnerOpen = !mobilePartnerOpen"
@@ -406,7 +416,10 @@
                 </div>
             </div>
 
-            <a href="{{ route('news') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold {{ request()->routeIs('news') ? 'text-primary font-bold bg-slate-50' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }} transition">Tin tức</a>
+            <a href="{{ route('news') }}" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-xl text-base font-semibold transition flex items-center {{ request()->routeIs('news') ? 'text-primary font-bold bg-slate-50' : 'text-slate-700 hover:bg-slate-50 hover:text-primary' }}">
+                <i class="fa-solid fa-newspaper text-slate-400 mr-3 text-base w-5 text-center transition-colors"></i>
+                <span>Tin tức</span>
+            </a>
             
             <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
                 @auth
