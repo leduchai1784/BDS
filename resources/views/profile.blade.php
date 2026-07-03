@@ -412,6 +412,7 @@
                             method="POST"
                             class="space-y-6"
                             x-data="{
+                                submitting: false,
                                 provinces: [],
                                 wards: [],
                                 selectedProvinceId: null,
@@ -773,11 +774,12 @@
                                     x-show="isEditing"
                                     @click="
                                         isEditing = false;
-                                        // Reset fields to original values
+                                        $el.form.reset();
+                                        // Reset Alpine province/ward state (form.reset() won't trigger x-model)
                                         provinceSearch = selectedProvince = '{{ old('add_province', $user['add_province'] ?? '') }}';
                                         wardSearch = selectedWard = '{{ old('add_ward', $user['add_ward'] ?? '') }}';
-                                        initializeDropdowns();
-                                        $el.form.reset();
+                                        selectedProvinceId = null;
+                                        wards = [];
                                     "
                                     class="inline-flex items-center justify-center px-6 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer active:scale-98 min-w-[100px]"
                                 >
@@ -788,9 +790,15 @@
                                 <button 
                                     type="submit" 
                                     x-show="isEditing"
-                                    class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+                                    @click="submitting = true"
+                                    :disabled="submitting"
+                                    class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px] disabled:opacity-70 disabled:cursor-wait"
                                 >
-                                    Lưu thay đổi
+                                    <span x-show="!submitting">Lưu thay đổi</span>
+                                    <span x-show="submitting" class="inline-flex items-center gap-2">
+                                        <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                                        Đang lưu...
+                                    </span>
                                 </button>
                             </div>
                         </form>
