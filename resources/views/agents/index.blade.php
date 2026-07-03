@@ -1,26 +1,37 @@
 @extends('layouts.app')
 
-@section('title', 'Danh bạ nhà môi giới uy tín | BDS Rental')
+@section('title', request('type') === 'company' ? 'Danh bạ doanh nghiệp đối tác uy tín | BDS Rental' : 'Danh bạ nhà môi giới uy tín | BDS Rental')
 
 @section('content')
 <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-primary/20 pt-28 pb-16 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Danh Bạ <span class="text-primary-hover">Nhà Môi Giới</span> Uy Tín
+            @if(request('type') === 'company')
+                Danh Bạ <span class="text-primary-hover">Doanh Nghiệp</span> Đối Tác
+            @else
+                Danh Bạ <span class="text-primary-hover">Nhà Môi Giới</span> Uy Tín
+            @endif
         </h1>
         <p class="text-slate-300 max-w-2xl mx-auto text-lg mb-8">
-            Kết nối trực tiếp với các nhà môi giới và chủ nhà chuyên nghiệp để tìm kiếm giao dịch an toàn và tối ưu nhất.
+            @if(request('type') === 'company')
+                Kết nối với các doanh nghiệp, chủ đầu tư và đơn vị phân phối bất động sản uy tín hàng đầu.
+            @else
+                Kết nối trực tiếp với các nhà môi giới và chủ nhà chuyên nghiệp để tìm kiếm giao dịch an toàn và tối ưu nhất.
+            @endif
         </p>
 
         <!-- Search Bar -->
         <form action="{{ route('agents.index') }}" method="GET" class="max-w-3xl mx-auto bg-white/10 backdrop-blur-md p-2 rounded-3xl border border-white/20 shadow-2xl flex flex-col md:flex-row gap-2">
+            @if(request('type'))
+                <input type="hidden" name="type" value="{{ request('type') }}">
+            @endif
             <div class="flex-grow flex items-center px-4 py-2">
                 <i class="fa-solid fa-user-tie text-slate-400 mr-3"></i>
                 <input 
                     type="text" 
                     name="q" 
                     value="{{ request('q') }}"
-                    placeholder="Tìm tên môi giới, công ty..." 
+                    placeholder="{{ request('type') === 'company' ? 'Tìm tên doanh nghiệp, công ty...' : 'Tìm tên môi giới, công ty...' }}" 
                     class="bg-transparent w-full text-white placeholder-slate-400 focus:outline-none text-base"
                 >
             </div>
@@ -46,9 +57,15 @@
 <!-- Agents Section -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="flex justify-between items-center mb-10 pb-6 border-b border-slate-100">
-        <h2 class="text-2xl font-black text-slate-900 text-left">Chuyên viên môi giới nổi bật</h2>
+        <h2 class="text-2xl font-black text-slate-900 text-left">
+            @if(request('type') === 'company')
+                Doanh nghiệp đối tác nổi bật
+            @else
+                Chuyên viên môi giới nổi bật
+            @endif
+        </h2>
         <p class="text-sm font-semibold text-slate-500">
-            Tổng số: <span class="text-slate-800 font-bold">{{ $agents->total() }}</span> môi giới
+            Tổng số: <span class="text-slate-800 font-bold">{{ $agents->total() }}</span> {{ request('type') === 'company' ? 'doanh nghiệp' : 'môi giới' }}
         </p>
     </div>
 

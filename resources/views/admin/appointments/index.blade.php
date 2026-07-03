@@ -100,10 +100,14 @@
                         </td>
                         <!-- Property -->
                         <td class="px-6 py-4.5 max-w-[280px]">
-                            <a href="{{ route('admin.properties.show', $app->property->id) }}" class="font-bold text-slate-800 dark:text-slate-200 hover:text-primary transition block truncate leading-tight">
-                                {{ $app->property->title }}
-                            </a>
-                            <span class="text-[9px] text-slate-400 dark:text-slate-500 block mt-1"><i class="fa-solid fa-user-tie mr-1 text-[8px]"></i>Chủ nhà: {{ $app->property->agent->name }}</span>
+                            @if($app->property)
+                                <a href="{{ route('admin.properties.show', $app->property->id) }}" class="font-bold text-slate-800 dark:text-slate-200 hover:text-primary transition block truncate leading-tight">
+                                    {{ $app->property->title }}
+                                </a>
+                                <span class="text-[9px] text-slate-400 dark:text-slate-500 block mt-1"><i class="fa-solid fa-user-tie mr-1 text-[8px]"></i>Chủ nhà: {{ $app->property->agent ? $app->property->agent->name : 'Không có' }}</span>
+                            @else
+                                <span class="text-slate-450 dark:text-slate-500 italic block">Bất động sản đã bị xóa</span>
+                            @endif
                         </td>
                         <!-- Date & Time -->
                         <td class="px-6 py-4.5 whitespace-nowrap leading-relaxed">
@@ -130,7 +134,20 @@
                                 <!-- Details Trigger Button -->
                                 <button 
                                     type="button"
-                                    @click="activeAppointment = { id: '{{ $app->id }}', name: '{{ addslashes($app->name) }}', phone: '{{ $app->phone }}', date: '{{ Carbon\Carbon::parse($app->date)->format('d/m/Y') }}', time: '{{ $app->time }}', message: '{{ addslashes($app->message ?? 'Không có lời nhắn') }}', status: '{{ $app->status }}', propertyTitle: '{{ addslashes($app->property->title) }}', propertyPrice: '{{ number_format($app->property->price / 1000000, 1) }} tr/tháng', propertyLocation: '{{ addslashes($app->property->location) }}', ownerName: '{{ addslashes($app->property->agent->name) }}', ownerPhone: '{{ $app->property->agent->phone }}' }; modalOpen = true"
+                                    @click="activeAppointment = { 
+                                        id: '{{ $app->id }}', 
+                                        name: '{{ addslashes($app->name) }}', 
+                                        phone: '{{ $app->phone }}', 
+                                        date: '{{ Carbon\Carbon::parse($app->date)->format('d/m/Y') }}', 
+                                        time: '{{ $app->time }}', 
+                                        message: '{{ addslashes($app->message ?? 'Không có lời nhắn') }}', 
+                                        status: '{{ $app->status }}', 
+                                        propertyTitle: '{{ $app->property ? addslashes($app->property->title) : 'Đã bị xóa' }}', 
+                                        propertyPrice: '{{ $app->property ? number_format($app->property->price / 1000000, 1) . ' tr/tháng' : 'Không có' }}', 
+                                        propertyLocation: '{{ $app->property ? addslashes($app->property->location) : 'Không có' }}', 
+                                        ownerName: '{{ ($app->property && $app->property->agent) ? addslashes($app->property->agent->name) : 'Không có' }}', 
+                                        ownerPhone: '{{ ($app->property && $app->property->agent) ? $app->property->agent->phone : 'Không có' }}' 
+                                    }; modalOpen = true"
                                     class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-primary border border-slate-200 dark:border-slate-700 flex items-center justify-center transition cursor-pointer"
                                     title="Xem chi tiết"
                                 >

@@ -9,11 +9,21 @@ class AgentController extends Controller
 {
     /**
      * Display a listing of agents/owners.
-     */
     public function index(Request $request)
     {
         // Fetch active users with the role of 'owner' (agents/owners)
         $query = User::where('role', 'owner')->where('status', 'active');
+
+        // Filter by type: company or agent
+        if ($request->has('type') && !empty($request->type)) {
+            if ($request->type === 'company') {
+                $query->whereNotNull('company')->where('company', '!=', '');
+            } else {
+                $query->where(function($q) {
+                    $q->whereNull('company')->orWhere('company', '');
+                });
+            }
+        }
 
         // Search by name, phone, or company
         if ($request->has('q') && !empty($request->q)) {

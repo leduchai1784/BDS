@@ -220,7 +220,7 @@
                             @endif
                         </div>
                         <div class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold space-y-0.5 leading-relaxed">
-                            <p class="truncate"><i class="fa-solid fa-location-dot mr-1 text-slate-350 dark:text-slate-650"></i>{{ $app->property->title }}</p>
+                            <p class="truncate"><i class="fa-solid fa-location-dot mr-1 text-slate-350 dark:text-slate-650"></i>{{ $app->property ? $app->property->title : 'Bất động sản đã bị xóa' }}</p>
                             <p><i class="fa-solid fa-clock mr-1 text-slate-350 dark:text-slate-650"></i>{{ Carbon\Carbon::parse($app->date)->format('d/m/Y') }} lúc {{ $app->time }}</p>
                         </div>
                     </div>
