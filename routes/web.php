@@ -161,3 +161,11 @@ Route::middleware('guest')->group(function () {
 // API địa chỉ lấy từ NKS
 Route::get('/api/locations/provinces', [LocationController::class, 'getProvinces']);
 Route::get('/api/locations/wards', [LocationController::class, 'getWards']);
+Route::get('/api/locations/test-routes', function() {
+    return collect(Route::getRoutes())->map(function($route) {
+        return [
+            'uri' => $route->uri(),
+            'methods' => $route->methods(),
+        ];
+    });
+});
