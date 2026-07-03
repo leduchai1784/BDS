@@ -117,7 +117,7 @@
                                     <p class="text-[10px] font-semibold text-slate-400 truncate" x-text="acc.email"></p>
                                 </div>
                             </div>
-                            <button type="button" @click.stop="removeAccount(acc.email)" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-slate-200/50 transition cursor-pointer" title="Xóa ghi nhớ">
+                            <button type="button" @click.stop="removeAccount(acc.email)" class="flex items-center justify-center w-7 h-7 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-200/50 transition cursor-pointer" title="Xóa ghi nhớ">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </button>
                         </div>
