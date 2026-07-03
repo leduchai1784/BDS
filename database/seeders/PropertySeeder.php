@@ -162,6 +162,64 @@ class PropertySeeder extends Seeder
             'created_at' => Carbon::now()->subMonths(3)
         ]);
 
+        $agentBao = User::create([
+            'name' => 'Vũ Gia Bảo',
+            'email' => 'bao.vu@vinhomes.com.vn',
+            'phone' => '0903334455',
+            'company' => 'Công ty Cổ phần Vinhomes',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+            'status' => 'active',
+            'avatar' => 'https://ui-avatars.com/api/?name=Vinhomes&background=0077bb&color=fff',
+            'created_at' => Carbon::now()->subMonths(2)
+        ]);
+
+        $agentThinh = User::create([
+            'name' => 'Phan Văn Thịnh',
+            'email' => 'thinh.phan@hungthinh.com.vn',
+            'phone' => '0938887766',
+            'company' => 'Tập đoàn Hưng Thịnh Land',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+            'status' => 'active',
+            'avatar' => 'https://ui-avatars.com/api/?name=Hung+Thinh&background=0077bb&color=fff',
+            'created_at' => Carbon::now()->subMonths(1)
+        ]);
+
+        $agentHoai = User::create([
+            'name' => 'Nguyễn Thị Hoài',
+            'email' => 'hoai.nguyen@khaihoan.com.vn',
+            'phone' => '0919998877',
+            'company' => 'Công ty Bất động sản Khải Hoàn Land',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+            'status' => 'active',
+            'avatar' => 'https://ui-avatars.com/api/?name=Khai+Hoan&background=0077bb&color=fff',
+            'created_at' => Carbon::now()->subMonths(2)
+        ]);
+
+        $agentNam = User::create([
+            'name' => 'Đặng Hoàng Nam',
+            'email' => 'nam.dang@test.com',
+            'phone' => '0965554433',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+            'status' => 'active',
+            'avatar' => 'https://ui-avatars.com/api/?name=Dang+Hoang+Nam&background=0077bb&color=fff',
+            'created_at' => Carbon::now()->subMonths(1)
+        ]);
+
+        $agentThu = User::create([
+            'name' => 'Bùi Minh Thư',
+            'email' => 'thu.bui@test.com',
+            'phone' => '0984443322',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+            'status' => 'active',
+            'avatar' => 'https://ui-avatars.com/api/?name=Bui+Minh+Thu&background=0077bb&color=fff',
+            'created_at' => Carbon::now()->subMonths(2)
+        ]);
+
         // Helper to generate property data array
         $makeProp = function($title, $desc, $price, $priceLabel, $area, $bed, $bath, $addr, $ward, $dist, $city, $lat, $lng, $vip, $new, $catId, $status, $views, $ownerId, $phone, $zalo, $createdAt) {
             return [
@@ -505,6 +563,87 @@ class PropertySeeder extends Seeder
             Carbon::now()->subMonths(1)
         ));
         $pHidden->propertyImages()->create(['image_path' => 'images/apartment_3.png', 'is_primary' => true]);
+
+        // Properties for Vinhomes ($agentBao)
+        $pVinhomes1 = Property::create($makeProp(
+            'Căn hộ cao cấp Vinhomes Ocean Park 2 phòng ngủ',
+            'Chính chủ cho thuê căn hộ Vinhomes Ocean Park Gia Lâm, tầng trung view hồ điều hòa, đầy đủ nội thất cao cấp sang trọng, tiện ích nội khu đầy đủ bể bơi, gym, trung tâm thương mại.',
+            12000000,
+            '12tr',
+            75,
+            2,
+            2,
+            'Khu đô thị Vinhomes Ocean Park, Gia Lâm',
+            'Đa Tốn',
+            'GL',
+            'Hà Nội',
+            20.9922,
+            105.9525,
+            true,
+            true,
+            $catChungCu->id,
+            'approved',
+            412,
+            $agentBao->id,
+            $agentBao->phone,
+            'https://zalo.me/' . $agentBao->phone,
+            Carbon::now()->subDays(6)
+        ));
+        $pVinhomes1->propertyImages()->create(['image_path' => 'images/apartment_1.png', 'is_primary' => true]);
+
+        // Properties for Hưng Thịnh Land ($agentThinh)
+        $pHungThinh1 = Property::create($makeProp(
+            'Căn hộ Richmond City Bình Thạnh view sông mát mẻ',
+            'Cho thuê căn hộ cao cấp Richmond City đường Nguyễn Xí, Bình Thạnh. Căn hộ tầng 18 view sông lộng gió, trang bị tivi, tủ lạnh, máy giặt, giường tủ đầy đủ.',
+            15000000,
+            '15tr',
+            80,
+            2,
+            2,
+            '207 Nguyễn Xí, Bình Thạnh',
+            'Phường 26',
+            'BT',
+            'Hồ Chí Minh',
+            10.8122,
+            106.7025,
+            true,
+            true,
+            $catChungCu->id,
+            'approved',
+            305,
+            $agentThinh->id,
+            $agentThinh->phone,
+            'https://zalo.me/' . $agentThinh->phone,
+            Carbon::now()->subDays(10)
+        ));
+        $pHungThinh1->propertyImages()->create(['image_path' => 'images/apartment_2.png', 'is_primary' => true]);
+
+        // Properties for Khải Hoàn Land ($agentHoai)
+        $pKhaiHoan1 = Property::create($makeProp(
+            'Nhà nguyên căn mặt tiền kinh doanh quận Tân Bình',
+            'Cho thuê nhà nguyên căn mặt tiền đường Cộng Hòa, Tân Bình. Diện tích rộng 5x20m, 1 trệt 2 lầu, thích hợp làm showroom, văn phòng công ty, spa hoặc lớp học.',
+            45000000,
+            '45tr',
+            100,
+            4,
+            3,
+            'Cộng Hòa, Tân Bình',
+            'Phường 13',
+            'TB',
+            'Hồ Chí Minh',
+            10.8022,
+            106.6425,
+            true,
+            true,
+            $catNhaNguyenCan->id,
+            'approved',
+            219,
+            $agentHoai->id,
+            $agentHoai->phone,
+            'https://zalo.me/' . $agentHoai->phone,
+            Carbon::now()->subDays(4)
+        ));
+        $pKhaiHoan1->propertyImages()->create(['image_path' => 'images/house_1.png', 'is_primary' => true]);
 
         // 6. Create viewing appointments
         Appointment::create([
