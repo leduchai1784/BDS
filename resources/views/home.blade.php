@@ -574,7 +574,7 @@
                         :class="activeTab === 'gocnhin' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
-                        Góc Nhìn BDS Rental
+                        Góc Nhìn NKS
                     </button>
                     <button 
                         @click="activeTab = 'noithat'" 
@@ -612,51 +612,43 @@
                         'baocao' => [
                             [
                                 'title' => 'Báo cáo thị trường căn hộ cho thuê TP.HCM Quý 2/2026',
-                                'slug' => 'bao-cao-thi-truong-can-ho-cho-thue-tphcm-quy-2-2026',
                                 'image' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=600&q=80',
                                 'date' => '28/06/2026'
                             ],
                             [
                                 'title' => 'Xu hướng dịch chuyển dòng vốn bất động sản nửa cuối năm 2026',
-                                'slug' => 'xu-huong-dich-chuyen-dong-von-bat-dong-san-nua-cuoi-nam-2026',
                                 'image' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80',
                                 'date' => '25/06/2026'
                             ],
                             [
                                 'title' => 'Báo cáo tiêu chuẩn sống và xu hướng lựa chọn căn hộ của giới trẻ',
-                                'slug' => 'bao-cao-tieu-chuan-song-va-xu-huong-lua-chon-can-ho-cua-gioi-tre',
                                 'image' => 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80',
                                 'date' => '18/06/2026'
                             ],
                             [
                                 'title' => 'Các Yếu Tố Ảnh Hưởng Đến Giá Trị Bất Động Sản Năm 2026',
-                                'slug' => 'cac-yeu-to-anh-huong-den-gia-tri-bat-dong-san-nam-2026',
                                 'image' => 'https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=600&q=80',
                                 'date' => '28/06/2026'
                             ]
                         ],
                         'gocnhin' => [
                             [
-                                'title' => 'Góc Nhìn BDS Rental: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
-                                'slug' => 'goc-nhin-bds-rental-can-ho-studio-quan-7-chiem-linh-phan-khuc-cho-thue',
+                                'title' => 'Góc Nhìn NKS: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
                                 'image' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600',
                                 'date' => '27/06/2026'
                             ],
                             [
-                                'title' => 'Góc nhìn BDS Rental: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
-                                'slug' => 'goc-nhin-bds-rental-thi-truong-bat-dong-san-cuoi-nam-2026-se-di-ve-dau',
+                                'title' => 'Góc nhìn NKS: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
                                 'image' => 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=600',
                                 'date' => '26/06/2026'
                             ],
                             [
                                 'title' => 'Làm thế nào để tối ưu hóa doanh thu từ căn hộ dịch vụ cho thuê?',
-                                'slug' => 'lam-the-nao-de-toi-uu-hoa-doanh-thu-tu-can-ho-dich-vu-cho-thue',
                                 'image' => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
                                 'date' => '29/06/2026'
                             ],
                             [
                                 'title' => 'Đánh giá tiềm năng tăng trưởng của các căn hộ ven sông Sài Gòn',
-                                'slug' => 'danh-gia-tiem-nang-tang-truong-cua-can-ho-ven-song-sai-gon',
                                 'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80',
                                 'date' => '20/06/2026'
                             ]
@@ -664,25 +656,21 @@
                         'noithat' => [
                             [
                                 'title' => '5 xu hướng thiết kế nội thất căn hộ Studio tối giản năm 2026',
-                                'slug' => '5-xu-huong-thiet-ke-noi-that-can-ho-studio-toi-gian-nam-2026',
                                 'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80',
                                 'date' => '01/07/2026'
                             ],
                             [
                                 'title' => 'Bí quyết lựa chọn vật liệu chống ẩm mốc cho toilet căn hộ dịch vụ',
-                                'slug' => 'bi-quyet-lua-chon-vat-lieu-chong-am-moc-cho-toilet-can-ho-dich-vu',
                                 'image' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
                                 'date' => '27/06/2026'
                             ],
                             [
                                 'title' => 'Cách bài trí hệ thống chiếu sáng giúp không gian sống trở nên ấm cúng',
-                                'slug' => 'cach-bai-tri-he-thong-chieu-sang-giup-khong-gian-song-tro-nen-am-cung',
                                 'image' => 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80',
                                 'date' => '15/06/2026'
                             ],
                             [
                                 'title' => 'Bố trí sofa phòng khách thông minh cho căn hộ nhỏ hẹp',
-                                'slug' => 'bo-tri-sofa-phong-khach-thong-minh-cho-can-ho-nho-hep',
                                 'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
@@ -690,25 +678,21 @@
                         'phongthuy' => [
                             [
                                 'title' => 'Phong thủy phòng ngủ: Những lỗi đại kỵ cần tránh khi bố trí giường',
-                                'slug' => 'phong-thuy-phong-ngu-nhung-loi-dai-ky-can-tranh-khi-bo-tri-giuong-ngu',
                                 'image' => 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80',
                                 'date' => '03/07/2026'
                             ],
                             [
                                 'title' => 'Lựa chọn hướng nhà và màu sơn hợp tuổi mệnh Thổ năm Bính Ngọ 2026',
-                                'slug' => 'lua-chon-huong-nha-va-mau-son-hop-tuoi-menh-tho-nam-binh-ngo-2026',
                                 'image' => 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80',
                                 'date' => '28/06/2026'
                             ],
                             [
                                 'title' => 'Bố trí cây xanh hợp phong thủy giúp thu hút vượng khí cho phòng khách',
-                                'slug' => 'bo-tri-cay-xanh-hop-phong-thuy-giup-thu-hut-vuong-khi-cho-phong-khach',
                                 'image' => 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=600&q=80',
                                 'date' => '19/06/2026'
                             ],
                             [
                                 'title' => 'Cách hóa giải gương đối diện cửa phòng ngủ chuẩn phong thủy',
-                                'slug' => 'cach-hoa-giai-guong-doi-dien-cua-phong-ngu-chuan-phong-thuy',
                                 'image' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
@@ -716,25 +700,21 @@
                         'tintuc' => [
                             [
                                 'title' => 'Đề xuất quy định mới về quản lý vận hành chung cư mini và nhà trọ',
-                                'slug' => 'de-xuat-quy-dinh-moi-ve-quan-ly-van-hanh-chung-cu-mini-va-nha-tro',
                                 'image' => 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
                                 'date' => '03/07/2026'
                             ],
                             [
                                 'title' => 'Thành phố Hồ Chí Minh khởi công xây dựng 3 dự án nhà ở xã hội mới',
-                                'slug' => 'thanh-pho-ho-chi-minh-khoi-cong-xay-dung-3-du-an-nha-o-xa-hoi-moi',
                                 'image' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80',
                                 'date' => '30/06/2026'
                             ],
                             [
                                 'title' => 'Khởi động dự án cải tạo hạ tầng giao thông trục đường chính',
-                                'slug' => 'khoi-dong-du-an-cai-tao-ha-tang-giao-thong-truc-duong-chinh',
                                 'image' => 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80',
                                 'date' => '22/06/2026'
                             ],
                             [
                                 'title' => 'Giá căn hộ cho thuê tiếp tục tăng trưởng nhẹ dịp cuối năm',
-                                'slug' => 'gia-can-ho-cho-thue-tiep-tuc-tang-truong-nhe-dip-cuoi-nam',
                                 'image' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
@@ -742,25 +722,21 @@
                         'kienthuc' => [
                             [
                                 'title' => 'Quy trình và thủ tục chuyển nhượng hợp đồng thuê nhà chuẩn pháp lý',
-                                'slug' => 'quy-trinh-va-thu-tuc-chuyen-nhuong-hop-dong-thue-nha-chuan-phap-ly',
                                 'image' => 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80',
                                 'date' => '02/07/2026'
                             ],
                             [
                                 'title' => 'Kinh nghiệm vàng giúp phân biệt sổ hồng thật và giả khi giao dịch đặt cọc',
-                                'slug' => 'kinh-nghiem-vang-giup-phan-biet-so-hong-that-va-gia-khi-giao-dich-dat-coc',
                                 'image' => 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/06/2026'
                             ],
                             [
                                 'title' => 'Các loại thuế phí phải nộp khi mua bán và chuyển nhượng nhà đất',
-                                'slug' => 'cac-loai-thue-phi-phai-nop-khi-mua-ban-va-chuyen-nhuong-nha-dat',
                                 'image' => 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
                                 'date' => '17/06/2026'
                             ],
                             [
                                 'title' => 'Kinh nghiệm quản lý tài chính khi mua nhà trả góp cho gia đình trẻ',
-                                'slug' => 'kinh-nghiem-quan-ly-tai-chinh-khi-mua-nha-tra-gop-cho-gia-dinh-tre',
                                 'image' => 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80',
                                 'date' => '26/6/2026'
                             ]
@@ -778,7 +754,7 @@
                         x-cloak
                     >
                         @foreach($articles as $article)
-                            <div class="flex flex-col text-left group cursor-pointer" onclick="window.location.href='{{ route('news.show', $article['slug']) }}'">
+                            <div class="flex flex-col text-left group cursor-pointer">
                                 <!-- Image Container -->
                                 <div class="rounded-2xl overflow-hidden aspect-[16/10] mb-3 relative bg-slate-100 flex-shrink-0">
                                     <img 
@@ -791,7 +767,7 @@
 
                                 <!-- Title -->
                                 <h3 class="text-[13px] md:text-sm font-extrabold text-[#0f172a] hover:text-primary transition line-clamp-2 leading-snug mb-1.5">
-                                    <a href="{{ route('news.show', $article['slug']) }}">{{ $article['title'] }}</a>
+                                    <a href="#">{{ $article['title'] }}</a>
                                 </h3>
 
                                 <!-- Date -->

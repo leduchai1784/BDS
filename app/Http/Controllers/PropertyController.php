@@ -185,31 +185,4 @@ class PropertyController extends Controller
 
         return response()->json($suggestions);
     }
-
-    /**
-     * Get property details as JSON for map modal.
-     */
-    public function getDetailsJson(string $id)
-    {
-        try {
-            $property = $this->propertyService->getPropertyById($id);
-            
-            $isLiked = false;
-            if (auth()->check()) {
-                $isLiked = $this->wishlistService->isFavorite(auth()->id(), $id);
-            }
-            
-            return response()->json([
-                'success' => true,
-                'property' => $property,
-                'isLiked' => $isLiked,
-                'current_user_id' => auth()->id()
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy bất động sản yêu cầu.'
-            ], 404);
-        }
-    }
 }
