@@ -87,7 +87,7 @@
                     <strong>Tên tiếng Anh:</strong> New Knowledge Technology Solution Ltd. Company<br>
                     <strong>Địa chỉ:</strong> 222 Lê Văn Sỹ, Phường 14, Quận 3, TP. Hồ Chí Minh<br>
                     <strong>Mã số doanh nghiệp:</strong> 0313074497 (Thành lập ngày 06/01/2015)<br>
-                    <strong>Hotline:</strong> 0977758217 | <strong>Email:</strong> info@nks.com.vn
+                    <strong>Hotline:</strong> 0977758217 | <strong>Email:</strong> info@bdsrental.vn
                 </p>
             </div>
             <div class="flex space-x-6">

@@ -30,7 +30,7 @@
     <!-- Hero / Header Title Section -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28">
         <div class="space-y-2 border-b border-slate-100 pb-6 text-left">
-            <span class="text-xs font-black text-primary uppercase tracking-widest">NKS WIKI TIN TỨC</span>
+            <span class="text-xs font-black text-primary uppercase tracking-widest">BDS RENTAL WIKI TIN TỨC</span>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight font-sans">
                 Tin Tức Bất Động Sản
             </h1>
@@ -57,7 +57,7 @@
                     <button @click="changeTab('view')" 
                             :class="activeTab === 'view' ? 'bg-primary text-white shadow-sm' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'" 
                             class="px-5 py-2.5 rounded-2xl text-xs font-black transition-all cursor-pointer focus:outline-none">
-                        Góc Nhìn NKS
+                        Góc Nhìn BDS Rental
                     </button>
                     <button @click="changeTab('interior')" 
                             :class="activeTab === 'interior' ? 'bg-primary text-white shadow-sm' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'" 

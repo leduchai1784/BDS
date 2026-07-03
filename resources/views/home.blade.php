@@ -574,7 +574,7 @@
                         :class="activeTab === 'gocnhin' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
-                        Góc Nhìn NKS
+                        Góc Nhìn BDS Rental
                     </button>
                     <button 
                         @click="activeTab = 'noithat'" 
@@ -637,14 +637,14 @@
                         ],
                         'gocnhin' => [
                             [
-                                'title' => 'Góc Nhìn NKS: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
-                                'slug' => 'goc-nhin-nks-can-ho-studio-quan-7-chiem-linh-phan-khuc-cho-thue',
+                                'title' => 'Góc Nhìn BDS Rental: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
+                                'slug' => 'goc-nhin-bds-rental-can-ho-studio-quan-7-chiem-linh-phan-khuc-cho-thue',
                                 'image' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600',
                                 'date' => '27/06/2026'
                             ],
                             [
-                                'title' => 'Góc nhìn NKS: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
-                                'slug' => 'goc-nhin-nks-thi-truong-bat-dong-san-cuoi-nam-2026-se-di-ve-dau',
+                                'title' => 'Góc nhìn BDS Rental: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
+                                'slug' => 'goc-nhin-bds-rental-thi-truong-bat-dong-san-cuoi-nam-2026-se-di-ve-dau',
                                 'image' => 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=600',
                                 'date' => '26/06/2026'
                             ],

@@ -25,7 +25,7 @@
             <div class="flex items-center text-xs text-slate-400 font-bold space-x-4">
                 <span>Đăng ngày: {{ $article['date'] }}</span>
                 <span>•</span>
-                <span>Tác giả: Ban Biên Tập NKS</span>
+                <span>Tác giả: Ban Biên Tập BDS Rental</span>
             </div>
         </div>
     </div>

@@ -89,7 +89,7 @@ class HomeController extends Controller
                     'excerpt' => 'Thị trường căn hộ dịch vụ và Studio ghi nhận tỷ lệ lấp đầy đạt 85%, giá thuê tăng nhẹ 3-5% tại các khu vực trung tâm Phú Nhuận, Quận 3.',
                     'date' => '28/06/2026',
                     'category_label' => 'Báo cáo thị trường',
-                    'content' => '<h3>Tình hình chung của thị trường cho thuê</h3><p>Trong quý 2 năm 2026, phân khúc căn hộ dịch vụ và căn hộ studio cho thuê tại khu vực Thành phố Hồ Chí Minh ghi nhận những chuyển biến vô cùng tích cực. Nhờ sự quay trở lại mạnh mẽ của các chuyên gia nước ngoài và lượng sinh viên, người đi làm trẻ tuổi có thu nhập khá, tỷ lệ lấp đầy trung bình toàn thành phố đã chạm mốc 85%.</p><h3>Biến động giá thuê tại các quận trung tâm</h3><p>Mức giá thuê căn hộ trung bình tại các khu vực Phú Nhuận, Quận 3, Quận 1 và Bình Thạnh ghi nhận mức tăng nhẹ từ 3% đến 5% so với quý trước. Cụ thể, các căn hộ studio diện tích từ 30m2 đến 40m2 đầy đủ tiện ích có mức giá thuê dao động từ 7.5 triệu đến 11 triệu đồng/tháng. Phân khúc bình dân hơn ở các khu vực Quận 7 và Tân Bình giữ mức ổn định từ 5 triệu đến 7 triệu đồng/tháng.</p><h3>Dự báo thị trường cuối năm</h3><p>Các chuyên gia NKS dự báo thị trường cho thuê sẽ tiếp tục giữ nhiệt độ ổn định trong hai quý cuối năm 2026. Xu hướng người thuê chú trọng hơn vào các không gian có bếp riêng biệt và thiết kế tối ưu ánh sáng tự nhiên sẽ là đòn bẩy buộc các chủ nhà phải không ngừng cải tạo nâng cấp phòng để duy trì lợi thế cạnh tranh.</p>'
+                    'content' => '<h3>Tình hình chung của thị trường cho thuê</h3><p>Trong quý 2 năm 2026, phân khúc căn hộ dịch vụ và căn hộ studio cho thuê tại khu vực Thành phố Hồ Chí Minh ghi nhận những chuyển biến vô cùng tích cực. Nhờ sự quay trở lại mạnh mẽ của các chuyên gia nước ngoài và lượng sinh viên, người đi làm trẻ tuổi có thu nhập khá, tỷ lệ lấp đầy trung bình toàn thành phố đã chạm mốc 85%.</p><h3>Biến động giá thuê tại các quận trung tâm</h3><p>Mức giá thuê căn hộ trung bình tại các khu vực Phú Nhuận, Quận 3, Quận 1 và Bình Thạnh ghi nhận mức tăng nhẹ từ 3% đến 5% so với quý trước. Cụ thể, các căn hộ studio diện tích từ 30m2 đến 40m2 đầy đủ tiện ích có mức giá thuê dao động từ 7.5 triệu đến 11 triệu đồng/tháng. Phân khúc bình dân hơn ở các khu vực Quận 7 và Tân Bình giữ mức ổn định từ 5 triệu đến 7 triệu đồng/tháng.</p><h3>Dự báo thị trường cuối năm</h3><p>Các chuyên gia BDS Rental dự báo thị trường cho thuê sẽ tiếp tục giữ nhiệt độ ổn định trong hai quý cuối năm 2026. Xu hướng người thuê chú trọng hơn vào các không gian có bếp riêng biệt và thiết kế tối ưu ánh sáng tự nhiên sẽ là đòn bẩy buộc các chủ nhà phải không ngừng cải tạo nâng cấp phòng để duy trì lợi thế cạnh tranh.</p>'
                 ],
                 [
                     'title' => 'Xu hướng dịch chuyển dòng vốn bất động sản nửa cuối năm 2026',
@@ -121,30 +121,30 @@ class HomeController extends Controller
             ],
             'view' => [
                 [
-                    'title' => 'Góc Nhìn NKS: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
-                    'slug' => 'goc-nhin-nks-can-ho-studio-quan-7-chiem-linh-phan-khuc-cho-thue',
+                    'title' => 'Góc Nhìn BDS Rental: Căn Hộ Studio Quận 7 Đang Dần Chiếm Lĩnh Phân Khúc Cho Thuê',
+                    'slug' => 'goc-nhin-bds-rental-can-ho-studio-quan-7-chiem-linh-phan-khuc-cho-thue',
                     'image' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800',
                     'excerpt' => 'Phân tích xu hướng lựa chọn không gian sống độc lập, tiện ích cao cấp của thế hệ Gen Z và người đi làm độc thân.',
                     'date' => '27/06/2026',
-                    'category_label' => 'Góc nhìn NKS',
+                    'category_label' => 'Góc nhìn BDS Rental',
                     'content' => '<h3>Lý do Quận 7 là mảnh đất vàng của căn hộ Studio</h3><p>Quận 7 từ lâu đã nổi tiếng với quy hoạch bài bản, môi trường sống văn minh đậm chất quốc tế và hệ thống tiện ích đẳng cấp. Với sự tập trung của nhiều trường đại học lớn như RMIT, Tôn Đức Thắng và các tòa nhà văn phòng tại Phú Mỹ Hưng, nhu cầu thuê căn hộ nhỏ gọn từ sinh viên khá giả và nhân sự văn phòng trẻ tại đây là cực kỳ khổng lồ.</p><h3>Ưu thế vượt trội của mô hình Studio tiện ích</h3><p>Thay vì thuê phòng trọ truyền thống chật hẹp hoặc thuê căn hộ 2 phòng ngủ giá quá cao, mô hình căn hộ Studio diện tích từ 28-35m2 với đầy đủ trang thiết bị thông minh trở thành sự lựa chọn tối ưu. Khách thuê chỉ cần mang vali quần áo vào ở, tận hưởng hồ bơi, phòng gym nội khu với mức chi phí vô cùng hợp lý.</p>'
                 ],
                 [
-                    'title' => 'Góc nhìn NKS: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
-                    'slug' => 'goc-nhin-nks-thi-truong-bat-dong-san-cuoi-nam-2026-se-di-ve-dau',
+                    'title' => 'Góc nhìn BDS Rental: Thị trường bất động sản cuối năm 2026 sẽ đi về đâu?',
+                    'slug' => 'goc-nhin-bds-rental-thi-truong-bat-dong-san-cuoi-nam-2026-se-di-ve-dau',
                     'image' => 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=600',
                     'excerpt' => 'Phân tích đa chiều về nguồn cung căn hộ dịch vụ và xu hướng giá thuê bất động sản chính chủ.',
                     'date' => '26/06/2026',
-                    'category_label' => 'Góc nhìn NKS',
-                    'content' => '<h3>Những chuyển biến vào dịp cuối năm</h3><p>Thị trường bất động sản vào những tháng cuối năm luôn sôi động do lượng kiều hối đổ về và nhu cầu an cư lạc nghiệp tăng cao. Tuy nhiên, năm 2026 ghi nhận một bức tranh thực tế hơn khi người mua lẫn người thuê đều cực kỳ cẩn trọng, so sánh đối chiếu kỹ lưỡng trước khi đưa ra quyết định đặt bút ký hợp đồng.</p><h3>Nhận định từ các chuyên gia NKS</h3><p>Phân khúc căn hộ dịch vụ chính chủ sẽ tiếp tục chiếm ưu thế lớn nhờ tính ổn định pháp lý và chất lượng quản lý chuyên nghiệp. Giá thuê dự kiến sẽ đi ngang hoặc tăng nhẹ không quá 3%, mở ra cơ hội thương lượng tốt cho các khách thuê thông minh biết nắm bắt thời cơ tìm kiếm những sản phẩm chất lượng cao.</p>'
+                    'category_label' => 'Góc nhìn BDS Rental',
+                    'content' => '<h3>Những chuyển biến vào dịp cuối năm</h3><p>Thị trường bất động sản vào những tháng cuối năm luôn sôi động do lượng kiều hối đổ về và nhu cầu an cư lạc nghiệp tăng cao. Tuy nhiên, năm 2026 ghi nhận một bức tranh thực tế hơn khi người mua lẫn người thuê đều cực kỳ cẩn trọng, so sánh đối chiếu kỹ lưỡng trước khi đưa ra quyết định đặt bút ký hợp đồng.</p><h3>Nhận định từ các chuyên gia BDS Rental</h3><p>Phân khúc căn hộ dịch vụ chính chủ sẽ tiếp tục chiếm ưu thế lớn nhờ tính ổn định pháp lý và chất lượng quản lý chuyên nghiệp. Giá thuê dự kiến sẽ đi ngang hoặc tăng nhẹ không quá 3%, mở ra cơ hội thương lượng tốt cho các khách thuê thông minh biết nắm bắt thời cơ tìm kiếm những sản phẩm chất lượng cao.</p>'
                 ],
                 [
                     'title' => 'Làm thế nào để tối ưu hóa doanh thu từ căn hộ dịch vụ cho thuê?',
                     'slug' => 'lam-the-nao-de-toi-uu-hoa-doanh-thu-tu-can-ho-dich-vu-cho-thue',
                     'image' => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80',
-                    'excerpt' => 'Những bài học thực tế từ NKS giúp các chủ đầu tư căn hộ tăng tỷ suất lợi nhuận lên đến 12%/năm nhờ cải tạo thiết kế.',
+                    'excerpt' => 'Những bài học thực tế từ BDS Rental giúp các chủ đầu tư căn hộ tăng tỷ suất lợi nhuận lên đến 12%/năm nhờ cải tạo thiết kế.',
                     'date' => '29/06/2026',
-                    'category_label' => 'Góc nhìn NKS',
+                    'category_label' => 'Góc nhìn BDS Rental',
                     'content' => '<h3>Thiết kế thông minh quyết định giá trị</h3><p>Để nâng cao biên độ lợi nhuận từ căn hộ dịch vụ cho thuê, chủ nhà không nhất thiết phải đổ quá nhiều tiền vào nội thất xa xỉ. Điều cốt lõi nằm ở việc phân bổ không gian thông minh. Việc lắp đặt hệ thống giường bục đa năng tích hợp ngăn kéo chứa đồ, kết hợp vách kính lùa ngăn khu vực bếp sẽ giúp căn phòng 25m2 trông rộng rãi như 35m2.</p><h3>Ứng dụng công nghệ quản lý tự động</h3><p>Việc sử dụng khóa vân tay thông minh kết nối wifi, đồng hồ điện nước tử số hóa giúp giảm thiểu 70% chi phí nhân sự quản lý trực tiếp. BDS Rental hỗ trợ các chủ nhà số hóa toàn bộ quy trình tiếp cận khách thuê và quản lý lịch hẹn xem nhà trực tuyến hiệu quả.</p>'
                 ],
                 [
@@ -153,7 +153,7 @@ class HomeController extends Controller
                     'image' => 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80',
                     'excerpt' => 'Tầm nhìn chiến lược về sự phát triển vượt bậc của các căn hộ và khu dân cư dọc trục sông Sài Gòn.',
                     'date' => '20/06/2026',
-                    'category_label' => 'Góc nhìn NKS',
+                    'category_label' => 'Góc nhìn BDS Rental',
                     'content' => '<h3>Sự đắt giá của tầm nhìn hướng sông</h3><p>Bất động sản ven sông luôn sở hữu mức định giá cao hơn từ 20% đến 35% so với các khu vực lân cận cùng phân khúc. Ngoài lợi thế về cảnh quan thoáng đãng, khí hậu mát mẻ quanh năm, yếu tố phong thủy thịnh vượng "cận lộ, cận giang" cũng là thỏi nam châm thu hút giới thượng lưu và cộng đồng người nước ngoài thuê ở lâu dài.</p><h3>Quy hoạch giao thông đường thủy làm đòn bẩy</h3><p>Sự phát triển của tuyến buýt đường sông (Waterbus) cùng các dự án công viên cảnh quan dọc bờ sông Sài Gòn đang biến các khu căn hộ tại Bình Thạnh, Quận 2 cũ và Thủ Đức trở thành những trung tâm đô thị sinh thái kiểu mẫu mới, hứa hẹn biên độ tăng giá thuê ổn định lâu dài.</p>'
                 ]
             ],
