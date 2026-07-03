@@ -95,23 +95,27 @@ class PropertyService
      */
     public function getNksProvinces(): array
     {
-        return Cache::remember('nks_provinces', 86400, function () {
-            try {
-                $response = Http::withoutVerifying()
-                    ->timeout(15)
-                    ->post('https://online.nks.vn/api/nks/provinces', []);
+        $cached = Cache::get('nks_provinces');
+        if (is_array($cached) && !empty($cached)) {
+            return $cached;
+        }
 
-                if ($response->successful()) {
-                    $json = $response->json();
-                    if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
-                        return $json['data'];
-                    }
+        try {
+            $response = Http::withoutVerifying()
+                ->timeout(15)
+                ->post('https://online.nks.vn/api/nks/provinces', []);
+
+            if ($response->successful()) {
+                $json = $response->json();
+                if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
+                    Cache::put('nks_provinces', $json['data'], 86400);
+                    return $json['data'];
                 }
-            } catch (\Exception $e) {
-                Log::warning('Failed to fetch provinces from NKS API: ' . $e->getMessage());
             }
-            return [];
-        });
+        } catch (\Exception $e) {
+            Log::warning('Failed to fetch provinces from NKS API: ' . $e->getMessage());
+        }
+        return [];
     }
 
     /**
@@ -119,23 +123,27 @@ class PropertyService
      */
     public function getNksWards(): array
     {
-        return Cache::remember('nks_wards', 86400, function () {
-            try {
-                $response = Http::withoutVerifying()
-                    ->timeout(15)
-                    ->post('https://online.nks.vn/api/nks/administratives', []);
+        $cached = Cache::get('nks_wards');
+        if (is_array($cached) && !empty($cached)) {
+            return $cached;
+        }
 
-                if ($response->successful()) {
-                    $json = $response->json();
-                    if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
-                        return $json['data'];
-                    }
+        try {
+            $response = Http::withoutVerifying()
+                ->timeout(15)
+                ->post('https://online.nks.vn/api/nks/administratives', []);
+
+            if ($response->successful()) {
+                $json = $response->json();
+                if (isset($json['success']) && $json['success'] && !empty($json['data'])) {
+                    Cache::put('nks_wards', $json['data'], 86400);
+                    return $json['data'];
                 }
-            } catch (\Exception $e) {
-                Log::warning('Failed to fetch administratives from NKS API: ' . $e->getMessage());
             }
-            return [];
-        });
+        } catch (\Exception $e) {
+            Log::warning('Failed to fetch administratives from NKS API: ' . $e->getMessage());
+        }
+        return [];
     }
 
     /**
