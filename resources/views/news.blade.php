@@ -26,43 +26,43 @@
         <div class="flex items-center justify-start md:justify-center space-x-3 overflow-x-auto pb-4 mb-12 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none]">
             <button 
                 @click="activeTab = 'baocao'" 
-                :class="activeTab === 'baocao' ? 'bg-primary text-white font-extrabold shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold border border-slate-200/40'"
-                class="px-6 py-2.5 rounded-full text-sm transition duration-200 whitespace-nowrap cursor-pointer"
+                :class="activeTab === 'baocao' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
+                class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
             >
-                Báo cáo Thị trường BĐS
+                Báo cáo Thị trường BĐS Việt Nam
             </button>
             <button 
                 @click="activeTab = 'gocnhin'" 
-                :class="activeTab === 'gocnhin' ? 'bg-primary text-white font-extrabold shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold border border-slate-200/40'"
-                class="px-6 py-2.5 rounded-full text-sm transition duration-200 whitespace-nowrap cursor-pointer"
+                :class="activeTab === 'gocnhin' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
+                class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
             >
                 Góc Nhìn NKS
             </button>
             <button 
                 @click="activeTab = 'noithat'" 
-                :class="activeTab === 'noithat' ? 'bg-primary text-white font-extrabold shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold border border-slate-200/40'"
-                class="px-6 py-2.5 rounded-full text-sm transition duration-200 whitespace-nowrap cursor-pointer"
+                :class="activeTab === 'noithat' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
+                class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
             >
                 Nội Thất
             </button>
             <button 
                 @click="activeTab = 'phongthuy'" 
-                :class="activeTab === 'phongthuy' ? 'bg-primary text-white font-extrabold shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold border border-slate-200/40'"
-                class="px-6 py-2.5 rounded-full text-sm transition duration-200 whitespace-nowrap cursor-pointer"
+                :class="activeTab === 'phongthuy' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
+                class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
             >
                 Phong Thủy
             </button>
             <button 
                 @click="activeTab = 'tintuc'" 
-                :class="activeTab === 'tintuc' ? 'bg-primary text-white font-extrabold shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold border border-slate-200/40'"
-                class="px-6 py-2.5 rounded-full text-sm transition duration-200 whitespace-nowrap cursor-pointer"
+                :class="activeTab === 'tintuc' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
+                class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
             >
                 Tin Tức
             </button>
             <button 
                 @click="activeTab = 'kienthuc'" 
-                :class="activeTab === 'kienthuc' ? 'bg-primary text-white font-extrabold shadow-sm' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold border border-slate-200/40'"
-                class="px-6 py-2.5 rounded-full text-sm transition duration-200 whitespace-nowrap cursor-pointer"
+                :class="activeTab === 'kienthuc' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
+                class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
             >
                 Kiến Thức
             </button>

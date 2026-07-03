@@ -564,42 +564,42 @@
                 <div class="flex items-center justify-start gap-2.5 overflow-x-auto pb-4 mb-8 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none]">
                     <button 
                         @click="activeTab = 'baocao'" 
-                        :class="activeTab === 'baocao' ? 'bg-[#0070c0] text-white font-bold' : 'bg-[#f1f3f7] text-[#556070] hover:bg-slate-200 font-semibold'"
+                        :class="activeTab === 'baocao' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         Báo cáo Thị trường BĐS Việt Nam
                     </button>
                     <button 
                         @click="activeTab = 'gocnhin'" 
-                        :class="activeTab === 'gocnhin' ? 'bg-[#0070c0] text-white font-bold' : 'bg-[#f1f3f7] text-[#556070] hover:bg-slate-200 font-semibold'"
+                        :class="activeTab === 'gocnhin' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         Góc Nhìn NKS
                     </button>
                     <button 
                         @click="activeTab = 'noithat'" 
-                        :class="activeTab === 'noithat' ? 'bg-[#0070c0] text-white font-bold' : 'bg-[#f1f3f7] text-[#556070] hover:bg-slate-200 font-semibold'"
+                        :class="activeTab === 'noithat' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         Nội Thất
                     </button>
                     <button 
                         @click="activeTab = 'phongthuy'" 
-                        :class="activeTab === 'phongthuy' ? 'bg-[#0070c0] text-white font-bold' : 'bg-[#f1f3f7] text-[#556070] hover:bg-slate-200 font-semibold'"
+                        :class="activeTab === 'phongthuy' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         Phong Thủy
                     </button>
                     <button 
                         @click="activeTab = 'tintuc'" 
-                        :class="activeTab === 'tintuc' ? 'bg-[#0070c0] text-white font-bold' : 'bg-[#f1f3f7] text-[#556070] hover:bg-slate-200 font-semibold'"
+                        :class="activeTab === 'tintuc' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         Tin Tức
                     </button>
                     <button 
                         @click="activeTab = 'kienthuc'" 
-                        :class="activeTab === 'kienthuc' ? 'bg-[#0070c0] text-white font-bold' : 'bg-[#f1f3f7] text-[#556070] hover:bg-slate-200 font-semibold'"
+                        :class="activeTab === 'kienthuc' ? 'bg-primary text-white font-bold shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'"
                         class="px-5 py-2.5 rounded-full text-xs transition duration-200 whitespace-nowrap cursor-pointer"
                     >
                         Kiến Thức
