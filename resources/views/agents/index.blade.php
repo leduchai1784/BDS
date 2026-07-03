@@ -102,6 +102,10 @@
                 <i class="fa-solid fa-user-tie {{ request('type') !== 'company' ? 'text-primary' : 'text-slate-400' }}"></i>
                 Nhà Môi Giới
             </a>
+
+            {{-- Divider --}}
+            <div class="w-px h-5 bg-slate-200 mx-2 self-center"></div>
+
             {{-- Tab: Doanh Nghiệp --}}
             <a href="{{ route('agents.index', ['type' => 'company']) }}"
                class="flex items-center gap-2 px-7 py-4 text-sm font-bold border-b-2 transition-colors duration-150
