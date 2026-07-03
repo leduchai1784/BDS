@@ -352,4 +352,36 @@ class NksAuthService
             'website'           => $user->website,
         ];
     }
+
+    /**
+     * Cập nhật mật khẩu lên NKS.
+     */
+    public function updatePassword(string $token, string $oldPassword, string $newPassword): array
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->timeout(10)
+                ->post("{$this->baseUrl}/updatePass", [
+                    'old_password' => $oldPassword,
+                    'password'     => $newPassword,
+                    'access_token' => $token,
+                ]);
+
+            $json = $response->json();
+
+            Log::info('NKS updatePass Request:', [
+                'url'      => "{$this->baseUrl}/updatePass",
+                'status'   => $response->status(),
+                'response' => $json
+            ]);
+
+            return [
+                'success' => $response->successful() && !empty($json['success']),
+                'message' => $json['message'] ?? '',
+            ];
+        } catch (\Exception $e) {
+            Log::warning('NKS updatePass failed: ' . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

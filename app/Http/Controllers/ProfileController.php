@@ -440,6 +440,22 @@ class ProfileController extends Controller
             'new_password.different' => 'Mật khẩu mới phải khác mật khẩu hiện tại.'
         ]);
 
+        // ✅ 1. Sync password change to NKS synchronously (if user has NKS token)
+        if ($user->nks_token) {
+            $nksResult = $this->nksAuthService->updatePassword(
+                $user->nks_token, 
+                $request->current_password, 
+                $request->new_password
+            );
+
+            if (!$nksResult['success']) {
+                return back()->withErrors([
+                    'current_password' => $nksResult['message'] ?: 'Không thể cập nhật mật khẩu lên hệ thống NKS. Vui lòng kiểm tra lại.'
+                ])->withInput();
+            }
+        }
+
+        // ✅ 2. Update local password
         $this->profileService->changePassword($user->id, $request->current_password, $request->new_password);
 
         return redirect()->route('profile.index', ['tab' => 'profile', 'subtab' => 'password'])->with('success', 'Mật khẩu đã được thay đổi thành công!');
