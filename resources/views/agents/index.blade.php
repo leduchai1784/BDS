@@ -84,9 +84,9 @@
                     <!-- Avatar & Status -->
                     <div class="relative w-24 h-24 mb-4">
                         <img 
-                            src="{{ $agent->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($agent->name) . '&background=0077bb&color=fff' }}" 
-                            alt="{{ $agent->name }}" 
-                            class="w-full h-full rounded-full object-cover border-4 border-slate-50 group-hover:border-primary/10 transition-colors"
+                            src="{{ $agent->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(request('type') === 'company' ? $agent->company : $agent->name) . '&background=0077bb&color=fff' }}" 
+                            alt="{{ request('type') === 'company' ? $agent->company : $agent->name }}" 
+                            class="w-full h-full {{ request('type') === 'company' ? 'rounded-2xl shadow-sm' : 'rounded-full' }} object-cover border-4 border-slate-50 group-hover:border-primary/10 transition-colors"
                         >
                         <!-- KYC verified badge (tick xanh) -->
                         @if(!empty($agent->id_number))
@@ -98,11 +98,13 @@
 
                     <!-- Name & Title -->
                     <h3 class="text-lg font-extrabold text-slate-900 group-hover:text-primary transition line-clamp-1 mb-1">
-                        <a href="{{ route('agents.show', $agent->id) }}">{{ $agent->name }}</a>
+                        <a href="{{ route('agents.show', $agent->id) }}">
+                            {{ request('type') === 'company' ? $agent->company : $agent->name }}
+                        </a>
                     </h3>
                     
                     <p class="text-xs font-bold text-primary tracking-wide uppercase mb-3 truncate max-w-full">
-                        {{ $agent->company ?? 'Môi giới độc lập' }}
+                        {{ request('type') === 'company' ? 'Đại diện: ' . $agent->name : ($agent->company ?? 'Môi giới độc lập') }}
                     </p>
 
                     <!-- Active counts & details -->
@@ -125,7 +127,7 @@
                             href="{{ route('agents.show', $agent->id) }}"
                             class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl border border-slate-100 text-xs font-extrabold text-slate-700 bg-slate-50 hover:bg-primary hover:text-white hover:border-transparent transition-all duration-200"
                         >
-                            Xem trang cá nhân
+                            {{ request('type') === 'company' ? 'Xem trang doanh nghiệp' : 'Xem trang cá nhân' }}
                         </a>
                         
                         <div class="flex gap-2">

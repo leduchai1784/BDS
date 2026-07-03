@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $agent->name . ' - Nhà môi giới chuyên nghiệp | BDS Rental')
+@section('title', (!empty($agent->company) ? $agent->company : $agent->name) . ' - BDS Rental')
 
 @section('content')
 <div class="pt-24 bg-slate-50 min-h-screen">
@@ -11,7 +11,7 @@
             <span class="mx-2">/</span>
             <a href="{{ route('agents.index') }}" class="hover:text-primary">Môi giới</a>
             <span class="mx-2">/</span>
-            <span class="text-slate-800 font-bold truncate">{{ $agent->name }}</span>
+            <span class="text-slate-800 font-bold truncate">{{ !empty($agent->company) ? $agent->company : $agent->name }}</span>
         </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -21,9 +21,9 @@
                     <!-- Profile avatar with verified badge -->
                     <div class="relative w-28 h-28 mb-4">
                         <img 
-                            src="{{ $agent->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($agent->name) . '&background=0077bb&color=fff' }}" 
-                            alt="{{ $agent->name }}" 
-                            class="w-full h-full rounded-full object-cover border-4 border-slate-50 shadow-inner"
+                            src="{{ $agent->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(!empty($agent->company) ? $agent->company : $agent->name) . '&background=0077bb&color=fff' }}" 
+                            alt="{{ !empty($agent->company) ? $agent->company : $agent->name }}" 
+                            class="w-full h-full {{ !empty($agent->company) ? 'rounded-2xl shadow-sm' : 'rounded-full' }} object-cover border-4 border-slate-50 shadow-inner"
                         >
                         @if(!empty($agent->id_number))
                             <span class="absolute bottom-1 right-1 w-7 h-7 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-white text-[11px] shadow-md" title="Môi giới đã xác thực danh tính">
@@ -32,9 +32,11 @@
                         @endif
                     </div>
 
-                    <h2 class="text-xl font-extrabold text-slate-900 mb-1">{{ $agent->name }}</h2>
+                    <h2 class="text-xl font-extrabold text-slate-900 mb-1">
+                        {{ !empty($agent->company) ? $agent->company : $agent->name }}
+                    </h2>
                     <span class="bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider mb-4 block">
-                        {{ $agent->company ?? 'Môi giới độc lập' }}
+                        {{ !empty($agent->company) ? 'Đại diện: ' . $agent->name : 'Môi giới độc lập' }}
                     </span>
 
                     <hr class="w-full border-slate-100 mb-4">
