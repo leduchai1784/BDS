@@ -233,6 +233,31 @@
                                 {{ $stats['total_appointments'] }}
                             </span>
                         </button>
+
+                        <button 
+                            @click="activeTab = 'leads'; window.history.pushState(null, '', '?tab=leads');" 
+                            :class="activeTab === 'leads' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-user-group text-sm"></i>
+                                <span>Quản lý Khách (Leads)</span>
+                            </div>
+                            <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                {{ $stats['total_leads'] ?? 4 }}
+                            </span>
+                        </button>
+
+                        <button 
+                            @click="activeTab = 'marketing'; window.history.pushState(null, '', '?tab=marketing');" 
+                            :class="activeTab === 'marketing' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                        >
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                                <span>AI Content Studio</span>
+                            </div>
+                        </button>
                         @endif
 
                         <button 
@@ -1995,6 +2020,18 @@
                                             </td>
                                             <td class="px-5 py-4 whitespace-nowrap text-right">
                                                 <div class="inline-flex items-center space-x-2">
+                                                    <button 
+                                                        type="button" 
+                                                        @click="
+                                                            activeTab = 'marketing'; 
+                                                            selectedPropertyId = '{{ $prop->id }}'; 
+                                                            window.history.pushState(null, '', '?tab=marketing');
+                                                        " 
+                                                        class="p-1.5 text-slate-500 hover:text-primary transition focus:outline-none cursor-pointer" 
+                                                        title="AI Content Studio (Marketing)"
+                                                    >
+                                                        <i class="fa-solid fa-wand-magic-sparkles text-sm text-primary"></i>
+                                                    </button>
                                                     <a href="{{ route('properties.edit', $prop->id) }}" class="p-1.5 text-slate-500 hover:text-primary transition" title="Chỉnh sửa">
                                                         <i class="fa-solid fa-pen text-sm"></i>
                                                     </a>
@@ -2368,6 +2405,16 @@
                             @endif
                         @endif
                     </div>
+                </div>
+
+                <!-- TAB Leads -->
+                <div x-show="activeTab === 'leads'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    @include('components.owner-leads-tab')
+                </div>
+
+                <!-- TAB Marketing -->
+                <div x-show="activeTab === 'marketing'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    @include('components.owner-marketing-tab')
                 </div>
                 @endif
 
