@@ -1,6 +1,7 @@
 <header 
     x-data="{ 
         mobileMenuOpen: false, 
+        userDrawerOpen: false,
         isScrolled: window.pageYOffset > 20 || window.location.pathname !== '/'
     }" 
     @scroll.window="isScrolled = window.pageYOffset > 20 || window.location.pathname !== '/'"
@@ -308,12 +309,38 @@
             </div>
             @endguest
 
-            <!-- Hamburger Button for Mobile -->
-            <div class="flex items-center md:hidden">
+            <!-- Mobile Action Icons (Bell & Avatar & Hamburger) -->
+            <div class="flex items-center space-x-2 md:hidden">
+                @auth
+                    <!-- Bell Notification Icon -->
+                    <a 
+                        href="{{ route('profile.index', ['tab' => 'appointments']) }}" 
+                        class="relative p-1.5 rounded-full transition duration-150"
+                        :class="isScrolled ? 'text-slate-600 hover:bg-slate-100' : 'text-slate-200 hover:bg-white/10'"
+                    >
+                        <i class="fa-regular fa-bell text-[19px]"></i>
+                        <span class="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border border-white">2</span>
+                    </a>
+
+                    <!-- User Avatar Drawer Button -->
+                    <button 
+                        @click="userDrawerOpen = !userDrawerOpen; mobileMenuOpen = false" 
+                        type="button" 
+                        class="w-7.5 h-7.5 rounded-full overflow-hidden border border-primary/20 shadow-sm focus:outline-none cursor-pointer"
+                    >
+                        <img 
+                            src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0077bb&color=fff' }}" 
+                            alt="{{ Auth::user()->name }}" 
+                            class="w-full h-full object-cover"
+                        >
+                    </button>
+                @endauth
+
+                <!-- Hamburger Button -->
                 <button 
-                    @click="mobileMenuOpen = !mobileMenuOpen" 
+                    @click="mobileMenuOpen = !mobileMenuOpen; userDrawerOpen = false" 
                     type="button" 
-                    class="inline-flex items-center justify-center p-2 rounded-xl focus:outline-none transition duration-150"
+                    class="inline-flex items-center justify-center p-2 rounded-xl focus:outline-none transition duration-150 cursor-pointer"
                     :class="isScrolled ? 'text-slate-700 hover:bg-slate-100' : 'text-white hover:bg-white/10'"
                 >
                     <span class="sr-only">Mở menu</span>
@@ -495,6 +522,178 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 📱 Mobile User Profile Drawer (App-like Card from Bottom) matching Image 1 -->
+    <div 
+        x-show="userDrawerOpen" 
+        class="fixed inset-0 z-50 md:hidden flex items-end justify-center bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        x-cloak
+    >
+        <!-- Card Content Panel -->
+        <div 
+            @click.outside="userDrawerOpen = false"
+            class="bg-white w-full rounded-t-3xl shadow-2xl p-5 border-t border-slate-100 flex flex-col space-y-4 max-h-[85vh] overflow-y-auto"
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="translate-y-full"
+            x-transition:enter-end="translate-y-0"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="translate-y-0"
+            x-transition:leave-end="translate-y-full"
+        >
+            <!-- Handle Indicator -->
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-2 flex-shrink-0"></div>
+
+            @auth
+            <!-- User Header Card -->
+            <div class="flex items-center gap-4 bg-slate-50/70 p-4 rounded-2xl border border-slate-100/60 text-left">
+                <img 
+                    src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0077bb&color=fff' }}" 
+                    alt="{{ Auth::user()->name }}" 
+                    class="w-14 h-14 rounded-full object-cover border border-primary/20 shadow-sm"
+                >
+                <div class="space-y-1">
+                    <h4 class="text-base font-extrabold text-slate-800 leading-tight">{{ Auth::user()->name }}</h4>
+                    <div>
+                        @if(Auth::user()->role === 'admin')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-purple-50 text-purple-600 border border-purple-100">
+                                Quản trị viên
+                            </span>
+                        @elseif(Auth::user()->role === 'owner')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                Đối tác Chủ nhà
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-orange-50 text-orange-600 border border-orange-100">
+                                Khách thuê nhà
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Menu Options -->
+            <div class="space-y-2 flex-grow overflow-y-auto">
+                <!-- 1. Admin Control Panel (If Admin) -->
+                @if(Auth::user()->role === 'admin')
+                <a 
+                    href="{{ route('admin.dashboard') }}" 
+                    @click="userDrawerOpen = false"
+                    class="flex items-center justify-between p-3.5 hover:bg-slate-50 rounded-2xl transition border border-slate-100/40"
+                >
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 mr-3 text-base">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-sm font-extrabold text-slate-800">Trang quản trị</span>
+                            <span class="block text-[10px] text-slate-400">Kiểm duyệt tin đăng & thành viên</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-350 text-xs"></i>
+                </a>
+                @endif
+
+                <!-- 2. Manage Properties (If Owner) -->
+                @if(Auth::user()->role === 'owner')
+                <a 
+                    href="{{ route('profile.index', ['tab' => 'properties']) }}" 
+                    @click="userDrawerOpen = false"
+                    class="flex items-center justify-between p-3.5 hover:bg-slate-50 rounded-2xl transition border border-slate-100/40"
+                >
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 mr-3 text-base">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-sm font-extrabold text-slate-800">Quản lý tin đăng</span>
+                            <span class="block text-[10px] text-slate-400">Đăng, sửa và ẩn các tin cho thuê</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-350 text-xs"></i>
+                </a>
+                @endif
+
+                <!-- 3. Manage Appointments -->
+                <a 
+                    href="{{ route('profile.index', ['tab' => 'appointments']) }}" 
+                    @click="userDrawerOpen = false"
+                    class="flex items-center justify-between p-3.5 hover:bg-slate-50 rounded-2xl transition border border-slate-100/40"
+                >
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500 mr-3 text-base">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-sm font-extrabold text-slate-800">Quản lý lịch hẹn</span>
+                            <span class="block text-[10px] text-slate-400">Xem và quản lý lịch xem nhà</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-350 text-xs"></i>
+                </a>
+
+                <!-- 4. Favorite Properties -->
+                <a 
+                    href="{{ route('profile.index', ['tab' => 'favorites']) }}" 
+                    @click="userDrawerOpen = false"
+                    class="flex items-center justify-between p-3.5 hover:bg-slate-50 rounded-2xl transition border border-slate-100/40"
+                >
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-500 mr-3 text-base">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-sm font-extrabold text-slate-800">Tin yêu thích</span>
+                            <span class="block text-[10px] text-slate-400">Danh sách tin đăng đã lưu lưu trữ</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-350 text-xs"></i>
+                </a>
+
+                <!-- 5. Account Settings -->
+                <a 
+                    href="/profile" 
+                    @click="userDrawerOpen = false"
+                    class="flex items-center justify-between p-3.5 hover:bg-slate-50 rounded-2xl transition border border-slate-100/40"
+                >
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 mr-3 text-base">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-sm font-extrabold text-slate-800">Cài đặt tài khoản</span>
+                            <span class="block text-[10px] text-slate-400">Thông tin cá nhân, CCCD & bảo mật</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-350 text-xs"></i>
+                </a>
+
+                <!-- 6. Logout -->
+                <a 
+                    href="{{ route('logout') }}" 
+                    onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"
+                    class="flex items-center justify-between p-3.5 hover:bg-red-50/50 rounded-2xl transition border border-transparent"
+                >
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-xl bg-red-100/50 flex items-center justify-center text-red-500 mr-3 text-base">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-sm font-extrabold text-red-500">Đăng xuất</span>
+                            <span class="block text-[10px] text-red-400">Thoát khỏi phiên làm việc hiện tại</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-red-300 text-xs"></i>
+                </a>
+            </div>
+            @endauth
         </div>
     </div>
 
