@@ -35,7 +35,7 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-full font-sans antialiased text-slate-800 pb-16 md:pb-0">
+<body class="flex flex-col min-h-full font-sans antialiased text-slate-800">
 
     <!-- Header / Navbar Component -->
     @if(!isset($hideNavbar) || !$hideNavbar)
@@ -54,68 +54,6 @@
 
     <!-- AI Chatbot Widget -->
     @include('components.chat-widget')
-
-    <!-- 📱 Mobile Bottom Navigation Bar (Tabbar) like moso.vn -->
-    @if(!isset($hideMobileTabbar) || !$hideMobileTabbar)
-    <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-150 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden safe-bottom">
-        <div class="grid grid-cols-5 h-16">
-            <!-- 1. Home -->
-            <a 
-                href="/" 
-                class="flex flex-col items-center justify-center space-y-1 {{ request()->is('/') ? 'text-primary' : 'text-slate-400 hover:text-slate-600' }} transition duration-200"
-            >
-                <i class="fa-solid fa-house-chimney text-base"></i>
-                <span class="text-[9px] font-bold">Trang chủ</span>
-            </a>
-
-            <!-- 2. Map -->
-            <a 
-                href="/map" 
-                class="flex flex-col items-center justify-center space-y-1 {{ request()->is('map*') ? 'text-primary' : 'text-slate-400 hover:text-slate-600' }} transition duration-200"
-            >
-                <i class="fa-solid fa-map-location-dot text-base"></i>
-                <span class="text-[9px] font-bold">Bản đồ</span>
-            </a>
-
-            <!-- 3. Add Property (Center Highlight Button) -->
-            <a 
-                href="{{ route('properties.choose-type') }}" 
-                class="flex flex-col items-center justify-center relative"
-            >
-                <div class="absolute -top-4 w-12 h-12 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition-all duration-200">
-                    <i class="fa-solid fa-plus text-lg"></i>
-                </div>
-                <span class="text-[9px] font-bold text-slate-400 mt-7">Đăng tin</span>
-            </a>
-
-            <!-- 4. News -->
-            <a 
-                href="/news" 
-                class="flex flex-col items-center justify-center space-y-1 {{ request()->is('news*') ? 'text-primary' : 'text-slate-400 hover:text-slate-600' }} transition duration-200"
-            >
-                <i class="fa-solid fa-newspaper text-base"></i>
-                <span class="text-[9px] font-bold">Tin tức</span>
-            </a>
-
-            <!-- 5. Profile -->
-            <a 
-                href="/profile" 
-                class="flex flex-col items-center justify-center space-y-1 {{ request()->is('profile*') ? 'text-primary' : 'text-slate-400 hover:text-slate-600' }} transition duration-200"
-            >
-                @auth
-                    <img 
-                        src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0077bb&color=fff' }}" 
-                        alt="Profile" 
-                        class="w-5.5 h-5.5 rounded-full object-cover border {{ request()->is('profile*') ? 'border-primary' : 'border-slate-300' }}"
-                    >
-                @else
-                    <i class="fa-solid fa-circle-user text-base"></i>
-                @endauth
-                <span class="text-[9px] font-bold">Cá nhân</span>
-            </a>
-        </div>
-    </div>
-    @endif
 
     <!-- Global Share Listing Modal -->
     <div 
