@@ -562,7 +562,7 @@
         <!-- MOBILE ONLY: Bottom Horizontal Slider Overlay -->
         <div 
             x-show="filteredPropertiesCount() > 0"
-            class="absolute bottom-6 left-0 right-0 z-10 px-4 md:hidden"
+            class="absolute bottom-20 left-0 right-0 z-10 px-4 md:hidden"
             x-transition:enter="transition ease-out duration-350 transform"
             x-transition:enter-start="opacity-0 translate-y-12"
             x-transition:enter-end="opacity-100 translate-y-0"

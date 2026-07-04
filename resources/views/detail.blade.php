@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    $hideMobileTabbar = true;
+@endphp
+
 @section('title', $property['title'] . ' | BDS Rental')
 @section('meta_description', Str::limit(strip_tags(str_replace('\n', ' ', $property['description'])), 150))
 
