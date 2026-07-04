@@ -27,7 +27,7 @@ class AppointmentController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:255',
-            'date' => 'required|date|after_or_equal:today',
+            'date' => 'required|date|after_or_equal:' . now()->timezone('Asia/Ho_Chi_Minh')->format('Y-m-d'),
             'time' => 'required|string',
             'message' => 'nullable|string|max:1000'
         ], [
