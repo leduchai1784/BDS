@@ -80,11 +80,11 @@
             let interval = setInterval(() => {
                 this.progress += 2;
                 if (this.progress === 20) {
-                    this.currentStep = 'AI đang soạn thảo 20 bài viết Facebook (Đa góc nhìn)...';
+                    this.currentStep = 'AI đang soạn thảo bài viết Facebook (Đa góc nhìn)...';
                 } else if (this.progress === 45) {
-                    this.currentStep = 'AI đang xây dựng 10 kịch bản TikTok Video chi tiết...';
+                    this.currentStep = 'AI đang xây dựng kịch bản TikTok Video chi tiết...';
                 } else if (this.progress === 70) {
-                    this.currentStep = 'AI đang viết 5 bài viết chuẩn SEO và lập tiêu đề bài đăng...';
+                    this.currentStep = 'AI đang viết bài viết chuẩn SEO và lập tiêu đề bài đăng...';
                 } else if (this.progress === 85) {
                     this.currentStep = 'AI đang tạo mẫu Email Marketing và kịch bản SMS chào hàng...';
                 } else if (this.progress === 95) {
@@ -108,7 +108,7 @@
     <!-- Header -->
     <div class="pb-5 border-b border-slate-100">
         <h2 class="text-xl font-bold text-slate-800">AI Content Studio (AI Marketing)</h2>
-        <p class="text-xs text-slate-400 mt-1 font-semibold">Tạo tự động 20 bài Facebook, 10 kịch bản TikTok, 5 bài SEO, Email & SMS chỉ trong vài phút.</p>
+        <p class="text-xs text-slate-400 mt-1 font-semibold">Tạo tự động bài đăng Facebook, kịch bản TikTok, bài viết SEO, Email & SMS chỉ trong vài phút.</p>
     </div>
 
     <!-- Generator Panel (Form) -->
@@ -221,21 +221,21 @@
                     :class="activeResultTab === 'facebook' ? 'bg-primary-light text-primary font-extrabold' : 'text-slate-600 hover:bg-slate-50'"
                     class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition cursor-pointer text-left whitespace-nowrap lg:w-full focus:outline-none"
                 >
-                    <i class="fa-brands fa-facebook text-sm"></i> Facebook (20 bài)
+                    <i class="fa-brands fa-facebook text-sm"></i> Facebook
                 </button>
                 <button 
                     @click="activeResultTab = 'tiktok'"
                     :class="activeResultTab === 'tiktok' ? 'bg-primary-light text-primary font-extrabold' : 'text-slate-600 hover:bg-slate-50'"
                     class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition cursor-pointer text-left whitespace-nowrap lg:w-full focus:outline-none"
                 >
-                    <i class="fa-brands fa-tiktok text-sm"></i> TikTok Scripts (10 kịch bản)
+                    <i class="fa-brands fa-tiktok text-sm"></i> TikTok Scripts
                 </button>
                 <button 
                     @click="activeResultTab = 'seo'"
                     :class="activeResultTab === 'seo' ? 'bg-primary-light text-primary font-extrabold' : 'text-slate-600 hover:bg-slate-50'"
                     class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition cursor-pointer text-left whitespace-nowrap lg:w-full focus:outline-none"
                 >
-                    <i class="fa-solid fa-file-word text-sm"></i> SEO Articles (5 bài)
+                    <i class="fa-solid fa-file-word text-sm"></i> SEO Articles
                 </button>
                 <button 
                     @click="activeResultTab = 'email'"
@@ -262,7 +262,7 @@
                         <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
                             <i class="fa-brands fa-facebook text-blue-650 text-base"></i> Bài đăng Facebook hàng tuần
                         </h3>
-                        <span class="text-[10px] font-bold text-slate-400">Đã tạo 20 bài viết thành công</span>
+                        <span class="text-[10px] font-bold text-slate-400">Đã tạo bài viết thành công</span>
                     </div>
 
                     <div class="space-y-4 max-h-[500px] overflow-y-auto pr-1">
@@ -291,7 +291,7 @@
                         <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
                             <i class="fa-brands fa-tiktok text-slate-900 text-base"></i> Kịch bản Video TikTok ngắn
                         </h3>
-                        <span class="text-[10px] font-bold text-slate-400">Đã tạo 10 kịch bản thành công</span>
+                        <span class="text-[10px] font-bold text-slate-400">Đã tạo kịch bản thành công</span>
                     </div>
 
                     <div class="space-y-5 max-h-[500px] overflow-y-auto pr-1">
@@ -338,7 +338,7 @@
                         <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
                             <i class="fa-solid fa-file-word text-blue-500 text-base"></i> Bài viết chuẩn SEO Website
                         </h3>
-                        <span class="text-[10px] font-bold text-slate-400">Đã tạo 5 bài viết chuẩn SEO</span>
+                        <span class="text-[10px] font-bold text-slate-400">Đã tạo bài viết chuẩn SEO</span>
                     </div>
 
                     <div class="space-y-4 max-h-[500px] overflow-y-auto pr-1">
