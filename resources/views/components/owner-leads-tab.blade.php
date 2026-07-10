@@ -101,9 +101,13 @@
     $leadsList = isset($leads) && count($leads) > 0 ? $leads : $mockLeads;
 @endphp
 
+<script>
+    window.crmLeadsList = {!! json_encode($leadsList) !!};
+</script>
+
 <div 
     x-data="{
-        leads: {!! json_encode($leadsList) !!},
+        leads: window.crmLeadsList || [],
         selectedLead: null,
         drawerOpen: false,
         activeDetailTab: 'demand',
