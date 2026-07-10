@@ -274,7 +274,7 @@
         </template>
 
         <template x-if="filteredLeads.length > 0">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-55/40 border-b border-slate-100 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">

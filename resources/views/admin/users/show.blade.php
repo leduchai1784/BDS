@@ -96,7 +96,7 @@
                     <div class="px-6 py-5 border-b border-slate-100">
                         <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Tin đăng bất động sản ({{ count($properties) }})</h3>
                     </div>
-                    <div class="divide-y divide-slate-100 overflow-x-auto">
+                    <div class="divide-y divide-slate-100 overflow-x-auto max-h-[300px] overflow-y-auto pr-1 thin-scrollbar">
                         @if(count($properties) > 0)
                         <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -156,7 +156,7 @@
                     <div class="px-6 py-5 border-b border-slate-100">
                         <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Lịch hẹn xem nhà ({{ count($appointments) }})</h3>
                     </div>
-                    <div class="divide-y divide-slate-100 overflow-x-auto">
+                    <div class="divide-y divide-slate-100 overflow-x-auto max-h-[300px] overflow-y-auto pr-1 thin-scrollbar">
                         @if(count($appointments) > 0)
                         <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">

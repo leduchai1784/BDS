@@ -2015,7 +2015,7 @@
                             <p class="text-[10px] text-slate-400 mt-1">Bấm nút "Đăng tin miễn phí" trên thanh điều hướng để bắt đầu.</p>
                         </div>
                     @else
-                        <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar border border-slate-150/80 rounded-2xl shadow-sm bg-white">
                             <table class="min-w-full divide-y divide-slate-100 text-left">
                                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                     <tr>
@@ -2246,7 +2246,7 @@
                                         <p class="text-xs font-bold text-slate-500">Chưa có khách đặt lịch hẹn xem nhà nào.</p>
                                     </div>
                                 @else
-                                    <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar border border-slate-150/80 rounded-2xl shadow-sm bg-white">
                                         <table class="min-w-full divide-y divide-slate-100 text-left">
                                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                                 <tr>
@@ -2331,7 +2331,7 @@
                                         </a>
                                     </div>
                                 @else
-                                    <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar border border-slate-150/80 rounded-2xl shadow-sm bg-white">
                                         <table class="min-w-full divide-y divide-slate-100 text-left">
                                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                                 <tr>
@@ -2401,7 +2401,7 @@
                                     </a>
                                 </div>
                             @else
-                                <div class="overflow-x-auto border border-slate-150/80 rounded-2xl shadow-sm bg-white">
+                                <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar border border-slate-150/80 rounded-2xl shadow-sm bg-white">
                                     <table class="min-w-full divide-y divide-slate-100 text-left">
                                         <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                             <tr>
