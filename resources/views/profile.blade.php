@@ -3054,10 +3054,12 @@
     x-data="{
         open: false,
         message: 'Bạn có chắc chắn muốn thực hiện hành động này?',
+        type: 'danger',
         confirmCallback: null,
-        showConfirm(message, callback) {
+        showConfirm(message, callback, type) {
             this.message = message;
             this.confirmCallback = callback;
+            this.type = type || 'danger';
             this.open = true;
         },
         triggerConfirm() {
@@ -3065,15 +3067,18 @@
             this.open = false;
         }
     }"
-    @trigger-custom-confirm.window="showConfirm($event.detail.message, $event.detail.callback)"
+    @trigger-custom-confirm.window="showConfirm($event.detail.message, $event.detail.callback, $event.detail.type)"
     x-show="open"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     x-transition
     x-cloak
 >
     <div @click.outside="open = false" class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative border border-slate-100 text-center space-y-4">
-        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl border border-amber-100">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+        <div 
+            class="w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl border"
+            :class="type === 'danger' ? 'bg-red-50 text-red-500 border-red-100' : 'bg-amber-50 text-amber-500 border-amber-100'"
+        >
+            <i class="fa-solid" :class="type === 'danger' ? 'fa-circle-exclamation' : 'fa-triangle-exclamation'"></i>
         </div>
         <h3 class="text-sm font-bold text-slate-800">Xác nhận</h3>
         <p class="text-xs text-slate-500 leading-relaxed" x-text="message"></p>
@@ -3081,7 +3086,12 @@
             <button type="button" @click="open = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition cursor-pointer">
                 Hủy bỏ
             </button>
-            <button type="button" @click="triggerConfirm()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-sm shadow-amber-500/20">
+            <button 
+                type="button" 
+                @click="triggerConfirm()" 
+                class="px-4 py-2 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-sm"
+                :class="type === 'danger' ? 'bg-red-500 hover:bg-red-655 shadow-red-500/20' : 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20'"
+            >
                 Xác nhận
             </button>
         </div>
@@ -3155,13 +3165,14 @@
 </style>
 
 <script>
-window.confirmAction = function(message, formElement) {
+window.confirmAction = function(message, formElement, type = 'danger') {
     window.dispatchEvent(new CustomEvent('trigger-custom-confirm', {
         detail: {
             message: message,
             callback: () => {
                 formElement.submit();
-            }
+            },
+            type: type
         }
     }));
     return false;
