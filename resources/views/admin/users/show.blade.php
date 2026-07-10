@@ -3,8 +3,8 @@
 @section('title', 'Chi Tiết Thành Viên - ' . $user->name)
 
 @section('content')
-<div id="user-detail-content" class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="space-y-6">
+<div id="user-detail-content" class="py-2 max-w-7xl mx-auto px-1">
+    <div class="space-y-4">
         <!-- Breadcrumbs / Back button -->
         <div class="flex items-center justify-between">
             <a href="{{ route('profile.index', ['tab' => 'admin_users']) }}" class="inline-flex items-center text-xs font-bold text-slate-500 hover:text-primary transition">
@@ -12,10 +12,10 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <!-- LEFT COLUMN: Profile Card (4/12 cols) -->
-            <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-center p-6">
-                <div class="relative w-24 h-24 mx-auto mb-4">
+            <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-center p-4">
+                <div class="relative w-16 h-16 mx-auto mb-3">
                     <img 
                         src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0077bb&color=fff' }}" 
                         alt="{{ $user->name }}" 
@@ -24,29 +24,29 @@
                 </div>
                 
                 <h3 class="text-lg font-black text-slate-800 leading-none mb-1.5">{{ $user->name }}</h3>
-                <span class="text-[10px] text-slate-400 font-bold block mb-4">ID thành viên: #{{ $user->id }}</span>
+                <span class="text-[9px] text-slate-400 font-bold block mb-2.5">ID thành viên: #{{ $user->id }}</span>
 
                 <!-- Status and Role Badges -->
-                <div class="flex items-center justify-center gap-2 mb-6">
+                <div class="flex items-center justify-center gap-1.5 mb-4">
                     <!-- Role -->
                     @if($user->role === 'admin')
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">Admin</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">Admin</span>
                     @elseif($user->role === 'owner')
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Chủ nhà</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Chủ nhà</span>
                     @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-teal-50 text-teal-700 border border-teal-200">Khách thuê</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-teal-50 text-teal-700 border border-teal-200">Khách thuê</span>
                     @endif
 
                     <!-- Status -->
                     @if($user->status === 'locked')
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">Đã khóa</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">Đã khóa</span>
                     @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">Đang hoạt động</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">Hoạt động</span>
                     @endif
                 </div>
 
                 <!-- Profile Info List -->
-                <div class="border-t border-slate-100 pt-5 space-y-3.5 text-left text-xs text-slate-600 font-semibold">
+                <div class="border-t border-slate-100 pt-4 space-y-2.5 text-left text-xs text-slate-600 font-semibold">
                     <div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Địa chỉ Email</span>
                         <span class="text-slate-800 break-all">{{ $user->email }}</span>
@@ -63,24 +63,24 @@
 
                 <!-- Lock / Unlock Action on sidebar -->
                 @if($user->id !== Auth::id())
-                    <div class="border-t border-slate-100 pt-5 mt-6 space-y-3">
+                    <div class="border-t border-slate-100 pt-4 mt-4">
                         <form id="detail-toggle-status-form" action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST">
                             @csrf
                             @if($user->status === 'locked')
                                 <button 
                                     type="submit" 
                                     onclick="return confirm('Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.');"
-                                    class="w-full bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-md shadow-green-500/20 transition cursor-pointer"
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-3 rounded-xl shadow-md transition cursor-pointer"
                                 >
-                                    <i class="fa-solid fa-unlock-keyhole mr-1.5"></i> Mở khóa tài khoản
+                                    Mở khóa tài khoản
                                 </button>
                             @else
                                 <button 
                                     type="submit" 
                                     onclick="return confirm('Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.');"
-                                    class="w-full bg-red-500 hover:bg-red-650 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-md shadow-red-500/20 transition cursor-pointer"
+                                    class="w-full bg-red-500 hover:bg-red-650 text-white text-xs font-bold py-2 px-3 rounded-xl shadow-md transition cursor-pointer"
                                 >
-                                    <i class="fa-solid fa-user-slash mr-1.5"></i> Khóa tài khoản này
+                                    Khóa tài khoản này
                                 </button>
                             @endif
                         </form>
@@ -89,38 +89,38 @@
             </div>
 
             <!-- RIGHT COLUMN: Related Properties or Appointments (8/12 cols) -->
-            <div class="lg:col-span-8 space-y-6">
+            <div class="lg:col-span-8 space-y-4">
                 <!-- If Owner: Show posted properties -->
                 @if($user->role === 'owner')
                 <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
-                    <div class="px-6 py-5 border-b border-slate-100">
-                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Tin đăng bất động sản ({{ count($properties) }})</h3>
+                    <div class="px-4 py-3 border-b border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Tin đăng bất động sản ({{ count($properties) }})</h3>
                     </div>
                     <div class="divide-y divide-slate-100 overflow-x-auto max-h-[300px] overflow-y-auto pr-1 thin-scrollbar">
                         @if(count($properties) > 0)
                         <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4">Bất động sản</th>
-                                    <th scope="col" class="px-6 py-4">Giá / diện tích</th>
-                                    <th scope="col" class="px-6 py-4">Trạng thái</th>
-                                    <th scope="col" class="px-6 py-4 text-right">Xem</th>
+                                    <th scope="col" class="px-4 py-2.5">Bất động sản</th>
+                                    <th scope="col" class="px-4 py-2.5">Giá / diện tích</th>
+                                    <th scope="col" class="px-4 py-2.5">Trạng thái</th>
+                                    <th scope="col" class="px-4 py-2.5 text-right">Xem</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 @foreach($properties as $p)
                                 <tr class="hover:bg-slate-50/50 transition">
-                                    <td class="px-6 py-4 max-w-[280px]">
+                                    <td class="px-4 py-2.5 max-w-[280px]">
                                         <a href="/property/{{ $p->id }}" class="font-bold text-slate-800 hover:text-primary transition block truncate leading-tight">
                                             {{ $p->title }}
                                         </a>
                                         <span class="text-[9px] text-slate-400 block mt-1"><i class="fa-solid fa-tag mr-1 text-[8px]"></i>{{ $p->category->name ?? 'Không phân loại' }}</span>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-2.5">
                                         <span class="block text-primary font-bold">{{ number_format($p->price / 1000000, 1) }} tr/tháng</span>
                                         <span class="text-[10px] text-slate-400 block mt-0.5">{{ $p->area }} m²</span>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-2.5">
                                         @if($p->status === 'approved')
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">Hiển thị</span>
                                         @elseif($p->status === 'pending')
@@ -131,7 +131,7 @@
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-50 text-slate-700 border border-slate-200">Đã ẩn</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-4 py-2.5 text-right">
                                         <a href="/property/{{ $p->id }}" class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-primary border border-slate-200 flex items-center justify-center transition">
                                             <i class="fa-solid fa-arrow-right text-[10px]"></i>
                                         </a>
@@ -141,8 +141,8 @@
                             </tbody>
                         </table>
                         @else
-                        <div class="py-12 text-center text-slate-400 font-semibold">
-                            <i class="fa-solid fa-hotel text-2xl mb-2.5 block text-slate-350"></i>
+                        <div class="py-8 text-center text-slate-400 font-semibold">
+                            <i class="fa-solid fa-hotel text-2xl mb-2 block text-slate-350"></i>
                             Thành viên này chưa đăng tin bất động sản nào.
                         </div>
                         @endif
@@ -153,18 +153,18 @@
                 <!-- If Tenant: Show scheduled appointments -->
                 @if($user->role === 'tenant')
                 <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
-                    <div class="px-6 py-5 border-b border-slate-100">
-                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Lịch hẹn xem nhà ({{ count($appointments) }})</h3>
+                    <div class="px-4 py-3 border-b border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Lịch hẹn xem nhà ({{ count($appointments) }})</h3>
                     </div>
                     <div class="divide-y divide-slate-100 overflow-x-auto max-h-[300px] overflow-y-auto pr-1 thin-scrollbar">
                         @if(count($appointments) > 0)
                         <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4">Bất động sản</th>
-                                    <th scope="col" class="px-6 py-4">Thời gian</th>
-                                    <th scope="col" class="px-6 py-4">Trạng thái</th>
-                                    <th scope="col" class="px-6 py-4 text-right">Xem BĐS</th>
+                                    <th scope="col" class="px-4 py-2.5">Bất động sản</th>
+                                    <th scope="col" class="px-4 py-2.5">Thời gian</th>
+                                    <th scope="col" class="px-4 py-2.5">Trạng thái</th>
+                                    <th scope="col" class="px-4 py-2.5 text-right">Xem BĐS</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -180,11 +180,11 @@
                                             <span class="text-slate-400 italic">BĐS không tồn tại</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-2.5">
                                         <span class="block text-slate-800">{{ Carbon\Carbon::parse($app->date)->format('d/m/Y') }}</span>
                                         <span class="text-[10px] text-slate-450 block mt-0.5 font-normal">lúc {{ $app->time }}</span>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-2.5">
                                         @if($app->status === 'confirmed')
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">Đã duyệt</span>
                                         @elseif($app->status === 'cancelled')
@@ -193,7 +193,7 @@
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ phản hồi</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-4 py-2.5 text-right">
                                         @if($app->property)
                                             <a href="/property/{{ $app->property->id }}" class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-primary border border-slate-200 flex items-center justify-center transition">
                                                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
@@ -209,8 +209,8 @@
                             </tbody>
                         </table>
                         @else
-                        <div class="py-12 text-center text-slate-400 font-semibold">
-                            <i class="fa-solid fa-calendar-days text-2xl mb-2.5 block text-slate-350"></i>
+                        <div class="py-8 text-center text-slate-400 font-semibold">
+                            <i class="fa-solid fa-calendar-days text-2xl mb-2 block text-slate-350"></i>
                             Khách thuê này chưa đăng ký lịch hẹn xem nhà nào.
                         </div>
                         @endif

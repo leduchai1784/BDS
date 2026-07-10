@@ -3012,7 +3012,7 @@
     x-transition
     x-cloak
 >
-    <div @click.outside="open = false" class="bg-white rounded-3xl max-w-5xl w-full p-6 shadow-2xl relative border border-slate-100 max-h-[90vh] overflow-y-auto thin-scrollbar">
+    <div @click.outside="open = false" class="bg-white rounded-3xl max-w-3xl w-full p-5 shadow-2xl relative border border-slate-100 max-h-[90vh] overflow-y-auto thin-scrollbar">
         <!-- Close button -->
         <button type="button" @click="open = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition cursor-pointer text-base z-10">
             <i class="fa-solid fa-xmark"></i>
