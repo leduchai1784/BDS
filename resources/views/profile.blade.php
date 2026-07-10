@@ -2816,7 +2816,7 @@
                                 x-data="{ 
                                     open: false, 
                                     selected: '{{ request('tab') === 'admin_properties' ? request('transaction_type') : '' }}',
-                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('transaction_type') === 'rent' ? 'Cho thuê' : (request('tab') === 'admin_properties' && request('transaction_type') === 'sale' ? 'Bán' : '-- Kiểu giao dịch --') }}'
+                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('transaction_type') === 'rent' ? 'Cho thuê' : (request('tab') === 'admin_properties' && request('transaction_type') === 'sale' ? 'Bán' : '-- Tất cả --') }}'
                                 }" 
                                 class="relative sm:col-span-3"
                             >
@@ -2840,11 +2840,11 @@
                                 >
                                     <button 
                                         type="button" 
-                                        @click="selected = ''; selectedLabel = '-- Kiểu giao dịch --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        @click="selected = ''; selectedLabel = '-- Tất cả --'; open = false; $nextTick(() => $el.closest('form').submit())" 
                                         class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
                                         :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
                                     >
-                                        -- Kiểu giao dịch --
+                                        -- Tất cả --
                                     </button>
                                     <button 
                                         type="button" 
