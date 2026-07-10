@@ -182,11 +182,7 @@
                         class="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left"
                         x-cloak
                     >
-                        @if(Auth::user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition border-b border-slate-50">
-                            <i class="fa-solid fa-shield-halved mr-2 text-sm text-slate-400"></i> Trang quản trị
-                        </a>
-                        @endif
+
                         <a href="/profile" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
                         </a>
@@ -436,12 +432,7 @@
                         </span>
                     </div>
                 </div>
-                @if(Auth::user()->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
-                    <i class="fa-solid fa-shield-halved text-slate-400 text-lg w-6 text-center"></i>
-                    <span>Trang quản trị (Admin)</span>
-                </a>
-                @endif
+
                 <a href="/profile" class="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
                     <i class="fa-solid fa-user-gear text-slate-400 text-lg w-6 text-center"></i>
                     <span>Trang cá nhân</span>
