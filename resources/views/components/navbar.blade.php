@@ -184,7 +184,7 @@
                     >
 
                         <a href="/profile" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
-                            <i class="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
+                            <i class="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> {{ Auth::user()->role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân' }}
                         </a>
                         <a href="{{ route('profile.index', ['tab' => 'favorites']) }}" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                             <i class="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin yêu thích
@@ -435,7 +435,7 @@
 
                 <a href="/profile" class="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
                     <i class="fa-solid fa-user-gear text-slate-400 text-lg w-6 text-center"></i>
-                    <span>Trang cá nhân</span>
+                    <span>{{ Auth::user()->role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân' }}</span>
                 </a>
                 <a 
                     href="{{ route('logout') }}" 
