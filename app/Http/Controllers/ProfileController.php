@@ -707,7 +707,18 @@ class ProfileController extends Controller
     private function fetchExternalLeads(): array
     {
         try {
-            $response = \Illuminate\Support\Facades\Http::timeout(5)->get('https://sdata.io.vn/wp-json/scrmai/v1/leads');
+            $token = config('services.scrm.token');
+            $apiUrl = config('services.scrm.url', 'https://sdata.io.vn/wp-json/scrmai/v1');
+
+            if (empty($token)) {
+                return [];
+            }
+
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+                ->timeout(5)
+                ->withToken($token)
+                ->post($apiUrl . '/leads');
+
             if ($response->successful()) {
                 $data = $response->json();
                 if (isset($data['success']) && $data['success'] && isset($data['data'])) {

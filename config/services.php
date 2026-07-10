@@ -40,4 +40,9 @@ return [
         'model' => env('GEMINI_MODEL', 'gemini-3.1-flash-lite'),
     ],
 
+    'scrm' => [
+        'token' => env('SCRM_API_TOKEN'),
+        'url' => env('SCRM_API_URL', 'https://sdata.io.vn/wp-json/scrmai/v1'),
+    ],
+
 ];
