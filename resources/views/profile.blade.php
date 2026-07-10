@@ -304,9 +304,6 @@
 
 
                         @if(Auth::user()->role === 'admin')
-                        <div class="pt-4 border-t border-slate-100/70 mt-2 space-y-0.5">
-                            <p class="px-5 text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">QUẢN TRỊ VIÊN</p>
-                            
                             <!-- Quản lý thành viên -->
                             <button 
                                 @click="activeTab = 'admin_users'; window.history.pushState(null, '', '?tab=admin_users');" 
@@ -357,7 +354,6 @@
                                     {{ $stats['total_leads'] ?? 4 }}
                                 </span>
                             </button>
-                        </div>
                         @endif
 
 
