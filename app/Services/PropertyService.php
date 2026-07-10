@@ -148,7 +148,25 @@ class PropertyService
         } catch (\Exception $e) {
             Log::warning('Failed to fetch wards for province ' . $provinceId . ' from NKS API: ' . $e->getMessage());
         }
-        return [];
+    }
+
+    /**
+     * Fetch all wards from NKS API.
+     */
+    public function getNksWards(): array
+    {
+        $provinces = $this->getNksProvinces();
+        $hcmProvince = null;
+        foreach ($provinces as $prov) {
+            $title = $prov['title'] ?? '';
+            if (stripos($title, 'Hồ Chí Minh') !== false || stripos($title, 'HCM') !== false) {
+                $hcmProvince = $prov;
+                break;
+            }
+        }
+        
+        $provinceId = $hcmProvince['id'] ?? ($provinces[0]['id'] ?? 79);
+        return $this->getNksWardsByProvince((int)$provinceId);
     }
 
     /**

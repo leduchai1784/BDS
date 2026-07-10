@@ -30,7 +30,7 @@
 
 <div class="group bg-white rounded-[24px] overflow-hidden border border-slate-100 hover:shadow-2xl hover:shadow-slate-200/80 transform hover:-translate-y-1.5 transition-all duration-350 flex flex-col h-full">
     <!-- 1. Hình ảnh (Image) -->
-    <div class="relative h-56 w-full overflow-hidden bg-slate-100 flex-shrink-0">
+    <div class="relative h-48 w-full overflow-hidden bg-slate-100 flex-shrink-0">
         <!-- Image with hover zoom effect -->
         <a href="/property/{{ $property['id'] }}" class="absolute inset-0 block">
             <img 
@@ -131,9 +131,9 @@
     </div>
 
     <!-- Nội dung thông tin card -->
-    <div class="p-6 flex flex-col flex-grow">
+    <div class="p-4 flex flex-col flex-grow">
         <!-- 2. Giá thuê (Price) -->
-        <div class="flex items-center justify-between mb-2.5">
+        <div class="flex items-center justify-between mb-2">
             <span class="text-xl font-extrabold text-primary tracking-tight">
                 {{ $property['price'] }}
             </span>
@@ -144,18 +144,18 @@
         </div>
 
         <!-- 3. Tiêu đề (Title) -->
-        <h3 class="text-base font-bold text-slate-800 line-clamp-2 group-hover:text-primary transition duration-150 mb-3.5 leading-snug flex-grow">
+        <h3 class="text-sm font-bold text-slate-800 line-clamp-2 group-hover:text-primary transition duration-150 mb-2 leading-snug flex-grow">
             <a href="/property/{{ $property['id'] }}">{{ $property['title'] }}</a>
         </h3>
 
         <!-- 4. Địa chỉ (Address) -->
-        <div class="flex items-center text-slate-500 text-xs font-semibold mb-6">
+        <div class="flex items-center text-slate-500 text-xs font-semibold mb-3">
             <i class="fa-solid fa-location-dot text-slate-400 mr-2 text-base"></i>
             <span class="truncate">{{ $property['location'] }}</span>
         </div>
 
         <!-- 5. Thông tin chi tiết thu gọn (Property Specs) -->
-        <div class="pt-4 border-t border-slate-100/80 mt-auto flex-shrink-0">
+        <div class="pt-3 border-t border-slate-100/80 mt-auto flex-shrink-0">
             <div class="flex items-center justify-between text-slate-600 text-xs px-1">
                 @if(isset($property['bedrooms']) && $property['bedrooms'] > 0)
                     <div class="flex items-center space-x-1.5" title="{{ $property['bedrooms'] }} phòng ngủ">
