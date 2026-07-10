@@ -2751,13 +2751,13 @@
                             <input type="hidden" name="tab" value="admin_properties">
                             
                             <!-- Search Keyword -->
-                            <div class="sm:col-span-6 relative">
+                            <div class="sm:col-span-3 relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="text" 
                                     name="search" 
                                     value="{{ request('tab') === 'admin_properties' ? request('search') : '' }}"
-                                    placeholder="Tìm kiếm theo tiêu đề tin, địa chỉ..." 
+                                    placeholder="Tìm kiếm tin..." 
                                     class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
                                     onchange="this.form.submit()"
                                 >
@@ -2811,12 +2811,66 @@
                                 </div>
                             </div>
 
+                            <!-- Transaction Type Filter -->
+                            <div 
+                                x-data="{ 
+                                    open: false, 
+                                    selected: '{{ request('tab') === 'admin_properties' ? request('transaction_type') : '' }}',
+                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('transaction_type') === 'rent' ? 'Cho thuê' : (request('tab') === 'admin_properties' && request('transaction_type') === 'sale' ? 'Bán' : '-- Kiểu giao dịch --') }}'
+                                }" 
+                                class="relative sm:col-span-3"
+                            >
+                                <input type="hidden" name="transaction_type" :value="selected">
+                            
+                                <button 
+                                    type="button" 
+                                    @click="open = !open" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
+                                >
+                                    <span x-text="selectedLabel"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                            
+                                <div 
+                                    x-show="open" 
+                                    @click.outside="open = false" 
+                                    x-transition
+                                    class="absolute z-30 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+                                    x-cloak
+                                >
+                                    <button 
+                                        type="button" 
+                                        @click="selected = ''; selectedLabel = '-- Kiểu giao dịch --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        -- Kiểu giao dịch --
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'sale'; selectedLabel = 'Bán'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'sale' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Bán
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'rent'; selectedLabel = 'Cho thuê'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'rent' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Cho thuê
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Status Filter -->
                             <div 
                                 x-data="{ 
                                     open: false, 
                                     selected: '{{ request('tab') === 'admin_properties' ? request('status') : '' }}',
-                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('status') === 'pending' ? 'Chờ duyệt' : (request('tab') === 'admin_properties' && request('status') === 'approved' ? 'Đã duyệt' : '-- Trạng thái --') }}'
+                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('status') === 'pending' ? 'Chờ duyệt' : (request('tab') === 'admin_properties' && request('status') === 'approved' ? 'Đã duyệt' : (request('tab') === 'admin_properties' && request('status') === 'hidden' ? 'Đã ẩn' : '-- Trạng thái --')) }}'
                                 }" 
                                 class="relative sm:col-span-3"
                             >
@@ -2861,6 +2915,14 @@
                                         :class="selected === 'approved' ? 'bg-primary-light/30 text-primary font-bold' : ''"
                                     >
                                         Đã duyệt
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'hidden'; selectedLabel = 'Đã ẩn'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'hidden' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Đã ẩn
                                     </button>
                                 </div>
                             </div>
@@ -2911,6 +2973,14 @@
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">
                                                     Đã duyệt
                                                 </span>
+                                            @elseif(($propItem['status'] ?? 'approved') === 'hidden')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-50 text-slate-600 border border-slate-200">
+                                                    Đã ẩn
+                                                </span>
+                                            @elseif(($propItem['status'] ?? 'approved') === 'rejected')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">
+                                                    Từ chối
+                                                </span>
                                             @else
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                                                     Chờ duyệt
@@ -2921,7 +2991,7 @@
                                         <td class="px-6 py-4 text-right whitespace-nowrap">
                                             <div class="flex items-center justify-end gap-1.5">
                                                 @if(($propItem['status'] ?? 'approved') === 'pending')
-                                                    <form id="approve-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.status', $propItem['id']) }}" method="POST" class="inline">
+                                                    <form id="approve-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.status', $propItem['id']) }}" method="POST" class="inline" onsubmit="return window.confirmAction('Bạn có chắc chắn muốn duyệt đăng tin này?', this);">
                                                         @csrf
                                                         <input type="hidden" name="status" value="approved">
                                                         <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 text-[10px] font-extrabold cursor-pointer transition shadow-sm">
@@ -2930,13 +3000,23 @@
                                                     </form>
                                                 @endif
                                                 
-                                                <form id="delete-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.destroy', $propItem['id']) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin đăng này?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition cursor-pointer" title="Xóa tin đăng">
-                                                        <i class="fa-solid fa-trash-can text-xs"></i>
-                                                    </button>
-                                                </form>
+                                                @if(($propItem['status'] ?? 'approved') === 'approved')
+                                                    <form id="hide-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.status', $propItem['id']) }}" method="POST" class="inline" onsubmit="return window.confirmAction('Bạn có chắc chắn muốn ẩn tin đăng này không?', this);">
+                                                        @csrf
+                                                        <input type="hidden" name="status" value="hidden">
+                                                        <button type="submit" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200 flex items-center justify-center transition cursor-pointer" title="Ẩn tin đăng">
+                                                            <i class="fa-solid fa-eye-slash text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                @elseif(($propItem['status'] ?? 'approved') === 'hidden')
+                                                    <form id="approve-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.status', $propItem['id']) }}" method="POST" class="inline" onsubmit="return window.confirmAction('Bạn có chắc chắn muốn hiển thị lại tin đăng này?', this);">
+                                                        @csrf
+                                                        <input type="hidden" name="status" value="approved">
+                                                        <button type="submit" class="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 border border-green-200 flex items-center justify-center transition cursor-pointer" title="Hiện tin đăng">
+                                                            <i class="fa-solid fa-eye text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>

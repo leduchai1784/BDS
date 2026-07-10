@@ -123,6 +123,12 @@ class ProfileController extends Controller
                     return isset($p['status']) && $p['status'] == $status;
                 });
             }
+            if (request()->filled('transaction_type') && request('tab') === 'admin_properties') {
+                $type = request('transaction_type');
+                $adminProperties = array_filter($adminProperties, function($p) use ($type) {
+                    return isset($p['transaction_type']) && $p['transaction_type'] == $type;
+                });
+            }
 
             // 3. Filter Appointments
             $appQuery = \App\Models\Appointment::with(['property', 'user']);
