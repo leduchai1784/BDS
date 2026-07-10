@@ -2469,6 +2469,60 @@
                         <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và khóa/mở khóa tài khoản khách thuê, chủ nhà hoặc quản trị viên.</p>
                     </div>
 
+                    <!-- Filters & Search Card -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm text-left">
+                        <form action="{{ route('profile.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                            <input type="hidden" name="tab" value="admin_users">
+                            
+                            <!-- Search Keyword -->
+                            <div class="sm:col-span-5 relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input 
+                                    type="text" 
+                                    name="search" 
+                                    value="{{ request('tab') === 'admin_users' ? request('search') : '' }}"
+                                    placeholder="Tìm kiếm theo tên, email hoặc SĐT..." 
+                                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-850 text-xs font-semibold outline-none transition"
+                                >
+                            </div>
+
+                            <!-- Role Filter -->
+                            <div class="sm:col-span-3">
+                                <select 
+                                    name="role" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                                    <option value="">-- Tất cả vai trò --</option>
+                                    <option value="tenant" {{ request('tab') === 'admin_users' && request('role') === 'tenant' ? 'selected' : '' }}>Khách thuê</option>
+                                    <option value="owner" {{ request('tab') === 'admin_users' && request('role') === 'owner' ? 'selected' : '' }}>Chủ nhà</option>
+                                    <option value="admin" {{ request('tab') === 'admin_users' && request('role') === 'admin' ? 'selected' : '' }}>Quản trị viên</option>
+                                </select>
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div class="sm:col-span-2">
+                                <select 
+                                    name="status" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                                    <option value="">-- Trạng thái --</option>
+                                    <option value="active" {{ request('tab') === 'admin_users' && request('status') === 'active' ? 'selected' : '' }}>Hoạt động</option>
+                                    <option value="locked" {{ request('tab') === 'admin_users' && request('status') === 'locked' ? 'selected' : '' }}>Đang khóa</option>
+                                </select>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="sm:col-span-2 flex gap-2">
+                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
+                                    Lọc
+                                </button>
+                                <a href="{{ route('profile.index', ['tab' => 'admin_users']) }}" class="flex-1 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                                    Xóa
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
                     <!-- Users Table Card -->
                     <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
                         <div class="overflow-x-auto">
@@ -2579,6 +2633,60 @@
                         <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái duyệt và quản lý toàn bộ các bất động sản trên hệ thống.</p>
                     </div>
 
+                    <!-- Filters & Search Card -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm text-left">
+                        <form action="{{ route('profile.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                            <input type="hidden" name="tab" value="admin_properties">
+                            
+                            <!-- Search Keyword -->
+                            <div class="sm:col-span-5 relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input 
+                                    type="text" 
+                                    name="search" 
+                                    value="{{ request('tab') === 'admin_properties' ? request('search') : '' }}"
+                                    placeholder="Tìm kiếm theo tiêu đề tin, địa chỉ..." 
+                                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="sm:col-span-3">
+                                <select 
+                                    name="category_id" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                                    <option value="">-- Tất cả danh mục --</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ request('tab') === 'admin_properties' && request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div class="sm:col-span-2">
+                                <select 
+                                    name="status" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                                    <option value="">-- Trạng thái --</option>
+                                    <option value="pending" {{ request('tab') === 'admin_properties' && request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
+                                    <option value="approved" {{ request('tab') === 'admin_properties' && request('status') === 'approved' ? 'selected' : '' }}>Đã duyệt</option>
+                                </select>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="sm:col-span-2 flex gap-2">
+                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
+                                    Lọc
+                                </button>
+                                <a href="{{ route('profile.index', ['tab' => 'admin_properties']) }}" class="flex-1 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                                    Xóa
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
                     <!-- Properties Table Card -->
                     <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
                         <div class="overflow-x-auto">
@@ -2671,6 +2779,48 @@
                     <div class="pb-5 border-b border-slate-100 mb-6 text-left">
                         <h2 class="text-xl font-bold text-slate-800">Quản lý lịch hẹn</h2>
                         <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và phê duyệt lịch đi xem nhà của khách hàng trên hệ thống.</p>
+                    </div>
+
+                    <!-- Filters & Search Card -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm text-left">
+                        <form action="{{ route('profile.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                            <input type="hidden" name="tab" value="admin_appointments">
+                            
+                            <!-- Search Keyword -->
+                            <div class="sm:col-span-7 relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input 
+                                    type="text" 
+                                    name="search" 
+                                    value="{{ request('tab') === 'admin_appointments' ? request('search') : '' }}"
+                                    placeholder="Tìm kiếm theo tên khách hàng hoặc số điện thoại..." 
+                                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div class="sm:col-span-3">
+                                <select 
+                                    name="status" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                >
+                                    <option value="">-- Trạng thái --</option>
+                                    <option value="pending" {{ request('tab') === 'admin_appointments' && request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
+                                    <option value="approved" {{ request('tab') === 'admin_appointments' && request('status') === 'approved' ? 'selected' : '' }}>Đã duyệt</option>
+                                    <option value="rejected" {{ request('tab') === 'admin_appointments' && request('status') === 'rejected' ? 'selected' : '' }}>Từ chối</option>
+                                </select>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="sm:col-span-2 flex gap-2">
+                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
+                                    Lọc
+                                </button>
+                                <a href="{{ route('profile.index', ['tab' => 'admin_appointments']) }}" class="flex-1 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                                    Xóa
+                                </a>
+                            </div>
+                        </form>
                     </div>
 
                     <!-- Appointments Table Card -->

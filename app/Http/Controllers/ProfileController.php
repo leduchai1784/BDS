@@ -83,9 +83,60 @@ class ProfileController extends Controller
         // Handle admin profile view
         if ($user->role === 'admin') {
             $propertyService = app(\App\Services\PropertyService::class);
-            $adminUsers = \App\Models\User::latest()->get();
+            
+            // 1. Filter Users
+            $usersQuery = \App\Models\User::query();
+            if (request()->filled('search') && request('tab') === 'admin_users') {
+                $search = request('search');
+                $usersQuery->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+            if (request()->filled('role') && request('tab') === 'admin_users') {
+                $usersQuery->where('role', request('role'));
+            }
+            if (request()->filled('status') && request('tab') === 'admin_users') {
+                $usersQuery->where('status', request('status'));
+            }
+            $adminUsers = $usersQuery->latest()->get();
+
+            // 2. Filter Properties (In-Memory because of mixed DB and external API records)
             $adminProperties = $propertyService->getAllProperties(true);
-            $adminAppointments = \App\Models\Appointment::with(['property', 'user'])->latest()->get();
+            if (request()->filled('search') && request('tab') === 'admin_properties') {
+                $search = request('search');
+                $adminProperties = array_filter($adminProperties, function($p) use ($search) {
+                    return (isset($p['title']) && stripos($p['title'], $search) !== false) ||
+                           (isset($p['location']) && stripos($p['location'], $search) !== false);
+                });
+            }
+            if (request()->filled('category_id') && request('tab') === 'admin_properties') {
+                $catId = request('category_id');
+                $adminProperties = array_filter($adminProperties, function($p) use ($catId) {
+                    return isset($p['category_id']) && $p['category_id'] == $catId;
+                });
+            }
+            if (request()->filled('status') && request('tab') === 'admin_properties') {
+                $status = request('status');
+                $adminProperties = array_filter($adminProperties, function($p) use ($status) {
+                    return isset($p['status']) && $p['status'] == $status;
+                });
+            }
+
+            // 3. Filter Appointments
+            $appQuery = \App\Models\Appointment::with(['property', 'user']);
+            if (request()->filled('search') && request('tab') === 'admin_appointments') {
+                $search = request('search');
+                $appQuery->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+            if (request()->filled('status') && request('tab') === 'admin_appointments') {
+                $appQuery->where('status', request('status'));
+            }
+            $adminAppointments = $appQuery->latest()->get();
 
             return view('profile', [
                 'user' => $userData,
