@@ -138,10 +138,9 @@
         getInitials(name) {
             if (!name) return 'L';
             const parts = name.trim().split(' ');
-            if (parts.length >= 2) {
-                return (parts[parts.length - 2][0] + parts[parts.length - 1][0]).toUpperCase();
-            }
-            return name[0].toUpperCase();
+            return parts.length === 1 
+                ? name[0].toUpperCase() 
+                : (parts[parts.length - 2][0] + parts[parts.length - 1][0]).toUpperCase();
         },
         get filteredLeads() {
             return this.leads.filter(lead => {
@@ -273,7 +272,7 @@
             </div>
         </template>
 
-        <template x-if="filteredLeads.length > 0">
+        <template x-if="filteredLeads.length">
             <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -347,7 +346,7 @@
 
                                 <!-- Độ khớp -->
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="inline-flex items-center gap-1 font-black text-xs" :class="lead.match_score >= 90 ? 'text-emerald-500' : 'text-amber-500'">
+                                    <div class="inline-flex items-center gap-1 font-black text-xs" :class="Math.max(lead.match_score, 90) === lead.match_score ? 'text-emerald-500' : 'text-amber-500'">
                                         <i class="fa-solid fa-fire text-[10px]"></i> <span x-text="lead.match_score + '%'"></span>
                                     </div>
                                 </td>
@@ -539,7 +538,7 @@
                                             </div>
                                         </template>
 
-                                        <template x-if="selectedLead.chat_history && selectedLead.chat_history.length > 0">
+                                        <template x-if="selectedLead.chat_history && selectedLead.chat_history.length">
                                             <div class="space-y-3.5 max-h-[380px] overflow-y-auto pr-1 bg-slate-50 p-3 rounded-2xl border border-slate-100">
                                                 <template x-for="(msg, idx) in selectedLead.chat_history" :key="idx">
                                                     <div class="flex flex-col mb-2.5" :class="msg.role === 'user' ? 'items-end' : 'items-start'">
@@ -572,7 +571,7 @@
                                             </div>
                                         </template>
 
-                                        <template x-if="selectedLead.matched_properties && selectedLead.matched_properties.length > 0">
+                                        <template x-if="selectedLead.matched_properties && selectedLead.matched_properties.length">
                                             <div class="space-y-3">
                                                 <template x-for="(prop, pIdx) in selectedLead.matched_properties" :key="pIdx">
                                                     <div class="p-3 bg-white border border-slate-100 hover:border-primary/20 rounded-xl shadow-sm transition flex gap-3">
