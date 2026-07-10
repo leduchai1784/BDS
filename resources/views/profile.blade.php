@@ -304,13 +304,69 @@
 
 
                         @if(Auth::user()->role === 'admin')
-                        <a 
-                            href="{{ route('admin.dashboard') }}" 
-                            class="flex items-center space-x-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
-                        >
-                            <i class="fa-solid fa-circle-arrow-left text-sm"></i>
-                            <span>Quay lại Admin Panel</span>
-                        </a>
+                        <div class="pt-4 border-t border-slate-100/70 mt-2 space-y-0.5">
+                            <p class="px-5 text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">QUẢN TRỊ VIÊN</p>
+                            
+                            <!-- Trang Dashboard -->
+                            <a 
+                                href="{{ route('admin.dashboard') }}" 
+                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            >
+                                <i class="fa-solid fa-chart-line text-sm"></i>
+                                <span>Trang Dashboard</span>
+                            </a>
+
+                            <!-- Quản lý thành viên -->
+                            <a 
+                                href="{{ route('admin.users.index') }}" 
+                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            >
+                                <i class="fa-solid fa-users text-sm"></i>
+                                <span>Quản lý thành viên</span>
+                            </a>
+
+                            <!-- Quản lý tin đăng -->
+                            <a 
+                                href="{{ route('admin.properties.index') }}" 
+                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            >
+                                <i class="fa-solid fa-rectangle-list text-sm"></i>
+                                <span>Quản lý tin đăng</span>
+                            </a>
+
+                            <!-- Quản lý lịch hẹn -->
+                            <a 
+                                href="{{ route('admin.appointments.index') }}" 
+                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            >
+                                <i class="fa-solid fa-calendar-check text-sm"></i>
+                                <span>Quản lý lịch hẹn</span>
+                            </a>
+
+                            <!-- Quản lý Lead -->
+                            <button 
+                                @click="activeTab = 'leads'; window.history.pushState(null, '', '?tab=leads');" 
+                                :class="activeTab === 'leads' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                                class="w-full text-left flex items-center justify-between space-x-3 px-5 py-3.5 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                            >
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-user-group text-sm"></i>
+                                    <span>Quản lý Lead</span>
+                                </div>
+                                <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                    {{ $stats['total_leads'] ?? 4 }}
+                                </span>
+                            </button>
+
+                            <!-- Quay lại Admin Panel -->
+                            <a 
+                                href="{{ route('admin.dashboard') }}" 
+                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            >
+                                <i class="fa-solid fa-circle-arrow-left text-sm"></i>
+                                <span>Quay lại Admin Panel</span>
+                            </a>
+                        </div>
                         @endif
 
 
@@ -1923,7 +1979,7 @@
                 </div>
 
                 <!-- TAB 2: Saved / Favorite Listings OR Owner Properties -->
-                @if(Auth::user()->role === 'owner')
+                @if(Auth::user()->role === 'owner' || Auth::user()->role === 'admin')
                 @php
                     $saleProperties = $myProperties->filter(fn($p) => $p->price_label && stripos($p->price_label, 'tháng') === false);
                     $rentProperties = $myProperties->filter(fn($p) => !$p->price_label || stripos($p->price_label, 'tháng') !== false);

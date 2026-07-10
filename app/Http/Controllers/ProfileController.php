@@ -84,9 +84,18 @@ class ProfileController extends Controller
         if ($user->role === 'admin') {
             return view('profile', [
                 'user' => $userData,
-                'stats' => null,
+                'stats' => [
+                    'total_properties' => 0,
+                    'total_views' => 0,
+                    'total_appointments' => 0,
+                    'total_leads' => 4,
+                ],
+                'myProperties' => collect(),
+                'ownerAppointments' => collect(),
                 'properties' => $favorites,
-                'appointments' => collect()
+                'appointments' => collect(),
+                'categories' => \App\Models\Category::all(),
+                'editProperty' => null,
             ]);
         }
         
