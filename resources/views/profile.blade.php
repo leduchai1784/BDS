@@ -2269,7 +2269,11 @@
                                                             <span class="text-[10px] text-slate-400"><i class="fa-solid fa-clock mr-1"></i>{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
                                                         </td>
                                                         <td class="px-5 py-4 max-w-[200px] truncate">
-                                                            <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $app->property->title }}">{{ $app->property->title }}</a>
+                                                            @if($app->property)
+                                                                <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $app->property->title }}">{{ $app->property->title }}</a>
+                                                            @else
+                                                                <span class="text-slate-400 italic">BĐS không tồn tại</span>
+                                                            @endif
                                                         </td>
                                                         <td class="px-5 py-4 whitespace-nowrap">
                                                             @if($app->status === 'approved')
@@ -2348,9 +2352,13 @@
                                                             <span class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
                                                         </td>
                                                         <td class="px-5 py-4 max-w-[200px] truncate">
-                                                            <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800">{{ $app->property->title }}</a>
+                                                            @if($app->property)
+                                                                <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800">{{ $app->property->title }}</a>
+                                                            @else
+                                                                <span class="text-slate-400 italic">BĐS không tồn tại</span>
+                                                            @endif
                                                         </td>
-                                                        <td class="px-5 py-4 whitespace-nowrap">{{ $app->property->agent->name ?? 'N/A' }}</td>
+                                                        <td class="px-5 py-4 whitespace-nowrap">{{ $app->property ? ($app->property->agent->name ?? 'N/A') : 'N/A' }}</td>
                                                         <td class="px-5 py-4 whitespace-nowrap">
                                                             @if($app->status === 'approved')
                                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã xác nhận</span>
@@ -2414,9 +2422,13 @@
                                                         <span class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($app->time)->format('H:i') }}</span>
                                                     </td>
                                                     <td class="px-5 py-4 max-w-[200px] truncate">
-                                                        <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800">{{ $app->property->title }}</a>
+                                                        @if($app->property)
+                                                            <a href="/property/{{ $app->property->id }}" class="hover:text-primary font-bold text-slate-800">{{ $app->property->title }}</a>
+                                                        @else
+                                                            <span class="text-slate-400 italic">BĐS không tồn tại</span>
+                                                        @endif
                                                     </td>
-                                                    <td class="px-5 py-4 whitespace-nowrap">{{ $app->property->agent->name ?? 'N/A' }}</td>
+                                                    <td class="px-5 py-4 whitespace-nowrap">{{ $app->property ? ($app->property->agent->name ?? 'N/A') : 'N/A' }}</td>
                                                     <td class="px-5 py-4 whitespace-nowrap">
                                                         @if($app->status === 'approved')
                                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã xác nhận</span>
@@ -2449,6 +2461,7 @@
                         @endif
                     </div>
                 </div>
+                @endif
 
                 <!-- TAB Leads -->
                 <div x-show="activeTab === 'leads'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
@@ -2852,7 +2865,11 @@
                                         </td>
                                         <!-- Property -->
                                         <td class="px-6 py-4 max-w-[200px] truncate">
-                                            <a href="/property/{{ $appItem->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $appItem->property->title }}">{{ $appItem->property->title }}</a>
+                                            @if($appItem->property)
+                                                <a href="/property/{{ $appItem->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $appItem->property->title }}">{{ $appItem->property->title }}</a>
+                                            @else
+                                                <span class="text-slate-400 italic">BĐS không tồn tại</span>
+                                            @endif
                                         </td>
                                         <!-- Status -->
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -2892,7 +2909,6 @@
                         </div>
                     </div>
                 </div>
-                @endif
                 @endif
 
                 @if(Auth::user()->role === 'tenant')
