@@ -103,7 +103,7 @@
 
 <div 
     x-data="{
-        leads: {!! json_encode($leadsList) !!},
+        leads: {{ json_encode($leadsList) }},
         selectedLead: null,
         drawerOpen: false,
         activeDetailTab: 'demand',

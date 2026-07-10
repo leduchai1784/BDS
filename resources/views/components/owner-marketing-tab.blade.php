@@ -5,7 +5,7 @@
 
 <div 
     x-data="{
-        properties: {!! json_encode($myPropertiesList) !!},
+        properties: {{ json_encode($myPropertiesList) }},
         selectedPropertyId: '',
         campaignGoal: 'rent_fast',
         campaignTone: 'friendly',
