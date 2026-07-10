@@ -2600,22 +2600,34 @@
                                         <td class="px-6 py-4 text-right whitespace-nowrap">
                                             <div class="flex items-center justify-end gap-1.5">
                                                 @if($userItem->id !== Auth::id())
-                                                    <form id="toggle-status-form-{{ $userItem->id }}" action="{{ route('admin.users.toggle-status', $userItem->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn {{ $userItem->status === 'locked' ? 'mở khóa' : 'khóa' }} tài khoản này?');">
+                                                    <form id="toggle-status-form-{{ $userItem->id }}" action="{{ route('admin.users.toggle-status', $userItem->id) }}" method="POST" class="inline" onsubmit="return window.confirmAction('Bạn có chắc chắn muốn {{ $userItem->status === 'locked' ? 'mở khóa' : 'khóa' }} tài khoản này?', this);">
                                                         @csrf
-                                                        <button 
-                                                            type="submit" 
-                                                            class="px-2.5 py-1.5 rounded-xl border text-[10px] font-extrabold cursor-pointer transition shadow-sm bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
-                                                        >
-                                                            {{ $userItem->status === 'locked' ? 'Mở khóa' : 'Khóa' }}
-                                                        </button>
+                                                        @if($userItem->status === 'locked')
+                                                            <button 
+                                                                type="submit" 
+                                                                title="Mở khóa tài khoản"
+                                                                class="w-7 h-7 rounded-lg border text-xs cursor-pointer transition shadow-sm bg-green-50 hover:bg-green-100 text-green-600 border-green-200 inline-flex items-center justify-center"
+                                                            >
+                                                                <i class="fa-solid fa-lock-open text-[10px]"></i>
+                                                            </button>
+                                                        @else
+                                                            <button 
+                                                                type="submit" 
+                                                                title="Khóa tài khoản"
+                                                                class="w-7 h-7 rounded-lg border text-xs cursor-pointer transition shadow-sm bg-red-50 hover:bg-red-100 text-red-650 border-red-250 inline-flex items-center justify-center"
+                                                            >
+                                                                <i class="fa-solid fa-lock text-[10px]"></i>
+                                                            </button>
+                                                        @endif
                                                     </form>
                                                     
                                                     <button 
                                                         type="button"
                                                         @click="$dispatch('open-user-modal', { userId: {{ $userItem->id }} })"
-                                                        class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-750 text-[10px] font-extrabold cursor-pointer transition shadow-sm inline-flex items-center justify-center"
+                                                        title="Xem chi tiết"
+                                                        class="w-7 h-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary text-xs cursor-pointer transition shadow-sm inline-flex items-center justify-center"
                                                     >
-                                                        Xem
+                                                        <i class="fa-solid fa-eye text-[10px]"></i>
                                                     </button>
                                                 @else
                                                     <span class="text-[10px] text-slate-400">Không có thao tác</span>
@@ -3036,6 +3048,45 @@
     </div>
 </div>
 @endif
+
+<!-- Custom Confirmation Modal (AlpineJS based) -->
+<div 
+    x-data="{
+        open: false,
+        message: 'Bạn có chắc chắn muốn thực hiện hành động này?',
+        confirmCallback: null,
+        showConfirm(message, callback) {
+            this.message = message;
+            this.confirmCallback = callback;
+            this.open = true;
+        },
+        triggerConfirm() {
+            if (this.confirmCallback) this.confirmCallback();
+            this.open = false;
+        }
+    }"
+    @trigger-custom-confirm.window="showConfirm($event.detail.message, $event.detail.callback)"
+    x-show="open"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    x-transition
+    x-cloak
+>
+    <div @click.outside="open = false" class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative border border-slate-100 text-center space-y-4">
+        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl border border-amber-100">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="text-sm font-bold text-slate-800">Xác nhận</h3>
+        <p class="text-xs text-slate-500 leading-relaxed" x-text="message"></p>
+        <div class="flex items-center justify-center gap-3 pt-2">
+            <button type="button" @click="open = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition cursor-pointer">
+                Hủy bỏ
+            </button>
+            <button type="button" @click="triggerConfirm()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow-sm shadow-amber-500/20">
+                Xác nhận
+            </button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -3104,6 +3155,18 @@
 </style>
 
 <script>
+window.confirmAction = function(message, formElement) {
+    window.dispatchEvent(new CustomEvent('trigger-custom-confirm', {
+        detail: {
+            message: message,
+            callback: () => {
+                formElement.submit();
+            }
+        }
+    }));
+    return false;
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     const avatarFileInput = document.getElementById('avatar-file-input');
     const cropperImage = document.getElementById('cropper-image');

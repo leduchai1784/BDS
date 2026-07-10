@@ -69,7 +69,7 @@
                             @if($user->status === 'locked')
                                 <button 
                                     type="submit" 
-                                    onclick="return confirm('Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.');"
+                                    onclick="return window.confirmAction('Mở khóa tài khoản cho {{ addslashes($user->name) }}? Người dùng này sẽ lại có quyền truy cập hệ thống bình thường.', this.form);"
                                     class="w-full bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-3 rounded-xl shadow-md transition cursor-pointer"
                                 >
                                     Mở khóa tài khoản
@@ -77,7 +77,7 @@
                             @else
                                 <button 
                                     type="submit" 
-                                    onclick="return confirm('Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.');"
+                                    onclick="return window.confirmAction('Khóa tài khoản thành viên của {{ addslashes($user->name) }}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở lại.', this.form);"
                                     class="w-full bg-red-500 hover:bg-red-650 text-white text-xs font-bold py-2 px-3 rounded-xl shadow-md transition cursor-pointer"
                                 >
                                     Khóa tài khoản này
