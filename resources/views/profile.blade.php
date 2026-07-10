@@ -234,19 +234,7 @@
                             </span>
                         </button>
 
-                        <button 
-                            @click="activeTab = 'leads'; window.history.pushState(null, '', '?tab=leads');" 
-                            :class="activeTab === 'leads' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                            class="flex items-center justify-between space-x-3 px-5 py-4 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
-                        >
-                            <div class="flex items-center space-x-3">
-                                <i class="fa-solid fa-user-group text-sm"></i>
-                                <span>Quản lý Khách (Leads)</span>
-                            </div>
-                            <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                                {{ $stats['total_leads'] ?? 4 }}
-                            </span>
-                        </button>
+
 
                         <button 
                             @click="activeTab = 'marketing'; window.history.pushState(null, '', '?tab=marketing');" 
@@ -2473,9 +2461,11 @@
                 @endif
 
                 <!-- TAB Leads -->
+                @if(Auth::user()->role === 'admin')
                 <div x-show="activeTab === 'leads'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     @include('components.owner-leads-tab')
                 </div>
+                @endif
 
                 <!-- TAB Marketing -->
                 <div x-show="activeTab === 'marketing'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>

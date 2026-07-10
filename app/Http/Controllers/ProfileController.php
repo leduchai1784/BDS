@@ -34,7 +34,7 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $leads = $this->fetchExternalLeads();
+        $leads = $user->role === 'admin' ? $this->fetchExternalLeads() : [];
         
         // Self-healing sync: pull latest profile from NKS — cached 3 min to avoid blocking on every page load
         if ($user->nks_token) {
@@ -198,7 +198,6 @@ class ProfileController extends Controller
                     'total_properties' => $totalProperties,
                     'total_views' => $totalViews,
                     'total_appointments' => $totalAppointments,
-                    'total_leads' => count($leads),
                 ],
                 'myProperties' => $myProperties,
                 'ownerAppointments' => $ownerAppointments,
@@ -206,7 +205,7 @@ class ProfileController extends Controller
                 'appointments' => $myBookedAppointments,
                 'categories' => $categories,
                 'property' => $editProperty,
-                'leads' => $leads,
+                'leads' => [],
             ]);
         } else {
             // Tenant stats
@@ -220,11 +219,10 @@ class ProfileController extends Controller
                     'total_properties' => 0,
                     'total_favorites' => $totalFavorites,
                     'total_appointments' => $totalAppointments,
-                    'total_leads' => count($leads),
                 ],
                 'properties' => $favorites,
                 'appointments' => $tenantAppointments,
-                'leads' => $leads,
+                'leads' => [],
             ]);
         }
     }
