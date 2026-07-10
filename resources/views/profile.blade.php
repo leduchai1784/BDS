@@ -8,7 +8,7 @@
     x-data="{ 
         activeTab: '{{ request('tab') ?? 'profile' }}', 
         activeSubTab: '{{ request('subtab') ?? ($errors->has('current_password') || $errors->has('new_password') ? 'password' : ($errors->has('avatar') ? 'avatar' : ($errors->has('id_number') || $errors->has('id_date') || $errors->has('id_place') || $errors->has('cccd_front') || $errors->has('cccd_back') ? 'cccd' : 'info'))) }}',
-        profileMenuOpen: {{ request('tab') === 'profile' || !request('tab') ? 'true' : 'false' }},
+        profileMenuOpen: false,
         showToast: {{ session('success') ? 'true' : 'false' }}, 
         toastMessage: '{{ session('success') }}',
         init() {
@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible scrollbar-none border-b lg:border-b-0 border-slate-100">
+                    <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-auto lg:max-h-[350px] scrollbar-thin border-b lg:border-b-0 border-slate-100">
                         <!-- Dropdown wrapper for Profile -->
                         <div class="flex flex-col w-full">
                             <button 
