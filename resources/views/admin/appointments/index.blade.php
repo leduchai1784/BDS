@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Quản Lý Lịch Hẹn Xem Nhà')
 @section('breadcrumb', 'Lịch hẹn')
