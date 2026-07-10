@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-auto lg:max-h-[350px] scrollbar-thin border-b lg:border-b-0 border-slate-100">
+                    <nav class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-auto lg:max-h-[350px] scrollbar-thin border-b lg:border-b-0 border-slate-100 lg:pb-8">
                         <!-- Dropdown wrapper for Profile -->
                         <div class="flex flex-col w-full">
                             <button 
