@@ -50,7 +50,7 @@ Route::middleware(['auth', 'owner'])->group(function () {
 
 // Route dành cho Admin (Bảo vệ bởi auth và admin middleware)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', function() { return redirect('/profile'); })->name('dashboard');
     
     // Quản lý người dùng
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');

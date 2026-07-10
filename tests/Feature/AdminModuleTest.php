@@ -93,8 +93,7 @@ class AdminModuleTest extends TestCase
     public function test_admin_can_access_admin_dashboard(): void
     {
         $response = $this->actingAs($this->adminUser)->get('/admin');
-        $response->assertStatus(200);
-        $response->assertSee('Dashboard');
+        $response->assertRedirect('/profile');
     }
 
     /**
@@ -425,7 +424,7 @@ class AdminModuleTest extends TestCase
         $response = $this->actingAs($this->adminUser)->get('/profile');
         $response->assertStatus(200);
         $response->assertSee('Ban quản trị');
-        $response->assertSee('Quay lại Admin Panel');
+        $response->assertSee('Quản lý thành viên');
         // Admin should not see Tenant or Owner specific tabs
         $response->assertDontSee('Lịch hẹn xem nhà');
     }

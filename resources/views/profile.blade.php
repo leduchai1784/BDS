@@ -307,47 +307,47 @@
                         <div class="pt-4 border-t border-slate-100/70 mt-2 space-y-0.5">
                             <p class="px-5 text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">QUẢN TRỊ VIÊN</p>
                             
-                            <!-- Trang Dashboard -->
-                            <a 
-                                href="{{ route('admin.dashboard') }}" 
-                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
-                            >
-                                <i class="fa-solid fa-chart-line text-sm"></i>
-                                <span>Trang Dashboard</span>
-                            </a>
-
                             <!-- Quản lý thành viên -->
-                            <a 
-                                href="{{ route('admin.users.index') }}" 
-                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            <button 
+                                @click="activeTab = 'admin_users'; window.history.pushState(null, '', '?tab=admin_users');" 
+                                :class="activeTab === 'admin_users' ? 'bg-primary-light text-primary border-primary font-bold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                                class="w-full text-left flex items-center justify-between space-x-3 px-5 py-3.5 text-xs border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                             >
-                                <i class="fa-solid fa-users text-sm"></i>
-                                <span>Quản lý thành viên</span>
-                            </a>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-users text-sm"></i>
+                                    <span>Quản lý thành viên</span>
+                                </div>
+                            </button>
 
                             <!-- Quản lý tin đăng -->
-                            <a 
-                                href="{{ route('admin.properties.index') }}" 
-                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            <button 
+                                @click="activeTab = 'admin_properties'; window.history.pushState(null, '', '?tab=admin_properties');" 
+                                :class="activeTab === 'admin_properties' ? 'bg-primary-light text-primary border-primary font-bold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                                class="w-full text-left flex items-center justify-between space-x-3 px-5 py-3.5 text-xs border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                             >
-                                <i class="fa-solid fa-rectangle-list text-sm"></i>
-                                <span>Quản lý tin đăng</span>
-                            </a>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-rectangle-list text-sm"></i>
+                                    <span>Quản lý tin đăng</span>
+                                </div>
+                            </button>
 
                             <!-- Quản lý lịch hẹn -->
-                            <a 
-                                href="{{ route('admin.appointments.index') }}" 
-                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
+                            <button 
+                                @click="activeTab = 'admin_appointments'; window.history.pushState(null, '', '?tab=admin_appointments');" 
+                                :class="activeTab === 'admin_appointments' ? 'bg-primary-light text-primary border-primary font-bold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                                class="w-full text-left flex items-center justify-between space-x-3 px-5 py-3.5 text-xs border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                             >
-                                <i class="fa-solid fa-calendar-check text-sm"></i>
-                                <span>Quản lý lịch hẹn</span>
-                            </a>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-calendar-check text-sm"></i>
+                                    <span>Quản lý lịch hẹn</span>
+                                </div>
+                            </button>
 
                             <!-- Quản lý Lead -->
                             <button 
                                 @click="activeTab = 'leads'; window.history.pushState(null, '', '?tab=leads');" 
-                                :class="activeTab === 'leads' ? 'bg-primary-light text-primary border-primary' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
-                                class="w-full text-left flex items-center justify-between space-x-3 px-5 py-3.5 text-xs font-bold border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
+                                :class="activeTab === 'leads' ? 'bg-primary-light text-primary border-primary font-bold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'"
+                                class="w-full text-left flex items-center justify-between space-x-3 px-5 py-3.5 text-xs border-b-2 lg:border-b-0 lg:border-l-4 whitespace-nowrap flex-grow lg:flex-grow-0 cursor-pointer transition focus:outline-none"
                             >
                                 <div class="flex items-center space-x-3">
                                     <i class="fa-solid fa-user-group text-sm"></i>
@@ -357,15 +357,6 @@
                                     {{ $stats['total_leads'] ?? 4 }}
                                 </span>
                             </button>
-
-                            <!-- Quay lại Admin Panel -->
-                            <a 
-                                href="{{ route('admin.dashboard') }}" 
-                                class="flex items-center space-x-3 px-5 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-primary border-b-2 lg:border-b-0 lg:border-l-4 border-transparent whitespace-nowrap flex-grow lg:flex-grow-0"
-                            >
-                                <i class="fa-solid fa-circle-arrow-left text-sm"></i>
-                                <span>Quay lại Admin Panel</span>
-                            </a>
                         </div>
                         @endif
 
@@ -2472,6 +2463,290 @@
                 <div x-show="activeTab === 'marketing'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
                     @include('components.owner-marketing-tab')
                 </div>
+
+                @if(Auth::user()->role === 'admin')
+                <!-- TAB Admin Users -->
+                <div x-show="activeTab === 'admin_users'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    <!-- Title -->
+                    <div class="pb-5 border-b border-slate-100 mb-6 text-left">
+                        <h2 class="text-xl font-bold text-slate-800">Quản lý thành viên</h2>
+                        <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và khóa/mở khóa tài khoản khách thuê, chủ nhà hoặc quản trị viên.</p>
+                    </div>
+
+                    <!-- Users Table Card -->
+                    <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
+                        <div class="overflow-x-auto">
+                            @if(isset($adminUsers) && $adminUsers->count() > 0)
+                            <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
+                                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4">Thành viên</th>
+                                        <th scope="col" class="px-6 py-4">Liên hệ</th>
+                                        <th scope="col" class="px-6 py-4">Vai trò</th>
+                                        <th scope="col" class="px-6 py-4">Trạng thái</th>
+                                        <th scope="col" class="px-6 py-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @foreach($adminUsers as $userItem)
+                                    <tr class="hover:bg-slate-50/50 transition">
+                                        <!-- Avatar & Name -->
+                                        <td class="px-6 py-4 flex items-center space-x-3.5">
+                                            <img 
+                                                src="{{ $userItem->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($userItem->name) . '&background=0077bb&color=fff' }}" 
+                                                alt="{{ $userItem->name }}" 
+                                                class="w-9 h-9 rounded-full object-cover border border-slate-100 shadow-sm"
+                                            >
+                                            <div>
+                                                <span class="font-bold text-slate-800 text-xs block leading-none">
+                                                    {{ $userItem->name }}
+                                                </span>
+                                                <span class="text-[9px] text-slate-400 block mt-1">ID: #{{ $userItem->id }}</span>
+                                            </div>
+                                        </td>
+                                        <!-- Email & Phone -->
+                                        <td class="px-6 py-4">
+                                            <span class="block text-slate-750 font-semibold leading-none">{{ $userItem->email }}</span>
+                                            <span class="text-[10px] text-slate-400 block mt-1">{{ $userItem->phone ?? 'Chưa cập nhật SĐT' }}</span>
+                                        </td>
+                                        <!-- Role -->
+                                        <td class="px-6 py-4">
+                                            @if($userItem->role === 'admin')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">Admin</span>
+                                            @elseif($userItem->role === 'owner')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Chủ nhà</span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-teal-50 text-teal-700 border border-teal-200">Khách thuê</span>
+                                            @endif
+                                        </td>
+                                        <!-- Status -->
+                                        <td class="px-6 py-4">
+                                            @if($userItem->status === 'locked')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">
+                                                    <i class="fa-solid fa-lock mr-1.5 text-[8px]"></i> Đã khóa
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">
+                                                    <i class="fa-solid fa-circle-check mr-1.5 text-[8px]"></i> Hoạt động
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <!-- Actions -->
+                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                @if($userItem->id !== Auth::id())
+                                                    <form id="toggle-status-form-{{ $userItem->id }}" action="{{ route('admin.users.toggle-status', $userItem->id) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button 
+                                                            type="submit" 
+                                                            class="px-2.5 py-1.5 rounded-xl border text-[10px] font-extrabold cursor-pointer transition shadow-sm bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+                                                        >
+                                                            {{ $userItem->status === 'locked' ? 'Mở khóa' : 'Khóa' }}
+                                                        </button>
+                                                    </form>
+                                                    
+                                                    <form id="delete-user-form-{{ $userItem->id }}" action="{{ route('admin.users.destroy', $userItem->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thành viên này?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button 
+                                                            type="submit" 
+                                                            class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition cursor-pointer" 
+                                                            title="Xóa tài khoản"
+                                                        >
+                                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <span class="text-[10px] text-slate-400">Không có thao tác</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            @else
+                            <div class="py-16 text-center text-slate-400 font-semibold">
+                                <i class="fa-solid fa-users-slash text-3xl mb-3 block text-slate-350"></i>
+                                Chưa có thành viên nào.
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB Admin Properties -->
+                <div x-show="activeTab === 'admin_properties'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    <!-- Title -->
+                    <div class="pb-5 border-b border-slate-100 mb-6 text-left">
+                        <h2 class="text-xl font-bold text-slate-800">Quản lý tin đăng</h2>
+                        <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái duyệt và quản lý toàn bộ các bất động sản trên hệ thống.</p>
+                    </div>
+
+                    <!-- Properties Table Card -->
+                    <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
+                        <div class="overflow-x-auto">
+                            @if(isset($adminProperties) && count($adminProperties) > 0)
+                            <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
+                                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4">Bất động sản</th>
+                                        <th scope="col" class="px-6 py-4">Giá / Diện tích</th>
+                                        <th scope="col" class="px-6 py-4">Kiểu giao dịch</th>
+                                        <th scope="col" class="px-6 py-4">Trạng thái</th>
+                                        <th scope="col" class="px-6 py-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @foreach($adminProperties as $propItem)
+                                    <tr class="hover:bg-slate-50/50 transition">
+                                        <!-- Title -->
+                                        <td class="px-6 py-4 max-w-[280px]">
+                                            <a href="/property/{{ $propItem['id'] }}" class="font-bold text-slate-800 hover:text-primary transition block truncate leading-none mb-1">
+                                                {{ $propItem['title'] }}
+                                            </a>
+                                            <span class="text-[10px] text-slate-400 block"><i class="fa-solid fa-location-dot mr-1"></i>{{ $propItem['location'] }}</span>
+                                        </td>
+                                        <!-- Price / Area -->
+                                        <td class="px-6 py-4">
+                                            <span class="block text-primary font-bold leading-none mb-1">{{ $propItem['price'] }}</span>
+                                            <span class="text-[10px] text-slate-400 block">{{ $propItem['area'] }} m²</span>
+                                        </td>
+                                        <!-- Transaction Type -->
+                                        <td class="px-6 py-4">
+                                            @php
+                                                $isSale = isset($propItem['price_label']) && stripos($propItem['price_label'], 'tháng') === false;
+                                            @endphp
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold {{ $isSale ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
+                                                {{ $isSale ? 'Bán' : 'Cho thuê' }}
+                                            </span>
+                                        </td>
+                                        <!-- Status -->
+                                        <td class="px-6 py-4">
+                                            @if(($propItem['status'] ?? 'approved') === 'approved')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">
+                                                    Đã duyệt
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                    Chờ duyệt
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <!-- Actions -->
+                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                @if(($propItem['status'] ?? 'approved') === 'pending')
+                                                    <form id="approve-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.status', $propItem['id']) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <input type="hidden" name="status" value="approved">
+                                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 text-[10px] font-extrabold cursor-pointer transition shadow-sm">
+                                                            Duyệt tin
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                
+                                                <form id="delete-prop-form-{{ $propItem['id'] }}" action="{{ route('admin.properties.destroy', $propItem['id']) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin đăng này?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition cursor-pointer" title="Xóa tin đăng">
+                                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            @else
+                            <div class="py-16 text-center text-slate-400 font-semibold">
+                                <i class="fa-solid fa-folder-open text-3xl mb-3 block text-slate-350"></i>
+                                Chưa có tin đăng nào trên hệ thống.
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB Admin Appointments -->
+                <div x-show="activeTab === 'admin_appointments'" x-transition:enter="transition duration-150" class="space-y-6" x-cloak>
+                    <!-- Title -->
+                    <div class="pb-5 border-b border-slate-100 mb-6 text-left">
+                        <h2 class="text-xl font-bold text-slate-800">Quản lý lịch hẹn</h2>
+                        <p class="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và phê duyệt lịch đi xem nhà của khách hàng trên hệ thống.</p>
+                    </div>
+
+                    <!-- Appointments Table Card -->
+                    <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
+                        <div class="overflow-x-auto">
+                            @if(isset($adminAppointments) && $adminAppointments->count() > 0)
+                            <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
+                                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4">Khách hàng</th>
+                                        <th scope="col" class="px-6 py-4">Ngày giờ hẹn</th>
+                                        <th scope="col" class="px-6 py-4">Bất động sản</th>
+                                        <th scope="col" class="px-6 py-4">Trạng thái</th>
+                                        <th scope="col" class="px-6 py-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @foreach($adminAppointments as $appItem)
+                                    <tr class="hover:bg-slate-50/50 transition">
+                                        <!-- Guest info -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="block text-slate-800 font-bold">{{ $appItem->name }}</span>
+                                            <span class="text-[10px] text-slate-400"><i class="fa-solid fa-phone mr-1"></i>{{ $appItem->phone }}</span>
+                                        </td>
+                                        <!-- Date/Time -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="block text-slate-800">{{ \Carbon\Carbon::parse($appItem->date)->format('d/m/Y') }}</span>
+                                            <span class="text-[10px] text-slate-400"><i class="fa-solid fa-clock mr-1"></i>{{ \Carbon\Carbon::parse($appItem->time)->format('H:i') }}</span>
+                                        </td>
+                                        <!-- Property -->
+                                        <td class="px-6 py-4 max-w-[200px] truncate">
+                                            <a href="/property/{{ $appItem->property->id }}" class="hover:text-primary font-bold text-slate-800 block truncate" title="{{ $appItem->property->title }}">{{ $appItem->property->title }}</a>
+                                        </td>
+                                        <!-- Status -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($appItem->status === 'approved')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">Đã duyệt</span>
+                                            @elseif($appItem->status === 'pending')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Chờ duyệt</span>
+                                            @elseif($appItem->status === 'rejected')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">Từ chối</span>
+                                            @elseif($appItem->status === 'completed')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Đã xem nhà</span>
+                                            @endif
+                                        </td>
+                                        <!-- Actions -->
+                                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                                            @if($appItem->status === 'pending')
+                                                <form action="{{ route('appointments.cancel', $appItem->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này?');">
+                                                    @csrf
+                                                    <button type="submit" class="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer">
+                                                        Hủy lịch
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-[10px] text-slate-400">Không có thao tác</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            @else
+                            <div class="py-16 text-center text-slate-400 font-semibold">
+                                <i class="fa-solid fa-calendar-xmark text-3xl mb-3 block text-slate-350"></i>
+                                Chưa có lịch hẹn xem nhà nào trên hệ thống.
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
                 @endif
 
                 @if(Auth::user()->role === 'tenant')
