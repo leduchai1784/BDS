@@ -2488,7 +2488,7 @@
                             <input type="hidden" name="tab" value="admin_users">
                             
                             <!-- Search Keyword -->
-                            <div class="sm:col-span-5 relative">
+                            <div class="sm:col-span-6 relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="text" 
@@ -2496,6 +2496,7 @@
                                     value="{{ request('tab') === 'admin_users' ? request('search') : '' }}"
                                     placeholder="Tìm kiếm theo tên, email hoặc SĐT..." 
                                     class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-850 text-xs font-semibold outline-none transition"
+                                    onchange="this.form.submit()"
                                 >
                             </div>
 
@@ -2503,7 +2504,8 @@
                             <div class="sm:col-span-3">
                                 <select 
                                     name="role" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
+                                    onchange="this.form.submit()"
                                 >
                                     <option value="">-- Tất cả vai trò --</option>
                                     <option value="tenant" {{ request('tab') === 'admin_users' && request('role') === 'tenant' ? 'selected' : '' }}>Khách thuê</option>
@@ -2513,32 +2515,23 @@
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-3">
                                 <select 
                                     name="status" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
+                                    onchange="this.form.submit()"
                                 >
                                     <option value="">-- Trạng thái --</option>
                                     <option value="active" {{ request('tab') === 'admin_users' && request('status') === 'active' ? 'selected' : '' }}>Hoạt động</option>
                                     <option value="locked" {{ request('tab') === 'admin_users' && request('status') === 'locked' ? 'selected' : '' }}>Đang khóa</option>
                                 </select>
                             </div>
-
-                            <!-- Buttons -->
-                            <div class="sm:col-span-2 flex gap-2">
-                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                                    Lọc
-                                </button>
-                                <a href="{{ route('profile.index', ['tab' => 'admin_users']) }}" class="flex-1 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
-                                    Xóa
-                                </a>
-                            </div>
                         </form>
                     </div>
 
                     <!-- Users Table Card -->
                     <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
                             @if(isset($adminUsers) && $adminUsers->count() > 0)
                             <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
@@ -2608,17 +2601,12 @@
                                                         </button>
                                                     </form>
                                                     
-                                                    <form id="delete-user-form-{{ $userItem->id }}" action="{{ route('admin.users.destroy', $userItem->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thành viên này?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button 
-                                                            type="submit" 
-                                                            class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition cursor-pointer" 
-                                                            title="Xóa tài khoản"
-                                                        >
-                                                            <i class="fa-solid fa-trash-can text-xs"></i>
-                                                        </button>
-                                                    </form>
+                                                    <a 
+                                                        href="{{ route('admin.users.show', $userItem->id) }}" 
+                                                        class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-750 text-[10px] font-extrabold cursor-pointer transition shadow-sm inline-flex items-center justify-center"
+                                                    >
+                                                        Xem
+                                                    </a>
                                                 @else
                                                     <span class="text-[10px] text-slate-400">Không có thao tác</span>
                                                 @endif
@@ -2652,7 +2640,7 @@
                             <input type="hidden" name="tab" value="admin_properties">
                             
                             <!-- Search Keyword -->
-                            <div class="sm:col-span-5 relative">
+                            <div class="sm:col-span-6 relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="text" 
@@ -2660,6 +2648,7 @@
                                     value="{{ request('tab') === 'admin_properties' ? request('search') : '' }}"
                                     placeholder="Tìm kiếm theo tiêu đề tin, địa chỉ..." 
                                     class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    onchange="this.form.submit()"
                                 >
                             </div>
 
@@ -2667,7 +2656,8 @@
                             <div class="sm:col-span-3">
                                 <select 
                                     name="category_id" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
+                                    onchange="this.form.submit()"
                                 >
                                     <option value="">-- Tất cả danh mục --</option>
                                     @foreach($categories as $cat)
@@ -2677,32 +2667,23 @@
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-3">
                                 <select 
                                     name="status" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
+                                    onchange="this.form.submit()"
                                 >
                                     <option value="">-- Trạng thái --</option>
                                     <option value="pending" {{ request('tab') === 'admin_properties' && request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
                                     <option value="approved" {{ request('tab') === 'admin_properties' && request('status') === 'approved' ? 'selected' : '' }}>Đã duyệt</option>
                                 </select>
                             </div>
-
-                            <!-- Buttons -->
-                            <div class="sm:col-span-2 flex gap-2">
-                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                                    Lọc
-                                </button>
-                                <a href="{{ route('profile.index', ['tab' => 'admin_properties']) }}" class="flex-1 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
-                                    Xóa
-                                </a>
-                            </div>
                         </form>
                     </div>
 
                     <!-- Properties Table Card -->
                     <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
                             @if(isset($adminProperties) && count($adminProperties) > 0)
                             <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
@@ -2800,7 +2781,7 @@
                             <input type="hidden" name="tab" value="admin_appointments">
                             
                             <!-- Search Keyword -->
-                            <div class="sm:col-span-7 relative">
+                            <div class="sm:col-span-8 relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                                 <input 
                                     type="text" 
@@ -2808,14 +2789,16 @@
                                     value="{{ request('tab') === 'admin_appointments' ? request('search') : '' }}"
                                     placeholder="Tìm kiếm theo tên khách hàng hoặc số điện thoại..." 
                                     class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    onchange="this.form.submit()"
                                 >
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="sm:col-span-3">
+                            <div class="sm:col-span-4">
                                 <select 
                                     name="status" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
+                                    onchange="this.form.submit()"
                                 >
                                     <option value="">-- Trạng thái --</option>
                                     <option value="pending" {{ request('tab') === 'admin_appointments' && request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
@@ -2823,22 +2806,12 @@
                                     <option value="rejected" {{ request('tab') === 'admin_appointments' && request('status') === 'rejected' ? 'selected' : '' }}>Từ chối</option>
                                 </select>
                             </div>
-
-                            <!-- Buttons -->
-                            <div class="sm:col-span-2 flex gap-2">
-                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition cursor-pointer">
-                                    Lọc
-                                </button>
-                                <a href="{{ route('profile.index', ['tab' => 'admin_appointments']) }}" class="flex-1 bg-white hover:bg-slate-50 text-slate-750 text-xs font-bold py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
-                                    Xóa
-                                </a>
-                            </div>
                         </form>
                     </div>
 
                     <!-- Appointments Table Card -->
                     <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
                             @if(isset($adminAppointments) && $adminAppointments->count() > 0)
                             <table class="min-w-full text-left text-xs text-slate-600 font-semibold">
                                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
