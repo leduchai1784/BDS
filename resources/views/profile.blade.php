@@ -2510,30 +2510,119 @@
                             </div>
 
                             <!-- Role Filter -->
-                            <div class="sm:col-span-3">
-                                <select 
-                                    name="role" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
-                                    onchange="this.form.submit()"
+                            <div 
+                                x-data="{ 
+                                    open: false, 
+                                    selected: '{{ request('tab') === 'admin_users' ? request('role') : '' }}',
+                                    selectedLabel: '{{ request('tab') === 'admin_users' && request('role') === 'tenant' ? 'Khách thuê' : (request('tab') === 'admin_users' && request('role') === 'owner' ? 'Chủ nhà' : (request('tab') === 'admin_users' && request('role') === 'admin' ? 'Quản trị viên' : '-- Tất cả vai trò --')) }}'
+                                }" 
+                                class="relative sm:col-span-3"
+                            >
+                                <input type="hidden" name="role" :value="selected">
+                            
+                                <button 
+                                    type="button" 
+                                    @click="open = !open" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
                                 >
-                                    <option value="">-- Tất cả vai trò --</option>
-                                    <option value="tenant" {{ request('tab') === 'admin_users' && request('role') === 'tenant' ? 'selected' : '' }}>Khách thuê</option>
-                                    <option value="owner" {{ request('tab') === 'admin_users' && request('role') === 'owner' ? 'selected' : '' }}>Chủ nhà</option>
-                                    <option value="admin" {{ request('tab') === 'admin_users' && request('role') === 'admin' ? 'selected' : '' }}>Quản trị viên</option>
-                                </select>
+                                    <span x-text="selectedLabel"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                            
+                                <div 
+                                    x-show="open" 
+                                    @click.outside="open = false" 
+                                    x-transition
+                                    class="absolute z-30 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+                                    x-cloak
+                                >
+                                    <button 
+                                        type="button" 
+                                        @click="selected = ''; selectedLabel = '-- Tất cả vai trò --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        -- Tất cả vai trò --
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'tenant'; selectedLabel = 'Khách thuê'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'tenant' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Khách thuê
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'owner'; selectedLabel = 'Chủ nhà'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'owner' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Chủ nhà
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'admin'; selectedLabel = 'Quản trị viên'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'admin' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Quản trị viên
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="sm:col-span-3">
-                                <select 
-                                    name="status" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
-                                    onchange="this.form.submit()"
+                            <div 
+                                x-data="{ 
+                                    open: false, 
+                                    selected: '{{ request('tab') === 'admin_users' ? request('status') : '' }}',
+                                    selectedLabel: '{{ request('tab') === 'admin_users' && request('status') === 'active' ? 'Hoạt động' : (request('tab') === 'admin_users' && request('status') === 'locked' ? 'Đang khóa' : '-- Trạng thái --') }}'
+                                }" 
+                                class="relative sm:col-span-3"
+                            >
+                                <input type="hidden" name="status" :value="selected">
+                            
+                                <button 
+                                    type="button" 
+                                    @click="open = !open" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
                                 >
-                                    <option value="">-- Trạng thái --</option>
-                                    <option value="active" {{ request('tab') === 'admin_users' && request('status') === 'active' ? 'selected' : '' }}>Hoạt động</option>
-                                    <option value="locked" {{ request('tab') === 'admin_users' && request('status') === 'locked' ? 'selected' : '' }}>Đang khóa</option>
-                                </select>
+                                    <span x-text="selectedLabel"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                            
+                                <div 
+                                    x-show="open" 
+                                    @click.outside="open = false" 
+                                    x-transition
+                                    class="absolute z-30 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+                                    x-cloak
+                                >
+                                    <button 
+                                        type="button" 
+                                        @click="selected = ''; selectedLabel = '-- Trạng thái --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        -- Trạng thái --
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'active'; selectedLabel = 'Hoạt động'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'active' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Hoạt động
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'locked'; selectedLabel = 'Đang khóa'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'locked' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Đang khóa
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -2675,30 +2764,105 @@
                             </div>
 
                             <!-- Category Filter -->
-                            <div class="sm:col-span-3">
-                                <select 
-                                    name="category_id" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
-                                    onchange="this.form.submit()"
+                            <div 
+                                x-data="{ 
+                                    open: false, 
+                                    selected: '{{ request('tab') === 'admin_properties' ? request('category_id') : '' }}',
+                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('category_id') ? ($categories->firstWhere('id', request('category_id'))->name ?? '-- Tất cả danh mục --') : '-- Tất cả danh mục --' }}'
+                                }" 
+                                class="relative sm:col-span-3"
+                            >
+                                <input type="hidden" name="category_id" :value="selected">
+                            
+                                <button 
+                                    type="button" 
+                                    @click="open = !open" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
                                 >
-                                    <option value="">-- Tất cả danh mục --</option>
+                                    <span x-text="selectedLabel"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                            
+                                <div 
+                                    x-show="open" 
+                                    @click.outside="open = false" 
+                                    x-transition
+                                    class="absolute z-30 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden max-h-60 overflow-y-auto thin-scrollbar"
+                                    x-cloak
+                                >
+                                    <button 
+                                        type="button" 
+                                        @click="selected = ''; selectedLabel = '-- Tất cả danh mục --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        -- Tất cả danh mục --
+                                    </button>
                                     @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}" {{ request('tab') === 'admin_properties' && request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        <button 
+                                            type="button" 
+                                            @click="selected = '{{ $cat->id }}'; selectedLabel = '{{ addslashes($cat->name) }}'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                            class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                            :class="selected == '{{ $cat->id }}' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                        >
+                                            {{ $cat->name }}
+                                        </button>
                                     @endforeach
-                                </select>
+                                </div>
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="sm:col-span-3">
-                                <select 
-                                    name="status" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
-                                    onchange="this.form.submit()"
+                            <div 
+                                x-data="{ 
+                                    open: false, 
+                                    selected: '{{ request('tab') === 'admin_properties' ? request('status') : '' }}',
+                                    selectedLabel: '{{ request('tab') === 'admin_properties' && request('status') === 'pending' ? 'Chờ duyệt' : (request('tab') === 'admin_properties' && request('status') === 'approved' ? 'Đã duyệt' : '-- Trạng thái --') }}'
+                                }" 
+                                class="relative sm:col-span-3"
+                            >
+                                <input type="hidden" name="status" :value="selected">
+                            
+                                <button 
+                                    type="button" 
+                                    @click="open = !open" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-205 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
                                 >
-                                    <option value="">-- Trạng thái --</option>
-                                    <option value="pending" {{ request('tab') === 'admin_properties' && request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
-                                    <option value="approved" {{ request('tab') === 'admin_properties' && request('status') === 'approved' ? 'selected' : '' }}>Đã duyệt</option>
-                                </select>
+                                    <span x-text="selectedLabel"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                            
+                                <div 
+                                    x-show="open" 
+                                    @click.outside="open = false" 
+                                    x-transition
+                                    class="absolute z-30 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+                                    x-cloak
+                                >
+                                    <button 
+                                        type="button" 
+                                        @click="selected = ''; selectedLabel = '-- Trạng thái --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        -- Trạng thái --
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'pending'; selectedLabel = 'Chờ duyệt'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'pending' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Chờ duyệt
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'approved'; selectedLabel = 'Đã duyệt'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'approved' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Đã duyệt
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -2816,17 +2980,65 @@
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="sm:col-span-4">
-                                <select 
-                                    name="status" 
-                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer"
-                                    onchange="this.form.submit()"
+                            <div 
+                                x-data="{ 
+                                    open: false, 
+                                    selected: '{{ request('tab') === 'admin_appointments' ? request('status') : '' }}',
+                                    selectedLabel: '{{ request('tab') === 'admin_appointments' && request('status') === 'pending' ? 'Chờ duyệt' : (request('tab') === 'admin_appointments' && request('status') === 'approved' ? 'Đã duyệt' : (request('tab') === 'admin_appointments' && request('status') === 'rejected' ? 'Từ chối' : '-- Trạng thái --')) }}'
+                                }" 
+                                class="relative sm:col-span-4"
+                            >
+                                <input type="hidden" name="status" :value="selected">
+                            
+                                <button 
+                                    type="button" 
+                                    @click="open = !open" 
+                                    class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
                                 >
-                                    <option value="">-- Trạng thái --</option>
-                                    <option value="pending" {{ request('tab') === 'admin_appointments' && request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
-                                    <option value="approved" {{ request('tab') === 'admin_appointments' && request('status') === 'approved' ? 'selected' : '' }}>Đã duyệt</option>
-                                    <option value="rejected" {{ request('tab') === 'admin_appointments' && request('status') === 'rejected' ? 'selected' : '' }}>Từ chối</option>
-                                </select>
+                                    <span x-text="selectedLabel"></span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                            
+                                <div 
+                                    x-show="open" 
+                                    @click.outside="open = false" 
+                                    x-transition
+                                    class="absolute z-30 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+                                    x-cloak
+                                >
+                                    <button 
+                                        type="button" 
+                                        @click="selected = ''; selectedLabel = '-- Trạng thái --'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === '' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        -- Trạng thái --
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'pending'; selectedLabel = 'Chờ duyệt'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'pending' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Chờ duyệt
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'approved'; selectedLabel = 'Đã duyệt'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'approved' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Đã duyệt
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        @click="selected = 'rejected'; selectedLabel = 'Từ chối'; open = false; $nextTick(() => $el.closest('form').submit())" 
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition"
+                                        :class="selected === 'rejected' ? 'bg-primary-light/30 text-primary font-bold' : ''"
+                                    >
+                                        Từ chối
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
