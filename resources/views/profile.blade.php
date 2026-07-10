@@ -2591,7 +2591,7 @@
                                         <td class="px-6 py-4 text-right whitespace-nowrap">
                                             <div class="flex items-center justify-end gap-1.5">
                                                 @if($userItem->id !== Auth::id())
-                                                    <form id="toggle-status-form-{{ $userItem->id }}" action="{{ route('admin.users.toggle-status', $userItem->id) }}" method="POST" class="inline">
+                                                    <form id="toggle-status-form-{{ $userItem->id }}" action="{{ route('admin.users.toggle-status', $userItem->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn {{ $userItem->status === 'locked' ? 'mở khóa' : 'khóa' }} tài khoản này?');">
                                                         @csrf
                                                         <button 
                                                             type="submit" 
@@ -2601,12 +2601,13 @@
                                                         </button>
                                                     </form>
                                                     
-                                                    <a 
-                                                        href="{{ route('admin.users.show', $userItem->id) }}" 
+                                                    <button 
+                                                        type="button"
+                                                        @click="$dispatch('open-user-modal', { userId: {{ $userItem->id }} })"
                                                         class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-750 text-[10px] font-extrabold cursor-pointer transition shadow-sm inline-flex items-center justify-center"
                                                     >
                                                         Xem
-                                                    </a>
+                                                    </button>
                                                 @else
                                                     <span class="text-[10px] text-slate-400">Không có thao tác</span>
                                                 @endif
@@ -2969,6 +2970,63 @@
         </div>
     </div>
 </div>
+
+<!-- User Details Modal (AlpineJS based) -->
+@if(Auth::user()->role === 'admin')
+<div 
+    x-data="{
+        open: false,
+        loading: false,
+        htmlContent: '',
+        openModal(userId) {
+            this.open = true;
+            this.loading = true;
+            this.htmlContent = '';
+            fetch('/admin/users/' + userId)
+                .then(res => res.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const content = doc.querySelector('#user-detail-content');
+                    if (content) {
+                        // Strip any breadcrumbs or navigation back buttons
+                        const backBtn = content.querySelector('.fa-arrow-left')?.closest('div');
+                        if (backBtn) {
+                            backBtn.remove();
+                        }
+                        this.htmlContent = content.innerHTML;
+                    } else {
+                        this.htmlContent = '<div class=\'p-8 text-center text-red-500 font-bold\'>Không thể tìm thấy nội dung chi tiết thành viên.</div>';
+                    }
+                    this.loading = false;
+                })
+                .catch(err => {
+                    this.htmlContent = '<div class=\'p-8 text-center text-red-500 font-bold\'>Lỗi kết nối khi tải dữ liệu.</div>';
+                    this.loading = false;
+                });
+        }
+    }"
+    @open-user-modal.window="openModal($event.detail.userId)"
+    x-show="open"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    x-transition
+    x-cloak
+>
+    <div @click.outside="open = false" class="bg-white rounded-3xl max-w-5xl w-full p-6 shadow-2xl relative border border-slate-100 max-h-[90vh] overflow-y-auto thin-scrollbar">
+        <!-- Close button -->
+        <button type="button" @click="open = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition cursor-pointer text-base z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <div x-show="loading" class="py-24 text-center text-slate-500 font-semibold">
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 block text-primary"></i>
+            Đang tải chi tiết thành viên...
+        </div>
+        
+        <div x-show="!loading" x-html="htmlContent"></div>
+    </div>
+</div>
+@endif
 @endsection
 
 @push('scripts')

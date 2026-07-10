@@ -3,7 +3,7 @@
 @section('title', 'Chi Tiết Thành Viên - ' . $user->name)
 
 @section('content')
-<div class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div id="user-detail-content" class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="space-y-6">
         <!-- Breadcrumbs / Back button -->
         <div class="flex items-center justify-between">
