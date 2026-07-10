@@ -157,7 +157,7 @@
                             >
                                 <div class="flex items-center space-x-3">
                                     <i class="fa-solid fa-user-gear text-sm"></i>
-                                    <span>Thông tin cá nhân</span>
+                                    <span>Thông tin</span>
                                 </div>
                                 <i :class="activeTab === 'profile' && profileMenuOpen ? 'rotate-180 text-primary' : 'text-slate-400'" class="fa-solid fa-chevron-down text-[10px] hidden lg:inline-block transition-transform duration-200 ml-2"></i>
                             </button>
@@ -181,7 +181,7 @@
                                         class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] cursor-pointer transition focus:outline-none text-left w-full"
                                     >
                                         <i class="fa-solid fa-user text-[10px]"></i>
-                                        <span>Thông tin cá nhân</span>
+                                        <span>Thông tin</span>
                                     </button>
                                     
                                     <button 
@@ -370,7 +370,7 @@
                             class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer"
                         >
                             <i class="fa-solid fa-user text-[9px]"></i>
-                            <span>Thông tin cá nhân</span>
+                            <span>Thông tin</span>
                         </button>
                         
                         <button 
@@ -402,7 +402,7 @@
                 <div x-show="activeTab === 'profile'" x-transition:enter="transition duration-150" class="space-y-8">
                     <!-- Title -->
                     <div class="pb-5 border-b border-slate-100 mb-6">
-                        <h2 class="text-xl font-bold text-slate-800">Thông tin cá nhân</h2>
+                        <h2 class="text-xl font-bold text-slate-800">Thông tin</h2>
                         <p class="text-xs text-slate-400 mt-1 font-semibold">Cập nhật hồ sơ và xem số liệu thống kê tài khoản của bạn.</p>
                     </div>
 
