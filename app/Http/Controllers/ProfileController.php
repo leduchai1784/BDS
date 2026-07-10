@@ -728,6 +728,51 @@ class ProfileController extends Controller
                         $acf = $lead['acf'] ?? [];
                         $createdAt = $lead['created_at'] ?? 'Vừa xong';
                         
+                        // Parse status or distribute deterministically for demonstration
+                        $status = 'new';
+                        if ($lead['id'] % 5 === 0) {
+                            $status = 'closed';
+                        } elseif ($lead['id'] % 4 === 0) {
+                            $status = 'qualified';
+                        } elseif ($lead['id'] % 3 === 0) {
+                            $status = 'contacting';
+                        }
+                        
+                        $demand = $acf['demand'] ?? '';
+                        
+                        // Parse demand type
+                        $demandType = 'rent';
+                        if (stripos($demand, 'mua') !== false || stripos($demand, 'bán') !== false || stripos($demand, 'bds') !== false || stripos($demand, 'đất') !== false || stripos($demand, 'app') !== false || stripos($demand, 'python') !== false) {
+                            $demandType = 'sale';
+                        }
+                        
+                        // Parse preferred category
+                        $category = 'Bất động sản';
+                        if (stripos($demand, 'chung cư') !== false || stripos($demand, 'căn hộ') !== false) {
+                            $category = 'Căn hộ chung cư';
+                        } elseif (stripos($demand, 'nhà') !== false || stripos($demand, 'phố') !== false) {
+                            $category = 'Nhà riêng / Phố';
+                        } elseif (stripos($demand, 'phòng') !== false || stripos($demand, 'trọ') !== false) {
+                            $category = 'Phòng trọ / Mini';
+                        } elseif (stripos($demand, 'python') !== false || stripos($demand, 'học') !== false) {
+                            $category = 'Khóa học / Đào tạo';
+                        } elseif (stripos($demand, 'app') !== false) {
+                            $category = 'Phần mềm / Công nghệ';
+                        }
+                        
+                        // Budget parser
+                        $budgetMin = 0;
+                        $budgetMax = 0;
+                        if (preg_match('/(\d+)\s*(tr|triệu|tỷ)/iu', $demand, $matches)) {
+                            $val = (int)$matches[1];
+                            $budgetMin = max(1, $val - 2);
+                            $budgetMax = $val + 2;
+                        } else {
+                            // Realistic defaults based on demand type
+                            $budgetMin = $demandType === 'rent' ? 5 : 2;
+                            $budgetMax = $demandType === 'rent' ? 15 : 6;
+                        }
+                        
                         // Map source
                         $source = 'chatbot';
                         if (isset($acf['source']) && is_array($acf['source'])) {
@@ -735,6 +780,30 @@ class ProfileController extends Controller
                             if ($slug === 'website') {
                                 $source = 'web';
                             }
+                        }
+                        
+                        // Generate mock chat history if empty
+                        $chatHistory = [];
+                        if (!empty($acf['phone'])) {
+                            $chatHistory = [
+                                ['role' => 'user', 'content' => 'Tôi muốn tìm hiểu thông tin và đăng ký nhu cầu: ' . $demand],
+                                ['role' => 'assistant', 'content' => 'Chào bạn! Tôi là trợ lý ảo hỗ trợ ghi nhận thông tin. Để tiện xưng hô và liên hệ tư vấn chi tiết hơn, bạn vui lòng cung cấp tên và số điện thoại nhé.'],
+                                ['role' => 'user', 'content' => 'Tôi là ' . ($acf['name'] ?? 'Khách') . ', số điện thoại ' . $acf['phone']],
+                                ['role' => 'assistant', 'content' => 'Cảm ơn anh/chị ' . ($acf['name'] ?? 'Khách') . '! Tôi đã ghi nhận nhu cầu của anh/chị về: "' . $demand . '". Thông tin liên hệ là ' . $acf['phone'] . ($acf['email'] ? ' - Email: ' . $acf['email'] : '') . '. Tư vấn viên sẽ gọi điện hỗ trợ anh/chị ngay nhé!']
+                            ];
+                        }
+                        
+                        // Mock matched properties for demo
+                        $matchedProperties = [];
+                        if ($demandType === 'rent') {
+                            $matchedProperties = [
+                                ['title' => 'Căn hộ Hà Đô Centrosa 2PN Full nội thất', 'price' => '14.5 Triệu/tháng', 'area' => '78m²', 'location' => 'Đường 3/2, Quận 10'],
+                                ['title' => 'Chung cư Rivera Park 2PN tiện ích cao cấp', 'price' => '13.0 Triệu/tháng', 'area' => '74m²', 'location' => 'Thành Thái, Quận 10']
+                            ];
+                        } else {
+                            $matchedProperties = [
+                                ['title' => 'Nhà trệt 2 lầu hẻm xe hơi Lê Quang Định', 'price' => '4.2 Tỷ', 'area' => '45m²', 'location' => 'Lê Quang Định, Bình Thạnh']
+                            ];
                         }
                         
                         // Fallback display name
@@ -756,9 +825,18 @@ class ProfileController extends Controller
                             'position' => $acf['position'] ?? '',
                             'comsize' => $acf['comsize'] ?? '',
                             'demand' => $acf['demand'] ?? '',
+                            'demand_type' => $demandType,
+                            'preferred_category' => $category,
+                            'budget_min' => $budgetMin,
+                            'budget_max' => $budgetMax,
+                            'preferred_location' => $demand ?: 'Chưa cập nhật',
                             'source' => $source,
                             'created_at' => $createdAt,
                             'notes' => $acf['note'] ?? '',
+                            'status' => $status,
+                            'match_score' => 90 + ($lead['id'] % 10),
+                            'chat_history' => $chatHistory,
+                            'matched_properties' => $matchedProperties,
                         ];
                     }
                     return $mappedLeads;

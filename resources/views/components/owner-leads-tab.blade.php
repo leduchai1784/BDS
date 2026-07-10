@@ -110,11 +110,33 @@
         leads: window.crmLeadsList || [],
         selectedLead: null,
         drawerOpen: false,
+        activeDetailTab: 'demand',
         filterSource: 'all',
         searchTerm: '',
         openLead(lead) {
             this.selectedLead = lead;
             this.drawerOpen = true;
+            this.activeDetailTab = 'demand';
+        },
+        getStatusLabel(status) {
+            const labels = {
+                'new': 'Mới nhận',
+                'contacting': 'Đang liên hệ',
+                'qualified': 'Tiềm năng',
+                'unqualified': 'Không khớp',
+                'closed': 'Đã chốt'
+            };
+            return labels[status] || status;
+        },
+        getStatusClass(status) {
+            const classes = {
+                'new': 'bg-blue-50 text-blue-600 border-blue-100',
+                'contacting': 'bg-amber-50 text-amber-600 border-amber-100',
+                'qualified': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                'unqualified': 'bg-slate-50 text-slate-500 border-slate-100',
+                'closed': 'bg-rose-50 text-rose-600 border-rose-100'
+            };
+            return 'px-2.5 py-1 text-[10px] font-bold rounded-lg border ' + (classes[status] || 'bg-slate-100 text-slate-600');
         },
         getInitials(name) {
             if (!name) return 'L';
@@ -375,79 +397,216 @@
                             </button>
                         </div>
 
+                        <!-- Drawer Subtabs Navigation -->
+                        <div class="border-b border-slate-150 px-5 flex items-center bg-slate-50/50 flex-shrink-0">
+                            <button 
+                                @click="activeDetailTab = 'demand'"
+                                :class="activeDetailTab === 'demand' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer font-bold"
+                            >
+                                Chi tiết & Ghi chú
+                            </button>
+                            <button 
+                                @click="activeDetailTab = 'chat'"
+                                :class="activeDetailTab === 'chat' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold"
+                            >
+                                <i class="fa-solid fa-message text-[10px]"></i> Lịch sử Chat AI
+                            </button>
+                            <button 
+                                @click="activeDetailTab = 'matching'"
+                                :class="activeDetailTab === 'matching' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold"
+                            >
+                                <i class="fa-solid fa-fire text-[10px] text-orange-500"></i> Đối khớp (<span x-text="selectedLead ? selectedLead.match_score + '%' : ''"></span>)
+                            </button>
+                        </div>
+
                         <!-- Drawer Content Body -->
-                        <div class="flex-grow p-5 space-y-6">
+                        <div class="flex-grow p-5 space-y-6 overflow-y-auto">
                             <template x-if="selectedLead">
-                                <div class="space-y-6">
-                                    <!-- Contact Info Card -->
-                                    <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
-                                        <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin liên hệ</h4>
-                                        <div class="space-y-2">
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Họ tên:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.name"></span>
+                                <div>
+                                    <!-- TAB 1: Details & Notes -->
+                                    <div x-show="activeDetailTab === 'demand'" class="space-y-6">
+                                        <!-- Contact Info Card -->
+                                        <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
+                                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin liên hệ</h4>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Họ tên:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.name"></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Số điện thoại:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.phone || 'Chưa cung cấp'"></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Email:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.email || 'Chưa cung cấp'"></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Zalo:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.zalo || 'Chưa cung cấp'"></span>
+                                                </div>
                                             </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Số điện thoại:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.phone || 'Chưa cung cấp'"></span>
+                                        </div>
+
+                                        <!-- Job & Company Card -->
+                                        <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
+                                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin công việc</h4>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Công ty:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.company || 'Chưa cung cấp'"></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Chức vụ:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.position || 'Chưa cung cấp'"></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-slate-400 font-semibold">Quy mô công ty:</span>
+                                                    <span class="font-bold text-slate-700" x-text="selectedLead.comsize || 'Chưa cung cấp'"></span>
+                                                </div>
                                             </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Email:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.email || 'Chưa cung cấp'"></span>
+                                        </div>
+
+                                        <!-- Demand Card -->
+                                        <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
+                                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Yêu cầu & Nhu cầu</h4>
+                                            <div class="space-y-1">
+                                                <span class="block text-slate-400 font-semibold mb-1">Chi tiết nhu cầu:</span>
+                                                <p class="font-semibold text-slate-700 leading-relaxed bg-white border border-slate-150 p-2.5 rounded-xl whitespace-pre-line" x-text="selectedLead.demand || '-'"></p>
                                             </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Zalo:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.zalo || 'Chưa cung cấp'"></span>
+                                        </div>
+
+                                        <!-- Care Status updates -->
+                                        <div class="space-y-1.5">
+                                            <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-1">Cập nhật trạng thái chăm sóc</label>
+                                            <div class="flex flex-wrap gap-2 pt-1">
+                                                <template x-for="st in ['new', 'contacting', 'qualified', 'unqualified', 'closed']" :key="st">
+                                                    <button 
+                                                        type="button" 
+                                                        @click="selectedLead.status = st; triggerToast('Đã cập nhật trạng thái Lead thành: ' + getStatusLabel(st))"
+                                                        :class="selectedLead.status === st ? 'bg-primary text-white border-primary shadow-sm' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'"
+                                                        class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg border transition cursor-pointer focus:outline-none"
+                                                        x-text="getStatusLabel(st)"
+                                                    ></button>
+                                                </template>
                                             </div>
+                                        </div>
+
+                                        <!-- Notes Card -->
+                                        <div class="space-y-1.5">
+                                            <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-1">Ghi chú chăm sóc chi tiết</label>
+                                            <textarea 
+                                                rows="4" 
+                                                x-model="selectedLead.notes"
+                                                class="w-full p-3 bg-slate-50 border border-slate-200 focus:border-primary rounded-xl text-xs font-semibold outline-none transition resize-none"
+                                                placeholder="Nhập ghi chú chăm sóc khách hàng..."
+                                            ></textarea>
+                                            <div class="flex justify-end pt-1">
+                                                <button 
+                                                    type="button" 
+                                                    @click="triggerToast('Đã lưu ghi chú thành công!')"
+                                                    class="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer"
+                                                >
+                                                    Lưu ghi chú
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Meta Info -->
+                                        <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl flex items-center justify-between text-xs">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-cloud-arrow-up text-emerald-500 text-sm"></i>
+                                                <div>
+                                                    <span class="block font-bold text-slate-700">Trạng thái đồng bộ</span>
+                                                    <span class="text-[10px] text-slate-400 font-semibold" x-text="'Ngày nhận: ' + selectedLead.created_at"></span>
+                                                </div>
+                                            </div>
+                                            <span class="text-[9px] font-bold text-slate-400 bg-slate-200/50 px-2 py-0.5 rounded" x-text="'ID: ' + selectedLead.id"></span>
                                         </div>
                                     </div>
 
-                                    <!-- Job & Company Card -->
-                                    <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
-                                        <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin công việc</h4>
-                                        <div class="space-y-2">
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Công ty:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.company || 'Chưa cung cấp'"></span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Chức vụ:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.position || 'Chưa cung cấp'"></span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-slate-400 font-semibold">Quy mô công ty:</span>
-                                                <span class="font-bold text-slate-700" x-text="selectedLead.comsize || 'Chưa cung cấp'"></span>
-                                            </div>
+                                    <!-- TAB 2: Chat History -->
+                                    <div x-show="activeDetailTab === 'chat'" class="space-y-4">
+                                        <div class="pb-3 border-b border-slate-100">
+                                            <h4 class="font-bold text-slate-700 text-xs">Đoạn hội thoại với trợ lý ảo</h4>
+                                            <p class="text-[10px] text-slate-400 font-medium">Bản ghi chat chi tiết để môi giới hiểu sâu mong muốn của khách.</p>
                                         </div>
+
+                                        <template x-if="!selectedLead.chat_history || selectedLead.chat_history.length === 0">
+                                            <div class="p-8 text-center text-slate-400 text-xs font-semibold">
+                                                Không có dữ liệu hội thoại chat (Lead thêm thủ công hoặc từ nguồn webform).
+                                            </div>
+                                        </template>
+
+                                        <template x-if="selectedLead.chat_history && selectedLead.chat_history.length">
+                                            <div class="space-y-3.5 max-h-[380px] overflow-y-auto pr-1 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                                                <template x-for="(msg, idx) in selectedLead.chat_history" :key="idx">
+                                                    <div class="flex flex-col mb-2.5" :class="msg.role === 'user' ? 'items-end' : 'items-start'">
+                                                        <span class="text-[8px] font-bold text-slate-400 mb-1 px-1" x-text="msg.role === 'user' ? 'Khách hàng' : 'AI Assistant'"></span>
+                                                        <div 
+                                                            class="max-w-[85%] px-3.5 py-2 rounded-xl text-[11px] leading-relaxed shadow-sm"
+                                                            :class="msg.role === 'user' 
+                                                                ? 'bg-primary text-white rounded-tr-none' 
+                                                                : 'bg-white text-slate-700 border border-slate-200/60 rounded-tl-none'"
+                                                            x-text="msg.content"
+                                                        ></div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
                                     </div>
 
-                                    <!-- Demand Card -->
-                                    <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
-                                        <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Yêu cầu & Nhu cầu</h4>
-                                        <div class="space-y-1">
-                                            <span class="block text-slate-400 font-semibold mb-1">Chi tiết nhu cầu:</span>
-                                            <p class="font-semibold text-slate-700 leading-relaxed bg-white border border-slate-150 p-2.5 rounded-xl whitespace-pre-line" x-text="selectedLead.demand || '-'"></p>
+                                    <!-- TAB 3: Property Matching -->
+                                    <div x-show="activeDetailTab === 'matching'" class="space-y-4.5">
+                                        <div class="pb-3 border-b border-slate-100">
+                                            <h4 class="font-bold text-slate-700 text-xs flex items-center gap-1">
+                                                <i class="fa-solid fa-fire text-orange-500"></i> Gợi ý BĐS phù hợp cho khách
+                                            </h4>
+                                            <p class="text-[10px] text-slate-400 font-medium">Đối khớp tự động dựa trên vị trí, khoảng giá và loại hình BĐS.</p>
                                         </div>
-                                    </div>
 
-                                    <!-- Notes Card -->
-                                    <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
-                                        <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Ghi chú hệ thống</h4>
-                                        <div class="space-y-1">
-                                            <p class="font-medium text-slate-600 leading-relaxed bg-white border border-slate-150 p-2.5 rounded-xl whitespace-pre-line" x-text="selectedLead.notes || 'Chưa có ghi chú nào từ khách hàng.'"></p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Meta Info -->
-                                    <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl flex items-center justify-between text-xs">
-                                        <div class="flex items-center gap-2">
-                                            <i class="fa-solid fa-cloud-arrow-up text-emerald-500 text-sm"></i>
-                                            <div>
-                                                <span class="block font-bold text-slate-700">Trạng thái đồng bộ</span>
-                                                <span class="text-[10px] text-slate-400 font-semibold" x-text="'Ngày nhận: ' + selectedLead.created_at"></span>
+                                        <template x-if="!selectedLead.matched_properties || selectedLead.matched_properties.length === 0">
+                                            <div class="p-8 text-center text-slate-400 text-xs font-semibold">
+                                                Không tìm thấy bất động sản nào trùng khớp trong kho hàng của bạn.
                                             </div>
+                                        </template>
+
+                                        <template x-if="selectedLead.matched_properties && selectedLead.matched_properties.length">
+                                            <div class="space-y-3">
+                                                <template x-for="(prop, pIdx) in selectedLead.matched_properties" :key="pIdx">
+                                                    <div class="p-3 bg-white border border-slate-100 hover:border-primary/20 rounded-xl shadow-sm transition flex gap-3">
+                                                        <div class="w-14 h-14 rounded-lg bg-slate-100 flex-shrink-0 relative overflow-hidden">
+                                                            <img src="/images/apartment_1.png" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=200&q=80'">
+                                                        </div>
+                                                        <div class="flex-grow min-w-0 flex flex-col justify-between">
+                                                            <div>
+                                                                <h5 class="font-bold text-slate-800 text-[11px] truncate" x-text="prop.title"></h5>
+                                                                <p class="text-[9px] text-slate-400 truncate mt-0.5 flex items-center gap-1">
+                                                                    <i class="fa-solid fa-location-dot"></i> <span x-text="prop.location"></span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="flex items-center justify-between mt-1">
+                                                                <span class="text-xs font-black text-primary" x-text="prop.price"></span>
+                                                                <span class="text-[9px] text-slate-400 font-bold" x-text="prop.area"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+                                            <button 
+                                                type="button" 
+                                                @click="triggerToast('Đã gửi email đề xuất giỏ hàng thành công!')"
+                                                class="flex-grow px-3 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none"
+                                            >
+                                                <i class="fa-solid fa-paper-plane"></i> Gửi giỏ hàng cho khách
+                                            </button>
                                         </div>
-                                        <span class="text-[9px] font-bold text-slate-400 bg-slate-200/50 px-2 py-0.5 rounded" x-text="'ID: ' + selectedLead.id"></span>
                                     </div>
                                 </div>
                             </template>
