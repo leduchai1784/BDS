@@ -314,6 +314,9 @@
                                     <i class="fa-solid fa-users text-sm"></i>
                                     <span>Quản lý thành viên</span>
                                 </div>
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                    {{ isset($adminUsers) ? count($adminUsers) : 0 }}
+                                </span>
                             </button>
 
                             <!-- Quản lý tin đăng -->
@@ -326,6 +329,9 @@
                                     <i class="fa-solid fa-rectangle-list text-sm"></i>
                                     <span>Quản lý tin đăng</span>
                                 </div>
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                    {{ isset($adminProperties) ? count($adminProperties) : 0 }}
+                                </span>
                             </button>
 
                             <!-- Quản lý lịch hẹn -->
@@ -338,6 +344,9 @@
                                     <i class="fa-solid fa-calendar-check text-sm"></i>
                                     <span>Quản lý lịch hẹn</span>
                                 </div>
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                    {{ isset($adminAppointments) ? count($adminAppointments) : 0 }}
+                                </span>
                             </button>
 
                             <!-- Quản lý Lead -->
@@ -350,7 +359,7 @@
                                     <i class="fa-solid fa-user-group text-sm"></i>
                                     <span>Quản lý Lead</span>
                                 </div>
-                                <span class="hidden lg:inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
                                     {{ $stats['total_leads'] ?? 4 }}
                                 </span>
                             </button>
