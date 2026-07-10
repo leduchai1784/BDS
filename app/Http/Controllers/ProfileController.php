@@ -82,18 +82,26 @@ class ProfileController extends Controller
         
         // Handle admin profile view
         if ($user->role === 'admin') {
+            $propertyService = app(\App\Services\PropertyService::class);
+            $adminUsers = \App\Models\User::latest()->get();
+            $adminProperties = $propertyService->getAllProperties(true);
+            $adminAppointments = \App\Models\Appointment::with(['property', 'user'])->latest()->get();
+
             return view('profile', [
                 'user' => $userData,
                 'stats' => [
-                    'total_properties' => 0,
+                    'total_properties' => count($adminProperties),
                     'total_views' => 0,
-                    'total_appointments' => 0,
+                    'total_appointments' => count($adminAppointments),
                     'total_leads' => 4,
                 ],
                 'myProperties' => collect(),
                 'ownerAppointments' => collect(),
                 'properties' => $favorites,
                 'appointments' => collect(),
+                'adminUsers' => $adminUsers,
+                'adminProperties' => $adminProperties,
+                'adminAppointments' => $adminAppointments,
                 'categories' => \App\Models\Category::all(),
                 'editProperty' => null,
             ]);
