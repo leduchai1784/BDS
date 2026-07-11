@@ -383,16 +383,16 @@
     <!-- MODAL POPUP (Lead Details) -->
     <div 
         x-show="drawerOpen" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
         role="dialog" 
         aria-modal="true"
         x-transition
         x-cloak
     >
-        <!-- Modal Panel Container -->
+        <!-- Modal Panel Container (Moderate Size: max-w-2xl) -->
         <div 
             @click.outside="drawerOpen = false"
-            class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl relative border border-slate-100 max-h-[90vh] flex flex-col overflow-hidden text-left"
+            class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl relative border border-slate-100 max-h-[85vh] flex flex-col overflow-hidden text-left animate-duration-300"
         >
 
                         <!-- Drawer Header -->
