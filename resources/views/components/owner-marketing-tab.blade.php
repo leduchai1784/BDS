@@ -24,6 +24,38 @@
     .wave-bar:nth-child(4) { animation-delay: 0.2s; }
     .wave-bar:nth-child(5) { animation-delay: 0.4s; }
     .wave-bar:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Emerald Theme Colors Fallback */
+    .btn-emerald {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: white !important;
+        border: none !important;
+    }
+    .btn-emerald:hover {
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3) !important;
+    }
+    .text-emerald {
+        color: #10b981 !important;
+    }
+    .text-emerald-dark {
+        color: #059669 !important;
+    }
+    .bg-emerald-light {
+        background-color: #ecfdf5 !important;
+    }
+    .bg-emerald-main {
+        background-color: #10b981 !important;
+    }
+    .badge-emerald {
+        background-color: #ecfdf5 !important;
+        color: #059669 !important;
+        border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    }
+    .badge-primary {
+        background-color: #f0f9ff !important;
+        color: #0077bb !important;
+        border: 1px solid rgba(0, 119, 187, 0.2) !important;
+    }
 </style>
 
 <div 
@@ -445,7 +477,7 @@
                 :class="localTab === 'content_studio' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
                 class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition focus:outline-none cursor-pointer"
             >
-                <i class="fa-solid fa-photo-film mr-1 text-emerald-500"></i> AI Content Studio
+                <i class="fa-solid fa-photo-film mr-1 text-emerald"></i> AI Content Studio
             </button>
             <button 
                 type="button"
@@ -912,7 +944,7 @@
                 <button 
                     type="button" 
                     @click="startStudioGeneration()"
-                    class="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-emerald-500/30 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer active:scale-98"
+                    class="px-6 py-3 btn-emerald text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer active:scale-98"
                 >
                     <i class="fa-solid fa-photo-film text-sm"></i> Tạo nội dung AI Studio
                 </button>
@@ -921,7 +953,7 @@
 
         <!-- Studio Loader -->
         <div x-show="generatingStudio" class="bg-white border border-slate-100 rounded-3xl p-12 shadow-sm text-center space-y-6" x-cloak x-transition>
-            <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-xl relative">
+            <div class="w-16 h-16 rounded-full bg-emerald-light text-emerald-dark flex items-center justify-center mx-auto text-xl relative">
                 <i class="fa-solid fa-photo-film animate-spin"></i>
             </div>
             
@@ -931,9 +963,9 @@
             </div>
 
             <div class="max-w-md mx-auto bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div class="bg-emerald-500 h-full transition-all duration-300" :style="'width: ' + progressStudio + '%'"></div>
+                <div class="bg-emerald-main h-full transition-all duration-300" :style="'width: ' + progressStudio + '%'"></div>
             </div>
-            <span class="inline-block text-[11px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full" x-text="progressStudio + '%'"></span>
+            <span class="inline-block text-[11px] font-black text-emerald-dark bg-emerald-light px-2.5 py-1 rounded-full" x-text="progressStudio + '%'"></span>
         </div>
 
         <!-- Studio Results -->
@@ -941,7 +973,7 @@
             <!-- Top bar -->
             <div class="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-emerald-600 text-base shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-emerald-dark text-base shadow-sm">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
                     <div>
@@ -1097,7 +1129,7 @@
                     <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
                         <div class="pb-3 border-b border-slate-100">
                             <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-image text-emerald-500 text-base"></i> Ảnh Thumbnail AI vẽ
+                                <i class="fa-solid fa-image text-emerald text-base"></i> Ảnh Thumbnail AI vẽ
                             </h3>
                         </div>
 
@@ -1199,7 +1231,7 @@
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <!-- Type badge -->
                                     <span 
-                                        :class="camp.type === 'marketing' ? 'bg-primary-light text-primary border-primary/20' : 'bg-emerald-50 text-emerald-600 border-emerald-500/20'"
+                                        :class="camp.type === 'marketing' ? 'badge-primary' : 'badge-emerald'"
                                         class="inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded-md"
                                         x-text="camp.type === 'marketing' ? 'AI Marketing' : 'Content Studio'"
                                     ></span>
