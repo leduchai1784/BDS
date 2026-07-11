@@ -427,7 +427,53 @@
                     </div>
 
                     <!-- Statistics Cards Grid (Giai đoạn 7) -->
-                    @if(Auth::user()->role === 'owner')
+                    @if(Auth::user()->role === 'admin')
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                        <!-- Stat Item 1 -->
+                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng thành viên</span>
+                                <span class="text-xl font-black text-slate-800">{{ count($adminUsers) }} người</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 2 -->
+                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-hotel"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng tin đăng</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_properties'] }} tin</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 3 -->
+                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng lịch hẹn</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_appointments'] }} cuộc</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 4 -->
+                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-user-group"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng Leads CRM</span>
+                                <span class="text-xl font-black text-slate-800">{{ $stats['total_leads'] }} khách</span>
+                            </div>
+                        </div>
+                    </div>
+                    @elseif(Auth::user()->role === 'owner')
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <!-- Stat Item 1 -->
                         <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
