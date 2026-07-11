@@ -383,7 +383,7 @@
     <!-- SLIDE-OVER DRAWER (Lead Details) -->
     <div 
         x-show="drawerOpen" 
-        class="fixed inset-0 z-50 overflow-hidden" 
+        class="fixed inset-0 z-[100] overflow-hidden" 
         aria-labelledby="slide-over-title" 
         role="dialog" 
         aria-modal="true"
