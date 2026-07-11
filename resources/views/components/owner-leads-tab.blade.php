@@ -403,7 +403,7 @@
                 @click="drawerOpen = false"
             ></div>
 
-            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex w-screen justify-end">
                 <!-- Slide-over panel (720px width) -->
                 <div 
                     x-show="drawerOpen"
@@ -413,7 +413,7 @@
                     x-transition:leave="transform transition ease-in-out duration-300"
                     x-transition:leave-start="translate-x-0 opacity-100"
                     x-transition:leave-end="translate-x-full opacity-90"
-                    class="pointer-events-auto w-screen lg:max-w-[50vw] md:max-w-[50vw] max-w-full animate-duration-300"
+                    class="pointer-events-auto w-full md:w-1/2 animate-duration-300"
                 >
                     <div class="flex h-full flex-col bg-slate-50 shadow-2xl overflow-hidden border-l border-slate-200">
                         
