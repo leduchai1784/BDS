@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "regions": [
+    "sin1"
+  ],
   "builds": [
     {
       "src": "public/index.php",
@@ -50,8 +53,8 @@
     "APP_SERVICES_CACHE": "/tmp/services.php",
     "APP_ROUTES_CACHE": "/tmp/routes.php",
     "VIEW_COMPILED_PATH": "/tmp",
-    "CACHE_DRIVER": "array",
-    "CACHE_STORE": "array",
+    "CACHE_DRIVER": "database",
+    "CACHE_STORE": "database",
     "SESSION_DRIVER": "database",
     "LOG_CHANNEL": "stderr"
   }
