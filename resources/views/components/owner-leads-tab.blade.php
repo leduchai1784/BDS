@@ -138,6 +138,15 @@
             };
             return 'px-2.5 py-1 text-[10px] font-bold rounded-lg border ' + (classes[status] || 'bg-slate-100 text-slate-600');
         },
+        getSourceLabel(source) {
+            const labels = {
+                'all': 'Tất cả',
+                'chatbot': 'AI Chatbot',
+                'web': 'Form Web',
+                'unknown': 'Chưa xác định'
+            };
+            return labels[source] || 'Tất cả';
+        },
         getInitials(name) {
             if (!name) return 'L';
             const parts = name.trim().split(' ');
@@ -235,17 +244,39 @@
         <div class="flex items-center gap-3 self-end md:self-auto flex-wrap">
 
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 relative" x-data="{ open: false }" @click.outside="open = false">
                 <span class="text-[10px] font-bold text-slate-400 uppercase">Nguồn:</span>
-                <select 
-                    x-model="filterSource"
-                    class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-600 focus:border-primary focus:outline-none transition cursor-pointer"
+                <button 
+                    type="button"
+                    @click="open = !open"
+                    class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-600 focus:border-primary focus:outline-none transition cursor-pointer flex items-center gap-2 min-w-[125px] justify-between"
                 >
-                    <option value="all">Tất cả</option>
-                    <option value="chatbot">AI Chatbot</option>
-                    <option value="web">Form Web</option>
-                    <option value="unknown">Chưa xác định</option>
-                </select>
+                    <span x-text="getSourceLabel(filterSource)"></span>
+                    <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                
+                <!-- Custom Dropdown Menu -->
+                <div 
+                    x-show="open"
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute z-30 right-0 top-full mt-1.5 w-44 bg-white border border-slate-100 rounded-2xl shadow-xl py-1 overflow-hidden"
+                    x-cloak
+                >
+                    <template x-for="opt in ['all', 'chatbot', 'web', 'unknown']" :key="opt">
+                        <button 
+                            type="button"
+                            @click="filterSource = opt; open = false"
+                            :class="filterSource === opt ? 'bg-primary/5 text-primary font-bold' : 'text-slate-600 hover:bg-slate-50'"
+                            class="w-full text-left px-4 py-2.5 text-xs font-semibold transition cursor-pointer"
+                            x-text="getSourceLabel(opt)"
+                        ></button>
+                    </template>
+                </div>
             </div>
         </div>
     </div>

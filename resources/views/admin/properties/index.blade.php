@@ -29,30 +29,58 @@
             </div>
 
             <!-- Category Filter -->
-            <div class="sm:col-span-3">
-                <select 
-                    name="category_id" 
-                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition"
+            <div class="sm:col-span-3 relative" x-data="{ open: false, selected: '{{ request('category_id') }}', categories: [
+                @foreach($categories as $cat)
+                    { id: '{{ $cat->id }}', name: '{{ $cat->name }}' },
+                @endforeach
+            ] }" @click.outside="open = false">
+                <input type="hidden" name="category_id" :value="selected">
+                <button 
+                    type="button" 
+                    @click="open = !open"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between"
                 >
-                    <option value="">-- Tất cả danh mục --</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                    @endforeach
-                </select>
+                    <span x-text="selected ? (categories.find(c => c.id == selected)?.name || '-- Tất cả danh mục --') : '-- Tất cả danh mục --'"></span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-450 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                
+                <div 
+                    x-show="open" 
+                    x-cloak
+                    x-transition
+                    class="absolute z-30 left-0 right-0 mt-1.5 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl py-1"
+                >
+                    <button type="button" @click="selected = ''; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">-- Tất cả danh mục --</button>
+                    <template x-for="cat in categories" :key="cat.id">
+                        <button type="button" @click="selected = cat.id; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold" x-text="cat.name"></button>
+                    </template>
+                </div>
             </div>
 
             <!-- Status Filter -->
-            <div class="sm:col-span-2">
-                <select 
-                    name="status" 
-                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition"
+            <div class="sm:col-span-2 relative" x-data="{ open: false, selected: '{{ request('status') }}' }" @click.outside="open = false">
+                <input type="hidden" name="status" :value="selected">
+                <button 
+                    type="button" 
+                    @click="open = !open"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between"
                 >
-                    <option value="">-- Trạng thái --</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
-                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Hiển thị</option>
-                    <option value="hidden" {{ request('status') === 'hidden' ? 'selected' : '' }}>Đang ẩn</option>
-                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Đã từ chối</option>
-                </select>
+                    <span x-text="selected === 'pending' ? 'Chờ duyệt' : (selected === 'approved' ? 'Hiển thị' : (selected === 'hidden' ? 'Đang ẩn' : (selected === 'rejected' ? 'Đã từ chối' : '-- Trạng thái --')))"></span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-450 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                
+                <div 
+                    x-show="open" 
+                    x-cloak
+                    x-transition
+                    class="absolute z-30 left-0 right-0 mt-1.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl py-1 overflow-hidden"
+                >
+                    <button type="button" @click="selected = ''; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">-- Trạng thái --</button>
+                    <button type="button" @click="selected = 'pending'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Chờ duyệt</button>
+                    <button type="button" @click="selected = 'approved'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Hiển thị</button>
+                    <button type="button" @click="selected = 'hidden'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Đang ẩn</button>
+                    <button type="button" @click="selected = 'rejected'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Đã từ chối</button>
+                </div>
             </div>
 
             <!-- Buttons -->

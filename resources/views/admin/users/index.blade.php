@@ -29,28 +29,52 @@
             </div>
 
             <!-- Role Filter -->
-            <div class="sm:col-span-3">
-                <select 
-                    name="role" 
-                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition"
+            <div class="sm:col-span-3 relative" x-data="{ open: false, selected: '{{ request('role') }}' }" @click.outside="open = false">
+                <input type="hidden" name="role" :value="selected">
+                <button 
+                    type="button" 
+                    @click="open = !open"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between"
                 >
-                    <option value="">-- Tất cả vai trò --</option>
-                    <option value="tenant" {{ request('role') === 'tenant' ? 'selected' : '' }}>Khách thuê (tenant)</option>
-                    <option value="owner" {{ request('role') === 'owner' ? 'selected' : '' }}>Chủ nhà (owner)</option>
-                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Quản trị viên (admin)</option>
-                </select>
+                    <span x-text="selected === 'tenant' ? 'Khách thuê (tenant)' : (selected === 'owner' ? 'Chủ nhà (owner)' : (selected === 'admin' ? 'Quản trị viên (admin)' : '-- Tất cả vai trò --'))"></span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-450 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                
+                <div 
+                    x-show="open" 
+                    x-cloak
+                    x-transition
+                    class="absolute z-30 left-0 right-0 mt-1.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl py-1 overflow-hidden"
+                >
+                    <button type="button" @click="selected = ''; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">-- Tất cả vai trò --</button>
+                    <button type="button" @click="selected = 'tenant'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Khách thuê (tenant)</button>
+                    <button type="button" @click="selected = 'owner'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Chủ nhà (owner)</button>
+                    <button type="button" @click="selected = 'admin'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Quản trị viên (admin)</button>
+                </div>
             </div>
 
             <!-- Status Filter -->
-            <div class="sm:col-span-2">
-                <select 
-                    name="status" 
-                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition"
+            <div class="sm:col-span-2 relative" x-data="{ open: false, selected: '{{ request('status') }}' }" @click.outside="open = false">
+                <input type="hidden" name="status" :value="selected">
+                <button 
+                    type="button" 
+                    @click="open = !open"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-primary focus:bg-white dark:focus:bg-slate-900 rounded-xl text-slate-800 dark:text-white text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between"
                 >
-                    <option value="">-- Trạng thái --</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="locked" {{ request('status') === 'locked' ? 'selected' : '' }}>Đang khóa</option>
-                </select>
+                    <span x-text="selected === 'active' ? 'Hoạt động' : (selected === 'locked' ? 'Đang khóa' : '-- Trạng thái --')"></span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-450 transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                
+                <div 
+                    x-show="open" 
+                    x-cloak
+                    x-transition
+                    class="absolute z-30 left-0 right-0 mt-1.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl py-1 overflow-hidden"
+                >
+                    <button type="button" @click="selected = ''; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">-- Trạng thái --</button>
+                    <button type="button" @click="selected = 'active'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Hoạt động</button>
+                    <button type="button" @click="selected = 'locked'; open = false" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer font-bold">Đang khóa</button>
+                </div>
             </div>
 
             <!-- Buttons -->
