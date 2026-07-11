@@ -113,13 +113,6 @@
         activeDetailTab: 'demand',
         filterSource: 'all',
         searchTerm: '',
-        showLeadToast: false,
-        leadToastMsg: '',
-        triggerToast(msg) {
-            this.leadToastMsg = msg;
-            this.showLeadToast = true;
-            setTimeout(() => this.showLeadToast = false, 3000);
-        },
         openLead(lead) {
             this.selectedLead = lead;
             this.drawerOpen = true;
@@ -177,22 +170,6 @@
     }"
     class="space-y-6"
 >
-    <!-- Mini Toast (local to this component) -->
-    <div
-        x-show="showLeadToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed bottom-6 right-6 z-[300] bg-slate-800 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2"
-        x-cloak
-    >
-        <i class="fa-solid fa-circle-check text-emerald-400"></i>
-        <span x-text="leadToastMsg"></span>
-    </div>
-
     <!-- Header -->
     <div class="pb-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -404,11 +381,9 @@
     </div>
 
     <!-- SLIDE-OVER DRAWER (Lead Details) -->
-    <template x-teleport="body">
     <div 
         x-show="drawerOpen" 
-        class="fixed inset-0 overflow-hidden" 
-        style="z-index: 9999;"
+        class="fixed inset-0 z-[100] overflow-hidden" 
         aria-labelledby="slide-over-title" 
         role="dialog" 
         aria-modal="true"
@@ -438,7 +413,7 @@
                     x-transition:leave="transform transition ease-in-out duration-300"
                     x-transition:leave-start="translate-x-0"
                     x-transition:leave-end="translate-x-full"
-                    class="pointer-events-auto w-screen md:w-1/2 animate-duration-300"
+                    class="pointer-events-auto w-screen max-w-md animate-duration-300"
                 >
                     <div class="flex h-full flex-col bg-white shadow-2xl overflow-y-auto border-l border-slate-100">
                         <!-- Drawer Header -->
@@ -460,25 +435,25 @@
                         </div>
 
                         <!-- Drawer Subtabs Navigation -->
-                        <div class="border-b border-slate-150 px-5 flex items-center bg-slate-50/50 flex-shrink-0 overflow-x-auto scrollbar-none whitespace-nowrap gap-1">
+                        <div class="border-b border-slate-150 px-5 flex items-center bg-slate-50/50 flex-shrink-0">
                             <button 
                                 @click="activeDetailTab = 'demand'"
                                 :class="activeDetailTab === 'demand' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
-                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer font-bold flex-shrink-0"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer font-bold"
                             >
                                 Chi tiết & Ghi chú
                             </button>
                             <button 
                                 @click="activeDetailTab = 'chat'"
                                 :class="activeDetailTab === 'chat' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
-                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold flex-shrink-0"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold"
                             >
                                 <i class="fa-solid fa-message text-[10px]"></i> Lịch sử Chat AI
                             </button>
                             <button 
                                 @click="activeDetailTab = 'matching'"
                                 :class="activeDetailTab === 'matching' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
-                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold flex-shrink-0"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold"
                             >
                                 <i class="fa-solid fa-fire text-[10px] text-orange-500"></i> Đối khớp (<span x-text="selectedLead ? selectedLead.match_score + '%' : ''"></span>)
                             </button>
@@ -674,9 +649,8 @@
                             </template>
                         </div>
                     </div>
-                </template>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>

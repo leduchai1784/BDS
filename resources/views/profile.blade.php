@@ -3,26 +3,6 @@
 @section('title', 'Dashboard Quản Lý Thành Viên | BDS Rental')
 
 @section('content')
-<script>
-    window.addEventListener('error', function(e) {
-        let errDiv = document.createElement('div');
-        errDiv.style.position = 'fixed';
-        errDiv.style.top = '10px';
-        errDiv.style.left = '10px';
-        errDiv.style.right = '10px';
-        errDiv.style.zIndex = '999999';
-        errDiv.style.background = '#fee2e2';
-        errDiv.style.border = '2px solid #ef4444';
-        errDiv.style.color = '#991b1b';
-        errDiv.style.padding = '15px';
-        errDiv.style.borderRadius = '10px';
-        errDiv.style.fontFamily = 'monospace';
-        errDiv.style.fontSize = '12px';
-        errDiv.style.whiteSpace = 'pre-wrap';
-        errDiv.innerHTML = '<strong>[JS ERROR]</strong> ' + e.message + '<br>File: ' + e.filename + '<br>Line: ' + e.lineno;
-        document.body.appendChild(errDiv);
-    });
-</script>
 <!-- Dashboard Wrapper with AlpineJS -->
 <div 
     x-data="{ 
@@ -427,53 +407,7 @@
                     </div>
 
                     <!-- Statistics Cards Grid (Giai đoạn 7) -->
-                    @if(Auth::user()->role === 'admin')
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-                        <!-- Stat Item 1 -->
-                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg">
-                                <i class="fa-solid fa-users"></i>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng thành viên</span>
-                                <span class="text-xl font-black text-slate-800">{{ count($adminUsers) }} người</span>
-                            </div>
-                        </div>
-
-                        <!-- Stat Item 2 -->
-                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center text-lg">
-                                <i class="fa-solid fa-hotel"></i>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng tin đăng</span>
-                                <span class="text-xl font-black text-slate-800">{{ $stats['total_properties'] }} tin</span>
-                            </div>
-                        </div>
-
-                        <!-- Stat Item 3 -->
-                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
-                                <i class="fa-solid fa-calendar-check"></i>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng lịch hẹn</span>
-                                <span class="text-xl font-black text-slate-800">{{ $stats['total_appointments'] }} cuộc</span>
-                            </div>
-                        </div>
-
-                        <!-- Stat Item 4 -->
-                        <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
-                                <i class="fa-solid fa-user-group"></i>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tổng Leads CRM</span>
-                                <span class="text-xl font-black text-slate-800">{{ $stats['total_leads'] }} khách</span>
-                            </div>
-                        </div>
-                    </div>
-                    @elseif(Auth::user()->role === 'owner')
+                    @if(Auth::user()->role === 'owner')
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <!-- Stat Item 1 -->
                         <div class="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
