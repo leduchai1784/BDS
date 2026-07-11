@@ -384,7 +384,8 @@
     <template x-teleport="body">
     <div 
         x-show="drawerOpen" 
-        class="fixed inset-0 z-[100] overflow-hidden" 
+        class="fixed inset-0 overflow-hidden" 
+        style="z-index: 9999;"
         aria-labelledby="slide-over-title" 
         role="dialog" 
         aria-modal="true"
@@ -414,7 +415,7 @@
                     x-transition:leave="transform transition ease-in-out duration-300"
                     x-transition:leave-start="translate-x-0"
                     x-transition:leave-end="translate-x-full"
-                    class="pointer-events-auto w-screen max-w-md animate-duration-300"
+                    class="pointer-events-auto w-screen max-w-lg animate-duration-300"
                 >
                     <div class="flex h-full flex-col bg-white shadow-2xl overflow-y-auto border-l border-slate-100">
                         <!-- Drawer Header -->
@@ -436,25 +437,25 @@
                         </div>
 
                         <!-- Drawer Subtabs Navigation -->
-                        <div class="border-b border-slate-150 px-5 flex items-center bg-slate-50/50 flex-shrink-0">
+                        <div class="border-b border-slate-150 px-5 flex items-center bg-slate-50/50 flex-shrink-0 overflow-x-auto scrollbar-none whitespace-nowrap gap-1">
                             <button 
                                 @click="activeDetailTab = 'demand'"
                                 :class="activeDetailTab === 'demand' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
-                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer font-bold"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer font-bold flex-shrink-0"
                             >
                                 Chi tiết & Ghi chú
                             </button>
                             <button 
                                 @click="activeDetailTab = 'chat'"
                                 :class="activeDetailTab === 'chat' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
-                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold flex-shrink-0"
                             >
                                 <i class="fa-solid fa-message text-[10px]"></i> Lịch sử Chat AI
                             </button>
                             <button 
                                 @click="activeDetailTab = 'matching'"
                                 :class="activeDetailTab === 'matching' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500'"
-                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold"
+                                class="px-4 py-3 border-b-2 text-xs transition focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold flex-shrink-0"
                             >
                                 <i class="fa-solid fa-fire text-[10px] text-orange-500"></i> Đối khớp (<span x-text="selectedLead ? selectedLead.match_score + '%' : ''"></span>)
                             </button>
