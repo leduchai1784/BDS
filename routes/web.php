@@ -46,6 +46,17 @@ Route::middleware(['auth', 'owner'])->group(function () {
     Route::post('/appointments/{id}/approve', [\App\Http\Controllers\Owner\AppointmentController::class, 'approve'])->name('appointments.approve');
     Route::post('/appointments/{id}/reject', [\App\Http\Controllers\Owner\AppointmentController::class, 'reject'])->name('appointments.reject');
     Route::post('/appointments/{id}/complete', [\App\Http\Controllers\Owner\AppointmentController::class, 'complete'])->name('appointments.complete');
+
+    // AI Marketing & Content Studio
+    Route::post('/owner/ai/marketing/facebook', [\App\Http\Controllers\Owner\AiMarketingController::class, 'generateFacebook'])->name('owner.ai.marketing.facebook');
+    Route::post('/owner/ai/marketing/tiktok', [\App\Http\Controllers\Owner\AiMarketingController::class, 'generateTiktok'])->name('owner.ai.marketing.tiktok');
+    Route::post('/owner/ai/marketing/seo', [\App\Http\Controllers\Owner\AiMarketingController::class, 'generateSeo'])->name('owner.ai.marketing.seo');
+    Route::post('/owner/ai/marketing/email-sms', [\App\Http\Controllers\Owner\AiMarketingController::class, 'generateEmailSms'])->name('owner.ai.marketing.email-sms');
+    Route::post('/owner/ai/content-studio/generate', [\App\Http\Controllers\Owner\AiMarketingController::class, 'generateContentStudio'])->name('owner.ai.content-studio.generate');
+    
+    Route::post('/owner/ai/campaign/save', [\App\Http\Controllers\Owner\AiMarketingController::class, 'saveCampaign'])->name('owner.ai.campaign.save');
+    Route::get('/owner/ai/campaigns/history', [\App\Http\Controllers\Owner\AiMarketingController::class, 'getHistory'])->name('owner.ai.campaigns.history');
+    Route::delete('/owner/ai/campaign/{id}', [\App\Http\Controllers\Owner\AiMarketingController::class, 'deleteCampaign'])->name('owner.ai.campaign.delete');
 });
 
 // Route dành cho Admin (Bảo vệ bởi auth và admin middleware)
