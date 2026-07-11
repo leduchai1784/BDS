@@ -605,21 +605,21 @@
                         :class="activeResultTab === 'facebook' ? 'bg-primary-light text-primary font-extrabold' : 'text-slate-600 hover:bg-slate-50'"
                         class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition cursor-pointer text-left whitespace-nowrap lg:w-full focus:outline-none"
                     >
-                        <i class="fa-brands fa-facebook text-sm text-blue-600"></i> Facebook (20 bài)
+                        <i class="fa-brands fa-facebook text-sm text-blue-600"></i> Facebook
                     </button>
                     <button 
                         @click="activeResultTab = 'tiktok'"
                         :class="activeResultTab === 'tiktok' ? 'bg-primary-light text-primary font-extrabold' : 'text-slate-600 hover:bg-slate-50'"
                         class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition cursor-pointer text-left whitespace-nowrap lg:w-full focus:outline-none"
                     >
-                        <i class="fa-brands fa-tiktok text-sm text-slate-800"></i> TikTok/Shorts (10 kịch bản)
+                        <i class="fa-brands fa-tiktok text-sm text-slate-800"></i> TikTok/Shorts
                     </button>
                     <button 
                         @click="activeResultTab = 'seo'"
                         :class="activeResultTab === 'seo' ? 'bg-primary-light text-primary font-extrabold' : 'text-slate-600 hover:bg-slate-50'"
                         class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition cursor-pointer text-left whitespace-nowrap lg:w-full focus:outline-none"
                     >
-                        <i class="fa-solid fa-file-word text-sm text-sky-500"></i> SEO Articles (5 bài)
+                        <i class="fa-solid fa-file-word text-sm text-sky-500"></i> SEO Articles
                     </button>
                     <button 
                         @click="activeResultTab = 'email'"
