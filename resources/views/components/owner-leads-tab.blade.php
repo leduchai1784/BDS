@@ -416,8 +416,9 @@
                     class="pointer-events-auto w-full md:w-1/2 animate-duration-300"
                 >
                     <div class="flex h-full flex-col bg-slate-50 shadow-2xl overflow-hidden border-l border-slate-200">
-                        
-                        <!-- HEADER (Sticky, Premium Design) -->
+                        <template x-if="selectedLead">
+                            <div class="flex h-full flex-col overflow-hidden relative">
+                                <!-- HEADER (Sticky, Premium Design) -->
                         <div class="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm flex-shrink-0">
                             <div class="px-6 py-5 flex items-start justify-between gap-4">
                                 <div class="flex items-center gap-4">
@@ -1028,6 +1029,8 @@
                                 </button>
                             </div>
                         </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
