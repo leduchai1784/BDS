@@ -380,42 +380,21 @@
         </template>
     </div>
 
-    <!-- SLIDE-OVER DRAWER (Lead Details) -->
+    <!-- MODAL POPUP (Lead Details) -->
     <div 
         x-show="drawerOpen" 
-        class="fixed inset-0 z-[100] overflow-hidden" 
-        aria-labelledby="slide-over-title" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" 
         role="dialog" 
         aria-modal="true"
+        x-transition
         x-cloak
     >
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- Background Backdrop overlay -->
-            <div 
-                x-show="drawerOpen"
-                x-transition:enter="ease-in-out duration-350"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="ease-in-out duration-300"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
-                @click="drawerOpen = false"
-            ></div>
+        <!-- Modal Panel Container -->
+        <div 
+            @click.outside="drawerOpen = false"
+            class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl relative border border-slate-100 max-h-[90vh] flex flex-col overflow-hidden text-left"
+        >
 
-            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-                <!-- Slide-over panel -->
-                <div 
-                    x-show="drawerOpen"
-                    x-transition:enter="transform transition ease-in-out duration-350"
-                    x-transition:enter-start="translate-x-full"
-                    x-transition:enter-end="translate-x-0"
-                    x-transition:leave="transform transition ease-in-out duration-300"
-                    x-transition:leave-start="translate-x-0"
-                    x-transition:leave-end="translate-x-full"
-                    class="pointer-events-auto w-screen max-w-md animate-duration-300"
-                >
-                    <div class="flex h-full flex-col bg-white shadow-2xl overflow-y-auto border-l border-slate-100">
                         <!-- Drawer Header -->
                         <div class="px-5 py-5 bg-gradient-to-r from-primary to-primary-hover text-white flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -465,44 +444,46 @@
                                 <div>
                                     <!-- TAB 1: Details & Notes -->
                                     <div x-show="activeDetailTab === 'demand'" class="space-y-6">
-                                        <!-- Contact Info Card -->
-                                        <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
-                                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin liên hệ</h4>
-                                            <div class="space-y-2">
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Họ tên:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.name"></span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Số điện thoại:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.phone || 'Chưa cung cấp'"></span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Email:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.email || 'Chưa cung cấp'"></span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Zalo:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.zalo || 'Chưa cung cấp'"></span>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <!-- Contact Info Card -->
+                                            <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
+                                                <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin liên hệ</h4>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Họ tên:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.name"></span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Số điện thoại:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.phone || 'Chưa cung cấp'"></span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Email:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.email || 'Chưa cung cấp'"></span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Zalo:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.zalo || 'Chưa cung cấp'"></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <!-- Job & Company Card -->
-                                        <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
-                                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin công việc</h4>
-                                            <div class="space-y-2">
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Công ty:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.company || 'Chưa cung cấp'"></span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Chức vụ:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.position || 'Chưa cung cấp'"></span>
-                                                </div>
-                                                <div class="flex justify-between">
-                                                    <span class="text-slate-400 font-semibold">Quy mô công ty:</span>
-                                                    <span class="font-bold text-slate-700" x-text="selectedLead.comsize || 'Chưa cung cấp'"></span>
+                                            <!-- Job & Company Card -->
+                                            <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3 text-xs">
+                                                <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider border-b border-slate-200 pb-2">Thông tin công việc</h4>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Công ty:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.company || 'Chưa cung cấp'"></span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Chức vụ:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.position || 'Chưa cung cấp'"></span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-slate-400 font-semibold">Quy mô công ty:</span>
+                                                        <span class="font-bold text-slate-700" x-text="selectedLead.comsize || 'Chưa cung cấp'"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -651,6 +632,3 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
