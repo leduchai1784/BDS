@@ -3,6 +3,26 @@
 @section('title', 'Dashboard Quản Lý Thành Viên | BDS Rental')
 
 @section('content')
+<script>
+    window.addEventListener('error', function(e) {
+        let errDiv = document.createElement('div');
+        errDiv.style.position = 'fixed';
+        errDiv.style.top = '10px';
+        errDiv.style.left = '10px';
+        errDiv.style.right = '10px';
+        errDiv.style.zIndex = '999999';
+        errDiv.style.background = '#fee2e2';
+        errDiv.style.border = '2px solid #ef4444';
+        errDiv.style.color = '#991b1b';
+        errDiv.style.padding = '15px';
+        errDiv.style.borderRadius = '10px';
+        errDiv.style.fontFamily = 'monospace';
+        errDiv.style.fontSize = '12px';
+        errDiv.style.whiteSpace = 'pre-wrap';
+        errDiv.innerHTML = '<strong>[JS ERROR]</strong> ' + e.message + '<br>File: ' + e.filename + '<br>Line: ' + e.lineno;
+        document.body.appendChild(errDiv);
+    });
+</script>
 <!-- Dashboard Wrapper with AlpineJS -->
 <div 
     x-data="{ 
