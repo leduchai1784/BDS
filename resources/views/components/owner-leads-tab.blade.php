@@ -381,6 +381,7 @@
     </div>
 
     <!-- SLIDE-OVER DRAWER (Lead Details) -->
+    <template x-teleport="body">
     <div 
         x-show="drawerOpen" 
         class="fixed inset-0 z-[100] overflow-hidden" 
@@ -654,3 +655,4 @@
         </div>
     </div>
 </div>
+</template>
