@@ -113,6 +113,13 @@
         activeDetailTab: 'demand',
         filterSource: 'all',
         searchTerm: '',
+        showLeadToast: false,
+        leadToastMsg: '',
+        triggerToast(msg) {
+            this.leadToastMsg = msg;
+            this.showLeadToast = true;
+            setTimeout(() => this.showLeadToast = false, 3000);
+        },
         openLead(lead) {
             this.selectedLead = lead;
             this.drawerOpen = true;
@@ -170,6 +177,22 @@
     }"
     class="space-y-6"
 >
+    <!-- Mini Toast (local to this component) -->
+    <div
+        x-show="showLeadToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed bottom-6 right-6 z-[300] bg-slate-800 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2"
+        x-cloak
+    >
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span x-text="leadToastMsg"></span>
+    </div>
+
     <!-- Header -->
     <div class="pb-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -651,9 +674,9 @@
                             </template>
                         </div>
                     </div>
-                </div>
+                </template>
             </div>
         </div>
     </div>
 </div>
-</template>
+</div>
