@@ -415,7 +415,7 @@
                     x-transition:leave="transform transition ease-in-out duration-300"
                     x-transition:leave-start="translate-x-0"
                     x-transition:leave-end="translate-x-full"
-                    class="pointer-events-auto w-screen lg:max-w-[50vw] md:max-w-[50vw] max-w-full animate-duration-300"
+                    class="pointer-events-auto w-screen md:w-1/2 animate-duration-300"
                 >
                     <div class="flex h-full flex-col bg-white shadow-2xl overflow-y-auto border-l border-slate-100">
                         <!-- Drawer Header -->
