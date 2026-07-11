@@ -413,7 +413,7 @@
                     x-transition:leave="transform transition ease-in-out duration-300"
                     x-transition:leave-start="translate-x-0 opacity-100"
                     x-transition:leave-end="translate-x-full opacity-90"
-                    class="pointer-events-auto w-screen max-w-[720px]"
+                    class="pointer-events-auto w-screen max-w-[550px]"
                 >
                     <div class="flex h-full flex-col bg-slate-50 shadow-2xl overflow-hidden border-l border-slate-200">
                         
@@ -507,39 +507,39 @@
                             </div>
 
                             <!-- STICKY SUBTABS NAVIGATION -->
-                            <div class="border-t border-slate-250 px-6 flex bg-slate-50 flex-shrink-0">
+                            <div class="border-t border-slate-200 px-4 flex bg-slate-50 flex-shrink-0 overflow-x-auto scrollbar-none gap-1">
                                 <button 
                                     @click="activeDetailTab = 'info'"
                                     :class="activeDetailTab === 'info' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
-                                    class="px-4 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-2 font-bold"
+                                    class="px-3 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold whitespace-nowrap flex-shrink-0"
                                 >
                                     <i class="fa-solid fa-circle-info text-[11px]"></i> Thông tin
                                 </button>
                                 <button 
                                     @click="activeDetailTab = 'timeline'"
                                     :class="activeDetailTab === 'timeline' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
-                                    class="px-4 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-2 font-bold"
+                                    class="px-3 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold whitespace-nowrap flex-shrink-0"
                                 >
                                     <i class="fa-solid fa-clock-rotate-left text-[11px]"></i> Timeline
                                 </button>
                                 <button 
                                     @click="activeDetailTab = 'ai'"
                                     :class="activeDetailTab === 'ai' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
-                                    class="px-4 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-2 font-bold"
+                                    class="px-3 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold whitespace-nowrap flex-shrink-0"
                                 >
                                     <i class="fa-solid fa-robot text-[11px]"></i> Trợ lý AI
                                 </button>
                                 <button 
                                     @click="activeDetailTab = 'appointments'"
                                     :class="activeDetailTab === 'appointments' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
-                                    class="px-4 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-2 font-bold"
+                                    class="px-3 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold whitespace-nowrap flex-shrink-0"
                                 >
                                     <i class="fa-solid fa-calendar-check text-[11px]"></i> Lịch hẹn
                                 </button>
                                 <button 
                                     @click="activeDetailTab = 'documents'"
                                     :class="activeDetailTab === 'documents' ? 'border-blue-600 text-blue-600 font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-800'"
-                                    class="px-4 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-2 font-bold"
+                                    class="px-3 py-3 border-b-2 text-xs transition-all focus:outline-none cursor-pointer flex items-center gap-1.5 font-bold whitespace-nowrap flex-shrink-0"
                                 >
                                     <i class="fa-solid fa-folder-open text-[11px]"></i> Tài liệu
                                 </button>
