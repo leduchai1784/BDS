@@ -774,11 +774,13 @@ class ProfileController extends Controller
                         }
                         
                         // Map source
-                        $source = 'chatbot';
+                        $source = 'unknown';
                         if (isset($acf['source']) && is_array($acf['source'])) {
                             $slug = $acf['source']['slug'] ?? '';
                             if ($slug === 'website') {
                                 $source = 'web';
+                            } elseif ($slug === 'chatbot') {
+                                $source = 'chatbot';
                             }
                         }
                         

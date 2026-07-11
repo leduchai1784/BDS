@@ -244,6 +244,7 @@
                     <option value="all">Tất cả</option>
                     <option value="chatbot">AI Chatbot</option>
                     <option value="web">Form Web</option>
+                    <option value="unknown">Chưa xác định</option>
                 </select>
             </div>
         </div>
@@ -318,6 +319,11 @@
                                     <template x-if="lead.source === 'web'">
                                         <span class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
                                             <i class="fa-solid fa-globe text-[9px]"></i> Web Form
+                                        </span>
+                                    </template>
+                                    <template x-if="lead.source !== 'chatbot' && lead.source !== 'web'">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">
+                                            <i class="fa-solid fa-circle-question text-[9px]"></i> Chưa xác định
                                         </span>
                                     </template>
                                 </td>
