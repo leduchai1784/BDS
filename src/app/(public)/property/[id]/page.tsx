@@ -4,20 +4,10 @@ import ImageGallery from '@/components/property/ImageGallery'
 import BookingForm from '@/components/appointment/BookingForm'
 import PropertyCard from '@/components/property/PropertyCard'
 import Link from 'next/link'
-import nextDynamic from 'next/dynamic'
+import DetailMapWrapper from '@/components/property/DetailMapWrapper'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
-
-// Dynamically import DetailMap client component to bypass SSR
-const DetailMap = nextDynamic(() => import('@/components/property/DetailMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[250px] sm:h-[320px] bg-slate-100 flex items-center justify-center rounded-2xl border border-slate-200">
-      <span className="text-xs text-slate-500 font-bold">Đang tải bản đồ vị trí...</span>
-    </div>
-  )
-})
 
 interface PropertyDetailPageProps {
   params: Promise<{ id: string }>
@@ -396,7 +386,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                   <i className="fa-solid fa-map-location-dot text-primary"></i>
                   <span>Bản đồ vị trí</span>
                 </h3>
-                <DetailMap 
+                <DetailMapWrapper 
                   latitude={property.latitude} 
                   longitude={property.longitude} 
                   title={property.title} 

@@ -19,12 +19,13 @@ export default function BookingForm({
   agentName
 }: BookingFormProps) {
   const { data: session, status } = useSession()
+  const user = session?.user as any
   const router = useRouter()
 
   // Form states
-  const [name, setName] = useState(session?.user?.name || '')
-  const [phone, setPhone] = useState(session?.user?.phone || '')
-  const [email, setEmail] = useState(session?.user?.email || '')
+  const [name, setName] = useState(user?.name || '')
+  const [phone, setPhone] = useState(user?.phone || '')
+  const [email, setEmail] = useState(user?.email || '')
   
   const todayString = new Date().toLocaleDateString('en-CA') // YYYY-MM-DD format
   const [date, setDate] = useState('')
@@ -47,9 +48,9 @@ export default function BookingForm({
     setTime('')
     setMessage('')
     setErrorMessage('')
-    setName(session?.user?.name || '')
-    setPhone(session?.user?.phone || '')
-    setEmail(session?.user?.email || '')
+    setName(user?.name || '')
+    setPhone(user?.phone || '')
+    setEmail(user?.email || '')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

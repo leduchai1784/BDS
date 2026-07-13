@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { randomUUID } from 'crypto'
 
 function slugify(text: string): string {
   return text
@@ -31,11 +32,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    if (session.user.role !== 'owner') {
+    const user = session.user as any
+
+    if (user.role !== 'owner') {
       return NextResponse.json({ error: 'Chỉ đối tác chủ nhà mới được đăng tin.' }, { status: 403 })
     }
 
-    const userId = Number(session.user.id)
+    const userId = Number(user.id)
     const body = await req.json()
 
     const {
@@ -99,7 +102,7 @@ export async function POST(req: Request) {
         city,
         latitude: Number(latitude),
         longitude: Number(longitude),
-        phone: session.user.phone || '0977.758.217',
+        phone: user.phone || '0977.758.217',
         status: 'approved', // auto-approve for now
         direction: direction || null,
         furniture: furniture || null,
@@ -118,6 +121,7 @@ export async function POST(req: Request) {
     
     // Primary cover
     imagesData.push({
+      id: randomUUID(),
       propertyId: property.id,
       imagePath: image_url,
       isPrimary: true
@@ -128,6 +132,7 @@ export async function POST(req: Request) {
       for (const url of gallery_urls) {
         if (url) {
           imagesData.push({
+            id: randomUUID(),
             propertyId: property.id,
             imagePath: url,
             isPrimary: false

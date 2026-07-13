@@ -158,7 +158,7 @@ Nếu không tìm thấy bất động sản nào phù hợp, hãy trả lời l
 
     // 7. Extract XML recommended IDs from reply
     let recommendedIds: string[] = []
-    const xmlRegex = /<recommendations>\[(.*?)\]<\/recommendations>/s
+    const xmlRegex = /<recommendations>\[([\s\S]*?)\]<\/recommendations>/
     const matches = replyText.match(xmlRegex)
     if (matches) {
       const idsString = matches[1]

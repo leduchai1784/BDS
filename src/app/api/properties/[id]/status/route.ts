@@ -29,7 +29,7 @@ export async function POST(
       return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
-    if (property.ownerId !== userId) {
+    if (Number(property.ownerId) !== userId) {
       return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
     }
 

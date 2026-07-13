@@ -36,17 +36,18 @@ interface Province {
 
 export default function PropertyCreatePage() {
   const { data: session, status } = useSession()
+  const user = session?.user as any
   const router = useRouter()
 
   // Redirect if not authenticated or not owner
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/property/create')
-    } else if (status === 'authenticated' && session?.user?.role !== 'owner') {
+    } else if (status === 'authenticated' && user?.role !== 'owner') {
       toast.error('Chỉ dành cho Đối tác Chủ nhà. Vui lòng nâng cấp tài khoản trước.')
       router.push('/profile?tab=register_owner')
     }
-  }, [status, session, router])
+  }, [status, user, router])
 
   // Form fields states
   const [purpose, setPurpose] = useState<'rent' | 'sale'>('rent')
@@ -299,7 +300,7 @@ export default function PropertyCreatePage() {
 
               {/* Property Type Selector */}
               <div className="space-y-1">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình nhà đất <span class="text-red-500">*</span></label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình nhà đất <span className="text-red-500">*</span></label>
                 <select 
                   value={propertyType}
                   onChange={(e) => setPropertyType(e.target.value)}
@@ -672,7 +673,7 @@ export default function PropertyCreatePage() {
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại liên hệ <span className="text-red-500">*</span></label>
                   <input 
                     type="text" 
-                    defaultValue={session?.user?.phone || ''}
+                    defaultValue={user?.phone || ''}
                     required 
                     placeholder="Số điện thoại của bạn..." 
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
