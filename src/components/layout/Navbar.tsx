@@ -116,27 +116,29 @@ export default function Navbar() {
               </Link>
               
               {rentDropdownOpen && (
-                <div className="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left animate-dropdown">
-                  <Link 
-                    href="/listings?purpose=rent" 
-                    className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap ${
-                      pathname === '/listings' && pathname.includes('purpose=rent') 
-                        ? 'bg-slate-100 text-primary' 
-                        : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
-                    }`}
-                  >
-                    Cho thuê
-                  </Link>
-                  <Link 
-                    href="/listings?purpose=sale" 
-                    className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap ${
-                      pathname === '/listings' && pathname.includes('purpose=sale') 
-                        ? 'bg-slate-100 text-primary' 
-                        : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
-                    }`}
-                  >
-                    Mua bán
-                  </Link>
+                <div className="absolute left-0 top-full pt-2 w-48 z-50 animate-dropdown">
+                  <div className="rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 text-left">
+                    <Link 
+                      href="/listings?purpose=rent" 
+                      className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap ${
+                        pathname === '/listings' && pathname.includes('purpose=rent') 
+                          ? 'bg-slate-100 text-primary' 
+                          : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
+                      }`}
+                    >
+                      Cho thuê
+                    </Link>
+                    <Link 
+                      href="/listings?purpose=sale" 
+                      className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap ${
+                        pathname === '/listings' && pathname.includes('purpose=sale') 
+                          ? 'bg-slate-100 text-primary' 
+                          : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
+                      }`}
+                    >
+                      Mua bán
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
@@ -164,23 +166,25 @@ export default function Navbar() {
               </Link>
               
               {partnerDropdownOpen && (
-                <div className="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left animate-dropdown">
-                  <Link 
-                    href="/agents" 
-                    className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap ${
-                      pathname === '/agents' ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
-                    }`}
-                  >
-                    Nhà môi giới
-                  </Link>
-                  <Link 
-                    href="/agents?type=company" 
-                    className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap ${
-                      pathname.includes('type=company') ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
-                    }`}
-                  >
-                    Doanh nghiệp
-                  </Link>
+                <div className="absolute left-0 top-full pt-2 w-48 z-50 animate-dropdown">
+                  <div className="rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 text-left">
+                    <Link 
+                      href="/agents" 
+                      className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap ${
+                        pathname === '/agents' ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
+                      }`}
+                    >
+                      Nhà môi giới
+                    </Link>
+                    <Link 
+                      href="/agents?type=company" 
+                      className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 mt-0.5 whitespace-nowrap ${
+                        pathname.includes('type=company') ? 'bg-slate-100 text-primary' : 'text-slate-800 hover:bg-slate-100 hover:text-primary'
+                      }`}
+                    >
+                      Doanh nghiệp
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
