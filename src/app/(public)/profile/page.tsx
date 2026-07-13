@@ -113,6 +113,7 @@ export default async function ProfilePage() {
 
   // Fetch unique properties for tenant appointments
   const tenantPropIds = Array.from(new Set(dbTenantAppointments.map(a => a.propertyId)))
+    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
   const tenantPropertiesList = await prisma.property.findMany({
     where: { id: { in: tenantPropIds } }
   })
@@ -174,6 +175,7 @@ export default async function ProfilePage() {
   })
 
   const wishlistPropIds = dbWishlist.map(w => w.propertyId)
+    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
   const wishlistPropertiesRaw = await prisma.property.findMany({
     where: {
       id: { in: wishlistPropIds },

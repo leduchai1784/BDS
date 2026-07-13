@@ -34,6 +34,7 @@ export default async function AdminUserDetailPage({ params }: AdminUserDetailPag
   })
 
   const appPropIds = appointmentsList.map(a => a.propertyId)
+    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
   const propertiesForApps = await prisma.property.findMany({
     where: { id: { in: appPropIds } }
   })

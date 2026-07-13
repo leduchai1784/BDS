@@ -46,6 +46,7 @@ export default async function AdminAppointmentsPage({ searchParams }: AdminAppoi
 
   // Fetch unique properties to join in JS memory
   const matchedPropIds = Array.from(new Set(dbAppointments.map(a => a.propertyId)))
+    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
   const propertiesList = await prisma.property.findMany({
     where: { id: { in: matchedPropIds } }
   })

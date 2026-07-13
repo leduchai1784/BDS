@@ -22,6 +22,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
     }
 
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(property_id)
+    if (!isUuid) {
+      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    }
+
     // Find property and owner details
     const property = await prisma.property.findUnique({
       where: { id: property_id },

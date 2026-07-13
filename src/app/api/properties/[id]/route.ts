@@ -39,8 +39,8 @@ export async function GET(
     const resolvedParams = await params
     const propertyId = resolvedParams.id
 
-    if (!propertyId) {
-      return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
+    if (!propertyId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)) {
+      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
     const property = await prisma.property.findUnique({
@@ -101,8 +101,8 @@ export async function PUT(
     const resolvedParams = await params
     const propertyId = resolvedParams.id
 
-    if (!propertyId) {
-      return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
+    if (!propertyId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)) {
+      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
     const property = await prisma.property.findUnique({
@@ -249,8 +249,8 @@ export async function DELETE(
     const resolvedParams = await params
     const propertyId = resolvedParams.id
 
-    if (!propertyId) {
-      return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
+    if (!propertyId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)) {
+      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
     const property = await prisma.property.findUnique({
