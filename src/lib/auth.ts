@@ -1,4 +1,5 @@
 import NextAuth, { DefaultSession } from 'next-auth'
+import { authConfig } from './auth.config'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import { loginNks, getNksUserInfo, mapNksUserToLocal } from './nks'
@@ -17,6 +18,7 @@ declare module 'next-auth' {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -35,7 +37,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // ┌── BƯỚC 1: Thử NKS Auth API
         const nksLogin = await loginNks(email, password)
         if (nksLogin.success && nksLogin.token) {
-          // Lấy profile chi tiết từ NKS
           const nksUserInfo = await getNksUserInfo(nksLogin.token)
           const fullNksUser = nksUserInfo.success && nksUserInfo.data 
             ? { ...nksLogin.user, ...nksUserInfo.data }
@@ -43,20 +44,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const mappedData = mapNksUserToLocal(fullNksUser, nksLogin.token)
 
-          // Tìm user cục bộ bằng email
           let localUser = await prisma.user.findUnique({ where: { email } })
 
           if (localUser) {
-            // Cập nhật thông tin từ NKS (giữ nguyên role và các trường cục bộ quan trọng)
             localUser = await prisma.user.update({
               where: { email },
               data: {
                 ...mappedData,
-                password: await bcrypt.hash(password, 12), // Cập nhật hash pass local
+                password: await bcrypt.hash(password, 12),
               }
             })
           } else {
-            // Tạo mới user local
             localUser = await prisma.user.create({
               data: {
                 ...mappedData,
@@ -105,28 +103,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
     })
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role
-        token.id = user.id
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string
-        session.user.id = token.id as string
-      }
-      return session
-    }
-  },
-  pages: {
-    signIn: '/login',
-    error: '/login'
-  },
-  session: {
-    strategy: 'jwt'
-  }
+  ]
 })
