@@ -128,7 +128,7 @@ Nếu không tìm thấy bất động sản nào phù hợp, hãy trả lời l
     })
 
     // 5. Format conversation history
-    const geminiHistory = []
+    let geminiHistory: any[] = []
     if (history && Array.isArray(history)) {
       for (const turn of history.slice(-10)) { // limit history length
         geminiHistory.push({
@@ -136,6 +136,14 @@ Nếu không tìm thấy bất động sản nào phù hợp, hãy trả lời l
           parts: [{ text: turn.content }]
         })
       }
+    }
+
+    // Filter out leading model messages to comply with Gemini SDK requirement (first message must be 'user')
+    const firstUserIdx = geminiHistory.findIndex(h => h.role === 'user')
+    if (firstUserIdx !== -1) {
+      geminiHistory = geminiHistory.slice(firstUserIdx)
+    } else {
+      geminiHistory = []
     }
 
     geminiHistory.push({
