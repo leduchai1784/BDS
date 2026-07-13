@@ -225,7 +225,7 @@ export default function BookingForm({
               
               {/* Dropdown Panel */}
               {isTimeDropdownOpen && (
-                <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 max-h-[180px] overflow-y-auto">
+                <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-150 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 p-1 max-h-[180px] overflow-y-auto custom-scrollbar">
                   <div className="space-y-0.5">
                     {timeSlots.map(t => (
                       <button 

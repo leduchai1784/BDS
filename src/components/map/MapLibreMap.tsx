@@ -11,6 +11,25 @@ interface MapLibreMapProps {
   hoveredId: string | null
 }
 
+function updateMarkerStyle(
+  el: HTMLElement,
+  isActive: boolean,
+  isHovered: boolean,
+  priceLabel: string
+) {
+  el.style.whiteSpace = 'nowrap'
+  if (isActive) {
+    el.className = 'custom-price-marker bg-white text-slate-800 text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-cyan-600 cursor-pointer flex items-center justify-center transition duration-200 scale-110 z-30'
+    el.innerHTML = `<span class="flex items-center text-xs font-black"><i class="fa-solid fa-circle-check text-emerald-500 mr-1 text-[13px]"></i>${priceLabel}</span>`
+  } else if (isHovered) {
+    el.className = 'custom-price-marker text-white text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-white cursor-pointer flex items-center justify-center transition duration-200 bg-cyan-700 scale-105 z-20'
+    el.innerHTML = priceLabel
+  } else {
+    el.className = 'custom-price-marker text-white text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-white cursor-pointer flex items-center justify-center transition duration-200 bg-cyan-600 hover:bg-cyan-700'
+    el.innerHTML = priceLabel
+  }
+}
+
 export default function MapLibreMap({
   properties,
   activeId,
@@ -75,11 +94,7 @@ export default function MapLibreMap({
       // Custom marker container
       const el = document.createElement('div')
       el.id = `map-marker-${p.id}`
-      el.className = `custom-price-marker text-white text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-white cursor-pointer flex items-center justify-center transition duration-200 ${
-        activeId === p.id ? 'bg-red-500 scale-110 z-30' : 'bg-cyan-600 hover:bg-cyan-700'
-      }`
-      el.style.whiteSpace = 'nowrap'
-      el.innerHTML = p.priceLabel
+      updateMarkerStyle(el, activeId === p.id, false, p.priceLabel)
 
       const imgUrl = p.imagePath || '/images/apartment_placeholder.png'
 
@@ -153,15 +168,12 @@ export default function MapLibreMap({
       const isActive = activeId === id
       const isHovered = hoveredId === id
 
-      el.className = `custom-price-marker text-white text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-white cursor-pointer flex items-center justify-center transition duration-200 ${
-        isActive 
-          ? 'bg-red-500 scale-110 z-30' 
-          : isHovered 
-            ? 'bg-red-400 scale-105 z-20' 
-            : 'bg-cyan-600 hover:bg-cyan-700'
-      }`
+      const property = properties.find(p => p.id === id)
+      const priceLabel = property ? property.priceLabel : ''
+
+      updateMarkerStyle(el, isActive, isHovered, priceLabel)
     })
-  }, [hoveredId, activeId])
+  }, [hoveredId, activeId, properties])
 
   // 4. Center map and open popup on Active ID change (from sidebar click)
   useEffect(() => {

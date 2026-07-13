@@ -164,6 +164,26 @@ export function buildPrismaFilters(filters: Record<string, any>): Prisma.Propert
     }
   }
 
+  // 13. Direction
+  const direction = filters.direction
+  if (direction && typeof direction === 'string' && direction.trim() !== '') {
+    let vnDirection = ''
+    switch (direction.trim().toLowerCase()) {
+      case 'east': vnDirection = 'Đông'; break
+      case 'west': vnDirection = 'Tây'; break
+      case 'south': vnDirection = 'Nam'; break
+      case 'north': vnDirection = 'Bắc'; break
+      case 'southeast': vnDirection = 'Đông Nam'; break
+      case 'southwest': vnDirection = 'Tây Nam'; break
+      case 'northeast': vnDirection = 'Đông Bắc'; break
+      case 'northwest': vnDirection = 'Tây Bắc'; break
+      default: vnDirection = direction.trim()
+    }
+    if (vnDirection) {
+      where.direction = { contains: vnDirection, mode: 'insensitive' }
+    }
+  }
+
   return where
 }
 

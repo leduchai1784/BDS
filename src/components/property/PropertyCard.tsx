@@ -230,7 +230,7 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
         {/* 4. Địa chỉ (Address) */}
         <div className="flex items-center text-slate-500 text-xs font-semibold mb-3">
           <i className="fa-solid fa-location-dot text-slate-400 mr-2 text-base"></i>
-          <span className="truncate">{property.district}, {property.city}</span>
+          <span className="truncate">{property.address || `${property.district}, ${property.city}`}</span>
         </div>
 
         {/* 5. Thông tin chi tiết thu gọn (Property Specs) */}

@@ -32,6 +32,7 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   const bedrooms = typeof resolvedParams.bedrooms === 'string' ? resolvedParams.bedrooms : ''
   const bathrooms = typeof resolvedParams.bathrooms === 'string' ? resolvedParams.bathrooms : ''
   const furniture = typeof resolvedParams.furniture === 'string' ? resolvedParams.furniture : ''
+  const direction = typeof resolvedParams.direction === 'string' ? resolvedParams.direction : ''
 
   // 1. Fetch filtered Database properties
   const dbWhere = buildPrismaFilters({
@@ -45,7 +46,8 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     area,
     bedrooms,
     bathrooms,
-    furniture
+    furniture,
+    direction
   })
 
   const dbPropertiesRaw = await prisma.property.findMany({
