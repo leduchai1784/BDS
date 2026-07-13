@@ -135,6 +135,14 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
 
               {/* Action Buttons */}
               <div className="flex items-center flex-wrap gap-2 flex-shrink-0">
+                {/* Edit */}
+                <Link
+                  href={`/property/${p.id}/edit`}
+                  className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-650 hover:text-slate-800 text-[10px] font-bold rounded-lg transition cursor-pointer"
+                >
+                  Sửa
+                </Link>
+
                 {/* Hide / Show */}
                 {p.status !== 'pending' && (
                   <button
