@@ -3,60 +3,6 @@
   "regions": [
     "sin1"
   ],
-  "builds": [
-    {
-      "src": "public/index.php",
-      "use": "vercel-php@0.9.0"
-    },
-    {
-      "src": "public/images/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/build/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/assets/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/images/(.*)",
-      "dest": "/public/images/$1"
-    },
-    {
-      "src": "/build/(.*)",
-      "dest": "/public/build/$1"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/public/assets/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/public/robots.txt"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/index.php"
-    }
-  ],
-  "env": {
-    "APP_EVENTS_CACHE": "/tmp/events.php",
-    "APP_PACKAGES_CACHE": "/tmp/packages.php",
-    "APP_SERVICES_CACHE": "/tmp/services.php",
-    "APP_ROUTES_CACHE": "/tmp/routes.php",
-    "VIEW_COMPILED_PATH": "/tmp",
-    "CACHE_DRIVER": "database",
-    "CACHE_STORE": "database",
-    "SESSION_DRIVER": "database",
-    "LOG_CHANNEL": "stderr",
-    "FPT_AI_API_KEY": "lfwASDyUM38VtqKqQhKvhgyhV46atljQ"
-  }
+  "framework": "nextjs",
+  "cleanUrls": true
 }

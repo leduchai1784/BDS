@@ -1,0 +1,177 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+
+interface PropertyItem {
+  id: string
+  title: string
+  priceLabel: string
+  address: string
+  status: string
+  viewsCount: number
+  createdAt: string | null
+}
+
+interface MyPropertiesTabProps {
+  initialProperties: PropertyItem[]
+  onSuccess: (message: string) => void
+}
+
+export default function MyPropertiesTab({ initialProperties, onSuccess }: MyPropertiesTabProps) {
+  const [list, setList] = useState<PropertyItem[]>(initialProperties)
+  const [loadingId, setLoadingId] = useState<string | null>(null)
+
+  const handleToggleStatus = async (id: string, currentStatus: string) => {
+    const nextStatus = currentStatus === 'rented' ? 'approved' : 'rented'
+    setLoadingId(id)
+
+    try {
+      const res = await fetch(`/api/properties/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus })
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setList(prev => prev.map(item => item.id === id ? { ...item, status: nextStatus } : item))
+        onSuccess(nextStatus === 'rented' ? 'Đã ẩn tin đăng thành công!' : 'Đã hiện tin đăng thành công!')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  const handleExtend = async (id: string) => {
+    setLoadingId(id)
+    try {
+      const res = await fetch(`/api/properties/${id}/extend`, {
+        method: 'POST'
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        onSuccess('Gia hạn tin đăng thành công! Tin đăng đã được đẩy lên đầu.')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Bạn có chắc chắn muốn xóa tin đăng này?')) return
+    setLoadingId(id)
+
+    try {
+      const res = await fetch(`/api/properties/${id}`, {
+        method: 'DELETE'
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setList(prev => prev.filter(item => item.id !== id))
+        onSuccess('Xóa tin đăng thành công!')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  return (
+    <div className="space-y-6 text-left">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-base font-black text-slate-800">Quản lý tin đăng</h3>
+          <p className="text-[11px] text-slate-500 font-semibold">Danh sách các bất động sản bạn đang đăng bán hoặc cho thuê.</p>
+        </div>
+        <Link 
+          href="/property/create" 
+          className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 transition cursor-pointer"
+        >
+          <i className="fa-solid fa-plus mr-1.5" />
+          Đăng tin mới
+        </Link>
+      </div>
+
+      {list.length > 0 ? (
+        <div className="space-y-4">
+          {list.map(p => (
+            <div 
+              key={p.id} 
+              className="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
+            >
+              <div className="space-y-2 flex-grow">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-primary transition">
+                    <Link href={`/property/${p.id}`}>{p.title}</Link>
+                  </h4>
+                  {/* Status Badges */}
+                  {p.status === 'approved' && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700">Đang hiển thị</span>
+                  )}
+                  {p.status === 'pending' && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-55 text-amber-700">Đang chờ duyệt</span>
+                  )}
+                  {p.status === 'rented' && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-500">Đang ẩn</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-400 font-semibold">{p.address}</p>
+                <div className="flex items-center gap-4 text-[10px] text-slate-450 font-bold">
+                  <span>Giá: <strong className="text-cyan-650">{p.priceLabel}</strong></span>
+                  <span>Lượt xem: <strong>{p.viewsCount}</strong></span>
+                  {p.createdAt && (
+                    <span>Ngày đăng: <strong>{new Date(p.createdAt).toLocaleDateString('vi-VN')}</strong></span>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center flex-wrap gap-2 flex-shrink-0">
+                {/* Hide / Show */}
+                {p.status !== 'pending' && (
+                  <button
+                    onClick={() => handleToggleStatus(p.id, p.status)}
+                    disabled={loadingId === p.id}
+                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-650 hover:text-slate-800 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                  >
+                    {p.status === 'rented' ? 'Hiện tin' : 'Ẩn tin'}
+                  </button>
+                )}
+
+                {/* Extend */}
+                <button
+                  onClick={() => handleExtend(p.id)}
+                  disabled={loadingId === p.id}
+                  className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-650 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                >
+                  Gia hạn (Đẩy top)
+                </button>
+
+                {/* Delete */}
+                <button
+                  onClick={() => handleDelete(p.id)}
+                  disabled={loadingId === p.id}
+                  className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-650 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                >
+                  Xóa
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-white border border-slate-100 rounded-3xl text-slate-400 font-semibold text-xs">
+          Bạn chưa đăng bất kỳ tin rao bất động sản nào.
+        </div>
+      )}
+    </div>
+  )
+}

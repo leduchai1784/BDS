@@ -1,0 +1,301 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               BigInt        @id @default(autoincrement())
+  name             String        @db.VarChar(255)
+  email            String        @unique(map: "users_email_unique") @db.VarChar(255)
+  emailVerifiedAt  DateTime?     @map("email_verified_at") @db.Timestamp(0)
+  phone            String?       @db.VarChar(255)
+  avatar           String?       @db.VarChar(255)
+  role             String        @default("tenant") @db.VarChar(255)
+  status           String        @default("active") @db.VarChar(255)
+  password         String        @db.VarChar(255)
+  rememberToken    String?       @map("remember_token") @db.VarChar(100)
+  createdAt        DateTime?     @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime?     @updatedAt @map("updated_at") @db.Timestamp(0)
+  nksUserId        String?       @map("nks_user_id") @db.VarChar(255)
+  nksToken         String?       @map("nks_token")
+  firstname        String?       @db.VarChar(255)
+  lastname         String?       @db.VarChar(255)
+  gender           Int           @default(0)
+  dob              String?       @db.VarChar(255)
+  pob              String?       @db.VarChar(255)
+  idNumber         String?       @map("id_number") @db.VarChar(255)
+  idDate           String?       @map("id_date") @db.VarChar(255)
+  idPlace          String?       @map("id_place") @db.VarChar(255)
+  cccdFront        String?       @map("cccd_front") @db.VarChar(255)
+  cccdBack         String?       @map("cccd_back") @db.VarChar(255)
+  addStreet        String?       @map("add_street") @db.VarChar(255)
+  addWard          String?       @map("add_ward") @db.VarChar(255)
+  addDistrict      String?       @map("add_district") @db.VarChar(255)
+  addProvince      String?       @map("add_province") @db.VarChar(255)
+  zaloId           String?       @map("zalo_id") @db.VarChar(255)
+  zaloKey          String?       @map("zalo_key") @db.VarChar(255)
+  intro            String?
+  website          String?       @db.VarChar(255)
+  permanentAddress String?       @map("permanent_address") @db.VarChar(255)
+  company          String?       @db.VarChar(255)
+  province         String?       @db.VarChar(255)
+  district         String?       @db.VarChar(255)
+  ward             String?       @db.VarChar(255)
+  aiCampaigns      AiCampaign[]
+  appointments     Appointment[]
+  demands          demands[]
+  properties       Property[]
+  wishlists        Wishlist[]
+
+  @@map("users")
+}
+
+model Category {
+  id          BigInt     @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  slug        String     @unique(map: "categories_slug_unique") @db.VarChar(255)
+  description String?
+  createdAt   DateTime?  @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.Timestamp(0)
+  properties  Property[]
+
+  @@map("categories")
+}
+
+model Project {
+  id          BigInt     @id @default(autoincrement())
+  title       String     @db.VarChar(255)
+  slug        String     @unique(map: "projects_slug_unique") @db.VarChar(255)
+  description String?
+  location    String?    @db.VarChar(255)
+  city        String?    @db.VarChar(255)
+  district    String?    @db.VarChar(255)
+  priceRange  String?    @map("price_range") @db.VarChar(255)
+  scale       String?    @db.VarChar(255)
+  investor    String?    @db.VarChar(255)
+  status      String     @default("selling") @db.VarChar(255)
+  images      Json?      @db.Json
+  latitude    Decimal?   @db.Decimal(10, 8)
+  longitude   Decimal?   @db.Decimal(11, 8)
+  createdAt   DateTime?  @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.Timestamp(0)
+  properties  Property[]
+
+  @@map("projects")
+}
+
+model Property {
+  id              String          @id @default(uuid()) @db.Uuid
+  ownerId         BigInt          @map("owner_id")
+  categoryId      BigInt?         @map("category_id")
+  title           String          @db.VarChar(255)
+  slug            String          @unique(map: "properties_slug_unique") @db.VarChar(255)
+  description     String
+  price           BigInt
+  priceLabel      String          @map("price_label") @db.VarChar(255)
+  area            Int
+  bedroom         Int             @default(0) @db.SmallInt
+  bathroom        Int             @default(0) @db.SmallInt
+  address         String          @db.VarChar(255)
+  ward            String          @db.VarChar(255)
+  district        String          @db.VarChar(10)
+  city            String          @db.VarChar(255)
+  latitude        Float
+  longitude       Float
+  phone           String          @db.VarChar(255)
+  zalo            String?         @db.VarChar(255)
+  status          String          @default("pending") @db.VarChar(255)
+  viewsCount      Int             @default(0) @map("views_count")
+  direction       String?         @db.VarChar(255)
+  furniture       String?
+  legal           String?         @db.VarChar(255)
+  isVip           Boolean         @default(false) @map("is_vip")
+  isNew           Boolean         @default(true) @map("is_new")
+  metaTitle       String?         @map("meta_title") @db.VarChar(255)
+  metaDescription String?         @map("meta_description")
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamp(0)
+  createdAt       DateTime?       @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime?       @updatedAt @map("updated_at") @db.Timestamp(0)
+  deposit         BigInt?
+  leaseTerm       String?         @map("lease_term") @db.VarChar(255)
+  frontage        Decimal?        @db.Decimal(8, 2)
+  roadWidth       Decimal?        @map("road_width") @db.Decimal(8, 2)
+  floors          Int?
+  transactionType String?         @map("transaction_type") @db.VarChar(255)
+  propertyType    String?         @map("property_type") @db.VarChar(255)
+  province        String?         @db.VarChar(255)
+  projectId       BigInt?         @map("project_id")
+  category        Category?       @relation(fields: [categoryId], references: [id], onUpdate: NoAction, map: "properties_category_id_foreign")
+  owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "properties_owner_id_foreign")
+  project         Project?        @relation(fields: [projectId], references: [id], onUpdate: NoAction, map: "properties_project_id_foreign")
+  propertyImages  PropertyImage[]
+
+  @@index([area], map: "properties_area_index")
+  @@index([city(ops: raw("gin_trgm_ops"))], map: "properties_city_trgm_idx", type: Gin)
+  @@index([district], map: "properties_district_index")
+  @@index([district(ops: raw("gin_trgm_ops"))], map: "properties_district_trgm_idx", type: Gin)
+  @@index([price], map: "properties_price_index")
+  @@index([propertyType], map: "properties_property_type_index")
+  @@index([province], map: "properties_province_index")
+  @@index([status], map: "properties_status_index")
+  @@index([title(ops: raw("gin_trgm_ops"))], map: "properties_title_trgm_idx", type: Gin)
+  @@index([transactionType], map: "properties_transaction_type_index")
+  @@index([ward(ops: raw("gin_trgm_ops"))], map: "properties_ward_trgm_idx", type: Gin)
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         String    @id @db.Uuid
+  propertyId String    @map("property_id") @db.Uuid
+  imagePath  String    @map("image_path")
+  isPrimary  Boolean   @default(false) @map("is_primary")
+  createdAt  DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "property_images_property_id_foreign")
+
+  @@map("property_images")
+}
+
+model Wishlist {
+  id         BigInt    @id @default(autoincrement())
+  userId     BigInt    @map("user_id")
+  propertyId String    @map("property_id") @db.VarChar(255)
+  createdAt  DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "wishlists_user_id_foreign")
+
+  @@unique([userId, propertyId], map: "wishlists_user_id_property_id_unique")
+  @@map("wishlists")
+}
+
+model Appointment {
+  id           BigInt    @id @default(autoincrement())
+  userId       BigInt?   @map("user_id")
+  propertyId   String    @map("property_id") @db.VarChar(255)
+  name         String    @db.VarChar(255)
+  phone        String    @db.VarChar(255)
+  date         DateTime  @db.Date
+  time         DateTime  @db.Time(0)
+  message      String?
+  status       String    @default("pending") @db.VarChar(255)
+  createdAt    DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+  rejectReason String?   @map("reject_reason") @db.VarChar(255)
+  email        String?   @db.VarChar(255)
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "appointments_user_id_foreign")
+
+  @@map("appointments")
+}
+
+model AiCampaign {
+  id         String    @id @default(uuid()) @db.Uuid
+  ownerId    BigInt    @map("owner_id")
+  propertyId String?   @map("property_id") @db.Uuid
+  type       String    @db.VarChar(255)
+  title      String    @db.VarChar(255)
+  goal       String?   @db.VarChar(255)
+  tone       String    @db.VarChar(255)
+  content    Json      @db.Json
+  createdAt  DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+  owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ai_campaigns_owner_id_foreign")
+
+  @@map("ai_campaigns")
+}
+
+model cache {
+  key        String @id @db.VarChar(255)
+  value      String
+  expiration BigInt
+
+  @@index([expiration], map: "cache_expiration_index")
+}
+
+model cache_locks {
+  key        String @id @db.VarChar(255)
+  owner      String @db.VarChar(255)
+  expiration BigInt
+
+  @@index([expiration], map: "cache_locks_expiration_index")
+}
+
+model demands {
+  id            BigInt    @id @default(autoincrement())
+  user_id       BigInt?
+  title         String    @db.VarChar(255)
+  type          String    @default("rent") @db.VarChar(255)
+  location      String?   @db.VarChar(255)
+  budget        String?   @db.VarChar(255)
+  description   String?
+  contact_name  String?   @db.VarChar(255)
+  contact_phone String?   @db.VarChar(255)
+  status        String    @default("approved") @db.VarChar(255)
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  users         User?     @relation(fields: [user_id], references: [id], onUpdate: NoAction, map: "demands_user_id_foreign")
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement())
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.VarChar(255)
+  queue      String   @db.VarChar(255)
+  payload    String
+  exception  String
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([connection, queue, failed_at], map: "failed_jobs_connection_queue_failed_at_index")
+}
+
+model job_batches {
+  id             String  @id @db.VarChar(255)
+  name           String  @db.VarChar(255)
+  total_jobs     Int
+  pending_jobs   Int
+  failed_jobs    Int
+  failed_job_ids String
+  options        String?
+  cancelled_at   Int?
+  created_at     Int
+  finished_at    Int?
+}
+
+model jobs {
+  id           BigInt @id @default(autoincrement())
+  queue        String @db.VarChar(255)
+  payload      String
+  attempts     Int    @db.SmallInt
+  reserved_at  Int?
+  available_at Int
+  created_at   Int
+
+  @@index([queue], map: "jobs_queue_index")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement())
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+model sessions {
+  id            String  @id @db.VarChar(255)
+  user_id       BigInt?
+  ip_address    String? @db.VarChar(45)
+  user_agent    String?
+  payload       String
+  last_activity Int
+
+  @@index([last_activity], map: "sessions_last_activity_index")
+  @@index([user_id], map: "sessions_user_id_index")
+}
