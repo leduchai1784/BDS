@@ -240,7 +240,7 @@ export default function Hero() {
 
           {/* Autocomplete Suggestion Dropdown */}
           {isOpen && suggestions.length > 0 && (
-            <div className="absolute left-4 right-4 md:left-5 md:right-5 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden text-left">
+            <div className="absolute left-4 right-4 md:left-5 md:right-5 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden text-left animate-dropdown">
               <div className="max-h-[350px] overflow-y-auto py-2">
                 {suggestions.map((sug, index) => (
                   <div 

@@ -116,7 +116,7 @@ export default function Navbar() {
               </Link>
               
               {rentDropdownOpen && (
-                <div className="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left">
+                <div className="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left animate-dropdown">
                   <Link 
                     href="/listings?purpose=rent" 
                     className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap ${
@@ -164,7 +164,7 @@ export default function Navbar() {
               </Link>
               
               {partnerDropdownOpen && (
-                <div className="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left">
+                <div className="absolute left-0 mt-2.5 w-48 rounded-3xl bg-white border border-slate-100/80 shadow-2xl p-2 z-50 text-left animate-dropdown">
                   <Link 
                     href="/agents" 
                     className={`block px-4 py-2.5 text-[14px] font-semibold rounded-2xl transition duration-150 whitespace-nowrap ${
@@ -259,7 +259,7 @@ export default function Navbar() {
 
                 {/* Dropdown Panel */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left">
+                  <div className="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left animate-dropdown">
                     <Link href="/profile" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                       <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> {user.role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân'}
                     </Link>
@@ -321,7 +321,7 @@ export default function Navbar() {
 
                 {/* Guest Dropdown Panel */}
                 {guestDropdownOpen && (
-                  <div className="absolute right-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left">
+                  <div className="absolute right-0 mt-2.5 w-44 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left animate-dropdown">
                     <Link href="/login" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                       <i className="fa-solid fa-right-to-bracket mr-2 text-sm text-slate-400"></i> Đăng nhập
                     </Link>
