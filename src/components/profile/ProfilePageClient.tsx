@@ -254,15 +254,15 @@ export default function ProfilePageClient({
                     </span>
                   </button>
 
-                  {/* Wishlist tab */}
+                  {/* Favorites tab */}
                   <button 
-                    onClick={() => handleTabChange('wishlist')}
+                    onClick={() => handleTabChange('favorites')}
                     className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition ${
-                      activeTab === 'wishlist' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      activeTab === 'favorites' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
                     }`}
                   >
                     <i className="fa-solid fa-heart text-sm" />
-                    <span>Tin đã lưu</span>
+                    <span>Tin yêu thích</span>
                   </button>
 
                   {/* Upgrade Role (For Tenant) */}
@@ -343,8 +343,8 @@ export default function ProfilePageClient({
               />
             )}
 
-            {/* 7. Wishlist Tab */}
-            {activeTab === 'wishlist' && (
+            {/* 7. Wishlist / Favorites Tab */}
+            {activeTab === 'favorites' && (
               <WishlistTab initialProperties={wishlistProperties} />
             )}
 
