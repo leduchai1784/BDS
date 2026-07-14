@@ -64,10 +64,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const combined = [...dbList, ...nksList]
 
   // 4. Filter and slice
-  // Tin đăng nổi bật (Featured Listings): only isVip === true, sorted by latest date
+  // Tin đăng nổi bật (Featured Listings): priority isVip, then isNew, then latest date
   const featuredListAll = combined
-    .filter(p => p.isVip)
+    .slice()
     .sort((a, b) => {
+      if (a.isVip && !b.isVip) return -1
+      if (!a.isVip && b.isVip) return 1
+      if (a.isNew && !b.isNew) return -1
+      if (!a.isNew && b.isNew) return 1
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
       return dateB - dateA
