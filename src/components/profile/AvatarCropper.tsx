@@ -136,7 +136,7 @@ export default function AvatarCropper({ currentAvatar, onSuccess }: AvatarCroppe
       `}</style>
 
       {errorMsg && (
-        <div className="p-3 bg-red-50 text-red-500 rounded-xl text-xs font-bold max-w-lg">
+        <div className="p-3 bg-red-50 text-red-500 rounded-xl text-xs font-bold">
           <i className="fa-solid fa-circle-exclamation mr-1.5" />
           {errorMsg}
         </div>
@@ -165,10 +165,10 @@ export default function AvatarCropper({ currentAvatar, onSuccess }: AvatarCroppe
       {/* EDITABLE AVATAR VIEW */}
       {isEditingAvatar && (
         <form onSubmit={handleSave} className="space-y-6">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 py-8 bg-slate-50 rounded-3xl border border-slate-100 px-6">
+          <div className="flex flex-col items-center justify-center gap-6 py-8 bg-slate-50 rounded-3xl border border-slate-100 px-6 w-full">
             
-            {/* Left side: Interactive Area */}
-            <div className="flex flex-col items-center space-y-4 w-full max-w-sm">
+            {/* Interactive Area */}
+            <div className="flex flex-col items-center space-y-5 w-full max-w-lg">
               {/* Current Avatar view (shows when no new image selected) */}
               {!hasImage && (
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-slate-200 relative group">
@@ -179,7 +179,7 @@ export default function AvatarCropper({ currentAvatar, onSuccess }: AvatarCroppe
               {/* Cropper container (shows when a new image is selected) */}
               {hasImage && imageSrc && (
                 <div className="w-full bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
-                  <div className="avatar-crop-container flex justify-center items-center overflow-hidden h-64 w-full">
+                  <div className="avatar-crop-container flex justify-center items-center overflow-hidden h-72 w-full">
                     <Cropper
                       src={imageSrc}
                       style={{ height: '100%', width: '100%' }}
@@ -191,15 +191,74 @@ export default function AvatarCropper({ currentAvatar, onSuccess }: AvatarCroppe
                       cropBoxMovable={false}
                       cropBoxResizable={false}
                       toggleDragModeOnDblclick={false}
-                      preview=".img-preview"
                       ref={cropperRef}
                     />
                   </div>
                 </div>
               )}
 
+              {/* Zoom & Rotate controls (placed right under the Cropper) */}
+              {hasImage && (
+                <div className="flex flex-col items-center space-y-2 pt-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Công cụ thu phóng & xoay</span>
+                  
+                  {/* Zoom & Pan Buttons */}
+                  <div className="flex justify-center gap-2">
+                    {/* Zoom In */}
+                    <button 
+                      type="button" 
+                      onClick={handleZoomIn}
+                      className="w-10 h-10 rounded-xl bg-white hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-xs cursor-pointer" 
+                      title="Phóng to"
+                    >
+                      <i className="fa-solid fa-magnifying-glass-plus text-sm"></i>
+                    </button>
+                    
+                    {/* Zoom Out */}
+                    <button 
+                      type="button" 
+                      onClick={handleZoomOut}
+                      className="w-10 h-10 rounded-xl bg-white hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-xs cursor-pointer" 
+                      title="Thu nhỏ"
+                    >
+                      <i className="fa-solid fa-magnifying-glass-minus text-sm"></i>
+                    </button>
+
+                    {/* Rotate Left */}
+                    <button 
+                      type="button" 
+                      onClick={handleRotateLeft}
+                      className="w-10 h-10 rounded-xl bg-white hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-xs cursor-pointer" 
+                      title="Xoay trái"
+                    >
+                      <i className="fa-solid fa-rotate-left text-sm"></i>
+                    </button>
+
+                    {/* Rotate Right */}
+                    <button 
+                      type="button" 
+                      onClick={handleRotateRight}
+                      className="w-10 h-10 rounded-xl bg-white hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-xs cursor-pointer" 
+                      title="Xoay phải"
+                    >
+                      <i className="fa-solid fa-rotate-right text-sm"></i>
+                    </button>
+
+                    {/* Reset */}
+                    <button 
+                      type="button" 
+                      onClick={handleReset}
+                      className="w-10 h-10 rounded-xl bg-white hover:bg-rose-500 hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-xs cursor-pointer" 
+                      title="Đặt lại"
+                    >
+                      <i className="fa-solid fa-arrows-rotate text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Action button for choosing files */}
-              <div className="text-center space-y-2">
+              <div className="text-center space-y-2 pt-2">
                 <h4 className="text-sm font-bold text-slate-800">Chọn ảnh đại diện mới</h4>
                 <p className="text-xs text-slate-400 max-w-xs leading-normal">Hỗ trợ định dạng JPG, PNG dung lượng dưới 5MB.</p>
                 
@@ -229,78 +288,6 @@ export default function AvatarCropper({ currentAvatar, onSuccess }: AvatarCroppe
                 </div>
               </div>
             </div>
-
-            {/* Right side: Cropper Controls & Cropped Preview */}
-            {hasImage && (
-              <div className="flex flex-col items-center space-y-6 w-full max-w-xs border-t md:border-t-0 md:border-l border-slate-200/80 pt-6 md:pt-0 md:pl-8">
-                {/* Cropped Preview Circle */}
-                <div className="flex flex-col items-center space-y-2">
-                  <span className="text-xs font-bold text-slate-500">Xem trước kết quả</span>
-                  <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-md bg-slate-100 relative">
-                    {/* Preview element container for CropperJS */}
-                    <div className="img-preview w-full h-full overflow-hidden rounded-full" style={{ width: '112px', height: '112px', overflow: 'hidden' }} />
-                  </div>
-                </div>
-
-                {/* Navigation & Crop Controls */}
-                <div className="flex flex-col space-y-3 w-full">
-                  <span className="text-xs font-bold text-slate-500 text-center">Công cụ thu phóng & xoay</span>
-                  
-                  {/* Zoom & Pan Buttons */}
-                  <div className="flex justify-center gap-2">
-                    {/* Zoom In */}
-                    <button 
-                      type="button" 
-                      onClick={handleZoomIn}
-                      className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-sm cursor-pointer" 
-                      title="Phóng to"
-                    >
-                      <i className="fa-solid fa-magnifying-glass-plus text-sm"></i>
-                    </button>
-                    
-                    {/* Zoom Out */}
-                    <button 
-                      type="button" 
-                      onClick={handleZoomOut}
-                      className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-sm cursor-pointer" 
-                      title="Thu nhỏ"
-                    >
-                      <i className="fa-solid fa-magnifying-glass-minus text-sm"></i>
-                    </button>
-
-                    {/* Rotate Left */}
-                    <button 
-                      type="button" 
-                      onClick={handleRotateLeft}
-                      className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-sm cursor-pointer" 
-                      title="Xoay trái"
-                    >
-                      <i className="fa-solid fa-rotate-left text-sm"></i>
-                    </button>
-
-                    {/* Rotate Right */}
-                    <button 
-                      type="button" 
-                      onClick={handleRotateRight}
-                      className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-primary hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-sm cursor-pointer" 
-                      title="Xoay phải"
-                    >
-                      <i className="fa-solid fa-rotate-right text-sm"></i>
-                    </button>
-
-                    {/* Reset */}
-                    <button 
-                      type="button" 
-                      onClick={handleReset}
-                      className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-rose-500 hover:text-white text-slate-600 flex items-center justify-center transition border border-slate-200 shadow-sm cursor-pointer" 
-                      title="Đặt lại"
-                    >
-                      <i className="fa-solid fa-arrows-rotate text-sm"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           
           {/* Submit / Cancel Footer */}
