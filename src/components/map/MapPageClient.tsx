@@ -218,7 +218,7 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-70px)] pt-[70px] overflow-hidden bg-slate-50">
+    <div className="flex flex-col h-screen pt-[72px] overflow-hidden bg-slate-50">
       
       {/* 1. Filter Capsule Bar (always floating on top) */}
       <div className="px-4 py-2 flex-shrink-0 z-30">

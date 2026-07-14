@@ -18,6 +18,8 @@ function updateMarkerStyle(
   priceLabel: string
 ) {
   el.style.whiteSpace = 'nowrap'
+  el.style.width = 'max-content'
+  el.style.display = 'inline-flex'
   if (isActive) {
     el.className = 'custom-price-marker bg-white text-slate-800 text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-cyan-600 cursor-pointer flex items-center justify-center transition duration-200 scale-110 z-30'
     el.innerHTML = `<span class="flex items-center text-xs font-black"><i class="fa-solid fa-circle-check text-emerald-500 mr-1 text-[13px]"></i>${priceLabel}</span>`
