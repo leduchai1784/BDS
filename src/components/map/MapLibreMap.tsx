@@ -139,7 +139,7 @@ export default function MapLibreMap({
       `
 
       const popup = new maplibregl.Popup({
-        offset: 35,
+        offset: 20,
         closeButton: false,
         closeOnClick: true,
         anchor: 'bottom'
