@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import PropertyCard from '@/components/property/PropertyCard'
+import Link from 'next/link'
 
 interface WishlistTabProps {
   initialProperties: any[]
@@ -40,8 +41,17 @@ export default function WishlistTab({ initialProperties }: WishlistTabProps) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white border border-slate-100 rounded-3xl text-slate-400 font-semibold text-xs">
-          Bạn chưa lưu bất kỳ bất động sản nào.
+        <div className="text-center py-16 bg-slate-50/50 border border-slate-100 rounded-3xl text-slate-400 font-semibold text-xs space-y-4">
+          <p>Bạn chưa lưu bất kỳ bất động sản nào.</p>
+          <div>
+            <Link 
+              href="/listings" 
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer"
+            >
+              <i className="fa-solid fa-compass" />
+              <span>Khám phá ngay</span>
+            </Link>
+          </div>
         </div>
       )}
     </div>
