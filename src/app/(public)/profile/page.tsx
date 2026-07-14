@@ -1,6 +1,6 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getNksUserInfo } from '@/lib/nks'
+import { getNksUserInfo, getNksProperties } from '@/lib/nks'
 import ProfilePageClient from '@/components/profile/ProfilePageClient'
 import { redirect } from 'next/navigation'
 
@@ -174,11 +174,14 @@ export default async function ProfilePage() {
     where: { userId }
   })
 
-  const wishlistPropIds = dbWishlist.map(w => w.propertyId)
-    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
-  const wishlistPropertiesRaw = await prisma.property.findMany({
+  const rawWishlistPropIds = dbWishlist.map(w => w.propertyId)
+  const uuidPropIds = rawWishlistPropIds.filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+  const nksPropIds = rawWishlistPropIds.filter(id => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+
+  // Fetch local db wishlist properties
+  const dbWishlistProps = await prisma.property.findMany({
     where: {
-      id: { in: wishlistPropIds },
+      id: { in: uuidPropIds },
       deletedAt: null
     },
     include: {
@@ -188,7 +191,7 @@ export default async function ProfilePage() {
     }
   })
 
-  const wishlistProperties = wishlistPropertiesRaw.map(p => ({
+  const localWishlist = dbWishlistProps.map(p => ({
     id: p.id,
     title: p.title,
     price: Number(p.price),
@@ -204,6 +207,35 @@ export default async function ProfilePage() {
     propertyType: p.propertyType,
     imagePath: p.propertyImages?.[0]?.imagePath || null
   }))
+
+  // Fetch NKS API wishlist properties
+  let nksWishlist: any[] = []
+  if (nksPropIds.length > 0) {
+    try {
+      const allNks = await getNksProperties()
+      const filteredNks = allNks.filter((p: any) => nksPropIds.includes(String(p.id)))
+      nksWishlist = filteredNks.map((p: any) => ({
+        id: String(p.id),
+        title: p.title,
+        price: Number(p.price),
+        priceLabel: p.priceLabel,
+        area: p.area,
+        bedroom: p.bedroom,
+        bathroom: p.bathroom,
+        address: p.address,
+        district: p.district,
+        city: p.city,
+        isVip: p.isVip,
+        isNew: p.isNew,
+        propertyType: p.propertyType,
+        imagePath: p.imagePath || null
+      }))
+    } catch (e) {
+      console.error('Error loading NKS properties for profile wishlist:', e)
+    }
+  }
+
+  const wishlistProperties = [...localWishlist, ...nksWishlist]
 
   // 7. Calculate overall stats
   const stats = {

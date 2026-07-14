@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getNksProperties } from '@/lib/nks'
 
 export async function POST(req: Request) {
   try {
@@ -17,17 +18,21 @@ export async function POST(req: Request) {
     }
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(property_id)
-    if (!isUuid) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
-    }
-
-    // Check if property exists
-    const propertyExists = await prisma.property.findUnique({
-      where: { id: property_id }
-    })
-
-    if (!propertyExists) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    if (isUuid) {
+      // Check if local property exists
+      const propertyExists = await prisma.property.findUnique({
+        where: { id: property_id }
+      })
+      if (!propertyExists) {
+        return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+      }
+    } else {
+      // Check if NKS property exists
+      const allNks = await getNksProperties()
+      const nksExists = allNks.some((p: any) => String(p.id) === String(property_id))
+      if (!nksExists) {
+        return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+      }
     }
 
     // Toggle logic using unique constraint
