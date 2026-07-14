@@ -95,7 +95,7 @@ export default function ProfilePageClient({
           
           {/* Left Column: Dashboard Sidebar Navigation (3/12 cols) */}
           <div className="lg:col-span-3 lg:self-stretch">
-            <div className="lg:sticky lg:top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-none text-left flex flex-col">
+            <div className="lg:sticky lg:top-24 max-h-[calc(100vh-7rem)] overflow-y-auto thin-scrollbar text-left flex flex-col">
               <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex-grow">
                 
                 {/* Banner Profile Summary */}
