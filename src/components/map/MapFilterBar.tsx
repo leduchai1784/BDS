@@ -337,21 +337,32 @@ export default function MapFilterBar({
             {/* Direction */}
             <div>
               <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 px-0.5">Hướng nhà</span>
-              <select
-                value={direction}
-                onChange={(e) => setDirection(e.target.value)}
-                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold outline-none transition cursor-pointer focus:border-primary focus:bg-white"
-              >
-                <option value="">Tất cả các hướng</option>
-                <option value="Đông">Đông</option>
-                <option value="Tây">Tây</option>
-                <option value="Nam">Nam</option>
-                <option value="Bắc">Bắc</option>
-                <option value="Đông Nam">Đông Nam</option>
-                <option value="Đông Bắc">Đông Bắc</option>
-                <option value="Tây Nam">Tây Nam</option>
-                <option value="Tây Bắc">Tây Bắc</option>
-              </select>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { key: '', label: 'Tất cả' },
+                  { key: 'Đông', label: 'Đông' },
+                  { key: 'Tây', label: 'Tây' },
+                  { key: 'Nam', label: 'Nam' },
+                  { key: 'Bắc', label: 'Bắc' },
+                  { key: 'Đông Nam', label: 'Đông Nam' },
+                  { key: 'Đông Bắc', label: 'Đông Bắc' },
+                  { key: 'Tây Nam', label: 'Tây Nam' },
+                  { key: 'Tây Bắc', label: 'Tây Bắc' }
+                ].map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setDirection(item.key)}
+                    className={`py-1.5 border rounded-lg text-center text-[10px] font-bold transition cursor-pointer ${
+                      item.key === '' ? 'col-span-3 py-1' : ''
+                    } ${
+                      direction === item.key ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-1">
