@@ -21,22 +21,25 @@ function updateMarkerStyle(
   el.style.width = 'max-content'
   el.style.display = 'inline-flex'
   
-  // Safe base styling classes
-  el.classList.add('custom-price-marker', 'text-[11px]', 'font-black', 'px-2.5', 'py-1.5', 'rounded-full', 'shadow-lg', 'border-2', 'cursor-pointer', 'flex', 'items-center', 'justify-center', 'transition-colors', 'duration-200')
+  // Safe base styling classes (blue capsule)
+  el.classList.add('custom-price-marker', 'text-[11px]', 'font-black', 'px-2.5', 'py-1.5', 'rounded-full', 'shadow-lg', 'border-2', 'cursor-pointer', 'flex', 'items-center', 'justify-center', 'transition-colors', 'duration-200', 'text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700')
   
+  // Remove any active/hover styles if they were previously added
+  el.classList.remove('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'bg-cyan-700', 'scale-105')
+  
+  // Manage only z-index layers for active/hovered markers
   if (isActive) {
-    el.classList.add('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30')
-    el.classList.remove('text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700', 'bg-cyan-700', 'scale-105', 'z-20')
-    el.innerHTML = `<span class="flex items-center text-xs font-black"><i class="fa-solid fa-circle-check text-emerald-500 mr-1 text-[13px]"></i>${priceLabel}</span>`
+    el.classList.add('z-30')
+    el.classList.remove('z-20')
   } else if (isHovered) {
-    el.classList.add('text-white', 'border-white', 'bg-cyan-700', 'scale-105', 'z-20')
-    el.classList.remove('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30', 'bg-cyan-600', 'hover:bg-cyan-700')
-    el.innerHTML = priceLabel
+    el.classList.add('z-20')
+    el.classList.remove('z-30')
   } else {
-    el.classList.add('text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700')
-    el.classList.remove('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30', 'bg-cyan-700', 'scale-105', 'z-20')
-    el.innerHTML = priceLabel
+    el.classList.remove('z-20', 'z-30')
   }
+  
+  // Keep innerHTML strictly to the price label
+  el.innerHTML = priceLabel
 }
 
 export default function MapLibreMap({
