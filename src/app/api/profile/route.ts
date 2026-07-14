@@ -90,6 +90,9 @@ export async function POST(req: Request) {
     })
   } catch (error: any) {
     console.error('Update profile error:', error)
+    if (error.code === 'P2002') {
+      return NextResponse.json({ success: false, message: 'Email này đã được sử dụng bởi thành viên khác.' }, { status: 400 })
+    }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

@@ -60,6 +60,12 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
   const [intro, setIntro] = useState(user.intro || '')
   const [districtName, setDistrictName] = useState(user.district || '')
 
+  // Error States
+  const [nameError, setNameError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [phoneError, setPhoneError] = useState('')
+  const [websiteError, setWebsiteError] = useState('')
+
   // Administrative Bound States
   const [provinces, setProvinces] = useState<Province[]>([])
   
@@ -140,6 +146,12 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     setIntro(user.intro || '')
     setDistrictName(user.district || '')
 
+    // Reset error states
+    setNameError('')
+    setEmailError('')
+    setPhoneError('')
+    setWebsiteError('')
+
     if (user.dob) {
       if (user.dob.includes('/')) {
         const parts = user.dob.split('/')
@@ -193,8 +205,50 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     setErrorMsg('')
   }
 
+  const validateForm = () => {
+    let isValid = true
+    setNameError('')
+    setEmailError('')
+    setPhoneError('')
+    setWebsiteError('')
+
+    if (!name.trim()) {
+      setNameError('Họ và tên không được để trống.')
+      isValid = false
+    }
+
+    if (!email.trim()) {
+      setEmailError('Địa chỉ Email không được để trống.')
+      isValid = false
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setEmailError('Định dạng Email không hợp lệ.')
+      isValid = false
+    }
+
+    if (phone.trim()) {
+      if (!/^(0[35789])[0-9]{8}$/.test(phone.trim())) {
+        setPhoneError('Số điện thoại liên hệ phải có 10 chữ số và bắt đầu bằng 03, 05, 07, 08, 09.')
+        isValid = false
+      }
+    }
+
+    if (website.trim()) {
+      try {
+        const urlStr = website.trim().startsWith('http') ? website.trim() : `https://${website.trim()}`
+        new URL(urlStr)
+      } catch (_) {
+        setWebsiteError('Định dạng Website không hợp lệ (ví dụ: https://example.com).')
+        isValid = false
+      }
+    }
+
+    return isValid
+  }
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!validateForm()) return
+
     setIsSaving(true)
     setErrorMsg('')
 
@@ -234,7 +288,11 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
         setIsEditing(false)
         onSuccess('Hồ sơ cá nhân đã được cập nhật thành công!')
       } else {
-        setErrorMsg(data.message || 'Lỗi cập nhật thông tin.')
+        if (data.message && data.message.includes('Email')) {
+          setEmailError(data.message)
+        } else {
+          setErrorMsg(data.message || 'Lỗi cập nhật thông tin.')
+        }
       }
     } catch (err) {
       setErrorMsg('Lỗi kết nối mạng, vui lòng thử lại.')
@@ -286,9 +344,16 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
               onChange={(e) => setName(e.target.value)} 
               required
               disabled={!isEditing}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+              className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed ${
+                nameError ? 'border-rose-500 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20' : 'border-slate-200 focus:border-primary'
+              }`}
             />
           </div>
+          {nameError && (
+            <p className="text-rose-500 text-[10px] font-bold mt-1 px-1">
+              <i className="fa-solid fa-circle-exclamation mr-1"></i>{nameError}
+            </p>
+          )}
         </div>
 
         {/* Giới tính */}
@@ -300,7 +365,7 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
               value={gender} 
               onChange={(e) => setGender(e.target.value)} 
               disabled={!isEditing}
-              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none appearance-none transition cursor-pointer disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
             >
               <option value="0">Nam</option>
               <option value="1">Nữ</option>
@@ -323,9 +388,16 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
               value={phone} 
               onChange={(e) => setPhone(e.target.value)} 
               disabled={!isEditing}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+              className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed ${
+                phoneError ? 'border-rose-500 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20' : 'border-slate-200 focus:border-primary'
+              }`}
             />
           </div>
+          {phoneError && (
+            <p className="text-rose-500 text-[10px] font-bold mt-1 px-1">
+              <i className="fa-solid fa-circle-exclamation mr-1"></i>{phoneError}
+            </p>
+          )}
         </div>
 
         {/* Email */}
@@ -342,9 +414,16 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
               onChange={(e) => setEmail(e.target.value)} 
               required
               disabled={!isEditing}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+              className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed ${
+                emailError ? 'border-rose-500 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20' : 'border-slate-200 focus:border-primary'
+              }`}
             />
           </div>
+          {emailError && (
+            <p className="text-rose-500 text-[10px] font-bold mt-1 px-1">
+              <i className="fa-solid fa-circle-exclamation mr-1"></i>{emailError}
+            </p>
+          )}
         </div>
       </div>
 
@@ -376,9 +455,16 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
               placeholder="https://..."
               onChange={(e) => setWebsite(e.target.value)} 
               disabled={!isEditing}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+              className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed ${
+                websiteError ? 'border-rose-500 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20' : 'border-slate-200 focus:border-primary'
+              }`}
             />
           </div>
+          {websiteError && (
+            <p className="text-rose-500 text-[10px] font-bold mt-1 px-1">
+              <i className="fa-solid fa-circle-exclamation mr-1"></i>{websiteError}
+            </p>
+          )}
         </div>
       </div>
 
