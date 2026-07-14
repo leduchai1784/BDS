@@ -90,12 +90,14 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
   // Mode Selection
   const [isEditingCccd, setIsEditingCccd] = useState(!user.idNumber)
 
-  // Input States
+  // Input States (Only showing 3 in UI but keeping others for backend compatibility)
   const [idNumber, setIdNumber] = useState(user.idNumber || '')
   const [idDate, setIdDate] = useState(toInputDate(user.idDate))
   const [idPlace, setIdPlace] = useState(user.idPlace || '')
-  const [pob, setPob] = useState(user.pob || '')
+
+  // Hidden/Auto-filled fields (Not displayed in form UI)
   const [dob, setDob] = useState(toInputDate(user.dob))
+  const [pob, setPob] = useState(user.pob || '')
   const [permanentAddress, setPermanentAddress] = useState(user.permanentAddress || '')
 
   const [cccdFront, setCccdFront] = useState(getCccdUrl(user.cccdFront))
@@ -103,9 +105,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
   // OCR scanning highlight classes
   const [highlightNum, setHighlightNum] = useState(false)
-  const [highlightDob, setHighlightDob] = useState(false)
-  const [highlightPob, setHighlightPob] = useState(false)
-  const [highlightAddress, setHighlightAddress] = useState(false)
   const [highlightIdDate, setHighlightIdDate] = useState(false)
   const [highlightIdPlace, setHighlightIdPlace] = useState(false)
 
@@ -156,18 +155,12 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
           }
           if (parsed.dob) {
             setDob(parsed.dob)
-            setHighlightDob(true)
-            setTimeout(() => setHighlightDob(false), 1500)
           }
           if (parsed.pob) {
             setPob(parsed.pob)
-            setHighlightPob(true)
-            setTimeout(() => setHighlightPob(false), 1500)
           }
           if (parsed.permanent_address) {
             setPermanentAddress(parsed.permanent_address)
-            setHighlightAddress(true)
-            setTimeout(() => setHighlightAddress(false), 1500)
           }
         } else {
           if (parsed.issue_date) {
@@ -182,8 +175,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
           }
           if (parsed.permanent_address && !permanentAddress) {
             setPermanentAddress(parsed.permanent_address)
-            setHighlightAddress(true)
-            setTimeout(() => setHighlightAddress(false), 1500)
           }
         }
       } else {
@@ -203,8 +194,8 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
     setIdNumber(user.idNumber || '')
     setIdDate(toInputDate(user.idDate))
     setIdPlace(user.idPlace || '')
-    setPob(user.pob || '')
     setDob(toInputDate(user.dob))
+    setPob(user.pob || '')
     setPermanentAddress(user.permanentAddress || '')
     setCccdFront(getCccdUrl(user.cccdFront))
     setCccdBack(getCccdUrl(user.cccdBack))
@@ -233,6 +224,11 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       }
     }
 
+    // Default fallbacks for dob, pob, permanentAddress to prevent validation issues
+    const finalDob = formattedDob || user.dob || '01/01/2000'
+    const finalPob = pob || user.pob || 'Việt Nam'
+    const finalPermanentAddress = permanentAddress || user.permanentAddress || 'Việt Nam'
+
     try {
       const res = await fetch('/api/profile/cccd', {
         method: 'POST',
@@ -241,9 +237,9 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
           id_number: idNumber,
           id_date: formattedIdDate,
           id_place: idPlace,
-          pob,
-          dob: formattedDob,
-          permanent_address: permanentAddress,
+          pob: finalPob,
+          dob: finalDob,
+          permanent_address: finalPermanentAddress,
           cccd_front: cccdFront.startsWith('data:image') ? cccdFront : null,
           cccd_back: cccdBack.startsWith('data:image') ? cccdBack : null
         })
@@ -367,16 +363,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
               <div className="flex items-start gap-3">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-calendar-day"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày sinh</span>
-                  <span className="text-xs font-black text-slate-800">{toDisplayDate(user.dob)}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
@@ -385,33 +371,13 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-building-columns"></i>
                 </div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi cấp</span>
                   <span className="text-xs font-black text-slate-800 leading-relaxed">{user.idPlace || 'Chưa cập nhật'}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-map-location-dot"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Quê quán (Nơi sinh)</span>
-                  <span className="text-xs font-black text-slate-800 leading-relaxed">{user.pob || 'Chưa cập nhật'}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-house-user"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi thường trú</span>
-                  <span className="text-xs font-black text-slate-800 leading-relaxed">{user.permanentAddress || 'Chưa cập nhật'}</span>
                 </div>
               </div>
             </div>
@@ -534,7 +500,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
           {/* Form Fields Group */}
           <div className="space-y-4 pt-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {/* Số CCCD */}
               <div className="space-y-1 text-left">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số CCCD / CMND (12 số)</label>
@@ -550,22 +516,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 />
               </div>
 
-              {/* Ngày sinh */}
-              <div className="space-y-1 text-left">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
-                <input 
-                  type="date" 
-                  value={dob} 
-                  onChange={(e) => setDob(e.target.value)} 
-                  required
-                  className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer ${
-                    highlightDob ? 'ocr-highlight' : ''
-                  }`}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Ngày cấp */}
               <div className="space-y-1 text-left">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày cấp</label>
@@ -591,38 +541,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   placeholder="Ví dụ: Cục Cảnh sát QLHC về TTXH"
                   className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition ${
                     highlightIdPlace ? 'ocr-highlight' : ''
-                  }`}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {/* Quê quán */}
-              <div className="space-y-1 text-left">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quê quán (Nơi sinh)</label>
-                <input 
-                  type="text" 
-                  value={pob} 
-                  onChange={(e) => setPob(e.target.value)} 
-                  required
-                  placeholder="Ví dụ: Ba Đình, Hà Nội"
-                  className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition ${
-                    highlightPob ? 'ocr-highlight' : ''
-                  }`}
-                />
-              </div>
-
-              {/* Nơi thường trú */}
-              <div className="space-y-1 text-left">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Nơi thường trú</label>
-                <input 
-                  type="text" 
-                  value={permanentAddress} 
-                  onChange={(e) => setPermanentAddress(e.target.value)} 
-                  required
-                  placeholder="Ví dụ: 123 Nguyễn Huệ, Quận 1, TP.HCM"
-                  className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition ${
-                    highlightAddress ? 'ocr-highlight' : ''
                   }`}
                 />
               </div>
@@ -683,16 +601,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
               <div className="flex items-start gap-3">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-calendar-day"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày sinh</span>
-                  <span className="text-xs font-black text-slate-800">{toDisplayDate(user.dob)}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-calendar-check"></i>
                 </div>
                 <div>
@@ -701,33 +609,13 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-building-columns"></i>
                 </div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi cấp</span>
                   <span className="text-xs font-black text-slate-800 leading-relaxed">{user.idPlace || 'Chưa cập nhật'}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-map-location-dot"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Quê quán (Nơi sinh)</span>
-                  <span className="text-xs font-black text-slate-800 leading-relaxed">{user.pob || 'Chưa cập nhật'}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-house-user"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi thường trú</span>
-                  <span className="text-xs font-black text-slate-800 leading-relaxed">{user.permanentAddress || 'Chưa cập nhật'}</span>
                 </div>
               </div>
             </div>
