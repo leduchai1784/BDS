@@ -121,10 +121,10 @@ export default function ProfilePageClient({
                     
                     <button 
                       onClick={() => handleTabChange('profile', 'avatar')}
-                      className="absolute bottom-0.5 left-0.5 w-6 h-6 rounded-full bg-white hover:bg-slate-50 text-slate-500 hover:text-primary border border-slate-200 shadow-md flex items-center justify-center cursor-pointer transition active:scale-90"
+                      className="absolute bottom-0.5 left-0.5 w-6 h-6 rounded-full bg-white hover:bg-slate-50 text-slate-500 hover:text-primary border border-slate-200 shadow-md flex items-center justify-center cursor-pointer transition active:scale-90 z-10"
                       title="Thay đổi ảnh đại diện"
                     >
-                      <i className="fa-solid fa-camera text-[9px]" />
+                      <i className="fa-solid fa-camera text-[9px] flex items-center justify-center" />
                     </button>
                   </div>
 
