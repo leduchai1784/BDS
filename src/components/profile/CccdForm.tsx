@@ -278,8 +278,8 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       {!isEditingCccd && (
         <div className="space-y-6 text-left">
           <div>
-            <h2 class="text-xl font-bold text-slate-800">Xác thực CCCD / CMND</h2>
-            <p class="text-xs text-slate-400 mt-1 font-semibold">Thông tin xác thực danh tính của bạn</p>
+            <h2 className="text-xl font-bold text-slate-800">Xác thực CCCD / CMND</h2>
+            <p className="text-xs text-slate-400 mt-1 font-semibold">Thông tin xác thực danh tính của bạn</p>
           </div>
 
           {/* Read-only images */}
