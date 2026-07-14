@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { createWorker } from 'tesseract.js'
 
 interface UserCccd {
   idNumber?: string | null
@@ -108,13 +109,111 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
   const [highlightIdDate, setHighlightIdDate] = useState(false)
   const [highlightIdPlace, setHighlightIdPlace] = useState(false)
 
+  // Scanning & Progress States
   const [isScanningFront, setIsScanningFront] = useState(false)
   const [isScanningBack, setIsScanningBack] = useState(false)
+  const [frontProgress, setFrontProgress] = useState(0)
+  const [backProgress, setBackProgress] = useState(0)
+
   const [isSaving, setIsSaving] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
   const frontInputRef = useRef<HTMLInputElement>(null)
   const backInputRef = useRef<HTMLInputElement>(null)
+
+  const parseOcrText = (text: string, side: 'front' | 'back') => {
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+    const spaceStrippedText = text.replace(/\s/g, '')
+
+    if (side === 'front') {
+      // 1. Số CCCD
+      const cleanedDigitsText = spaceStrippedText.replace(/[oO]/g, '0')
+      const numMatch = cleanedDigitsText.match(/\d{12}/)
+      if (numMatch) {
+        setIdNumber(numMatch[0])
+        setHighlightNum(true)
+        setTimeout(() => setHighlightNum(false), 1500)
+      }
+
+      // 2. DOB (Behind the scenes)
+      const dobMatch = spaceStrippedText.match(/(\d{2})[/-](\d{2})[/-](\d{4})/)
+      if (dobMatch) {
+        setDob(`${dobMatch[3]}-${dobMatch[2]}-${dobMatch[1]}`)
+      }
+
+      // 3. Quê quán (Behind the scenes)
+      let pobText = ''
+      for (let i = 0; i < lines.length; i++) {
+        if (/quê\s*quán|que\s*quan|origin/i.test(lines[i])) {
+          const parts = lines[i].split(/[:;]/)
+          if (parts.length > 1 && parts[1].trim().length > 3) {
+            pobText = parts[1].trim()
+          } else if (i + 1 < lines.length) {
+            pobText = lines[i + 1]
+          }
+          break
+        }
+      }
+      if (pobText) {
+        setPob(pobText.replace(/^[^a-zA-Z0-9À-ỹ]+/, ''))
+      }
+
+      // 4. Thường trú (Behind the scenes)
+      let addressText = ''
+      for (let i = 0; i < lines.length; i++) {
+        if (/thường\s*trú|thuong\s*tru|residence/i.test(lines[i])) {
+          const parts = lines[i].split(/[:;]/)
+          if (parts.length > 1 && parts[1].trim().length > 3) {
+            addressText = parts[1].trim()
+          } else if (i + 1 < lines.length) {
+            addressText = lines[i + 1]
+            if (i + 2 < lines.length && !/quốc\s*tịch|quoc\s*tich|hạn|han/i.test(lines[i + 2])) {
+              addressText += ', ' + lines[i + 2]
+            }
+          }
+          break
+        }
+      }
+      if (addressText) {
+        setPermanentAddress(addressText.replace(/^[^a-zA-Z0-9À-ỹ]+/, ''))
+      }
+    } else {
+      // Back side
+      // 1. Ngày cấp
+      const dobMatch = spaceStrippedText.match(/(\d{2})[/-](\d{2})[/-](\d{4})/)
+      if (dobMatch) {
+        setIdDate(`${dobMatch[3]}-${dobMatch[2]}-${dobMatch[1]}`)
+        setHighlightIdDate(true)
+        setTimeout(() => setHighlightIdDate(false), 1500)
+      } else {
+        const dayThangNamMatch = text.match(/(?:ngày|ngay)\s*(\d{1,2})\s*(?:tháng|thang)\s*(\d{1,2})\s*(?:năm|nam)\s*(\d{4})/i)
+        if (dayThangNamMatch) {
+          setIdDate(`${dayThangNamMatch[3]}-${dayThangNamMatch[2].padStart(2, '0')}-${dayThangNamMatch[1].padStart(2, '0')}`)
+          setHighlightIdDate(true)
+          setTimeout(() => setHighlightIdDate(false), 1500)
+        }
+      }
+
+      // 2. Nơi cấp
+      let issuePlace = ''
+      const normalizedText = text.toLowerCase()
+      if (normalizedText.includes('cục trưởng') || normalizedText.includes('cuc truong') || normalizedText.includes('cảnh sát') || normalizedText.includes('canh sat')) {
+        issuePlace = 'Cục trưởng Cục Cảnh sát quản lý hành chính về trật tự xã hội'
+      } else {
+        for (const line of lines) {
+          if (/cục|cuc|công\s*an|cong\s*an/i.test(line)) {
+            issuePlace = line
+            break
+          }
+        }
+      }
+      if (issuePlace) {
+        setIdPlace(issuePlace)
+        setHighlightIdPlace(true)
+        setTimeout(() => setHighlightIdPlace(false), 1500)
+      }
+    }
+  }
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
     const file = e.target.files?.[0]
@@ -122,8 +221,10 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
     if (side === 'front') {
       setIsScanningFront(true)
+      setFrontProgress(0)
     } else {
       setIsScanningBack(true)
+      setBackProgress(0)
     }
     setErrorMsg('')
 
@@ -137,52 +238,31 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
         setCccdBack(base64Data)
       }
 
-      // Triggers Tesseract OCR scan API
-      const res = await fetch('/api/profile/scan-cccd', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Data, side })
-      })
-
-      const resData = await res.json()
-      if (res.ok && resData.success && resData.data) {
-        const parsed = resData.data
-        if (side === 'front') {
-          if (parsed.number) {
-            setIdNumber(parsed.number)
-            setHighlightNum(true)
-            setTimeout(() => setHighlightNum(false), 1500)
-          }
-          if (parsed.dob) {
-            setDob(parsed.dob)
-          }
-          if (parsed.pob) {
-            setPob(parsed.pob)
-          }
-          if (parsed.permanent_address) {
-            setPermanentAddress(parsed.permanent_address)
-          }
-        } else {
-          if (parsed.issue_date) {
-            setIdDate(parsed.issue_date)
-            setHighlightIdDate(true)
-            setTimeout(() => setHighlightIdDate(false), 1500)
-          }
-          if (parsed.issue_place) {
-            setIdPlace(parsed.issue_place)
-            setHighlightIdPlace(true)
-            setTimeout(() => setHighlightIdPlace(false), 1500)
-          }
-          if (parsed.permanent_address && !permanentAddress) {
-            setPermanentAddress(parsed.permanent_address)
+      // Run Tesseract OCR scan directly on client-side
+      const worker = await createWorker('vie', 1, {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            const pct = Math.round(m.progress * 100)
+            if (side === 'front') {
+              setFrontProgress(pct)
+            } else {
+              setBackProgress(pct)
+            }
           }
         }
-      } else {
-        setErrorMsg(resData.message || 'Không thể nhận dạng hình ảnh tự động. Vui lòng nhập thủ công.')
-      }
-    } catch (err) {
+      })
+      const { data: { text } } = await worker.recognize(base64Data)
+      await worker.terminate()
+
+      console.log(`--- Client-side Tesseract OCR Text (${side}) ---`)
+      console.log(text)
+      console.log('------------------------------------------------')
+
+      parseOcrText(text, side)
+
+    } catch (err: any) {
       console.error(err)
-      setErrorMsg('Không thể quét ảnh tự động do sự cố kết nối OCR. Vui lòng nhập thủ công.')
+      setErrorMsg('Không thể quét ảnh tự động. Vui lòng thử lại hoặc điền thủ công.')
     } finally {
       setIsScanningFront(false)
       setIsScanningBack(false)
@@ -391,13 +471,28 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   <div className="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20">
                     <div className="scanner-line"></div>
                     <i className="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-emerald-400"></i>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt trước...</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt trước... {frontProgress}%</span>
                   </div>
                 )}
 
                 {cccdFront ? (
                   <div className="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
                     <img src={cccdFront} className="w-full h-full object-cover" alt="Mặt trước CCCD" />
+                    
+                    {/* Delete/Reset Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setCccdFront('')
+                        setIdNumber('')
+                      }}
+                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95"
+                      title="Xóa ảnh"
+                    >
+                      <i className="fa-solid fa-trash text-xs"></i>
+                    </button>
+
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                       <span className="text-white text-xs font-bold"><i className="fa-solid fa-camera mr-1"></i> Thay đổi</span>
                     </div>
@@ -430,13 +525,29 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   <div className="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20">
                     <div className="scanner-line"></div>
                     <i className="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-emerald-400"></i>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt sau...</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt sau... {backProgress}%</span>
                   </div>
                 )}
 
                 {cccdBack ? (
                   <div className="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
                     <img src={cccdBack} className="w-full h-full object-cover" alt="Mặt sau CCCD" />
+                    
+                    {/* Delete/Reset Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setCccdBack('')
+                        setIdDate('')
+                        setIdPlace('')
+                      }}
+                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95"
+                      title="Xóa ảnh"
+                    >
+                      <i className="fa-solid fa-trash text-xs"></i>
+                    </button>
+
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                       <span className="text-white text-xs font-bold"><i className="fa-solid fa-camera mr-1"></i> Thay đổi</span>
                     </div>
