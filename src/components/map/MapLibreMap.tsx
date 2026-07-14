@@ -7,7 +7,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 interface MapLibreMapProps {
   properties: any[]
   activeId: string | null
-  setActiveId: (id: string | null) => void
+  setActiveId: (id: string | null | ((prev: string | null) => string | null)) => void
   hoveredId: string | null
 }
 
@@ -180,11 +180,21 @@ export default function MapLibreMap({
         })
       })
 
-      // Click on marker bubble triggers centering and popup
+      // Listen for popup closing to reset active state
+      popup.on('close', () => {
+        setActiveId((current: string | null) => current === p.id ? null : current)
+      })
+
+      // Click on marker bubble triggers centering and popup, or toggle close if already active
       el.addEventListener('click', (e) => {
         e.stopPropagation()
-        setActiveId(p.id)
-        map.flyTo({ center: [lng, lat], zoom: 14.5, duration: 600 })
+        if (popup.isOpen()) {
+          popup.remove()
+          setActiveId(null)
+        } else {
+          setActiveId(p.id)
+          map.flyTo({ center: [lng, lat], zoom: 14.5, duration: 600 })
+        }
       })
 
       markersRef.current[p.id] = marker
@@ -212,7 +222,12 @@ export default function MapLibreMap({
       updateMarkerStyle(el, isActive, isHovered, priceLabel)
       
       // Force MapLibre to recalculate positioning offset based on new element dimensions
-      marker.setLngLat(marker.getLngLat())
+      // Wrap in requestAnimationFrame to ensure browser has completed layout reflow
+      requestAnimationFrame(() => {
+        if (markersRef.current[id]) {
+          markersRef.current[id].setLngLat(marker.getLngLat())
+        }
+      })
     })
   }, [hoveredId, activeId, properties])
 
