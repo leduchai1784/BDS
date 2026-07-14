@@ -38,6 +38,7 @@ export default function ProfilePageClient({
   const [activeTab, setActiveTab] = useState('profile')
   const [activeSubTab, setActiveSubTab] = useState('info') // info, password, cccd, avatar
   const [user, setUser] = useState(initialUser)
+  const [profileMenuOpen, setProfileMenuOpen] = useState(true)
 
   // Parse tab search params on load
   useEffect(() => {
@@ -168,17 +169,29 @@ export default function ProfilePageClient({
                 <nav className="flex flex-col border-b lg:border-b-0 border-slate-100 pb-4">
                   {/* Info dropdown menu */}
                   <button 
-                    onClick={() => handleTabChange('profile', 'info')}
-                    className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition focus:outline-none w-full text-left ${
-                      activeTab === 'profile' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                    onClick={() => {
+                      if (activeTab === 'profile') {
+                        setProfileMenuOpen(!profileMenuOpen)
+                      } else {
+                        handleTabChange('profile', 'info')
+                        setProfileMenuOpen(true)
+                      }
+                    }}
+                    className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition focus:outline-none w-full text-left ${
+                      activeTab === 'profile' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-650 border-transparent hover:bg-slate-50 hover:text-primary'
                     }`}
                   >
-                    <i className="fa-solid fa-user-gear text-sm" />
-                    <span>Thông tin & Bảo mật</span>
+                    <div className="flex items-center space-x-3">
+                      <i className="fa-solid fa-user-gear text-sm" />
+                      <span>Thông tin & Bảo mật</span>
+                    </div>
+                    <i className={`fa-solid fa-chevron-down text-[10px] transition-transform duration-200 ml-2 ${
+                      activeTab === 'profile' && profileMenuOpen ? 'rotate-180 text-primary' : 'text-slate-400'
+                    }`} />
                   </button>
 
-                  {/* Subtabs list (Only active if profile tab selected) */}
-                  {activeTab === 'profile' && (
+                  {/* Subtabs list (Only active if profile tab selected and menu is expanded) */}
+                  {activeTab === 'profile' && profileMenuOpen && (
                     <div className="pl-9 pr-4 py-2 space-y-1 bg-slate-50/50 border-l border-slate-100/80">
                       <button 
                         onClick={() => handleTabChange('profile', 'info')}
@@ -208,16 +221,6 @@ export default function ProfilePageClient({
                       >
                         <i className="fa-solid fa-id-card text-[10px]" />
                         <span>Xác thực CCCD</span>
-                      </button>
-
-                      <button 
-                        onClick={() => handleTabChange('profile', 'avatar')}
-                        className={`flex items-center space-x-2.5 px-3 py-2 rounded-xl text-[11px] w-full text-left transition ${
-                          activeSubTab === 'avatar' ? 'text-primary font-black bg-primary/10' : 'text-slate-500 font-semibold hover:text-primary'
-                        }`}
-                      >
-                        <i className="fa-solid fa-camera text-[10px]" />
-                        <span>Ảnh đại diện</span>
                       </button>
                     </div>
                   )}
