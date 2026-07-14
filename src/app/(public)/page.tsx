@@ -6,11 +6,21 @@ import ProjectSlider from '@/components/home/ProjectSlider'
 import DemandSlider from '@/components/home/DemandSlider'
 import VideoShowcase from '@/components/home/VideoShowcase'
 import NewsTabs from '@/components/home/NewsTabs'
+import Pagination from '@/components/property/Pagination'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-export default async function HomePage() {
+interface HomePageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const resolvedParams = await searchParams
+  const page = Number(resolvedParams.page || 1)
+  const limit = 8
+  const startIndex = (page - 1) * limit
+
   // 1. Fetch Database properties (approved, not deleted)
   const dbProperties = await prisma.property.findMany({
     where: {
@@ -54,15 +64,18 @@ export default async function HomePage() {
   const combined = [...dbList, ...nksList]
 
   // 4. Filter and slice
-  // Tin đăng nổi bật (Featured Listings): only isVip === true, sorted by latest date, take 8
-  const featuredList = combined
+  // Tin đăng nổi bật (Featured Listings): only isVip === true, sorted by latest date
+  const featuredListAll = combined
     .filter(p => p.isVip)
     .sort((a, b) => {
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
       return dateB - dateA
     })
-    .slice(0, 8)
+
+  const totalFeatured = featuredListAll.length
+  const totalFeaturedPages = Math.ceil(totalFeatured / limit)
+  const featuredList = featuredListAll.slice(startIndex, startIndex + limit)
 
   // Tin đăng mới nhất (Latest Listings): sorted by latest date, take 4
   const latestList = combined
@@ -114,19 +127,8 @@ export default async function HomePage() {
               ))}
             </div>
             
-            {/* Pagination Section (Static mockup to match PHP homepage) */}
-            <div className="flex justify-center mt-12">
-              <nav className="inline-flex space-x-1 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm" aria-label="Pagination">
-                <button type="button" className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition cursor-pointer">
-                  <i className="fa-solid fa-chevron-left text-xs"></i>
-                </button>
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-white font-bold shadow-md shadow-primary/20 text-xs">1</span>
-                <button type="button" className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition font-bold text-xs cursor-pointer">2</button>
-                <button type="button" className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition font-bold text-xs cursor-pointer">3</button>
-                <span className="inline-flex items-center justify-center w-10 h-10 text-slate-400 text-xs font-semibold">...</span>
-                <button type="button" className="inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition font-bold text-xs cursor-pointer">12</button>
-              </nav>
-            </div>
+            {/* Pagination Section (Functional) */}
+            <Pagination currentPage={page} totalPages={totalFeaturedPages} />
           </>
         ) : (
           <div className="text-center py-12 bg-white rounded-3xl border border-slate-100/80 p-8 shadow-sm">
