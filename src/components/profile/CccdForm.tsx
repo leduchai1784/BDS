@@ -481,24 +481,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 {cccdFront ? (
                   <div className="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
                     <img src={cccdFront} className="w-full h-full object-cover" alt="Mặt trước CCCD" />
-                    
-                    {/* Delete/Reset Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        setCccdFront('')
-                        if (frontInputRef.current) {
-                          frontInputRef.current.value = ''
-                        }
-                      }}
-                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95 animate-fadeIn"
-                      title="Xóa ảnh"
-                    >
-                      <i className="fa-solid fa-trash text-xs"></i>
-                    </button>
-
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                       <span className="text-white text-xs font-bold"><i className="fa-solid fa-camera mr-1"></i> Thay đổi</span>
                     </div>
@@ -541,24 +523,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 {cccdBack ? (
                   <div className="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
                     <img src={cccdBack} className="w-full h-full object-cover" alt="Mặt sau CCCD" />
-                    
-                    {/* Delete/Reset Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        setCccdBack('')
-                        if (backInputRef.current) {
-                          backInputRef.current.value = ''
-                        }
-                      }}
-                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95 animate-fadeIn"
-                      title="Xóa ảnh"
-                    >
-                      <i className="fa-solid fa-trash text-xs"></i>
-                    </button>
-
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                       <span className="text-white text-xs font-bold"><i className="fa-solid fa-camera mr-1"></i> Thay đổi</span>
                     </div>
