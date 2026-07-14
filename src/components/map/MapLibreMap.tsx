@@ -21,27 +21,22 @@ function updateMarkerStyle(
   el.style.width = 'max-content'
   el.style.display = 'inline-flex'
   
-  // Preserve MapLibre's internal classes so they are not wiped out by className assignment
-  const isMapLibre = el.classList.contains('maplibregl-marker') || el.className.includes('maplibregl-marker')
-  const anchorClass = Array.from(el.classList).find(c => c.startsWith('maplibregl-marker-anchor-'))
-  
-  const classes = ['custom-price-marker', 'text-[11px]', 'font-black', 'px-2.5', 'py-1.5', 'rounded-full', 'shadow-lg', 'border-2', 'cursor-pointer', 'flex', 'items-center', 'justify-center', 'transition-colors', 'duration-200']
-  
-  if (isMapLibre) classes.push('maplibregl-marker')
-  if (anchorClass) classes.push(anchorClass)
+  // Safe base styling classes
+  el.classList.add('custom-price-marker', 'text-[11px]', 'font-black', 'px-2.5', 'py-1.5', 'rounded-full', 'shadow-lg', 'border-2', 'cursor-pointer', 'flex', 'items-center', 'justify-center', 'transition-colors', 'duration-200')
   
   if (isActive) {
-    classes.push('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30')
+    el.classList.add('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30')
+    el.classList.remove('text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700', 'bg-cyan-700', 'scale-105', 'z-20')
     el.innerHTML = `<span class="flex items-center text-xs font-black"><i class="fa-solid fa-circle-check text-emerald-500 mr-1 text-[13px]"></i>${priceLabel}</span>`
   } else if (isHovered) {
-    classes.push('text-white', 'border-white', 'bg-cyan-700', 'scale-105', 'z-20')
+    el.classList.add('text-white', 'border-white', 'bg-cyan-700', 'scale-105', 'z-20')
+    el.classList.remove('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30', 'bg-cyan-600', 'hover:bg-cyan-700')
     el.innerHTML = priceLabel
   } else {
-    classes.push('text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700')
+    el.classList.add('text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700')
+    el.classList.remove('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30', 'bg-cyan-700', 'scale-105', 'z-20')
     el.innerHTML = priceLabel
   }
-  
-  el.className = classes.join(' ')
 }
 
 export default function MapLibreMap({
@@ -220,14 +215,6 @@ export default function MapLibreMap({
       const priceLabel = property ? property.priceLabel : ''
 
       updateMarkerStyle(el, isActive, isHovered, priceLabel)
-      
-      // Force MapLibre to recalculate positioning offset based on new element dimensions
-      // Wrap in requestAnimationFrame to ensure browser has completed layout reflow
-      requestAnimationFrame(() => {
-        if (markersRef.current[id]) {
-          markersRef.current[id].setLngLat(marker.getLngLat())
-        }
-      })
     })
   }, [hoveredId, activeId, properties])
 
