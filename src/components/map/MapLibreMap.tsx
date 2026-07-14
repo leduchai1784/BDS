@@ -111,26 +111,41 @@ export default function MapLibreMap({
       updateMarkerStyle(el, activeId === p.id, false, p.priceLabel)
 
       const imgUrl = p.imagePath || '/images/apartment_placeholder.png'
+      const typeLabel = (p.propertyType === 'apartment' ? 'Căn hộ' :
+                         p.propertyType === 'house' ? 'Nhà riêng' :
+                         p.propertyType === 'office' ? 'Văn phòng' :
+                         p.propertyType === 'premises' ? 'Mặt bằng' :
+                         p.propertyType === 'room' ? 'Phòng trọ' : 'Bất động sản').toUpperCase()
 
-      // Detailed popup HTML
+      // Detailed popup HTML (Synchronized with Laravel markup)
       const popupHTML = `
         <div class="w-[240px] text-left relative bg-white">
+          <!-- Image Container with Absolute Badges -->
           <div class="relative w-full h-28 overflow-hidden rounded-t-2xl">
             <a href="/property/${p.id}" class="block w-full h-full">
               <img src="${imgUrl}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
             </a>
+            <!-- Property Type Badge -->
+            <span class="absolute top-2 left-2 bg-[#0077bb] text-white text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-wide">
+              ${typeLabel}
+            </span>
+            <!-- Close Button Mock -->
+            <button onclick="window.activeMapPopup?.remove()" class="absolute top-2 right-2 w-6 h-6 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 shadow-md transition focus:outline-none z-10">
+              <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
           </div>
           
-          <div class="p-3.5 text-slate-800">
-            <h4 class="text-[13px] font-black text-slate-850 line-clamp-1 hover:text-cyan-600 transition mb-1 text-left">
+          <!-- Body Info -->
+          <div class="p-4 text-slate-800">
+            <h4 class="text-[13px] font-black text-slate-800 line-clamp-1 hover:text-[#0077bb] transition mb-1 text-left">
               <a href="/property/${p.id}">${p.title}</a>
             </h4>
             <p class="text-[10px] font-semibold text-slate-400 truncate mb-3 text-left">
               ${p.address}
             </p>
-            <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-              <span class="text-[13px] font-black text-cyan-600">${p.priceLabel}</span>
-              <a href="/property/${p.id}" class="text-[10px] font-black text-cyan-600 hover:underline flex items-center gap-0.5">
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span class="text-[13px] font-black text-[#0077bb]">${p.priceLabel}</span>
+              <a href="/property/${p.id}" class="text-[10px] font-black text-[#0077bb] hover:underline flex items-center gap-0.5">
                 Chi tiết <i class="fa-solid fa-arrow-right text-[8px]"></i>
               </a>
             </div>
@@ -139,7 +154,7 @@ export default function MapLibreMap({
       `
 
       const popup = new maplibregl.Popup({
-        offset: 20,
+        offset: 25,
         closeButton: false,
         closeOnClick: true,
         anchor: 'bottom'
@@ -154,6 +169,9 @@ export default function MapLibreMap({
       // Listen for popup opening
       popup.on('open', () => {
         setActiveId(p.id)
+        if (typeof window !== 'undefined') {
+          ;(window as any).activeMapPopup = popup
+        }
         // Close all other popups
         Object.entries(markersRef.current).forEach(([id, m]) => {
           if (id !== p.id && m.getPopup().isOpen()) {
