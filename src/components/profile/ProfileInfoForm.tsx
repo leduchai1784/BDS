@@ -12,6 +12,9 @@ interface UserProfile {
   province?: string | null
   district?: string | null
   ward?: string | null
+  addProvince?: string | null
+  addDistrict?: string | null
+  addWard?: string | null
   intro?: string | null
   website?: string | null
 }
@@ -28,6 +31,7 @@ interface Ward {
 
 interface WardWithDistrict extends Ward {
   DistrictName: string
+  DistrictId: string
 }
 
 interface District {
@@ -93,21 +97,26 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
       .then((data: Province[]) => {
         setProvinces(data)
         
-        // Initial match for user's province
-        if (user.province) {
-          const matchedProv = data.find(p => p.Name.toLowerCase() === user.province?.toLowerCase())
+        // Initial match for user's province (by ID or by Name)
+        const savedProvince = user.addProvince || user.province
+        if (savedProvince) {
+          const searchVal = savedProvince.toLowerCase()
+          const matchedProv = data.find(p => p.Id.toLowerCase() === searchVal || p.Name.toLowerCase() === searchVal)
           if (matchedProv) {
             setSelectedProvince(matchedProv)
             setProvinceSearch(matchedProv.Name)
             
-            // Match user's ward (without district dropdown, look through all districts)
-            if (user.ward) {
+            // Match user's ward (by ID or by Name)
+            const savedWard = user.addWard || user.ward
+            if (savedWard) {
+              const searchWardVal = savedWard.toLowerCase()
               for (const dist of matchedProv.Districts) {
-                const matchedW = dist.Wards.find(w => w.Name.toLowerCase() === user.ward?.toLowerCase())
+                const matchedW = dist.Wards.find(w => w.Id.toLowerCase() === searchWardVal || w.Name.toLowerCase() === searchWardVal)
                 if (matchedW) {
                   setSelectedWard({
                     ...matchedW,
-                    DistrictName: dist.Name
+                    DistrictName: dist.Name,
+                    DistrictId: dist.Id
                   })
                   setWardSearch(matchedW.Name)
                   break
@@ -118,7 +127,7 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
         }
       })
       .catch(err => console.error('Failed to load provinces list:', err))
-  }, [user.province, user.ward])
+  }, [user.province, user.addProvince, user.ward, user.addWard])
 
   const handleCancel = () => {
     setIsEditing(false)
@@ -145,19 +154,24 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     }
 
     // Re-match initial location selections
-    if (user.province && provinces.length > 0) {
-      const matchedProv = provinces.find(p => p.Name.toLowerCase() === user.province?.toLowerCase())
+    const savedProvince = user.addProvince || user.province
+    if (savedProvince && provinces.length > 0) {
+      const searchVal = savedProvince.toLowerCase()
+      const matchedProv = provinces.find(p => p.Id.toLowerCase() === searchVal || p.Name.toLowerCase() === searchVal)
       if (matchedProv) {
         setSelectedProvince(matchedProv)
         setProvinceSearch(matchedProv.Name)
         let found = false
-        if (user.ward) {
+        const savedWard = user.addWard || user.ward
+        if (savedWard) {
+          const searchWardVal = savedWard.toLowerCase()
           for (const dist of matchedProv.Districts) {
-            const matchedW = dist.Wards.find(w => w.Name.toLowerCase() === user.ward?.toLowerCase())
+            const matchedW = dist.Wards.find(w => w.Id.toLowerCase() === searchWardVal || w.Name.toLowerCase() === searchWardVal)
             if (matchedW) {
               setSelectedWard({
                 ...matchedW,
-                DistrictName: dist.Name
+                DistrictName: dist.Name,
+                DistrictId: dist.Id
               })
               setWardSearch(matchedW.Name)
               found = true
@@ -207,6 +221,9 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
           province: selectedProvince?.Name || '',
           district: districtName || '',
           ward: selectedWard?.Name || '',
+          add_province: selectedProvince?.Id || '',
+          add_district: selectedWard?.DistrictId || '',
+          add_ward: selectedWard?.Id || '',
           intro,
           website
         })
@@ -232,7 +249,8 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     ? selectedProvince.Districts.flatMap(d => 
         d.Wards.map(w => ({
           ...w,
-          DistrictName: d.Name
+          DistrictName: d.Name,
+          DistrictId: d.Id
         }))
       )
     : []

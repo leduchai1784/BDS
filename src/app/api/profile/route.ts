@@ -15,7 +15,8 @@ export async function POST(req: Request) {
 
     const { 
       name, phone, gender, dob, 
-      province, district, ward, add_street,
+      province, district, ward, 
+      add_province, add_district, add_ward, add_street,
       permanent_address, intro, website, company_name 
     } = body
 
@@ -51,9 +52,9 @@ export async function POST(req: Request) {
         district,
         ward,
         addStreet: add_street,
-        addProvince: province,
-        addDistrict: district,
-        addWard: ward
+        addProvince: add_province ? String(add_province) : null,
+        addDistrict: add_district ? String(add_district) : null,
+        addWard: add_ward ? String(add_ward) : null
       }
     })
 

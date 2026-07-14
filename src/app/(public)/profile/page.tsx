@@ -49,6 +49,9 @@ export default async function ProfilePage() {
     district: dbUser.district || '',
     ward: dbUser.ward || '',
     addStreet: dbUser.addStreet || '',
+    addProvince: dbUser.addProvince || '',
+    addDistrict: dbUser.addDistrict || '',
+    addWard: dbUser.addWard || '',
     joinDate: dbUser.createdAt ? new Date(dbUser.createdAt).toLocaleDateString('vi-VN') : ''
   }
 
