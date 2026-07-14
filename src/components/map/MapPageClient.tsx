@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import MapSidebar from './MapSidebar'
 import MapFilterBar from './MapFilterBar'
 import dynamic from 'next/dynamic'
@@ -42,6 +42,10 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
   const [bathrooms, setBathrooms] = useState('')
   const [furniture, setFurniture] = useState('')
   const [direction, setDirection] = useState('')
+
+  // Mobile scroll synchronization controls
+  const [ignoreMobileScroll, setIgnoreMobileScroll] = useState(false)
+  const mobileScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Sync initial state values with URL parameters
   useState(() => {
@@ -157,6 +161,62 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
     setActiveId(null)
   }
 
+  // Handle activeId change to scroll mobile card slider element
+  useEffect(() => {
+    if (!activeId) return
+
+    // Mobile card scroll synchronization
+    const mobileCard = document.getElementById(`card-mobile-${activeId}`)
+    if (mobileCard) {
+      setIgnoreMobileScroll(true)
+      mobileCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+      
+      const timeout = setTimeout(() => {
+        setIgnoreMobileScroll(false)
+      }, 800)
+      return () => clearTimeout(timeout)
+    }
+  }, [activeId])
+
+  // Listen to mobile sliding container scroll events to snap active markers
+  const handleMobileScroll = () => {
+    if (ignoreMobileScroll) return
+
+    if (mobileScrollTimeoutRef.current) {
+      clearTimeout(mobileScrollTimeoutRef.current)
+    }
+
+    mobileScrollTimeoutRef.current = setTimeout(() => {
+      const container = document.getElementById('mobile-cards-slider')
+      if (!container) return
+
+      const containerCenter = container.scrollLeft + (container.offsetWidth / 2)
+      const cards = container.children
+      let closestCard: HTMLElement | null = null
+      let minDistance = Infinity
+
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i] as HTMLElement
+        if (card.style.display === 'none') continue
+
+        const cardCenter = card.offsetLeft + (card.offsetWidth / 2)
+        const distance = Math.abs(containerCenter - cardCenter)
+
+        if (distance < minDistance) {
+          minDistance = distance
+          closestCard = card
+        }
+      }
+
+      if (closestCard) {
+        const cardId = closestCard.id.replace('card-mobile-', '')
+        if (cardId && cardId !== activeId) {
+          setActiveId(cardId)
+        }
+      }
+    }, 100)
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-70px)] pt-[70px] overflow-hidden bg-slate-50">
       
@@ -186,7 +246,7 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
       </div>
 
       {/* 2. Main Flex Workspace (Sidebar + Map) */}
-      <div className="flex flex-col lg:flex-row flex-grow w-full overflow-hidden">
+      <div className="flex flex-row flex-grow w-full overflow-hidden relative">
         {/* Sidebar */}
         <MapSidebar 
           properties={filteredList}
@@ -196,7 +256,7 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
           setHoveredId={setHoveredId}
         />
 
-        {/* Map Canvas */}
+        {/* Map Canvas & Mobile Slider Container */}
         <div className="flex-grow h-full relative z-10">
           <MapLibreMap 
             properties={filteredList}
@@ -204,6 +264,68 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
             setActiveId={setActiveId}
             hoveredId={hoveredId}
           />
+
+          {/* Floating Bottom Mobile Card Slider */}
+          {filteredList.length > 0 && (
+            <div className="absolute bottom-6 left-0 right-0 z-20 md:hidden px-4">
+              <div 
+                id="mobile-cards-slider"
+                className="flex space-x-3.5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-none scroll-smooth [&::-webkit-scrollbar]:hidden"
+                onScroll={handleMobileScroll}
+              >
+                {filteredList.map(property => {
+                  const isSelected = activeId === property.id
+                  return (
+                    <div 
+                      key={property.id}
+                      id={`card-mobile-${property.id}`}
+                      onClick={() => {
+                        setActiveId(property.id)
+                      }}
+                      className={`flex-shrink-0 w-[285px] bg-white rounded-2xl p-3 border flex gap-3 text-left snap-center scroll-ml-4 transition-all duration-300 ${
+                        isSelected ? 'border-primary ring-1 ring-primary shadow-2xl scale-[0.99]' : 'border-slate-100/80 shadow-xl'
+                      }`}
+                    >
+                      {/* Mobile Thumbnail */}
+                      <div className="w-24 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 relative">
+                        <img 
+                          src={property.imagePath || '/images/apartment_placeholder.png'} 
+                          alt={property.title} 
+                          className="w-full h-full object-cover"
+                        />
+                        {property.isVip && (
+                          <span className="absolute top-1 left-1 inline-flex items-center px-1 rounded text-[7px] font-black uppercase bg-red-500 text-white">
+                            VIP
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex flex-col justify-between flex-grow min-w-0">
+                        <div>
+                          <div className="flex items-center justify-between gap-1 mb-0.5">
+                            <span className="text-sm font-extrabold text-primary tracking-tight">
+                              {property.priceLabel}
+                            </span>
+                            <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                              {property.area} m²
+                            </span>
+                          </div>
+                          <h4 className="text-[12px] font-bold line-clamp-2 leading-snug text-slate-800">
+                            {property.title}
+                          </h4>
+                        </div>
+                        <div className="flex items-center text-slate-400 text-[10px] font-medium mt-1">
+                          <i className="fa-solid fa-location-dot text-[9px] mr-1 flex-shrink-0"></i>
+                          <span className="truncate">{property.address}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
