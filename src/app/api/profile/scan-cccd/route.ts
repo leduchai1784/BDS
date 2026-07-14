@@ -1,16 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
-
-function formatOcrDate(dateStr: string): string {
-  if (!dateStr) return ''
-  const clean = dateStr.replace(/\s/g, '')
-  const parts = clean.split('/')
-  if (parts.length === 3) {
-    const [day, month, year] = parts
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-  }
-  return dateStr
-}
+import { createWorker } from 'tesseract.js'
 
 export async function POST(req: Request) {
   try {
@@ -32,55 +22,96 @@ export async function POST(req: Request) {
     }
 
     const buffer = Buffer.from(base64Data, 'base64')
-    
-    // Create Blob from Buffer
-    const blob = new Blob([buffer], { type: 'image/jpeg' })
-    const formData = new FormData()
-    formData.append('image', blob, 'cccd.jpg')
 
-    const apiKey = process.env.FPT_AI_API_KEY || 'jEg5yvUc8HLoUnesjGKVuBEyaZz1NRFa'
+    // Initialize Tesseract worker for Vietnamese language processing
+    const worker = await createWorker('vie')
+    const { data: { text } } = await worker.recognize(buffer)
+    await worker.terminate()
 
-    const response = await fetch('https://api.fpt.ai/vision/idr/vnm', {
-      method: 'POST',
-      headers: {
-        'api-key': apiKey
-      },
-      body: formData
-    })
-
-    if (!response.ok) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Không thể kết nối đến API OCR của FPT.' 
-      }, { status: 500 })
-    }
-
-    const ocrData = await response.json()
-    if (ocrData.errorCode !== undefined && ocrData.errorCode !== 0 && ocrData.errorCode !== '0') {
-      return NextResponse.json({ 
-        success: false, 
-        message: `Lỗi OCR từ FPT: ${ocrData.errorMessage || 'Không xác định'}` 
-      }, { status: 422 })
-    }
-
-    const data = ocrData.data?.[0]
-    if (!data) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Không thể nhận dạng hình ảnh.' 
-      }, { status: 422 })
-    }
+    console.log(`--- Tesseract OCR Scanned Text (${side}) ---`)
+    console.log(text)
+    console.log('-------------------------------------------')
 
     const result: Record<string, string> = {}
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+
     if (side === 'front') {
-      if (data.id) result.number = data.id
-      if (data.dob) result.dob = formatOcrDate(data.dob)
-      if (data.home) result.pob = data.home
-      if (data.address) result.permanent_address = data.address
+      // 1. Extract 12 digit number
+      const numMatch = text.match(/\b\d{12}\b/)
+      if (numMatch) {
+        result.number = numMatch[0]
+      } else {
+        // Fallback for character recognition errors (e.g. O/o instead of 0)
+        const normalizedText = text.replace(/[oO]/g, '0')
+        const genericNum = normalizedText.match(/\b\d{12}\b/)
+        if (genericNum) result.number = genericNum[0]
+      }
+
+      // 2. Extract Date of birth (dob)
+      const dobMatch = text.match(/(\d{2})[/-](\d{2})[/-](\d{4})/)
+      if (dobMatch) {
+        result.dob = `${dobMatch[3]}-${dobMatch[2]}-${dobMatch[1]}`
+      }
+
+      // 3. Extract Place of origin (pob / quê quán)
+      let pobText = ''
+      for (let i = 0; i < lines.length; i++) {
+        if (/quê\s*quán|origin/i.test(lines[i])) {
+          const parts = lines[i].split(/[:;]/)
+          if (parts.length > 1 && parts[1].trim().length > 3) {
+            pobText = parts[1].trim()
+          } else if (i + 1 < lines.length) {
+            pobText = lines[i + 1]
+          }
+          break
+        }
+      }
+      if (pobText) result.pob = pobText.replace(/^[^a-zA-Z0-9À-ỹ]+/, '')
+
+      // 4. Extract Permanent address (nơi thường trú)
+      let addressText = ''
+      for (let i = 0; i < lines.length; i++) {
+        if (/thường\s*trú|residence/i.test(lines[i])) {
+          const parts = lines[i].split(/[:;]/)
+          if (parts.length > 1 && parts[1].trim().length > 3) {
+            addressText = parts[1].trim()
+          } else if (i + 1 < lines.length) {
+            addressText = lines[i + 1]
+            if (i + 2 < lines.length && !/quốc\s*tịch|hạn/i.test(lines[i + 2])) {
+              addressText += ', ' + lines[i + 2]
+            }
+          }
+          break
+        }
+      }
+      if (addressText) result.permanent_address = addressText.replace(/^[^a-zA-Z0-9À-ỹ]+/, '')
+
     } else {
-      if (data.issue_date) result.issue_date = formatOcrDate(data.issue_date)
-      if (data.issue_loc) result.issue_place = data.issue_loc
-      if (data.address) result.permanent_address = data.address
+      // Back side
+      // 1. Extract Issue date (ngày cấp)
+      const dateMatch = text.match(/ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i)
+      if (dateMatch) {
+        result.issue_date = `${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}`
+      } else {
+        const fallbackDate = text.match(/(\d{2})[/-](\d{2})[/-](\d{4})/)
+        if (fallbackDate) {
+          result.issue_date = `${fallbackDate[3]}-${fallbackDate[2]}-${fallbackDate[1]}`
+        }
+      }
+
+      // 2. Extract Issue place (nơi cấp)
+      let issuePlace = ''
+      if (text.toLowerCase().includes('cục trưởng') || text.toLowerCase().includes('cảnh sát')) {
+        issuePlace = 'Cục trưởng Cục Cảnh sát quản lý hành chính về trật tự xã hội'
+      } else {
+        for (const line of lines) {
+          if (/cục|công\s*an/i.test(line)) {
+            issuePlace = line
+            break
+          }
+        }
+      }
+      if (issuePlace) result.issue_place = issuePlace
     }
 
     return NextResponse.json({
@@ -88,10 +119,10 @@ export async function POST(req: Request) {
       data: result
     })
   } catch (error: any) {
-    console.error('Scan CCCD error:', error)
+    console.error('Scan CCCD Tesseract error:', error)
     return NextResponse.json({ 
       success: false, 
-      message: `Đã xảy ra lỗi trong quá trình quét OCR: ${error.message}` 
+      message: `Đã xảy ra lỗi trong quá trình quét OCR bằng Tesseract: ${error.message}` 
     }, { status: 500 })
   }
 }
