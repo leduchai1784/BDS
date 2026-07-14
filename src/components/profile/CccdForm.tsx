@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 
 interface UserCccd {
   idNumber?: string | null
@@ -52,6 +52,40 @@ function getCccdUrl(path?: string | null): string {
   return `https://data.nks.vn/storage/${cleanPath.replace('storage/', '')}`
 }
 
+const compressImage = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = (e) => {
+      const img = new Image()
+      img.src = e.target?.result as string
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const maxW = 1000
+        const maxH = 1000
+        let w = img.width
+        let h = img.height
+        if (w > h) {
+          if (w > maxW) {
+            h = Math.round((h * maxW) / w)
+            w = maxW
+          }
+        } else {
+          if (h > maxH) {
+            w = Math.round((w * maxH) / h)
+            h = maxH
+          }
+        }
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', 0.85))
+      }
+    }
+  })
+}
+
 export default function CccdForm({ user, onSuccess }: CccdFormProps) {
   // Mode Selection
   const [isEditingCccd, setIsEditingCccd] = useState(!user.idNumber)
@@ -94,16 +128,9 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
     }
     setErrorMsg('')
 
-    const reader = new FileReader()
-    reader.onload = async () => {
-      if (typeof reader.result !== 'string') {
-        setIsScanningFront(false)
-        setIsScanningBack(false)
-        return
-      }
-
-      const base64Data = reader.result
-
+    try {
+      const base64Data = await compressImage(file)
+      
       // Update UI preview
       if (side === 'front') {
         setCccdFront(base64Data)
@@ -112,66 +139,63 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       }
 
       // Triggers Tesseract OCR scan API
-      try {
-        const res = await fetch('/api/profile/scan-cccd', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64Data, side })
-        })
+      const res = await fetch('/api/profile/scan-cccd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Data, side })
+      })
 
-        const resData = await res.json()
-        if (res.ok && resData.success && resData.data) {
-          const parsed = resData.data
-          if (side === 'front') {
-            if (parsed.number) {
-              setIdNumber(parsed.number)
-              setHighlightNum(true)
-              setTimeout(() => setHighlightNum(false), 1500)
-            }
-            if (parsed.dob) {
-              setDob(parsed.dob)
-              setHighlightDob(true)
-              setTimeout(() => setHighlightDob(false), 1500)
-            }
-            if (parsed.pob) {
-              setPob(parsed.pob)
-              setHighlightPob(true)
-              setTimeout(() => setHighlightPob(false), 1500)
-            }
-            if (parsed.permanent_address) {
-              setPermanentAddress(parsed.permanent_address)
-              setHighlightAddress(true)
-              setTimeout(() => setHighlightAddress(false), 1500)
-            }
-          } else {
-            if (parsed.issue_date) {
-              setIdDate(parsed.issue_date)
-              setHighlightIdDate(true)
-              setTimeout(() => setHighlightIdDate(false), 1500)
-            }
-            if (parsed.issue_place) {
-              setIdPlace(parsed.issue_place)
-              setHighlightIdPlace(true)
-              setTimeout(() => setHighlightIdPlace(false), 1500)
-            }
-            if (parsed.permanent_address && !permanentAddress) {
-              setPermanentAddress(parsed.permanent_address)
-              setHighlightAddress(true)
-              setTimeout(() => setHighlightAddress(false), 1500)
-            }
+      const resData = await res.json()
+      if (res.ok && resData.success && resData.data) {
+        const parsed = resData.data
+        if (side === 'front') {
+          if (parsed.number) {
+            setIdNumber(parsed.number)
+            setHighlightNum(true)
+            setTimeout(() => setHighlightNum(false), 1500)
+          }
+          if (parsed.dob) {
+            setDob(parsed.dob)
+            setHighlightDob(true)
+            setTimeout(() => setHighlightDob(false), 1500)
+          }
+          if (parsed.pob) {
+            setPob(parsed.pob)
+            setHighlightPob(true)
+            setTimeout(() => setHighlightPob(false), 1500)
+          }
+          if (parsed.permanent_address) {
+            setPermanentAddress(parsed.permanent_address)
+            setHighlightAddress(true)
+            setTimeout(() => setHighlightAddress(false), 1500)
           }
         } else {
-          setErrorMsg(resData.message || 'Không thể nhận dạng hình ảnh tự động. Vui lòng nhập thủ công.')
+          if (parsed.issue_date) {
+            setIdDate(parsed.issue_date)
+            setHighlightIdDate(true)
+            setTimeout(() => setHighlightIdDate(false), 1500)
+          }
+          if (parsed.issue_place) {
+            setIdPlace(parsed.issue_place)
+            setHighlightIdPlace(true)
+            setTimeout(() => setHighlightIdPlace(false), 1500)
+          }
+          if (parsed.permanent_address && !permanentAddress) {
+            setPermanentAddress(parsed.permanent_address)
+            setHighlightAddress(true)
+            setTimeout(() => setHighlightAddress(false), 1500)
+          }
         }
-      } catch (err) {
-        console.error(err)
-        setErrorMsg('Không thể quét ảnh tự động do sự cố kết nối OCR. Vui lòng nhập thủ công.')
-      } finally {
-        setIsScanningFront(false)
-        setIsScanningBack(false)
+      } else {
+        setErrorMsg(resData.message || 'Không thể nhận dạng hình ảnh tự động. Vui lòng nhập thủ công.')
       }
+    } catch (err) {
+      console.error(err)
+      setErrorMsg('Không thể quét ảnh tự động do sự cố kết nối OCR. Vui lòng nhập thủ công.')
+    } finally {
+      setIsScanningFront(false)
+      setIsScanningBack(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleCancel = () => {
