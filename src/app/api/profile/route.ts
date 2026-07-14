@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       success: true,
       message: 'Profile updated successfully',
       user: {
-        id: updatedUser.id,
+        id: Number(updatedUser.id),
         name: updatedUser.name,
         email: updatedUser.email
       }
