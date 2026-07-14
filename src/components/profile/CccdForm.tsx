@@ -148,7 +148,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Front Photo */}
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ảnh CCCD Mặt trước</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Ảnh CCCD Mặt trước</label>
           <div 
             onClick={() => !isScanningFront && frontInputRef.current?.click()}
             className="h-44 w-full rounded-2xl border-2 border-dashed border-slate-200 hover:border-primary bg-slate-50 flex items-center justify-center cursor-pointer overflow-hidden relative group transition"
@@ -183,7 +183,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
         {/* Back Photo */}
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ảnh CCCD Mặt sau</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Ảnh CCCD Mặt sau</label>
           <div 
             onClick={() => !isScanningBack && backInputRef.current?.click()}
             className="h-44 w-full rounded-2xl border-2 border-dashed border-slate-200 hover:border-primary bg-slate-50 flex items-center justify-center cursor-pointer overflow-hidden relative group transition"
@@ -221,73 +221,73 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
         {/* ID Number */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Số CCCD (12 số)</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Số CCCD (12 số)</label>
           <input 
             type="text" 
             value={idNumber} 
             onChange={(e) => setIdNumber(e.target.value)} 
             required
-            className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
         </div>
 
         {/* Date of birth */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ngày sinh</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Ngày sinh</label>
           <input 
             type="date" 
             value={dob} 
             onChange={(e) => setDob(e.target.value)} 
             required
-            className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer"
           />
         </div>
 
         {/* Place of Birth */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Quê quán</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Quê quán</label>
           <input 
             type="text" 
             value={pob} 
             onChange={(e) => setPob(e.target.value)} 
             required
-            className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
         </div>
 
         {/* Issue Date */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ngày cấp</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Ngày cấp</label>
           <input 
             type="date" 
             value={idDate} 
             onChange={(e) => setIdDate(e.target.value)} 
             required
-            className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer"
           />
         </div>
 
         {/* Issue Place */}
         <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Nơi cấp</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Nơi cấp</label>
           <input 
             type="text" 
             value={idPlace} 
             onChange={(e) => setIdPlace(e.target.value)} 
             required
-            className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
         </div>
 
         {/* Permanent Address */}
         <div className="space-y-1.5 md:col-span-2">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Nơi thường trú</label>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Nơi thường trú</label>
           <input 
             type="text" 
             value={permanentAddress} 
             onChange={(e) => setPermanentAddress(e.target.value)} 
             required
-            className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
         </div>
       </div>

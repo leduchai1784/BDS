@@ -76,7 +76,7 @@ export default function RegisterOwnerForm({ onSuccess }: RegisterOwnerFormProps)
           onChange={(e) => setPhone(e.target.value)} 
           required
           placeholder="Ví dụ: 0977.758.217"
-          className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+          className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
         />
       </div>
 
@@ -88,7 +88,7 @@ export default function RegisterOwnerForm({ onSuccess }: RegisterOwnerFormProps)
           value={companyName} 
           onChange={(e) => setCompanyName(e.target.value)} 
           placeholder="Tên công ty hoặc để trống..."
-          className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+          className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
         />
       </div>
 

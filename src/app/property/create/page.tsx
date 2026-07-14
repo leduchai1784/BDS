@@ -619,7 +619,7 @@ export default function PropertyCreatePage() {
                     onChange={(e) => setAddress(e.target.value)}
                     required 
                     placeholder="Ví dụ: Số 15, Ngõ 44, Đường Duy Tân" 
-                    className="w-full px-4 py-2.5 bg-slate-55 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition text-left"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition text-left"
                   />
                 </div>
               </div>
