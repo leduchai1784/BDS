@@ -252,7 +252,7 @@ export default function ProfilePageClient({
                   >
                     <div className="flex items-center space-x-3">
                       <i className="fa-solid fa-calendar-days text-sm" />
-                      <span>Lịch xem nhà</span>
+                      <span>Lịch hẹn</span>
                     </div>
                     <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
                       {stats.totalAppointments}
