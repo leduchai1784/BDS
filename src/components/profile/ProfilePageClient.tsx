@@ -259,6 +259,21 @@ export default function ProfilePageClient({
                     </span>
                   </button>
 
+                  {/* AI Content Studio tab (For Owner) */}
+                  {isOwner && (
+                    <button 
+                      onClick={() => handleTabChange('marketing')}
+                      className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'marketing' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <i className="fa-solid fa-wand-magic-sparkles text-sm" />
+                        <span>AI Content Studio</span>
+                      </div>
+                    </button>
+                  )}
+
                   {/* Favorites tab */}
                   <button 
                     onClick={() => handleTabChange('favorites')}
