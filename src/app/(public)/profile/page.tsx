@@ -48,6 +48,7 @@ export default async function ProfilePage() {
     province: dbUser.province || '',
     district: dbUser.district || '',
     ward: dbUser.ward || '',
+    addStreet: dbUser.addStreet || '',
     joinDate: dbUser.createdAt ? new Date(dbUser.createdAt).toLocaleDateString('vi-VN') : ''
   }
 
@@ -71,6 +72,10 @@ export default async function ProfilePage() {
         if (u.permanent_address) mergedUser.permanentAddress = u.permanent_address
         if (u.cccd_front) mergedUser.cccdFront = u.cccd_front
         if (u.cccd_back) mergedUser.cccdBack = u.cccd_back
+        if (u.add_street) mergedUser.addStreet = u.add_street
+        if (u.add_province) mergedUser.province = u.add_province
+        if (u.add_district) mergedUser.district = u.add_district
+        if (u.add_ward) mergedUser.ward = u.add_ward
       }
     } catch (e) {
       console.warn('Failed to fetch NKS profile details for dashboard sync:', e)

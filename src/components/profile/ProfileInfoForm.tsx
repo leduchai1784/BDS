@@ -6,17 +6,14 @@ interface UserProfile {
   name: string
   email: string
   phone?: string | null
-  firstname?: string | null
-  lastname?: string | null
   gender?: number | null
   dob?: string | null
-  permanentAddress?: string | null
-  intro?: string | null
-  website?: string | null
-  companyName?: string | null
+  addStreet?: string | null
   province?: string | null
   district?: string | null
   ward?: string | null
+  intro?: string | null
+  website?: string | null
 }
 
 interface ProfileInfoFormProps {
@@ -27,6 +24,10 @@ interface ProfileInfoFormProps {
 interface Ward {
   Id: string
   Name: string
+}
+
+interface WardWithDistrict extends Ward {
+  DistrictName: string
 }
 
 interface District {
@@ -44,17 +45,16 @@ interface Province {
 export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProps) {
   const [isEditing, setIsEditing] = useState(false)
 
-  // Basic Info States
+  // Form States
   const [name, setName] = useState(user.name || '')
-  const [phone, setPhone] = useState(user.phone || '')
-  const [firstname, setFirstname] = useState(user.firstname || '')
-  const [lastname, setLastname] = useState(user.lastname || '')
   const [gender, setGender] = useState(user.gender !== undefined && user.gender !== null ? String(user.gender) : '0')
-  const [dob, setDob] = useState(user.dob || '')
-  const [permanentAddress, setPermanentAddress] = useState(user.permanentAddress || '')
-  const [intro, setIntro] = useState(user.intro || '')
+  const [phone, setPhone] = useState(user.phone || '')
+  const [email, setEmail] = useState(user.email || '')
+  const [dob, setDob] = useState('') // HTML date format: yyyy-mm-dd
   const [website, setWebsite] = useState(user.website || '')
-  const [companyName, setCompanyName] = useState(user.companyName || '')
+  const [addStreet, setAddStreet] = useState(user.addStreet || '')
+  const [intro, setIntro] = useState(user.intro || '')
+  const [districtName, setDistrictName] = useState(user.district || '')
 
   // Administrative Bound States
   const [provinces, setProvinces] = useState<Province[]>([])
@@ -63,18 +63,30 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null)
   const [provinceOpen, setProvinceOpen] = useState(false)
 
-  const [districtSearch, setDistrictSearch] = useState('')
-  const [selectedDistrict, setSelectedDistrict] = useState<District | null>(null)
-  const [districtOpen, setDistrictOpen] = useState(false)
-
   const [wardSearch, setWardSearch] = useState('')
-  const [selectedWard, setSelectedWard] = useState<Ward | null>(null)
+  const [selectedWard, setSelectedWard] = useState<WardWithDistrict | null>(null)
   const [wardOpen, setWardOpen] = useState(false)
 
   const [isSaving, setIsSaving] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
-  // Load Administrative divisions
+  // Convert dd/mm/yyyy from DB to yyyy-mm-dd for input[type="date"]
+  useEffect(() => {
+    if (user.dob) {
+      if (user.dob.includes('/')) {
+        const parts = user.dob.split('/')
+        if (parts.length === 3) {
+          setDob(`${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`)
+          return
+        }
+      }
+      setDob(user.dob)
+    } else {
+      setDob('')
+    }
+  }, [user.dob])
+
+  // Load Vietnam Administrative divisions
   useEffect(() => {
     fetch('/vietnam_provinces.json')
       .then(res => res.json())
@@ -88,20 +100,17 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
             setSelectedProvince(matchedProv)
             setProvinceSearch(matchedProv.Name)
             
-            // Match user's district
-            if (user.district) {
-              const matchedDist = matchedProv.Districts.find(d => d.Name.toLowerCase() === user.district?.toLowerCase())
-              if (matchedDist) {
-                setSelectedDistrict(matchedDist)
-                setDistrictSearch(matchedDist.Name)
-                
-                // Match user's ward
-                if (user.ward) {
-                  const matchedWard = matchedDist.Wards.find(w => w.Name.toLowerCase() === user.ward?.toLowerCase())
-                  if (matchedWard) {
-                    setSelectedWard(matchedWard)
-                    setWardSearch(matchedWard.Name)
-                  }
+            // Match user's ward (without district dropdown, look through all districts)
+            if (user.ward) {
+              for (const dist of matchedProv.Districts) {
+                const matchedW = dist.Wards.find(w => w.Name.toLowerCase() === user.ward?.toLowerCase())
+                if (matchedW) {
+                  setSelectedWard({
+                    ...matchedW,
+                    DistrictName: dist.Name
+                  })
+                  setWardSearch(matchedW.Name)
+                  break
                 }
               }
             }
@@ -109,20 +118,31 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
         }
       })
       .catch(err => console.error('Failed to load provinces list:', err))
-  }, [user.province, user.district, user.ward])
+  }, [user.province, user.ward])
 
   const handleCancel = () => {
     setIsEditing(false)
     setName(user.name || '')
-    setPhone(user.phone || '')
-    setFirstname(user.firstname || '')
-    setLastname(user.lastname || '')
     setGender(user.gender !== undefined && user.gender !== null ? String(user.gender) : '0')
-    setDob(user.dob || '')
-    setPermanentAddress(user.permanentAddress || '')
-    setIntro(user.intro || '')
+    setPhone(user.phone || '')
+    setEmail(user.email || '')
     setWebsite(user.website || '')
-    setCompanyName(user.companyName || '')
+    setAddStreet(user.addStreet || '')
+    setIntro(user.intro || '')
+    setDistrictName(user.district || '')
+
+    if (user.dob) {
+      if (user.dob.includes('/')) {
+        const parts = user.dob.split('/')
+        if (parts.length === 3) {
+          setDob(`${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`)
+        }
+      } else {
+        setDob(user.dob)
+      }
+    } else {
+      setDob('')
+    }
 
     // Re-match initial location selections
     if (user.province && provinces.length > 0) {
@@ -130,21 +150,22 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
       if (matchedProv) {
         setSelectedProvince(matchedProv)
         setProvinceSearch(matchedProv.Name)
-        const matchedDist = matchedProv.Districts.find(d => d.Name.toLowerCase() === user.district?.toLowerCase())
-        if (matchedDist) {
-          setSelectedDistrict(matchedDist)
-          setDistrictSearch(matchedDist.Name)
-          const matchedWard = matchedDist.Wards.find(w => w.Name.toLowerCase() === user.ward?.toLowerCase())
-          if (matchedWard) {
-            setSelectedWard(matchedWard)
-            setWardSearch(matchedWard.Name)
-          } else {
-            setSelectedWard(null)
-            setWardSearch('')
+        let found = false
+        if (user.ward) {
+          for (const dist of matchedProv.Districts) {
+            const matchedW = dist.Wards.find(w => w.Name.toLowerCase() === user.ward?.toLowerCase())
+            if (matchedW) {
+              setSelectedWard({
+                ...matchedW,
+                DistrictName: dist.Name
+              })
+              setWardSearch(matchedW.Name)
+              found = true
+              break
+            }
           }
-        } else {
-          setSelectedDistrict(null)
-          setDistrictSearch('')
+        }
+        if (!found) {
           setSelectedWard(null)
           setWardSearch('')
         }
@@ -152,8 +173,6 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     } else {
       setSelectedProvince(null)
       setProvinceSearch('')
-      setSelectedDistrict(null)
-      setDistrictSearch('')
       setSelectedWard(null)
       setWardSearch('')
     }
@@ -165,6 +184,15 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     setIsSaving(true)
     setErrorMsg('')
 
+    // Format DOB back to dd/mm/yyyy for database
+    let formattedDob = dob
+    if (dob && dob.includes('-')) {
+      const parts = dob.split('-')
+      if (parts.length === 3) {
+        formattedDob = `${parts[2]}/${parts[1]}/${parts[0]}`
+      }
+    }
+
     try {
       const res = await fetch('/api/profile', {
         method: 'POST',
@@ -172,24 +200,22 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
         body: JSON.stringify({
           name,
           phone,
-          firstname,
-          lastname,
+          email,
           gender: Number(gender),
-          dob,
-          permanent_address: permanentAddress,
-          intro,
-          website,
-          company_name: companyName,
+          dob: formattedDob,
+          add_street: addStreet,
           province: selectedProvince?.Name || '',
-          district: selectedDistrict?.Name || '',
-          ward: selectedWard?.Name || ''
+          district: districtName || '',
+          ward: selectedWard?.Name || '',
+          intro,
+          website
         })
       })
 
       const data = await res.json()
       if (res.ok && data.success) {
         setIsEditing(false)
-        onSuccess('Cập nhật thông tin hồ sơ cá nhân thành công!')
+        onSuccess('Hồ sơ cá nhân đã được cập nhật thành công!')
       } else {
         setErrorMsg(data.message || 'Lỗi cập nhật thông tin.')
       }
@@ -201,22 +227,24 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     }
   }
 
+  // Get flat list of wards under the selected province
+  const flatWardsOfProvince: WardWithDistrict[] = selectedProvince
+    ? selectedProvince.Districts.flatMap(d => 
+        d.Wards.map(w => ({
+          ...w,
+          DistrictName: d.Name
+        }))
+      )
+    : []
+
   // Filters for searches
   const filteredProvinces = provinces.filter(p => 
     !provinceSearch || p.Name.toLowerCase().includes(provinceSearch.toLowerCase())
   )
 
-  const filteredDistricts = selectedProvince
-    ? selectedProvince.Districts.filter(d => 
-        !districtSearch || d.Name.toLowerCase().includes(districtSearch.toLowerCase())
-      )
-    : []
-
-  const filteredWards = selectedDistrict
-    ? selectedDistrict.Wards.filter(w => 
-        !wardSearch || w.Name.toLowerCase().includes(wardSearch.toLowerCase())
-      )
-    : []
+  const filteredWards = flatWardsOfProvince.filter(w => 
+    !wardSearch || w.Name.toLowerCase().includes(wardSearch.toLowerCase())
+  )
 
   return (
     <form onSubmit={handleSave} className="space-y-6 text-left">
@@ -227,28 +255,11 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
         </div>
       )}
 
-      {/* Grid 1: Basic user Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Email (Readonly) */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center px-1">
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Địa chỉ Email</label>
-            <span className="text-[9px] text-amber-500 font-bold"><i className="fa-solid fa-lock mr-1"></i> Email đăng nhập</span>
-          </div>
-          <div className="relative">
-            <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input 
-              type="email" 
-              value={user.email} 
-              disabled 
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 text-slate-400 rounded-xl text-xs font-semibold outline-none cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        {/* Display Name */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Họ và tên hiển thị</label>
+      {/* Grid 1: Name & Gender */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {/* Họ và tên */}
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Họ và tên</label>
           <div className="relative">
             <i className="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input 
@@ -262,39 +273,9 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
           </div>
         </div>
 
-        {/* Phone */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Số điện thoại liên hệ</label>
-          <div className="relative">
-            <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input 
-              type="tel" 
-              value={phone} 
-              onChange={(e) => setPhone(e.target.value)} 
-              disabled={!isEditing}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        {/* Date of Birth */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ngày sinh</label>
-          <div className="relative">
-            <i className="fa-solid fa-cake-candles absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs z-10"></i>
-            <input 
-              type="date" 
-              value={dob} 
-              onChange={(e) => setDob(e.target.value)} 
-              disabled={!isEditing}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        {/* Gender */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Giới tính</label>
+        {/* Giới tính */}
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới tính</label>
           <div className="relative">
             <i className="fa-solid fa-venus-mars absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <select 
@@ -310,10 +291,65 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
             <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
           </div>
         </div>
+      </div>
+
+      {/* Grid 2: Phone & Email */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {/* Số điện thoại */}
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Số điện thoại</label>
+          <div className="relative">
+            <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input 
+              type="tel" 
+              value={phone} 
+              onChange={(e) => setPhone(e.target.value)} 
+              disabled={!isEditing}
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        {/* Email */}
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1 flex justify-between items-center">
+            <span>Địa chỉ Email</span>
+            <span className="text-[9px] text-amber-500 normal-case font-bold"><i className="fa-solid fa-lock mr-1"></i> Email đăng nhập</span>
+          </label>
+          <div className="relative">
+            <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required
+              disabled={!isEditing}
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid 3: Dob & Website */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {/* Ngày sinh */}
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Ngày sinh</label>
+          <div className="relative">
+            <i className="fa-solid fa-cake-candles absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs z-10"></i>
+            <input 
+              type="date" 
+              value={dob} 
+              onChange={(e) => setDob(e.target.value)} 
+              disabled={!isEditing}
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
 
         {/* Website */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Website</label>
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Website</label>
           <div className="relative">
             <i className="fa-solid fa-globe absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input 
@@ -326,16 +362,123 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
             />
           </div>
         </div>
+      </div>
 
-        {/* Company Name */}
-        <div className="space-y-1.5">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Tên công ty (nếu có)</label>
+      {/* Grid 4: Address Details */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        
+        {/* Tỉnh / Thành phố */}
+        <div className="space-y-1 relative">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh / Thành phố</label>
           <div className="relative">
-            <i className="fa-solid fa-building absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <i className="fa-solid fa-map-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs z-10"></i>
             <input 
               type="text" 
-              value={companyName} 
-              onChange={(e) => setCompanyName(e.target.value)} 
+              placeholder="Chọn Tỉnh/Thành phố..."
+              value={provinceSearch}
+              onFocus={() => {
+                if (isEditing) {
+                  setProvinceOpen(true)
+                  setWardOpen(false)
+                }
+              }}
+              onChange={(e) => {
+                setProvinceSearch(e.target.value)
+                setProvinceOpen(true)
+              }}
+              disabled={!isEditing}
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+            />
+            <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+
+            {/* Dropdown Panel */}
+            {provinceOpen && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left">
+                {filteredProvinces.map(p => (
+                  <div 
+                    key={p.Id}
+                    onClick={() => {
+                      setSelectedProvince(p)
+                      setProvinceSearch(p.Name)
+                      setProvinceOpen(false)
+                      
+                      // Reset ward selection
+                      setSelectedWard(null)
+                      setWardSearch('')
+                      setDistrictName('')
+                    }}
+                    className="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                  >
+                    {p.Name}
+                  </div>
+                ))}
+                {filteredProvinces.length === 0 && (
+                  <div className="px-4 py-2.5 text-xs text-slate-400 font-semibold">Không tìm thấy kết quả</div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Phường / Xã */}
+        <div className="space-y-1 relative">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường / Xã</label>
+          <div className="relative">
+            <i className="fa-solid fa-tree-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs z-10"></i>
+            <input 
+              type="text" 
+              placeholder="Chọn Phường/Xã..."
+              value={wardSearch}
+              onFocus={() => {
+                if (isEditing && selectedProvince) {
+                  setWardOpen(true)
+                  setProvinceOpen(false)
+                }
+              }}
+              onChange={(e) => {
+                setWardSearch(e.target.value)
+                setWardOpen(true)
+              }}
+              disabled={!isEditing || !selectedProvince}
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer text-left disabled:opacity-60 disabled:cursor-not-allowed"
+            />
+            <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+
+            {/* Dropdown Panel */}
+            {wardOpen && selectedProvince && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto text-left">
+                {filteredWards.map(w => (
+                  <div 
+                    key={w.Id}
+                    onClick={() => {
+                      setSelectedWard(w)
+                      setWardSearch(w.Name)
+                      setWardOpen(false)
+                      setDistrictName(w.DistrictName) // Auto map district name
+                    }}
+                    className="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition"
+                  >
+                    {w.Name}
+                  </div>
+                ))}
+                {filteredWards.length === 0 && (
+                  <div className="px-4 py-2.5 text-xs text-slate-400 font-semibold">Không tìm thấy kết quả</div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Đường / Số nhà */}
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Đường / Số nhà</label>
+          <div className="relative">
+            <i className="fa-solid fa-road absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input 
+              type="text" 
+              value={addStreet} 
+              placeholder="Số 10 Duy Tân..."
+              onChange={(e) => setAddStreet(e.target.value)} 
               disabled={!isEditing}
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
             />
@@ -343,174 +486,26 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
         </div>
       </div>
 
-      {/* Grid 2: Administrative Boundaries Dropdowns */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        
-        {/* Province/City Selector */}
-        <div className="space-y-1.5 relative">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Tỉnh / Thành phố</label>
-          <div className="relative">
-            <i className="fa-solid fa-map-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input 
-              type="text" 
-              placeholder="Chọn Tỉnh/Thành phố..."
-              value={provinceSearch}
-              onChange={(e) => {
-                setProvinceSearch(e.target.value)
-                setProvinceOpen(true)
-              }}
-              onFocus={() => isEditing && setProvinceOpen(true)}
-              disabled={!isEditing}
-              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-            />
-            <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-          </div>
-
-          {provinceOpen && filteredProvinces.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-              {filteredProvinces.map(p => (
-                <button
-                  key={p.Id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedProvince(p)
-                    setProvinceSearch(p.Name)
-                    setProvinceOpen(false)
-                    // Reset child selects
-                    setSelectedDistrict(null)
-                    setDistrictSearch('')
-                    setSelectedWard(null)
-                    setWardSearch('')
-                  }}
-                  className="w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary transition"
-                >
-                  {p.Name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* District Selector */}
-        <div className="space-y-1.5 relative">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Quận / Huyện</label>
-          <div className="relative">
-            <i className="fa-solid fa-tree-city absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input 
-              type="text" 
-              placeholder="Chọn Quận/Huyện..."
-              value={districtSearch}
-              onChange={(e) => {
-                setDistrictSearch(e.target.value)
-                setDistrictOpen(true)
-              }}
-              onFocus={() => isEditing && selectedProvince && setDistrictOpen(true)}
-              disabled={!isEditing || !selectedProvince}
-              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-            />
-            <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-          </div>
-
-          {districtOpen && selectedProvince && filteredDistricts.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-              {filteredDistricts.map(d => (
-                <button
-                  key={d.Id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedDistrict(d)
-                    setDistrictSearch(d.Name)
-                    setDistrictOpen(false)
-                    // Reset ward select
-                    setSelectedWard(null)
-                    setWardSearch('')
-                  }}
-                  className="w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary transition"
-                >
-                  {d.Name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Ward Selector */}
-        <div className="space-y-1.5 relative">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Phường / Xã</label>
-          <div className="relative">
-            <i className="fa-solid fa-road absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input 
-              type="text" 
-              placeholder="Chọn Phường/Xã..."
-              value={wardSearch}
-              onChange={(e) => {
-                setWardSearch(e.target.value)
-                setWardOpen(true)
-              }}
-              onFocus={() => isEditing && selectedDistrict && setWardOpen(true)}
-              disabled={!isEditing || !selectedDistrict}
-              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-            />
-            <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-          </div>
-
-          {wardOpen && selectedDistrict && filteredWards.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-              {filteredWards.map(w => (
-                <button
-                  key={w.Id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedWard(w)
-                    setWardSearch(w.Name)
-                    setWardOpen(false)
-                  }}
-                  className="w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary transition"
-                >
-                  {w.Name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-      </div>
-
-      {/* Permanent Address */}
-      <div className="space-y-1.5">
-        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Địa chỉ thường trú</label>
-        <div className="relative">
-          <i className="fa-solid fa-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-          <input 
-            type="text" 
-            value={permanentAddress} 
-            onChange={(e) => setPermanentAddress(e.target.value)} 
-            disabled={!isEditing}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
-          />
-        </div>
-      </div>
-
-      {/* Intro */}
-      <div className="space-y-1.5">
-        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Giới thiệu ngắn</label>
+      {/* Giới thiệu bản thân */}
+      <div className="space-y-1">
+        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Giới thiệu bản thân</label>
         <textarea 
           value={intro} 
-          onChange={(e) => setIntro(e.target.value)} 
           rows={3}
+          placeholder="Chia sẻ một chút về bản thân bạn..."
+          onChange={(e) => setIntro(e.target.value)} 
           disabled={!isEditing}
-          placeholder="Mô tả bản thân, kinh nghiệm bất động sản..."
-          className="w-full px-4 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition resize-none disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
+          className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition disabled:opacity-65 disabled:bg-slate-100/70 disabled:cursor-not-allowed"
         />
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons Footer */}
       <div className="flex justify-end items-center gap-3 pt-4 border-t border-slate-100">
         {!isEditing ? (
           <button 
             type="button" 
             onClick={() => setIsEditing(true)}
-            className="inline-flex items-center justify-center px-6 py-2.5 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition cursor-pointer active:scale-98 min-w-[130px]"
+            className="inline-flex items-center justify-center px-6 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition cursor-pointer active:scale-98 min-w-[130px]"
           >
             <i className="fa-solid fa-pen-to-square mr-2 text-xs"></i>Chỉnh sửa
           </button>
@@ -519,20 +514,25 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
             <button 
               type="button" 
               onClick={handleCancel}
-              className="inline-flex items-center justify-center px-6 py-2.5 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer active:scale-98 min-w-[100px]"
+              className="inline-flex items-center justify-center px-6 py-3 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer active:scale-98 min-w-[100px]"
             >
               Hủy
             </button>
-
             <button 
               type="submit" 
               disabled={isSaving}
-              className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
+              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-xs font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-md shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer active:scale-98 min-w-[130px]"
             >
               {isSaving ? (
-                <span><i className="fa-solid fa-spinner animate-spin mr-1" /> Đang lưu...</span>
+                <>
+                  <i className="fa-solid fa-spinner animate-spin mr-2" />
+                  Đang lưu...
+                </>
               ) : (
-                <span><i className="fa-solid fa-floppy-disk mr-2"></i>Lưu thay đổi</span>
+                <>
+                  <i className="fa-solid fa-floppy-disk mr-2" />
+                  Lưu thay đổi
+                </>
               )}
             </button>
           </>
