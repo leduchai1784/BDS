@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PropertyCard from '@/components/property/PropertyCard'
 import ProjectGallery from '@/components/project/ProjectGallery'
+import DetailMapWrapper from '@/components/property/DetailMapWrapper'
 
 export const dynamic = 'force-dynamic'
 
@@ -128,17 +129,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             {project.latitude && project.longitude && (
               <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
                 <h2 className="text-xl font-extrabold text-slate-900 mb-4">Vị trí dự án</h2>
-                <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 relative">
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
-                    frameBorder="0" 
-                    scrolling="no" 
-                    marginHeight={0} 
-                    marginWidth={0} 
-                    src={`https://maps.google.com/maps?q=${project.latitude},${project.longitude}&hl=vi&z=14&output=embed`}
-                  ></iframe>
-                </div>
+                <DetailMapWrapper
+                  latitude={Number(project.latitude)}
+                  longitude={Number(project.longitude)}
+                  title={project.title}
+                />
               </div>
             )}
           </div>
