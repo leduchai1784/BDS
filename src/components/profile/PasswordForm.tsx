@@ -23,33 +23,43 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
   const [useSpecial, setUseSpecial] = useState(true)
   const [generatedPassText, setGeneratedPassText] = useState('')
   const [genCopied, setGenCopied] = useState(false)
+  const [showGenPass, setShowGenPass] = useState(true)
+  const [savedConfirm, setSavedConfirm] = useState(false)
 
-  const generateRandomPassword = () => {
+  const generateRandomPassword = (
+    length: number = passwordLength,
+    upper: boolean = useUpper,
+    lower: boolean = useLower,
+    num: boolean = useNumbers,
+    spec: boolean = useSpecial
+  ) => {
     let charset = ''
-    if (useUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    if (useLower) charset += 'abcdefghijklmnopqrstuvwxyz'
-    if (useNumbers) charset += '0123456789'
-    if (useSpecial) charset += '!@#$%^&*()_+~|{}[]:;?'
+    if (upper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    if (lower) charset += 'abcdefghijklmnopqrstuvwxyz'
+    if (num) charset += '0123456789'
+    if (spec) charset += '!@#$%^&*()_+~|{}[]:;?'
 
+    let activeLower = lower
+    let activeNumbers = num
     if (charset.length === 0) {
-      setUseLower(true)
-      setUseNumbers(true)
+      activeLower = true
+      activeNumbers = true
       charset = 'abcdefghijklmnopqrstuvwxyz0123456789'
     }
 
     let password = ''
     let guaranteed: string[] = []
-    if (useUpper) guaranteed.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(Math.floor(Math.random() * 26)))
-    if (useLower) guaranteed.push('abcdefghijklmnopqrstuvwxyz'.charAt(Math.floor(Math.random() * 26)))
-    if (useNumbers) guaranteed.push('0123456789'.charAt(Math.floor(Math.random() * 10)))
-    if (useSpecial) {
+    if (upper) guaranteed.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(Math.floor(Math.random() * 26)))
+    if (activeLower) guaranteed.push('abcdefghijklmnopqrstuvwxyz'.charAt(Math.floor(Math.random() * 26)))
+    if (activeNumbers) guaranteed.push('0123456789'.charAt(Math.floor(Math.random() * 10)))
+    if (spec) {
       const specials = '!@#$%^&*()_+~|{}[]:;?'
       guaranteed.push(specials.charAt(Math.floor(Math.random() * specials.length)))
     }
 
-    let remainingLength = passwordLength - guaranteed.length
+    let remainingLength = length - guaranteed.length
     if (remainingLength < 0) {
-      guaranteed = guaranteed.slice(0, passwordLength)
+      guaranteed = guaranteed.slice(0, length)
       remainingLength = 0
     }
 
@@ -67,6 +77,7 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
 
     const generated = finalPasswordArray.join('')
     setGeneratedPassText(generated)
+    setSavedConfirm(false) // Reset confirmation
   }
 
   const copyGenPass = () => {
@@ -76,9 +87,11 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
   }
 
   const applyGeneratedPassword = () => {
-    setNewPassword(generatedPassText)
-    setConfirmPassword(generatedPassText)
-    setOpenGen(false)
+    if (savedConfirm && generatedPassText) {
+      setNewPassword(generatedPassText)
+      setConfirmPassword(generatedPassText)
+      setOpenGen(false)
+    }
   }
 
   const handleSave = async (e: React.FormEvent) => {
@@ -160,8 +173,9 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
             <button 
               type="button" 
               onClick={() => {
-                setOpenGen(!openGen)
-                if(!openGen) generateRandomPassword()
+                const nextState = !openGen
+                setOpenGen(nextState)
+                if(nextState) generateRandomPassword(passwordLength, useUpper, useLower, useNumbers, useSpecial)
               }}
               className="text-[10px] font-bold text-primary hover:text-primary-hover flex items-center gap-1 transition cursor-pointer"
             >
@@ -169,64 +183,128 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
             </button>
             
             {openGen && (
-              <div className="absolute right-0 mt-2 z-50 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 space-y-4">
-                <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                  <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider">Tạo mật khẩu</span>
-                  <button type="button" onClick={() => setOpenGen(false)} className="text-slate-400 hover:text-slate-650 text-xs font-bold">×</button>
-                </div>
-                
-                {/* Result field */}
-                <div className="flex items-center gap-1.5 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
-                  <span className="text-xs font-mono font-bold select-all break-all flex-grow text-slate-700">{generatedPassText}</span>
-                  <button type="button" onClick={copyGenPass} className="text-slate-400 hover:text-primary transition text-xs shrink-0" title="Sao chép">
-                    <i className={genCopied ? "fa-solid fa-check text-green-500" : "fa-regular fa-copy"} />
+              <div className="absolute right-0 mt-2 z-50 w-64 rounded-2xl bg-white border border-slate-200 shadow-2xl p-3.5 text-left space-y-2.5 select-none">
+                <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                  <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                    <i className="fa-solid fa-wand-magic-sparkles"></i> Generate Password
+                  </span>
+                  <button type="button" onClick={() => setOpenGen(false)} className="text-slate-400 hover:text-slate-650 text-xs">
+                    <i className="fa-solid fa-xmark"></i>
                   </button>
                 </div>
                 
-                {/* Config Controls */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500 font-bold">Độ dài: <span className="text-primary font-black">{passwordLength}</span></span>
-                    <input 
-                      type="range" 
-                      min="8" 
-                      max="24" 
-                      value={passwordLength}
-                      onChange={(e) => {
-                        setPasswordLength(Number(e.target.value))
-                        setTimeout(generateRandomPassword, 50)
-                      }}
-                      className="w-36 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" 
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-600">
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={useUpper} onChange={(e) => { setUseUpper(e.target.checked); setTimeout(generateRandomPassword, 50); }} className="accent-primary w-3.5 h-3.5" />
-                      <span>Ký tự HOA</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={useLower} onChange={(e) => { setUseLower(e.target.checked); setTimeout(generateRandomPassword, 50); }} className="accent-primary w-3.5 h-3.5" />
-                      <span>Ký tự thường</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={useNumbers} onChange={(e) => { setUseNumbers(e.target.checked); setTimeout(generateRandomPassword, 50); }} className="accent-primary w-3.5 h-3.5" />
-                      <span>Chữ số (0-9)</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={useSpecial} onChange={(e) => { setUseSpecial(e.target.checked); setTimeout(generateRandomPassword, 50); }} className="accent-primary w-3.5 h-3.5" />
-                      <span>Đặc biệt</span>
-                    </label>
+                {/* Password Display Area */}
+                <div className="relative bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex items-center justify-between min-h-[38px]">
+                  <span className="text-xs font-mono font-bold text-slate-700 tracking-wide break-all select-all">
+                    {generatedPassText ? (showGenPass ? generatedPassText : '•'.repeat(generatedPassText.length)) : '***'}
+                  </span>
+                  <div className="flex items-center space-x-1.5 flex-shrink-0 ml-2">
+                    <button type="button" onClick={() => setShowGenPass(!showGenPass)} className="text-slate-400 hover:text-slate-600 p-0.5" title="Hiện/Ẩn">
+                      <i className={`fa-solid text-[10px] ${showGenPass ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                    </button>
+                    {generatedPassText && (
+                      <button type="button" onClick={copyGenPass} className="text-slate-400 hover:text-slate-600 p-0.5" title="Sao chép">
+                        <i className={`fa-solid text-[10px] ${genCopied ? 'fa-check text-green-500' : 'fa-copy'}`}></i>
+                      </button>
+                    )}
                   </div>
                 </div>
+
+                {/* Length control slider */}
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-[9px] font-extrabold uppercase text-slate-400">
+                    <span>Số lượng ký tự</span>
+                    <span className="text-xs font-bold text-slate-700">{passwordLength}</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="8" 
+                    max="32" 
+                    value={passwordLength}
+                    onChange={(e) => {
+                      const len = Number(e.target.value)
+                      setPasswordLength(len)
+                      generateRandomPassword(len, useUpper, useLower, useNumbers, useSpecial)
+                    }}
+                    className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" 
+                  />
+                </div>
                 
-                {/* Apply Button */}
+                {/* Checkboxes */}
+                <div className="space-y-1.5 text-[10px] font-bold text-slate-600 pt-0.5">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={useNumbers} 
+                      onChange={(e) => {
+                        setUseNumbers(e.target.checked)
+                        generateRandomPassword(passwordLength, useUpper, useLower, e.target.checked, useSpecial)
+                      }} 
+                      className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5" 
+                    />
+                    <span>Có ký tự số</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={useLower} 
+                      onChange={(e) => {
+                        setUseLower(e.target.checked)
+                        generateRandomPassword(passwordLength, useUpper, e.target.checked, useNumbers, useSpecial)
+                      }} 
+                      className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5" 
+                    />
+                    <span>Có ký tự thường</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={useUpper} 
+                      onChange={(e) => {
+                        setUseUpper(e.target.checked)
+                        generateRandomPassword(passwordLength, e.target.checked, useLower, useNumbers, useSpecial)
+                      }} 
+                      className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5" 
+                    />
+                    <span>Có ký tự hoa</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={useSpecial} 
+                      onChange={(e) => {
+                        setUseSpecial(e.target.checked)
+                        generateRandomPassword(passwordLength, useUpper, useLower, useNumbers, e.target.checked)
+                      }} 
+                      className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5" 
+                    />
+                    <span>Có ký tự đặc biệt</span>
+                  </label>
+                </div>
+
+                {/* Save check checkbox */}
+                <div className="pt-1.5 border-t border-slate-100">
+                  <label className="flex items-start space-x-2 cursor-pointer text-[10px] font-bold text-slate-600">
+                    <input 
+                      type="checkbox" 
+                      checked={savedConfirm} 
+                      onChange={(e) => setSavedConfirm(e.target.checked)} 
+                      className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5 mt-0.5" 
+                    />
+                    <span className="leading-tight">Tôi đã lưu lại mật khẩu mới</span>
+                  </label>
+                </div>
+
+                {/* Submit (Apply) Button */}
                 <button 
                   type="button" 
+                  disabled={!savedConfirm || !generatedPassText}
                   onClick={applyGeneratedPassword}
-                  className="w-full py-2 bg-primary hover:bg-primary-hover text-white text-[11px] font-bold rounded-xl shadow-md shadow-primary/10 transition cursor-pointer"
+                  className={`w-full py-2.5 text-xs font-bold rounded-full transition cursor-pointer text-center ${
+                    (!savedConfirm || !generatedPassText) ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary-hover active:scale-98 shadow-md'
+                  }`}
                 >
-                  Sử dụng mật khẩu này
+                  Xác nhận
                 </button>
               </div>
             )}
