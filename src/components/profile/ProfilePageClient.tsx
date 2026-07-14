@@ -166,7 +166,7 @@ export default function ProfilePageClient({
                 </div>
 
                 {/* Navigation Links */}
-                <nav className="flex flex-col border-b lg:border-b-0 border-slate-100 pb-4">
+                <nav className="flex flex-col overflow-y-auto thin-scrollbar max-h-[320px] border-b lg:border-b-0 border-slate-100 pb-4 lg:pb-6">
                   {/* Info dropdown menu */}
                   <button 
                     onClick={() => {
@@ -277,72 +277,27 @@ export default function ProfilePageClient({
                   {/* Favorites tab */}
                   <button 
                     onClick={() => handleTabChange('favorites')}
-                    className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition w-full ${
+                    className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition ${
                       activeTab === 'favorites' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <i className="fa-solid fa-heart text-sm" />
-                      <span>Tin yêu thích</span>
-                    </div>
-                    {stats.totalFavorites !== undefined && (
-                      <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                        {stats.totalFavorites}
-                      </span>
-                    )}
+                    <i className="fa-solid fa-heart text-sm" />
+                    <span>Tin yêu thích</span>
                   </button>
 
                   {/* Upgrade Role (For Tenant) */}
                   {!isOwner && (
                     <button 
                       onClick={() => handleTabChange('register_owner')}
-                      className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition w-full text-left ${
-                        activeTab === 'register_owner' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'register_owner' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-650 border-transparent hover:bg-slate-50 hover:text-primary'
                       }`}
                     >
-                      <i className="fa-solid fa-user-tie text-sm" />
-                      <span>Đăng ký làm chủ nhà</span>
+                      <i className="fa-solid fa-crown text-sm text-amber-500" />
+                      <span>Đăng ký đối tác chủ nhà</span>
                     </button>
                   )}
                 </nav>
-
-                {/* Subtabs for Mobile (shown below the main nav scrollbar on mobile, hidden on desktop) */}
-                {activeTab === 'profile' && (
-                  <div className="flex lg:hidden flex-row overflow-x-auto scrollbar-none border-t border-slate-100/70 p-2.5 gap-2 bg-slate-50/50 whitespace-nowrap w-full">
-                    <button 
-                      type="button"
-                      onClick={() => handleTabChange('profile', 'info')}
-                      className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer ${
-                        activeSubTab === 'info' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:text-primary'
-                      }`}
-                    >
-                      <i className="fa-solid fa-user text-[9px]"></i>
-                      <span>Thông tin cá nhân</span>
-                    </button>
-                    
-                    <button 
-                      type="button"
-                      onClick={() => handleTabChange('profile', 'password')}
-                      className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer ${
-                        activeSubTab === 'password' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:text-primary'
-                      }`}
-                    >
-                      <i className="fa-solid fa-key text-[9px]"></i>
-                      <span>Đổi mật khẩu</span>
-                    </button>
-                    
-                    <button 
-                      type="button"
-                      onClick={() => handleTabChange('profile', 'cccd')}
-                      className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-bold transition cursor-pointer ${
-                        activeSubTab === 'cccd' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:text-primary'
-                      }`}
-                    >
-                      <i className="fa-solid fa-id-card text-[9px]"></i>
-                      <span>Xác thực CCCD</span>
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
