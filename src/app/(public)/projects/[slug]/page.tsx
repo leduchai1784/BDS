@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import PropertyCard from '@/components/property/PropertyCard'
+import ProjectGallery from '@/components/project/ProjectGallery'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,7 +36,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     }
   }
 
-  // Fetch properties belonging to this project
+  // Fetch properties belonging to this project (both sale and rent)
   const dbProperties = await prisma.property.findMany({
     where: {
       projectId: Number(project.id),
@@ -69,96 +70,143 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   }))
 
   return (
-    <div className="bg-slate-50 min-h-screen pt-28 pb-16 text-slate-800 text-left">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div className="bg-slate-50 min-h-screen pt-24 pb-16 text-slate-800 text-left">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Breadcrumbs */}
-        <nav className="flex text-xs font-semibold text-slate-500 mb-6 space-x-2">
+        <nav className="flex text-sm font-semibold text-slate-500 mb-6 space-x-2">
           <Link href="/" className="hover:text-primary transition">Trang chủ</Link>
           <span>/</span>
-          <Link href="/projects" className="hover:text-primary transition">Dự án bất động sản</Link>
+          <Link href="/projects" className="hover:text-primary transition">Dự án</Link>
           <span>/</span>
-          <span className="text-slate-850 truncate max-w-xs">{project.title}</span>
+          <span className="text-slate-800 font-bold truncate max-w-xs">{project.title}</span>
         </nav>
 
-        {/* Project Card Info Container */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden p-6 sm:p-10 space-y-8">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Gallery / Image Slider */}
-            <div className="space-y-3">
-              <div className="w-full h-64 sm:h-[350px] rounded-2xl overflow-hidden bg-slate-100">
-                <img src={imagesArr[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80'} className="w-full h-full object-cover" alt={project.title} />
-              </div>
-              
-              {/* Secondary Thumbnails */}
-              {imagesArr.length > 1 && (
-                <div className="grid grid-cols-4 gap-2.5">
-                  {imagesArr.slice(1, 5).map((img, i) => (
-                    <div key={i} className="h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
-                      <img src={img} className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
-              )}
+        {/* Project Title Header */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">{project.investor || 'Chủ đầu tư'}</span>
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                project.status === 'selling'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : project.status === 'upcoming'
+                  ? 'bg-orange-100 text-orange-700'
+                  : 'bg-blue-100 text-blue-700'
+              }`}>
+                {project.status === 'selling' ? 'Đang mở bán' : project.status === 'upcoming' ? 'Sắp mở bán' : 'Đã bàn giao'}
+              </span>
             </div>
-
-            {/* Spec Details */}
-            <div className="space-y-5">
-              <div>
-                <span className={`inline-block px-2.5 py-0.5 rounded-md text-[9px] font-black uppercase ${
-                  project.status === 'selling'
-                    ? 'bg-emerald-50 text-emerald-650'
-                    : project.status === 'upcoming'
-                    ? 'bg-amber-50 text-amber-605'
-                    : 'bg-slate-100 text-slate-550'
-                }`}>
-                  {project.status === 'selling' ? 'Đang mở bán' : project.status === 'upcoming' ? 'Sắp mở bán' : 'Đã bàn giao'}
-                </span>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 mt-2 leading-tight">{project.title}</h1>
-                <p className="text-xs text-slate-400 font-semibold mt-1"><i className="fa-solid fa-location-dot mr-1" />{project.location}, {project.district}, {project.city}</p>
-              </div>
-
-              <div className="border-t border-b border-slate-100 py-4 grid grid-cols-2 gap-4 text-xs font-semibold">
-                <div className="space-y-1">
-                  <span className="block text-[8px] uppercase tracking-wider text-slate-400">Chủ đầu tư</span>
-                  <span className="text-slate-800 font-bold text-xs">{project.investor || 'Chưa cập nhật'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="block text-[8px] uppercase tracking-wider text-slate-400">Quy mô</span>
-                  <span className="text-slate-800 font-bold text-xs">{project.scale || 'Chưa cập nhật'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="block text-[8px] uppercase tracking-wider text-slate-400">Khoảng giá dự án</span>
-                  <span className="text-primary font-black text-xs">{project.priceRange || 'Thương lượng'}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <span className="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Giới thiệu dự án</span>
-                <p className="text-xs text-slate-500 font-medium leading-relaxed whitespace-pre-wrap">{project.description}</p>
-              </div>
-            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900">{project.title}</h1>
+            <p className="text-sm text-slate-500 mt-1 flex items-center">
+              <i className="fa-solid fa-location-dot mr-1.5 text-primary"></i> {project.location}
+            </p>
           </div>
-
+          
+          <div className="flex flex-col text-right">
+            <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Giá bán dự kiến</span>
+            <span className="text-2xl md:text-3xl font-black text-orange-500 mt-0.5">{project.priceRange || 'Liên hệ'}</span>
+          </div>
         </div>
 
-        {/* Properties in this project */}
-        <section className="space-y-6">
+        {/* Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left 2 Cols: Gallery, Description & Map */}
+          <div className="lg:col-span-2 space-y-8 text-left">
+            {/* Gallery Component */}
+            <ProjectGallery images={imagesArr} title={project.title} />
+
+            {/* Description & Overview */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+              <h2 className="text-xl font-extrabold text-slate-900 mb-4 pb-3 border-b border-slate-50">Mô tả dự án</h2>
+              <div className="prose max-w-none text-slate-650 leading-relaxed text-sm md:text-base space-y-4">
+                <p className="whitespace-pre-line leading-relaxed">{project.description}</p>
+              </div>
+            </div>
+
+            {/* Map Coordinates if available */}
+            {project.latitude && project.longitude && (
+              <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+                <h2 className="text-xl font-extrabold text-slate-900 mb-4">Vị trí dự án</h2>
+                <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 relative">
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameBorder="0" 
+                    scrolling="no" 
+                    marginHeight={0} 
+                    marginWidth={0} 
+                    src={`https://maps.google.com/maps?q=${project.latitude},${project.longitude}&hl=vi&z=14&output=embed`}
+                  ></iframe>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right 1 Col: Quick Facts & Contact CTA */}
+          <div className="space-y-8 text-left">
+            {/* Project Details Panel */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+              <h3 className="text-lg font-extrabold text-slate-900 mb-4 pb-3 border-b border-slate-50">Thông tin tổng quan</h3>
+              
+              <dl className="space-y-4 text-sm">
+                <div className="flex justify-between py-1 border-b border-slate-50 pb-2">
+                  <dt className="text-slate-400 font-semibold">Chủ đầu tư:</dt>
+                  <dd className="text-slate-800 font-extrabold text-right">{project.investor || 'Chủ đầu tư'}</dd>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-50 pb-2">
+                  <dt className="text-slate-400 font-semibold">Quy mô:</dt>
+                  <dd className="text-slate-800 font-extrabold text-right">{project.scale || 'Đang cập nhật'}</dd>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-50 pb-2">
+                  <dt className="text-slate-400 font-semibold">Trạng thái:</dt>
+                  <dd className="text-slate-800 font-extrabold text-right">
+                    {project.status === 'selling' ? 'Đang mở bán' : project.status === 'upcoming' ? 'Sắp mở bán' : 'Đã bàn giao'}
+                  </dd>
+                </div>
+                <div className="flex justify-between py-1">
+                  <dt className="text-slate-400 font-semibold">Địa chỉ:</dt>
+                  <dd className="text-slate-800 font-extrabold text-right max-w-[180px] truncate" title={project.location || undefined}>{project.location}</dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Call to action card */}
+            <div className="bg-gradient-to-br from-primary to-primary-hover rounded-3xl p-6 text-white shadow-xl shadow-primary/20">
+              <h3 className="text-lg font-extrabold mb-2">Quan tâm dự án này?</h3>
+              <p className="text-xs text-white/80 leading-relaxed mb-6">
+                Để lại thông tin liên hệ hoặc gọi điện cho chúng tôi để nhận bảng giá chính thức, tài liệu mặt bằng và chính sách bán hàng mới nhất của dự án.
+              </p>
+              <a 
+                href="tel:19001888" 
+                className="w-full inline-flex items-center justify-center py-3.5 px-4 rounded-2xl bg-white text-primary font-black hover:bg-slate-50 transition text-sm shadow-md cursor-pointer"
+              >
+                <i className="fa-solid fa-phone mr-2"></i> Gọi ngay: 1900 1888
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Project Properties section */}
+        <section className="space-y-6 text-left mt-12">
           <div className="border-b border-slate-200 pb-3">
-            <h2 className="text-lg font-black text-slate-850">Tin rao thuê thuộc dự án này ({mappedProperties.length})</h2>
+            <h2 className="text-2xl font-black text-slate-900">Bất động sản thuộc dự án này</h2>
+            <p className="text-sm text-slate-500 mt-1">Danh sách tin đăng mua bán, cho thuê thực tế đang hoạt động tại dự án {project.title}</p>
           </div>
 
           {mappedProperties.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
               {mappedProperties.map(property => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>
           ) : (
             <div className="text-center py-16 bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
-              <i className="fa-solid fa-folder-open text-slate-300 text-4xl mb-4 block" />
-              <p className="text-slate-400 text-xs font-bold">Chưa có tin rao cho thuê nào thuộc dự án này.</p>
+              <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-4 text-slate-400">
+                <i className="fa-solid fa-house-circle-xmark text-2xl" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 mb-1">Chưa có tin đăng liên quan</h3>
+              <p className="text-slate-500 text-sm">Hiện chưa có chủ nhà hoặc nhà môi giới nào đăng tin mua bán/cho thuê thuộc dự án này.</p>
             </div>
           )}
         </section>
