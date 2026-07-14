@@ -38,7 +38,7 @@ export default function ProfilePageClient({
   const [activeTab, setActiveTab] = useState('profile')
   const [activeSubTab, setActiveSubTab] = useState('info') // info, password, cccd, avatar
   const [user, setUser] = useState(initialUser)
-  const [profileMenuOpen, setProfileMenuOpen] = useState(true)
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
 
   // Parse tab search params on load
   useEffect(() => {
