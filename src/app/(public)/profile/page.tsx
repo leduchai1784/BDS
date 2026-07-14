@@ -238,9 +238,16 @@ export default async function ProfilePage() {
   const wishlistProperties = [...localWishlist, ...nksWishlist]
 
   // 7. Calculate overall stats
+  const totalViews = dbProperties.reduce((sum, p) => sum + (p.viewsCount || 0), 0)
+  const totalFavorites = await prisma.wishlist.count({
+    where: { userId }
+  })
+
   const stats = {
     totalProperties: propertiesList.length,
-    totalAppointments: tenantAppointments.length + ownerAppointments.length
+    totalAppointments: tenantAppointments.length + ownerAppointments.length,
+    totalViews,
+    totalFavorites
   }
 
   return (

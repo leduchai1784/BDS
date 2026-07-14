@@ -22,6 +22,8 @@ interface ProfilePageClientProps {
   stats: {
     totalProperties: number
     totalAppointments: number
+    totalViews?: number
+    totalFavorites?: number
   }
 }
 
@@ -285,47 +287,119 @@ export default function ProfilePageClient({
           {/* Right Column: Tab View Workspace (9/12 cols) */}
           <div className="lg:col-span-9 bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8">
             
-            {/* 1. Profile / Info tab */}
-            {activeTab === 'profile' && activeSubTab === 'info' && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-black text-slate-800">Thông tin cá nhân</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold">Cập nhật hồ sơ cá nhân và đồng bộ với cổng thông tin NKS Online.</p>
+            {/* 1. Profile Tab Wrapper */}
+            {activeTab === 'profile' && (
+              <div className="space-y-8">
+                {/* Title */}
+                <div className="pb-5 border-b border-slate-100 text-left">
+                  <h2 className="text-xl font-bold text-slate-800">Thông tin cá nhân</h2>
+                  <p className="text-xs text-slate-400 mt-1 font-semibold">Cập nhật hồ sơ và xem số liệu thống kê tài khoản của bạn.</p>
                 </div>
-                <ProfileInfoForm user={user} onSuccess={handleSuccess} />
-              </div>
-            )}
 
-            {/* 2. Profile / Password tab */}
-            {activeTab === 'profile' && activeSubTab === 'password' && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-black text-slate-800">Đổi mật khẩu tài khoản</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold">Thiết lập mật khẩu bảo mật mới.</p>
-                </div>
-                <PasswordForm onSuccess={handleSuccess} />
-              </div>
-            )}
+                {/* Statistics Cards Grid */}
+                {isOwner ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                    {/* Stat Item 1 */}
+                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary/5 text-primary flex items-center justify-center text-lg">
+                        <i className="fa-solid fa-list-check"></i>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin đã đăng</span>
+                        <span className="text-xl font-black text-slate-800">{stats.totalProperties} tin</span>
+                      </div>
+                    </div>
 
-            {/* 3. Profile / CCCD tab */}
-            {activeTab === 'profile' && activeSubTab === 'cccd' && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-black text-slate-800">Xác thực CCCD (KYC)</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold">Cung cấp ảnh mặt trước, mặt sau CCCD để xác minh danh tính tự động bằng FPT AI OCR.</p>
-                </div>
-                <CccdForm user={user} onSuccess={handleSuccess} />
-              </div>
-            )}
+                    {/* Stat Item 2 */}
+                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
+                        <i className="fa-solid fa-eye"></i>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lượt xem tin</span>
+                        <span className="text-xl font-black text-slate-800">{stats.totalViews?.toLocaleString('vi-VN') || 0} lượt</span>
+                      </div>
+                    </div>
 
-            {/* 4. Profile / Avatar tab */}
-            {activeTab === 'profile' && activeSubTab === 'avatar' && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-black text-slate-800">Ảnh đại diện</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold">Cập nhật ảnh đại diện của bạn.</p>
+                    {/* Stat Item 3 */}
+                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
+                        <i className="fa-solid fa-calendar-days"></i>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn khách đặt</span>
+                        <span className="text-xl font-black text-slate-800">{ownerAppointments.length} cuộc</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                    {/* Stat Item 1 */}
+                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg">
+                        <i className="fa-solid fa-heart"></i>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin yêu thích</span>
+                        <span className="text-xl font-black text-slate-800">{stats.totalFavorites || 0} tin</span>
+                      </div>
+                    </div>
+
+                    {/* Stat Item 2 */}
+                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
+                        <i className="fa-solid fa-calendar-days"></i>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn</span>
+                        <span className="text-xl font-black text-slate-800">{tenantAppointments.length} cuộc</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Subtab Contents */}
+                <div className="mt-8 border-t border-slate-100 pt-8">
+                  {activeSubTab === 'info' && (
+                    <div className="space-y-6 text-left">
+                      <div>
+                        <h3 className="text-sm font-black text-slate-800">Thông tin cá nhân</h3>
+                        <p className="text-[11px] text-slate-500 font-semibold">Cập nhật hồ sơ cá nhân và đồng bộ với cổng thông tin NKS Online.</p>
+                      </div>
+                      <ProfileInfoForm user={user} onSuccess={handleSuccess} />
+                    </div>
+                  )}
+
+                  {activeSubTab === 'password' && (
+                    <div className="space-y-6 text-left">
+                      <div>
+                        <h3 className="text-sm font-black text-slate-800">Đổi mật khẩu tài khoản</h3>
+                        <p className="text-[11px] text-slate-500 font-semibold">Thiết lập mật khẩu bảo mật mới.</p>
+                      </div>
+                      <PasswordForm onSuccess={handleSuccess} />
+                    </div>
+                  )}
+
+                  {activeSubTab === 'cccd' && (
+                    <div className="space-y-6 text-left">
+                      <div>
+                        <h3 className="text-sm font-black text-slate-800">Xác thực CCCD (KYC)</h3>
+                        <p className="text-[11px] text-slate-500 font-semibold">Cung cấp ảnh mặt trước, mặt sau CCCD để xác minh danh tính tự động bằng FPT AI OCR.</p>
+                      </div>
+                      <CccdForm user={user} onSuccess={handleSuccess} />
+                    </div>
+                  )}
+
+                  {activeSubTab === 'avatar' && (
+                    <div className="space-y-6 text-left">
+                      <div>
+                        <h3 className="text-sm font-black text-slate-800">Ảnh đại diện</h3>
+                        <p className="text-[11px] text-slate-500 font-semibold">Cập nhật ảnh đại diện của bạn.</p>
+                      </div>
+                      <AvatarCropper currentAvatar={user.avatar} onSuccess={handleAvatarSuccess} />
+                    </div>
+                  )}
                 </div>
-                <AvatarCropper currentAvatar={user.avatar} onSuccess={handleAvatarSuccess} />
               </div>
             )}
 
