@@ -302,43 +302,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
             <p className="text-xs text-slate-400 mt-1 font-semibold">Thông tin xác thực danh tính của bạn</p>
           </div>
 
-          {/* Read-only images */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Mặt trước */}
-            <div className="space-y-2 text-left">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt trước CCCD</label>
-              <div className="border border-slate-150 rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] overflow-hidden">
-                {cccdFront ? (
-                  <div className="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
-                    <img src={cccdFront} className="w-full h-full object-cover" alt="Mặt trước CCCD" />
-                  </div>
-                ) : (
-                  <div className="text-center py-6 flex flex-col items-center justify-center text-slate-400">
-                    <i className="fa-solid fa-image text-3xl mb-2"></i>
-                    <p className="text-xs font-bold">Chưa có ảnh mặt trước</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Mặt sau */}
-            <div className="space-y-2 text-left">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt sau CCCD</label>
-              <div className="border border-slate-150 rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] overflow-hidden">
-                {cccdBack ? (
-                  <div className="w-full h-full max-h-[160px] rounded-2xl overflow-hidden relative">
-                    <img src={cccdBack} className="w-full h-full object-cover" alt="Mặt sau CCCD" />
-                  </div>
-                ) : (
-                  <div className="text-center py-6 flex flex-col items-center justify-center text-slate-400">
-                    <i className="fa-solid fa-image text-3xl mb-2"></i>
-                    <p className="text-xs font-bold">Chưa có ảnh mặt sau</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* Info Summary Card */}
           <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-3xl p-6 shadow-sm">
             <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-5">
@@ -350,7 +313,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 <p className="text-[9px] text-slate-400 font-semibold">Dữ liệu hiện tại trong hệ thống</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left">
               <div className="flex items-start gap-3">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-hashtag"></i>
@@ -371,7 +334,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
+              <div className="flex items-start gap-3">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-building-columns"></i>
                 </div>
@@ -588,7 +551,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 <p className="text-[9px] text-slate-400 font-semibold">Dữ liệu hiện tại trong hệ thống</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left">
               <div className="flex items-start gap-3">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-hashtag"></i>
@@ -609,7 +572,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 md:col-span-2 border-t border-slate-100 pt-3.5 mt-1">
+              <div className="flex items-start gap-3">
                 <div className="mt-1 text-slate-400 text-xs w-4 text-center">
                   <i className="fa-solid fa-building-columns"></i>
                 </div>
