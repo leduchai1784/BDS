@@ -142,6 +142,12 @@ export default function MapLibreMap({
       // Listen for popup opening
       popup.on('open', () => {
         setActiveId(p.id)
+        // Close all other popups
+        Object.entries(markersRef.current).forEach(([id, m]) => {
+          if (id !== p.id && m.getPopup().isOpen()) {
+            m.getPopup().remove()
+          }
+        })
       })
 
       // Click on marker bubble triggers centering and popup
@@ -187,6 +193,13 @@ export default function MapLibreMap({
     const coords = marker.getLngLat()
     map.flyTo({ center: coords, zoom: 14.5, duration: 600 })
     
+    // Close all other popups
+    Object.entries(markersRef.current).forEach(([id, m]) => {
+      if (id !== activeId && m.getPopup().isOpen()) {
+        m.getPopup().remove()
+      }
+    })
+
     // Open the popup if not already opened
     if (!marker.getPopup().isOpen()) {
       marker.togglePopup()
