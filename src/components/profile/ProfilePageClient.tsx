@@ -110,7 +110,7 @@ export default function ProfilePageClient({
                     <img 
                       src={user.avatar} 
                       alt={user.name} 
-                      className="w-full h-full rounded-full object-cover border-4 border-white shadow-lg group-hover:scale-105 transition-all duration-300"
+                      className="w-full h-full rounded-full object-cover border-4 border-white shadow-lg"
                       onError={(e) => {
                         e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0077bb&color=fff`
                       }}
