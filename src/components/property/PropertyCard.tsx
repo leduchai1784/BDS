@@ -40,10 +40,14 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
 
   const getImageUrl = () => {
     if (property.imagePath) {
-      if (property.imagePath.startsWith('http://') || property.imagePath.startsWith('https://')) {
-        return property.imagePath
+      let path = property.imagePath
+      if (path.startsWith('http://')) {
+        path = path.replace('http://', 'https://')
       }
-      return `/${property.imagePath}`
+      if (path.startsWith('https://')) {
+        return path
+      }
+      return `/${path}`
     }
     return '/images/apartment_placeholder.png' // Default placeholder
   }

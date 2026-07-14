@@ -108,7 +108,10 @@ export default function MapLibreMap({
       el.id = `map-marker-${p.id}`
       updateMarkerStyle(el, activeId === p.id, false, p.priceLabel)
 
-      const imgUrl = p.imagePath || '/images/apartment_placeholder.png'
+      let imgUrl = p.imagePath || '/images/apartment_placeholder.png'
+      if (imgUrl.startsWith('http://')) {
+        imgUrl = imgUrl.replace('http://', 'https://')
+      }
       const typeLabel = (p.propertyType === 'apartment' ? 'Căn hộ' :
                          p.propertyType === 'house' ? 'Nhà riêng' :
                          p.propertyType === 'office' ? 'Văn phòng' :
