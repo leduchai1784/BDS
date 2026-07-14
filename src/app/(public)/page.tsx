@@ -179,10 +179,9 @@ export default async function HomePage() {
           <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-primary/30 blur-3xl"></div>
           <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-primary/10 blur-3xl"></div>
 
-          <div className="relative z-10 max-w-2xl flex flex-col justify-center h-full">
+          <div className="relative z-10 max-w-4xl flex flex-col justify-center h-full">
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl leading-tight">
-              Bạn có bất động sản <br className="hidden sm:inline" />
-              <span className="text-primary">muốn cho thuê?</span>
+              Bạn có bất động sản <span className="text-primary">muốn cho thuê?</span>
             </h2>
             <p className="mt-4 text-base text-slate-300 leading-relaxed">
               Đăng tin ngay hôm nay để tiếp cận hơn 100,000 khách thuê tiềm năng truy cập mỗi tháng. Hoàn toàn miễn phí, nhanh chóng và dễ dàng.
