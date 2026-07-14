@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PropertyCard from '@/components/property/PropertyCard'
 
 interface WishlistTabProps {
@@ -10,22 +10,19 @@ interface WishlistTabProps {
 export default function WishlistTab({ initialProperties }: WishlistTabProps) {
   const [list, setList] = useState(initialProperties)
 
-  const handleRemove = async (propertyId: string) => {
-    try {
-      const res = await fetch('/api/wishlist/toggle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ property_id: propertyId })
-      })
-
-      const data = await res.json()
-      if (res.ok && data.success) {
-        setList(prev => prev.filter(item => item.id !== propertyId))
+  useEffect(() => {
+    const handleWishlistUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ id: string; isFavorite: boolean }>
+      if (customEvent.detail && !customEvent.detail.isFavorite) {
+        setList(prev => prev.filter(item => item.id !== customEvent.detail.id))
       }
-    } catch (err) {
-      console.error('Error removing wishlist item:', err)
     }
-  }
+    
+    window.addEventListener('wishlist-updated', handleWishlistUpdate)
+    return () => {
+      window.removeEventListener('wishlist-updated', handleWishlistUpdate)
+    }
+  }, [])
 
   return (
     <div className="space-y-6 text-left">
@@ -38,17 +35,7 @@ export default function WishlistTab({ initialProperties }: WishlistTabProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {list.map(p => (
             <div key={p.id} className="relative group">
-              <PropertyCard property={p} />
-              
-              {/* Quick Remove Button Overlay */}
-              <button 
-                type="button"
-                onClick={() => handleRemove(p.id)}
-                className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-red-50 text-red-500 hover:text-red-600 border border-slate-200/50 flex items-center justify-center shadow-md transition cursor-pointer active:scale-95"
-                title="Bỏ lưu"
-              >
-                <i className="fa-solid fa-heart-crack text-xs" />
-              </button>
+              <PropertyCard property={p} isFavoriteInitial={true} />
             </div>
           ))}
         </div>

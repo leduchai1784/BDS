@@ -94,7 +94,9 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
         setIsProcessing(false)
         
         // Dispatch custom event to notify components
-        window.dispatchEvent(new CustomEvent('wishlist-updated'))
+        window.dispatchEvent(new CustomEvent('wishlist-updated', {
+          detail: { id: property.id, isFavorite: newLiked }
+        }))
         return
       } catch (e) {
         console.error(e)
@@ -114,7 +116,9 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
       const data = await res.json()
       if (res.ok && data.success) {
         setLiked(data.is_favorite)
-        window.dispatchEvent(new CustomEvent('wishlist-updated'))
+        window.dispatchEvent(new CustomEvent('wishlist-updated', {
+          detail: { id: property.id, isFavorite: data.is_favorite }
+        }))
       }
     } catch (err) {
       console.error('Error toggling wishlist:', err)
