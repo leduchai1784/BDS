@@ -14,6 +14,11 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
+  // Show/Hide States
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [copiedNewPassword, setCopiedNewPassword] = useState(false)
+
   // Password Generator States
   const [openGen, setOpenGen] = useState(false)
   const [passwordLength, setPasswordLength] = useState(12)
@@ -90,6 +95,7 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
     if (savedConfirm && generatedPassText) {
       setNewPassword(generatedPassText)
       setConfirmPassword(generatedPassText)
+      setShowNewPassword(true)
       setOpenGen(false)
     }
   }
@@ -127,6 +133,8 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
         setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
+        setShowCurrentPassword(false)
+        setShowNewPassword(false)
       } else {
         setErrorMsg(data.message || 'Mật khẩu cũ không chính xác.')
       }
@@ -153,13 +161,21 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
         <div className="relative">
           <i className="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
-            type="password" 
+            type={showCurrentPassword ? 'text' : 'password'} 
             value={currentPassword} 
             onChange={(e) => setCurrentPassword(e.target.value)} 
             required
             placeholder="••••••••"
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
+          <button 
+            type="button" 
+            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 transition cursor-pointer"
+            title="Hiện/Ẩn mật khẩu"
+          >
+            <i className={`fa-solid ${showCurrentPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs`} />
+          </button>
         </div>
       </div>
 
@@ -199,11 +215,11 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
                     {generatedPassText ? (showGenPass ? generatedPassText : '•'.repeat(generatedPassText.length)) : '***'}
                   </span>
                   <div className="flex items-center space-x-1.5 flex-shrink-0 ml-2">
-                    <button type="button" onClick={() => setShowGenPass(!showGenPass)} className="text-slate-400 hover:text-slate-600 p-0.5" title="Hiện/Ẩn">
+                    <button type="button" onClick={() => setShowGenPass(!showGenPass)} className="text-slate-400 hover:text-slate-605 p-0.5 cursor-pointer" title="Hiện/Ẩn">
                       <i className={`fa-solid text-[10px] ${showGenPass ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                     </button>
                     {generatedPassText && (
-                      <button type="button" onClick={copyGenPass} className="text-slate-400 hover:text-slate-600 p-0.5" title="Sao chép">
+                      <button type="button" onClick={copyGenPass} className="text-slate-400 hover:text-slate-655 p-0.5 cursor-pointer" title="Sao chép">
                         <i className={`fa-solid text-[10px] ${genCopied ? 'fa-check text-green-500' : 'fa-copy'}`}></i>
                       </button>
                     )}
@@ -312,15 +328,39 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
         </div>
 
         <div className="relative">
-          <i className="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
-            type="password" 
+            type={showNewPassword ? 'text' : 'password'} 
             value={newPassword} 
             onChange={(e) => setNewPassword(e.target.value)} 
             required
             placeholder="Tối thiểu 6 ký tự..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+            <button 
+              type="button" 
+              onClick={() => setShowNewPassword(!showNewPassword)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-650 transition cursor-pointer"
+              title="Hiện/Ẩn mật khẩu"
+            >
+              <i className={`fa-solid ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs`} />
+            </button>
+            {newPassword.length > 0 && (
+              <button 
+                type="button" 
+                onClick={() => {
+                  navigator.clipboard.writeText(newPassword)
+                  setCopiedNewPassword(true)
+                  setTimeout(() => setCopiedNewPassword(false), 2000)
+                }}
+                className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-650 transition cursor-pointer"
+                title="Sao chép"
+              >
+                <i className={`fa-solid ${copiedNewPassword ? 'fa-check text-green-500' : 'fa-copy'} text-xs`} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -328,15 +368,23 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
       <div className="space-y-1.5">
         <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Xác nhận mật khẩu mới</label>
         <div className="relative">
-          <i className="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
-            type="password" 
+            type={showNewPassword ? 'text' : 'password'} 
             value={confirmPassword} 
             onChange={(e) => setConfirmPassword(e.target.value)} 
             required
             placeholder="Nhập lại mật khẩu mới..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
+            className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
           />
+          <button 
+            type="button" 
+            onClick={() => setShowNewPassword(!showNewPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 transition cursor-pointer"
+            title="Hiện/Ẩn mật khẩu"
+          >
+            <i className={`fa-solid ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs`} />
+          </button>
         </div>
       </div>
 
