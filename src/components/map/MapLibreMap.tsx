@@ -180,6 +180,9 @@ export default function MapLibreMap({
       const priceLabel = property ? property.priceLabel : ''
 
       updateMarkerStyle(el, isActive, isHovered, priceLabel)
+      
+      // Force MapLibre to recalculate positioning offset based on new element dimensions
+      marker.setLngLat(marker.getLngLat())
     })
   }, [hoveredId, activeId, properties])
 
