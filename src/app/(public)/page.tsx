@@ -164,6 +164,46 @@ export default async function HomePage() {
 
       {/* Section 4.5: Tabbed Real Estate News */}
       <NewsTabs />
+
+      {/* Section 5: Call to Action (CTA) */}
+      <section className="pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+        <div className="relative rounded-3xl bg-slate-900 overflow-hidden shadow-xl py-12 px-6 sm:px-12 md:py-16 md:px-16 text-left border border-slate-800">
+          {/* Background effects */}
+          <div className="absolute inset-0 opacity-10">
+            <img 
+              src="https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg" 
+              alt="Landlord CTA" 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+          <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-primary/30 blur-3xl"></div>
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-primary/10 blur-3xl"></div>
+
+          <div className="relative z-10 max-w-2xl flex flex-col justify-center h-full">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl leading-tight">
+              Bạn có bất động sản <br className="hidden sm:inline" />
+              <span className="text-primary">muốn cho thuê?</span>
+            </h2>
+            <p className="mt-4 text-base text-slate-300 leading-relaxed">
+              Đăng tin ngay hôm nay để tiếp cận hơn 100,000 khách thuê tiềm năng truy cập mỗi tháng. Hoàn toàn miễn phí, nhanh chóng và dễ dàng.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <Link 
+                href="/property/create" 
+                className="inline-flex items-center justify-center px-6 py-3.5 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer"
+              >
+                <i className="fa-solid fa-circle-plus mr-2"></i> Đăng tin cho thuê ngay
+              </Link>
+              <Link 
+                href="/#contact" 
+                className="inline-flex items-center justify-center px-6 py-3.5 border border-slate-700 hover:border-slate-500 text-sm font-semibold rounded-xl text-slate-100 hover:text-white bg-slate-900/50 hover:bg-slate-900 transition cursor-pointer"
+              >
+                Liên hệ tư vấn môi giới
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

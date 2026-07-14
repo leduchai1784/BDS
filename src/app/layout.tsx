@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 import ChatBot from "@/components/ai/ChatBot"
+import ShareModal from "@/components/ShareModal"
 
 export default function RootLayout({
   children,
@@ -35,6 +36,7 @@ export default function RootLayout({
         <SessionProvider>
           {children}
           <ChatBot />
+          <ShareModal />
         </SessionProvider>
       </body>
     </html>

@@ -125,17 +125,14 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/property/${property.id}`
-    // If Web Share API is available
-    if (navigator.share) {
-      navigator.share({
-        title: property.title,
-        url: shareUrl
-      }).catch(err => console.error(err))
-    } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(shareUrl)
-      alert('Đã sao chép liên kết chia sẻ vào khay nhớ tạm!')
-    }
+    window.dispatchEvent(
+      new CustomEvent('open-share-modal', {
+        detail: {
+          url: shareUrl,
+          title: property.title
+        }
+      })
+    )
   }
 
   return (
@@ -161,7 +158,7 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
               <i className="fa-solid fa-tags mr-1"></i> BÁN
             </span>
           ) : (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-cyan-600 text-white shadow-md shadow-blue-500/20">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-primary text-white shadow-md shadow-blue-500/20">
               <i className="fa-solid fa-key mr-1"></i> THUÊ
             </span>
           )}
@@ -183,7 +180,7 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
           <button 
             onClick={handleShare}
             type="button" 
-            className="w-9 h-9 rounded-full flex items-center justify-center border border-slate-100 bg-white/80 hover:bg-white text-slate-400 hover:text-cyan-650 shadow-sm transition active:scale-90 cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center border border-slate-100 bg-white/80 hover:bg-white text-slate-400 hover:text-primary shadow-sm transition active:scale-90 cursor-pointer"
             title="Chia sẻ tin đăng"
           >
             <i className="fa-solid fa-share-nodes text-xs"></i>
@@ -214,7 +211,7 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
       <div className="p-4 flex flex-col flex-grow">
         {/* 2. Giá thuê (Price) */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xl font-extrabold text-cyan-600 tracking-tight">
+          <span className="text-xl font-extrabold text-primary tracking-tight">
             {property.priceLabel}
           </span>
           <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">
@@ -223,7 +220,7 @@ export default function PropertyCard({ property, isFavoriteInitial = false }: Pr
         </div>
 
         {/* 3. Tiêu đề (Title) */}
-        <h3 className="text-sm font-bold text-slate-800 line-clamp-2 hover:text-cyan-600 transition duration-150 mb-2 leading-snug flex-grow">
+        <h3 className="text-sm font-bold text-slate-800 line-clamp-2 hover:text-primary transition duration-150 mb-2 leading-snug flex-grow">
           <Link href={`/property/${property.id}`}>{property.title}</Link>
         </h3>
 
