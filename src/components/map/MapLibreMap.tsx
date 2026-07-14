@@ -20,16 +20,28 @@ function updateMarkerStyle(
   el.style.whiteSpace = 'nowrap'
   el.style.width = 'max-content'
   el.style.display = 'inline-flex'
+  
+  // Preserve MapLibre's internal classes so they are not wiped out by className assignment
+  const isMapLibre = el.classList.contains('maplibregl-marker') || el.className.includes('maplibregl-marker')
+  const anchorClass = Array.from(el.classList).find(c => c.startsWith('maplibregl-marker-anchor-'))
+  
+  const classes = ['custom-price-marker', 'text-[11px]', 'font-black', 'px-2.5', 'py-1.5', 'rounded-full', 'shadow-lg', 'border-2', 'cursor-pointer', 'flex', 'items-center', 'justify-center', 'transition-colors', 'duration-200']
+  
+  if (isMapLibre) classes.push('maplibregl-marker')
+  if (anchorClass) classes.push(anchorClass)
+  
   if (isActive) {
-    el.className = 'custom-price-marker bg-white text-slate-800 text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-cyan-600 cursor-pointer flex items-center justify-center transition-colors duration-200 scale-110 z-30'
+    classes.push('bg-white', 'text-slate-800', 'border-cyan-600', 'scale-110', 'z-30')
     el.innerHTML = `<span class="flex items-center text-xs font-black"><i class="fa-solid fa-circle-check text-emerald-500 mr-1 text-[13px]"></i>${priceLabel}</span>`
   } else if (isHovered) {
-    el.className = 'custom-price-marker text-white text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-white cursor-pointer flex items-center justify-center transition-colors duration-200 bg-cyan-700 scale-105 z-20'
+    classes.push('text-white', 'border-white', 'bg-cyan-700', 'scale-105', 'z-20')
     el.innerHTML = priceLabel
   } else {
-    el.className = 'custom-price-marker text-white text-[11px] font-black px-2.5 py-1.5 rounded-full shadow-lg border-2 border-white cursor-pointer flex items-center justify-center transition-colors duration-200 bg-cyan-600 hover:bg-cyan-700'
+    classes.push('text-white', 'border-white', 'bg-cyan-600', 'hover:bg-cyan-700')
     el.innerHTML = priceLabel
   }
+  
+  el.className = classes.join(' ')
 }
 
 export default function MapLibreMap({
