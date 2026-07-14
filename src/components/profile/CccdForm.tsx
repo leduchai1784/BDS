@@ -91,7 +91,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
   // Mode Selection
   const [isEditingCccd, setIsEditingCccd] = useState(!user.idNumber)
 
-  // Input States (Only showing 3 in UI but keeping others for backend compatibility)
+  // Input States (Only showing 3 in UI but keeping others for database compatibility)
   const [idNumber, setIdNumber] = useState(user.idNumber || '')
   const [idDate, setIdDate] = useState(toInputDate(user.idDate))
   const [idPlace, setIdPlace] = useState(user.idPlace || '')
@@ -465,7 +465,10 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
             {/* Front Image Upload */}
             <div className="space-y-2 text-left">
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt trước CCCD</label>
-              <div className="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden cursor-pointer">
+              <div 
+                onClick={() => !isScanningFront && frontInputRef.current?.click()}
+                className="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden cursor-pointer"
+              >
                 {/* Scanning Overlay */}
                 {isScanningFront && (
                   <div className="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20">
@@ -484,10 +487,13 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation()
+                        e.preventDefault()
                         setCccdFront('')
-                        setIdNumber('')
+                        if (frontInputRef.current) {
+                          frontInputRef.current.value = ''
+                        }
                       }}
-                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95"
+                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95 animate-fadeIn"
                       title="Xóa ảnh"
                     >
                       <i className="fa-solid fa-trash text-xs"></i>
@@ -511,7 +517,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   accept="image/*" 
                   ref={frontInputRef}
                   onChange={(e) => handleImageChange(e, 'front')} 
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                  className="hidden" 
                 />
               </div>
             </div>
@@ -519,7 +525,10 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
             {/* Back Image Upload */}
             <div className="space-y-2 text-left">
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt sau CCCD</label>
-              <div className="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden cursor-pointer">
+              <div 
+                onClick={() => !isScanningBack && backInputRef.current?.click()}
+                className="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden cursor-pointer"
+              >
                 {/* Scanning Overlay */}
                 {isScanningBack && (
                   <div className="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20">
@@ -538,11 +547,13 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation()
+                        e.preventDefault()
                         setCccdBack('')
-                        setIdDate('')
-                        setIdPlace('')
+                        if (backInputRef.current) {
+                          backInputRef.current.value = ''
+                        }
                       }}
-                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95"
+                      className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition z-20 cursor-pointer active:scale-95 animate-fadeIn"
                       title="Xóa ảnh"
                     >
                       <i className="fa-solid fa-trash text-xs"></i>
@@ -566,7 +577,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   accept="image/*" 
                   ref={backInputRef}
                   onChange={(e) => handleImageChange(e, 'back')} 
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                  className="hidden" 
                 />
               </div>
             </div>
