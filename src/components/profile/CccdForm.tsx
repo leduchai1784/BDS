@@ -539,50 +539,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
               )}
             </button>
           </div>
-
-          {/* Summary card at bottom of editable view */}
-          <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-3xl p-6 mt-6 shadow-sm">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xs">
-                <i className="fa-solid fa-address-card"></i>
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-slate-800">Thông tin Căn cước công dân đã lưu</h4>
-                <p className="text-[9px] text-slate-400 font-semibold">Dữ liệu hiện tại trong hệ thống</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-hashtag"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Số CCCD / CMND</span>
-                  <span className="text-xs font-black text-slate-800">{user.idNumber || 'Chưa cập nhật'}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-calendar-check"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Ngày cấp</span>
-                  <span className="text-xs font-black text-slate-800">{toDisplayDate(user.idDate)}</span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="mt-1 text-slate-400 text-xs w-4 text-center">
-                  <i className="fa-solid fa-building-columns"></i>
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nơi cấp</span>
-                  <span className="text-xs font-black text-slate-800 leading-relaxed">{user.idPlace || 'Chưa cập nhật'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </form>
       )}
     </div>
