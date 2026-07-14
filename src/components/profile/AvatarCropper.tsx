@@ -144,7 +144,7 @@ export default function AvatarCropper({ currentAvatar, onSuccess }: AvatarCroppe
 
       {/* READ-ONLY AVATAR VIEW */}
       {!isEditingAvatar && (
-        <div className="flex flex-col items-center justify-center space-y-6 py-10 bg-slate-50 rounded-3xl border border-slate-100 px-6 max-w-lg">
+        <div className="flex flex-col items-center justify-center space-y-6 py-10 bg-slate-50 rounded-3xl border border-slate-100 px-6">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-slate-200">
             <img src={currentAvatar} alt="Avatar preview" className="w-full h-full object-cover" />
           </div>
