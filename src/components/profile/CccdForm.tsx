@@ -136,9 +136,9 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       }
 
       // 2. DOB (Behind the scenes)
-      const dobMatch = spaceStrippedText.match(/(\d{2})[/-](\d{2})[/-](\d{4})/)
+      const dobMatch = spaceStrippedText.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/)
       if (dobMatch) {
-        setDob(`${dobMatch[3]}-${dobMatch[2]}-${dobMatch[1]}`)
+        setDob(`${dobMatch[3]}-${dobMatch[2].padStart(2, '0')}-${dobMatch[1].padStart(2, '0')}`)
       }
 
       // 3. Quê quán (Behind the scenes)
@@ -179,14 +179,14 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       }
     } else {
       // Back side
-      // 1. Ngày cấp
-      const dobMatch = spaceStrippedText.match(/(\d{2})[/-](\d{2})[/-](\d{4})/)
-      if (dobMatch) {
-        setIdDate(`${dobMatch[3]}-${dobMatch[2]}-${dobMatch[1]}`)
+      // 1. Ngày cấp (Flexible matching for dd/mm/yyyy or "ngày ... tháng ... năm ...")
+      const dateMatch = spaceStrippedText.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/)
+      if (dateMatch) {
+        setIdDate(`${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}`)
         setHighlightIdDate(true)
         setTimeout(() => setHighlightIdDate(false), 1500)
       } else {
-        const dayThangNamMatch = text.match(/(?:ngày|ngay)\s*(\d{1,2})\s*(?:tháng|thang)\s*(\d{1,2})\s*(?:năm|nam)\s*(\d{4})/i)
+        const dayThangNamMatch = text.match(/(?:ngày|ngay)?\s*(\d{1,2})\s*(?:tháng|thang)\s*(\d{1,2})\s*(?:năm|nam)\s*(\d{4})/i)
         if (dayThangNamMatch) {
           setIdDate(`${dayThangNamMatch[3]}-${dayThangNamMatch[2].padStart(2, '0')}-${dayThangNamMatch[1].padStart(2, '0')}`)
           setHighlightIdDate(true)
@@ -194,14 +194,17 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
         }
       }
 
-      // 2. Nơi cấp
+      // 2. Nơi cấp (Flexible keyword check)
       let issuePlace = ''
       const normalizedText = text.toLowerCase()
-      if (normalizedText.includes('cục trưởng') || normalizedText.includes('cuc truong') || normalizedText.includes('cảnh sát') || normalizedText.includes('canh sat')) {
+      const cccdKeywords = ['cục', 'cuc', 'trưởng', 'truong', 'cảnh', 'canh', 'sát', 'sat', 'quản', 'quan', 'lý', 'ly', 'dân cư', 'dan cu']
+      const hasCccdKeywords = cccdKeywords.some(keyword => normalizedText.includes(keyword))
+      
+      if (hasCccdKeywords) {
         issuePlace = 'Cục trưởng Cục Cảnh sát quản lý hành chính về trật tự xã hội'
       } else {
         for (const line of lines) {
-          if (/cục|cuc|công\s*an|cong\s*an/i.test(line)) {
+          if (/công\s*an|cong\s*an/i.test(line)) {
             issuePlace = line
             break
           }
