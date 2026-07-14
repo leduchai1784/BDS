@@ -166,7 +166,7 @@ export default async function HomePage() {
       <NewsTabs />
 
       {/* Section 5: Call to Action (CTA) */}
-      <section className="pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+      <section className="pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 text-left">
         <div className="relative rounded-3xl bg-slate-900 overflow-hidden shadow-xl py-12 px-6 sm:px-12 md:py-16 md:px-16 text-left border border-slate-800">
           {/* Background effects */}
           <div className="absolute inset-0 opacity-10">
