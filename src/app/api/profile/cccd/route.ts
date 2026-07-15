@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { updateNksCccd, updateNksInfo, getNksUserInfo } from '@/lib/nks'
+import fs from 'fs'
+import path from 'path'
 
 export async function POST(req: Request) {
   try {
@@ -22,7 +24,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
     }
 
-    // 1. Update local database
+    // Ensure uploads directory exists
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'cccd')
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true })
+    }
+
+    // 1. Prepare local database update fields
     const localUpdateData: any = {
       dob,
       pob,
@@ -32,8 +40,33 @@ export async function POST(req: Request) {
       permanentAddress: permanent_address
     }
 
-    if (cccd_front) localUpdateData.cccdFront = cccd_front
-    if (cccd_back) localUpdateData.cccdBack = cccd_back
+    // Save front CCCD image locally if sent as base64 to avoid VarChar(255) DB length overflow
+    if (cccd_front) {
+      if (cccd_front.startsWith('data:image')) {
+        const base64Image = cccd_front.substring(cccd_front.indexOf(',') + 1)
+        const filename = `cccd-front-${userId}-${Date.now()}.jpg`
+        const filePath = path.join(uploadsDir, filename)
+        const buffer = Buffer.from(base64Image, 'base64')
+        fs.writeFileSync(filePath, buffer)
+        localUpdateData.cccdFront = `/uploads/cccd/${filename}`
+      } else {
+        localUpdateData.cccdFront = cccd_front
+      }
+    }
+
+    // Save back CCCD image locally if sent as base64 to avoid VarChar(255) DB length overflow
+    if (cccd_back) {
+      if (cccd_back.startsWith('data:image')) {
+        const base64Image = cccd_back.substring(cccd_back.indexOf(',') + 1)
+        const filename = `cccd-back-${userId}-${Date.now()}.jpg`
+        const filePath = path.join(uploadsDir, filename)
+        const buffer = Buffer.from(base64Image, 'base64')
+        fs.writeFileSync(filePath, buffer)
+        localUpdateData.cccdBack = `/uploads/cccd/${filename}`
+      } else {
+        localUpdateData.cccdBack = cccd_back
+      }
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
