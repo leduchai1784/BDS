@@ -32,6 +32,29 @@ export default function PropertyEditPage() {
   const params = useParams()
   const propertyId = params.id as string
 
+  const provinceRef = useRef<HTMLDivElement>(null)
+  const districtRef = useRef<HTMLDivElement>(null)
+  const wardRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (provinceRef.current && !provinceRef.current.contains(event.target as Node)) {
+        setProvinceOpen(false)
+      }
+      if (districtRef.current && !districtRef.current.contains(event.target as Node)) {
+        setDistrictOpen(false)
+      }
+      if (wardRef.current && !wardRef.current.contains(event.target as Node)) {
+        setWardOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   // Redirect if not authenticated or not owner
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -592,7 +615,7 @@ export default function PropertyEditPage() {
               {/* Dropdowns for Address selectors */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {/* Province Dropdown */}
-                <div className="space-y-1 relative">
+                <div className="space-y-1 relative" ref={provinceRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh / Thành phố <span className="text-red-500">*</span></label>
                   <button
                     type="button"
@@ -637,7 +660,7 @@ export default function PropertyEditPage() {
                 </div>
 
                 {/* District Dropdown */}
-                <div className="space-y-1 relative">
+                <div className="space-y-1 relative" ref={districtRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận / Huyện <span className="text-red-500">*</span></label>
                   <button
                     type="button"
@@ -682,7 +705,7 @@ export default function PropertyEditPage() {
                 </div>
 
                 {/* Ward Dropdown */}
-                <div className="space-y-1 relative">
+                <div className="space-y-1 relative" ref={wardRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường / Xã <span className="text-red-500">*</span></label>
                   <button
                     type="button"

@@ -38,6 +38,28 @@ export default function PropertyCreatePage() {
   const { data: session, status } = useSession()
   const user = session?.user as any
   const router = useRouter()
+  const provinceRef = useRef<HTMLDivElement>(null)
+  const districtRef = useRef<HTMLDivElement>(null)
+  const wardRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (provinceRef.current && !provinceRef.current.contains(event.target as Node)) {
+        setProvinceOpen(false)
+      }
+      if (districtRef.current && !districtRef.current.contains(event.target as Node)) {
+        setDistrictOpen(false)
+      }
+      if (wardRef.current && !wardRef.current.contains(event.target as Node)) {
+        setWardOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   // Redirect if not authenticated or not owner
   useEffect(() => {
@@ -547,7 +569,7 @@ export default function PropertyCreatePage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Province Selector */}
-                <div className="space-y-1 relative" onMouseLeave={() => setProvinceOpen(false)}>
+                <div className="space-y-1 relative" ref={provinceRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <input 
@@ -585,7 +607,7 @@ export default function PropertyCreatePage() {
                 </div>
 
                 {/* District Selector */}
-                <div className="space-y-1 relative" onMouseLeave={() => setDistrictOpen(false)}>
+                <div className="space-y-1 relative" ref={districtRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <input 
@@ -622,7 +644,7 @@ export default function PropertyCreatePage() {
                 </div>
 
                 {/* Ward Selector */}
-                <div className="space-y-1 relative" onMouseLeave={() => setWardOpen(false)}>
+                <div className="space-y-1 relative" ref={wardRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <input 
