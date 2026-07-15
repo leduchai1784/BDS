@@ -522,7 +522,25 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Front Image Upload */}
             <div className="space-y-2 text-left">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt trước CCCD</label>
+              <div className="flex justify-between items-center px-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Mặt trước CCCD</label>
+                {cccdFront && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      setCccdFront('')
+                      if (frontInputRef.current) {
+                        frontInputRef.current.value = ''
+                      }
+                    }}
+                    className="text-[10px] font-black text-rose-500 hover:text-rose-600 transition flex items-center gap-1 cursor-pointer"
+                  >
+                    <i className="fa-solid fa-arrow-rotate-left text-[9px]"></i> Đặt lại
+                  </button>
+                )}
+              </div>
               <div 
                 onClick={() => !isScanningFront && frontInputRef.current?.click()}
                 className="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden cursor-pointer"
@@ -566,7 +584,25 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
             {/* Back Image Upload */}
             <div className="space-y-2 text-left">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Mặt sau CCCD</label>
+              <div className="flex justify-between items-center px-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Mặt sau CCCD</label>
+                {cccdBack && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      setCccdBack('')
+                      if (backInputRef.current) {
+                        backInputRef.current.value = ''
+                      }
+                    }}
+                    className="text-[10px] font-black text-rose-500 hover:text-rose-600 transition flex items-center gap-1 cursor-pointer"
+                  >
+                    <i className="fa-solid fa-arrow-rotate-left text-[9px]"></i> Đặt lại
+                  </button>
+                )}
+              </div>
               <div 
                 onClick={() => !isScanningBack && backInputRef.current?.click()}
                 className="relative border-2 border-dashed border-slate-200 hover:border-primary rounded-3xl bg-slate-50 p-4 flex flex-col items-center justify-center min-h-[180px] transition group overflow-hidden cursor-pointer"
