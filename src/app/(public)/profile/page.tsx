@@ -298,7 +298,8 @@ export default async function ProfilePage() {
     const dbAdminAppointments = await prisma.appointment.findMany({
       orderBy: { date: 'desc' }
     })
-    const adminAppPropIds = dbAdminAppointments.map(a => a.propertyId)
+    const adminAppPropIds = Array.from(new Set(dbAdminAppointments.map(a => a.propertyId)))
+      .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
     const adminAppProps = await prisma.property.findMany({
       where: { id: { in: adminAppPropIds } }
     })
