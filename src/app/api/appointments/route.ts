@@ -53,7 +53,7 @@ export async function POST(req: Request) {
         phone,
         email,
         date: new Date(date),
-        time,
+        time: new Date(`1970-01-01T${time}:00Z`),
         message,
         status: 'pending'
       }
