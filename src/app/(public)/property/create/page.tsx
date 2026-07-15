@@ -305,17 +305,17 @@ export default function PropertyCreatePage() {
           
           <div className="pb-5 border-b border-slate-100 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-2">
-              <h1 className="text-xl font-bold text-slate-800">Đăng tin rao mới</h1>
-              <p className="text-xs text-slate-400 mt-1 font-semibold">Nhập đầy đủ thông tin để thu hút khách hàng tiềm năng.</p>
-              <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold text-slate-800">Đăng tin mới</h1>
                 <button
                   type="button"
                   onClick={fillSampleData}
-                  className="inline-flex items-center justify-center px-3.5 py-1.5 border border-primary/20 text-[10px] font-black rounded-lg text-primary bg-primary/5 hover:bg-primary/10 transition cursor-pointer active:scale-98"
+                  className="inline-flex items-center justify-center px-2.5 py-1 border border-primary/20 text-[9px] font-black rounded-lg text-primary bg-primary/5 hover:bg-primary/10 transition cursor-pointer active:scale-98"
                 >
-                  <i className="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Nhập dữ liệu mẫu
+                  <i className="fa-solid fa-wand-magic-sparkles mr-1"></i> Nhập dữ liệu mẫu
                 </button>
               </div>
+              <p className="text-xs text-slate-400 mt-1 font-semibold">Nhập đầy đủ thông tin để thu hút khách hàng tiềm năng.</p>
             </div>
             
             {/* Segment Switcher */}
@@ -820,7 +820,7 @@ export default function PropertyCreatePage() {
                 {isSubmitting ? (
                   <span><i className="fa-solid fa-spinner animate-spin mr-1" /> Đang tạo...</span>
                 ) : (
-                  <span>Đăng tin rao</span>
+                  <span>Đăng tin</span>
                 )}
               </button>
             </div>
