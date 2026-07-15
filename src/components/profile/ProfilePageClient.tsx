@@ -400,10 +400,6 @@ export default function ProfilePageClient({
 
                   {activeSubTab === 'cccd' && (
                     <div className="space-y-6 text-left">
-                      <div>
-                        <h3 className="text-sm font-black text-slate-800">Xác thực CCCD (KYC)</h3>
-                        <p className="text-[11px] text-slate-500 font-semibold">Cung cấp ảnh mặt trước, mặt sau CCCD để xác minh danh tính tự động bằng FPT AI OCR.</p>
-                      </div>
                       <CccdForm user={user} onSuccess={handleSuccess} />
                     </div>
                   )}
