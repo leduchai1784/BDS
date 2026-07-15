@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createWorker } from 'tesseract.js'
 
 interface UserCccd {
@@ -51,6 +51,14 @@ function getCccdUrl(path?: string | null): string {
     return `/${cleanPath}`
   }
   return `https://data.nks.vn/storage/${cleanPath.replace('storage/', '')}`
+}
+
+function removeVietnameseAccents(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
 }
 
 const compressImage = (file: File): Promise<string> => {
@@ -104,6 +112,18 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
   const [cccdFront, setCccdFront] = useState(getCccdUrl(user.cccdFront))
   const [cccdBack, setCccdBack] = useState(getCccdUrl(user.cccdBack))
 
+  // Provinces List for Issue Place matching
+  const [provincesList, setProvincesList] = useState<{ Id: string; Name: string }[]>([])
+
+  useEffect(() => {
+    fetch('/vietnam_provinces.json')
+      .then(res => res.json())
+      .then((data: any[]) => {
+        setProvincesList(data)
+      })
+      .catch(err => console.error('Failed to load provinces list:', err))
+  }, [])
+
   // OCR scanning highlight classes
   const [highlightNum, setHighlightNum] = useState(false)
   const [highlightIdDate, setHighlightIdDate] = useState(false)
@@ -126,9 +146,13 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
     const spaceStrippedText = text.replace(/\s/g, '')
 
     if (side === 'front') {
-      // 1. Số CCCD
-      const cleanedDigitsText = spaceStrippedText.replace(/[oO]/g, '0')
-      const numMatch = cleanedDigitsText.match(/\d{12}/)
+      // 1. Số CCCD (Replace common OCR errors like O->0, I/l/|->1, B/S->8)
+      const cleanedDigitsText = spaceStrippedText
+        .replace(/[oO]/g, '0')
+        .replace(/[Il|i]/g, '1')
+        .replace(/[BsS]/g, '8')
+      
+      const numMatch = cleanedDigitsText.match(/\d{12}/) || cleanedDigitsText.match(/\d{9}/)
       if (numMatch) {
         setIdNumber(numMatch[0])
         setHighlightNum(true)
@@ -194,7 +218,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
         }
       }
 
-      // 2. Nơi cấp (Flexible keyword check)
+      // 2. Nơi cấp (Match against standard Cccd patterns, or lookup the provinces list to get standard names)
       let issuePlace = ''
       const normalizedText = text.toLowerCase()
       const cccdKeywords = ['cục', 'cuc', 'trưởng', 'truong', 'cảnh', 'canh', 'sát', 'sat', 'quản', 'quan', 'lý', 'ly', 'dân cư', 'dan cu']
@@ -203,13 +227,33 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       if (hasCccdKeywords) {
         issuePlace = 'Cục trưởng Cục Cảnh sát quản lý hành chính về trật tự xã hội'
       } else {
-        for (const line of lines) {
-          if (/công\s*an|cong\s*an/i.test(line)) {
-            issuePlace = line
-            break
+        // Try matching against provinces list
+        const cleanOcrText = removeVietnameseAccents(normalizedText)
+        const matchedProvince = provincesList.find(p => {
+          const cleanName = p.Name.toLowerCase()
+          const noAccentName = removeVietnameseAccents(cleanName)
+          return cleanOcrText.includes(cleanName) || cleanOcrText.includes(noAccentName)
+        })
+
+        if (matchedProvince) {
+          const provName = matchedProvince.Name
+          // Format based on central city vs province
+          if (['Hà Nội', 'Hồ Chí Minh', 'Hải Phòng', 'Đà Nẵng', 'Cần Thơ'].some(c => provName.includes(c))) {
+            issuePlace = `Công an TP. ${provName.replace('Thành phố ', '')}`
+          } else {
+            issuePlace = `Công an tỉnh ${provName.replace('Tỉnh ', '')}`
+          }
+        } else {
+          // Fallback to checking raw lines
+          for (const line of lines) {
+            if (/công\s*an|cong\s*an/i.test(line)) {
+              issuePlace = line
+              break
+            }
           }
         }
       }
+
       if (issuePlace) {
         setIdPlace(issuePlace)
         setHighlightIdPlace(true)
