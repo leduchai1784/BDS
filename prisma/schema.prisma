@@ -102,7 +102,7 @@ model Property {
   bathroom        Int             @default(0) @db.SmallInt
   address         String          @db.VarChar(255)
   ward            String          @db.VarChar(255)
-  district        String          @db.VarChar(10)
+  district        String          @db.VarChar(255)
   city            String          @db.VarChar(255)
   latitude        Float
   longitude       Float
