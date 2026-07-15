@@ -98,6 +98,43 @@ export default function PropertyCreatePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
+  const fillSampleData = () => {
+    setTitle('Căn hộ chung cư cao cấp view Vinhomes Riverside cực đẹp')
+    setPurpose('rent')
+    setPropertyType('Căn hộ chung cư')
+    setPrice('12000000')
+    setArea('75')
+    setBedroom('2')
+    setBathroom('2')
+    setDeposit('24000000')
+    setLeaseTerm('Tối thiểu 1 năm')
+    setDirection('Đông Nam')
+    setLegal('Sổ hồng lâu dài')
+    setFurniture('Đầy đủ đồ cao cấp chỉ việc xách vali vào ở')
+    setDescription('Cho thuê căn hộ chung cư cao cấp thiết kế cực kỳ hiện đại và sang trọng. Căn hộ gồm 2 phòng ngủ, 2 nhà vệ sinh, ban công rộng hướng Đông Nam đón gió mát mẻ, tầm nhìn trực diện sang khu biệt thự Vinhomes Riverside. Đã trang bị đầy đủ nội thất tivi, tủ lạnh, máy giặt, điều hòa các phòng, giường đệm cao cấp, sofa da bếp từ xịn xò. Cư dân miễn phí gửi xe, sử dụng bể bơi bốn mùa.')
+    
+    // Auto-locate Hà Nội -> Long Biên -> Phúc Lợi
+    const hn = provinces.find(p => p.Name.includes('Hà Nội'))
+    if (hn) {
+      setSelectedProvince(hn)
+      const lb = hn.Districts.find(d => d.Name.includes('Long Biên'))
+      if (lb) {
+        setSelectedDistrict(lb)
+        const pl = lb.Wards.find(w => w.Name.includes('Phúc Lợi'))
+        if (pl) {
+          setSelectedWard(pl)
+        }
+      }
+    }
+    setAddress('Căn hộ 1506, Tòa Park 2, Vinhomes Symphony')
+    setLatitude(21.0435)
+    setLongitude(105.9123)
+    setImageUrl('https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg')
+    setGalleryUrlsText('https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg\nhttps://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg')
+    
+    toast.success('Đã điền tự động dữ liệu đăng tin mẫu!')
+  }
+
   // Load Administrative divisions
   useEffect(() => {
     fetch('/vietnam_provinces.json')
@@ -245,9 +282,18 @@ export default function PropertyCreatePage() {
         <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden p-6 sm:p-8 text-left">
           
           <div className="pb-5 border-b border-slate-100 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
+            <div className="space-y-2">
               <h1 className="text-xl font-bold text-slate-800">Đăng tin rao mới</h1>
               <p className="text-xs text-slate-400 mt-1 font-semibold">Nhập đầy đủ thông tin để thu hút khách hàng tiềm năng.</p>
+              <div>
+                <button
+                  type="button"
+                  onClick={fillSampleData}
+                  className="inline-flex items-center justify-center px-3.5 py-1.5 border border-primary/20 text-[10px] font-black rounded-lg text-primary bg-primary/5 hover:bg-primary/10 transition cursor-pointer active:scale-98"
+                >
+                  <i className="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Nhập dữ liệu mẫu
+                </button>
+              </div>
             </div>
             
             {/* Segment Switcher */}
