@@ -38,6 +38,7 @@ export default function AppointmentsTab({
   
   const [activeSubTab, setActiveSubTab] = useState<'tenant' | 'owner'>(isOwner ? 'owner' : 'tenant')
   const [loadingId, setLoadingId] = useState<number | null>(null)
+  const [selectedApp, setSelectedApp] = useState<AppointmentItem | null>(null)
 
   const handleApprove = async (id: number) => {
     setLoadingId(id)
@@ -110,7 +111,7 @@ export default function AppointmentsTab({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700">Đã đồng ý</span>
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700">Đã xác nhận</span>
       case 'rejected':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-red-50 text-red-650">Bị từ chối</span>
       case 'cancelled':
@@ -124,7 +125,6 @@ export default function AppointmentsTab({
 
   const formatDateTime = (dateStr: string, timeStr: any) => {
     const d = new Date(dateStr).toLocaleDateString('vi-VN')
-    // timeStr is returned from Postgres as ISO String or Time, let's extract hh:mm
     let t = timeStr
     if (typeof timeStr === 'string' && timeStr.includes('T')) {
       t = timeStr.split('T')[1].substring(0, 5)
@@ -202,43 +202,25 @@ export default function AppointmentsTab({
 
                 <div>
                   <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-450 mb-1">Ghi chú & Lời nhắn</span>
-                  <span className="text-[11px] italic">{item.message || 'Không có.'}</span>
+                  <span className="text-[11px] italic truncate block max-w-xs">{item.message || 'Không có.'}</span>
                 </div>
               </div>
 
-              {/* Rejection notice if rejected */}
-              {item.status === 'rejected' && item.rejectReason && (
-                <div className="p-3 bg-red-50 border border-red-100/50 rounded-xl text-[11px] text-red-700 font-semibold">
-                  <strong>Lý do từ chối:</strong> {item.rejectReason}
-                </div>
-              )}
-
               {/* Actions footer */}
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100/60">
-                {activeSubTab === 'owner' && item.status === 'pending' && (
-                  <>
-                    <button
-                      onClick={() => handleApprove(item.id)}
-                      disabled={loadingId === item.id}
-                      className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-[10px] font-bold rounded-lg shadow-sm transition cursor-pointer disabled:opacity-50"
-                    >
-                      Xác nhận
-                    </button>
-                    <button
-                      onClick={() => handleReject(item.id)}
-                      disabled={loadingId === item.id}
-                      className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-650 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
-                    >
-                      Từ chối
-                    </button>
-                  </>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedApp(item)}
+                  className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-600 text-[10px] font-bold rounded-lg transition cursor-pointer"
+                >
+                  Xem chi tiết
+                </button>
 
                 {item.status !== 'cancelled' && item.status !== 'rejected' && (
                   <button
                     onClick={() => handleCancel(item.id, activeSubTab)}
                     disabled={loadingId === item.id}
-                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-500 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                    className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-650 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
                   >
                     Hủy lịch
                   </button>
@@ -250,6 +232,87 @@ export default function AppointmentsTab({
       ) : (
         <div className="text-center py-12 bg-white border border-slate-100 rounded-3xl text-slate-400 font-semibold text-xs">
           Chưa có lịch hẹn xem nhà nào được ghi nhận.
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {selectedApp && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-xl border border-slate-100">
+            {/* Modal Header */}
+            <div className="bg-primary px-6 py-4 flex items-center justify-between text-white">
+              <h4 className="font-extrabold text-sm flex items-center gap-2">
+                <i className="fa-regular fa-calendar-check text-base"></i>
+                <span>Chi tiết lịch hẹn</span>
+              </h4>
+              <button 
+                onClick={() => setSelectedApp(null)}
+                className="text-white/80 hover:text-white transition cursor-pointer text-xs"
+              >
+                <i className="fa-solid fa-xmark text-base"></i>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 text-slate-700">
+              {/* Property Details */}
+              <div className="pb-3 border-b border-slate-100">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Bất động sản</span>
+                <Link 
+                  href={`/property/${selectedApp.property.id}`}
+                  className="font-extrabold text-slate-800 hover:text-primary transition text-xs leading-snug block"
+                >
+                  {selectedApp.property.title}
+                </Link>
+                <span className="text-[10px] text-slate-450 font-semibold mt-1 block">{selectedApp.property.address}</span>
+              </div>
+
+              {/* Time Details */}
+              <div className="pb-3 border-b border-slate-100">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Thời gian gặp</span>
+                <span className="text-xs font-bold text-slate-800">{formatDateTime(selectedApp.date, selectedApp.time)}</span>
+              </div>
+
+              {/* Contact Details */}
+              <div className="pb-3 border-b border-slate-100 space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  {activeSubTab === 'owner' ? 'Thông tin khách hàng' : 'Thông tin liên hệ'}
+                </span>
+                <div className="text-xs font-bold text-slate-800">{selectedApp.name}</div>
+                <div className="text-[11px] font-semibold text-slate-500">SĐT: {selectedApp.phone}</div>
+                {selectedApp.email && (
+                  <div className="text-[11px] font-semibold text-slate-500">Email: {selectedApp.email}</div>
+                )}
+              </div>
+
+              {/* Message Details */}
+              <div className="pb-3 border-b border-slate-100">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Ghi chú & Lời nhắn</span>
+                <p className="text-xs italic bg-slate-50 p-2.5 rounded-xl border border-slate-100/80 text-slate-600 margin-0 whitespace-pre-line">
+                  {selectedApp.message || 'Không có.'}
+                </p>
+              </div>
+
+              {/* Status Details */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Trạng thái</span>
+                  {getStatusBadge(selectedApp.status)}
+                </div>
+                {selectedApp.status !== 'cancelled' && selectedApp.status !== 'rejected' && (
+                  <button
+                    onClick={() => {
+                      handleCancel(selectedApp.id, activeSubTab)
+                      setSelectedApp(null)
+                    }}
+                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-650 text-xs font-bold rounded-xl transition cursor-pointer"
+                  >
+                    Hủy lịch hẹn
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

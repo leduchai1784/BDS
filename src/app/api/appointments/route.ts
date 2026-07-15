@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         date: new Date(date),
         time: new Date(`1970-01-01T${time}:00Z`),
         message,
-        status: 'pending'
+        status: 'approved'
       }
     })
 
