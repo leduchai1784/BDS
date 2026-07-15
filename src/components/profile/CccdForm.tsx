@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createWorker } from 'tesseract.js'
 
 interface UserCccd {
@@ -16,7 +16,7 @@ interface UserCccd {
 
 interface CccdFormProps {
   user: UserCccd
-  onSuccess: (message: string) => void
+  onSuccess: (message: string, updatedFields?: Partial<UserCccd>) => void
 }
 
 function toInputDate(val?: string | null): string {
@@ -120,6 +120,19 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
   const frontInputRef = useRef<HTMLInputElement>(null)
   const backInputRef = useRef<HTMLInputElement>(null)
+
+  // Keep local state in sync when user prop changes (e.g. from parent state update)
+  useEffect(() => {
+    setIdNumber(user.idNumber || '')
+    setIdDate(toInputDate(user.idDate))
+    setIdPlace(user.idPlace || '')
+    setDob(toInputDate(user.dob))
+    setPob(user.pob || '')
+    setPermanentAddress(user.permanentAddress || '')
+    setCccdFront(getCccdUrl(user.cccdFront))
+    setCccdBack(getCccdUrl(user.cccdBack))
+    setIsEditingCccd(!user.idNumber)
+  }, [user])
 
   const parseOcrText = (text: string, side: 'front' | 'back') => {
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
@@ -386,7 +399,16 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
       const data = await res.json()
       if (res.ok && data.success) {
         setIsEditingCccd(false)
-        onSuccess('Thông tin xác thực CCCD đã được cập nhật thành công!')
+        onSuccess('Thông tin xác thực CCCD đã được cập nhật thành công!', data.user || {
+          idNumber,
+          idDate: formattedIdDate,
+          idPlace,
+          dob: finalDob,
+          pob: finalPob,
+          permanentAddress: finalPermanentAddress,
+          cccdFront: data.user?.cccdFront || cccdFront,
+          cccdBack: data.user?.cccdBack || cccdBack
+        })
       } else {
         setErrorMsg(data.error || data.message || 'Lỗi cập nhật CCCD.')
       }

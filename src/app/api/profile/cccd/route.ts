@@ -2,8 +2,50 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { updateNksCccd, updateNksInfo, getNksUserInfo } from '@/lib/nks'
-import fs from 'fs'
-import path from 'path'
+import crypto from 'crypto'
+
+async function uploadToCloudinary(base64Image: string): Promise<string> {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME
+  const apiKey = process.env.CLOUDINARY_API_KEY
+  const apiSecret = process.env.CLOUDINARY_API_SECRET
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error('Cloudinary configuration is missing in environment variables')
+  }
+
+  // Clean base64 data header if present
+  let cleanBase64 = base64Image
+  if (base64Image.startsWith('data:image/')) {
+    cleanBase64 = base64Image.substring(base64Image.indexOf(',') + 1)
+  }
+
+  const timestamp = Math.round(new Date().getTime() / 1000)
+  const signatureStr = `timestamp=${timestamp}${apiSecret}`
+  const signature = crypto.createHash('sha1').update(signatureStr).digest('hex')
+
+  const formData = new URLSearchParams()
+  formData.append('file', `data:image/jpeg;base64,${cleanBase64}`)
+  formData.append('api_key', apiKey)
+  formData.append('timestamp', String(timestamp))
+  formData.append('signature', signature)
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: 'POST',
+    body: formData
+  })
+
+  if (!response.ok) {
+    const errText = await response.text()
+    throw new Error(`Cloudinary upload request failed: ${errText}`)
+  }
+
+  const result = await response.json()
+  if (!result.secure_url) {
+    throw new Error('No secure_url returned from Cloudinary')
+  }
+
+  return result.secure_url
+}
 
 export async function POST(req: Request) {
   try {
@@ -24,12 +66,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
     }
 
-    // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'cccd')
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true })
-    }
-
     // 1. Prepare local database update fields
     const localUpdateData: any = {
       dob,
@@ -40,29 +76,19 @@ export async function POST(req: Request) {
       permanentAddress: permanent_address
     }
 
-    // Save front CCCD image locally if sent as base64 to avoid VarChar(255) DB length overflow
+    // Upload base64 front image to Cloudinary instead of saving locally (prevents EROFS error on Vercel)
     if (cccd_front) {
       if (cccd_front.startsWith('data:image')) {
-        const base64Image = cccd_front.substring(cccd_front.indexOf(',') + 1)
-        const filename = `cccd-front-${userId}-${Date.now()}.jpg`
-        const filePath = path.join(uploadsDir, filename)
-        const buffer = Buffer.from(base64Image, 'base64')
-        fs.writeFileSync(filePath, buffer)
-        localUpdateData.cccdFront = `/uploads/cccd/${filename}`
+        localUpdateData.cccdFront = await uploadToCloudinary(cccd_front)
       } else {
         localUpdateData.cccdFront = cccd_front
       }
     }
 
-    // Save back CCCD image locally if sent as base64 to avoid VarChar(255) DB length overflow
+    // Upload base64 back image to Cloudinary instead of saving locally (prevents EROFS error on Vercel)
     if (cccd_back) {
       if (cccd_back.startsWith('data:image')) {
-        const base64Image = cccd_back.substring(cccd_back.indexOf(',') + 1)
-        const filename = `cccd-back-${userId}-${Date.now()}.jpg`
-        const filePath = path.join(uploadsDir, filename)
-        const buffer = Buffer.from(base64Image, 'base64')
-        fs.writeFileSync(filePath, buffer)
-        localUpdateData.cccdBack = `/uploads/cccd/${filename}`
+        localUpdateData.cccdBack = await uploadToCloudinary(cccd_back)
       } else {
         localUpdateData.cccdBack = cccd_back
       }
@@ -80,8 +106,6 @@ export async function POST(req: Request) {
         if (inputBase64) return inputBase64
         if (!existingPath) return ''
         if (existingPath.startsWith('data:image')) return existingPath
-        
-        // Wait, if it's already an NKS URL, return as is
         return existingPath
       }
 
@@ -143,9 +167,23 @@ export async function POST(req: Request) {
         }
 
         if (Object.keys(syncUrls).length > 0) {
-          await prisma.user.update({
+          const finalUpdatedUser = await prisma.user.update({
             where: { id: userId },
             data: syncUrls
+          })
+          return NextResponse.json({
+            success: true,
+            user: {
+              idNumber: finalUpdatedUser.idNumber,
+              idDate: finalUpdatedUser.idDate,
+              idPlace: finalUpdatedUser.idPlace,
+              dob: finalUpdatedUser.dob,
+              pob: finalUpdatedUser.pob,
+              permanentAddress: finalUpdatedUser.permanentAddress,
+              cccdFront: finalUpdatedUser.cccdFront,
+              cccdBack: finalUpdatedUser.cccdBack
+            },
+            message: 'CCCD details updated and synchronized with NKS successfully'
           })
         }
       }
@@ -153,6 +191,16 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
+      user: {
+        idNumber: updatedUser.idNumber,
+        idDate: updatedUser.idDate,
+        idPlace: updatedUser.idPlace,
+        dob: updatedUser.dob,
+        pob: updatedUser.pob,
+        permanentAddress: updatedUser.permanentAddress,
+        cccdFront: updatedUser.cccdFront,
+        cccdBack: updatedUser.cccdBack
+      },
       message: 'CCCD details updated successfully'
     })
   } catch (error: any) {

@@ -66,8 +66,11 @@ export default function ProfilePageClient({
     window.history.pushState(null, '', url.pathname + url.search)
   }
 
-  const handleSuccess = (message: string) => {
+  const handleSuccess = (message: string, updatedFields?: any) => {
     toast.success(message)
+    if (updatedFields) {
+      setUser((prev: any) => ({ ...prev, ...updatedFields }))
+    }
   }
 
   const handleAvatarSuccess = (message: string, newAvatarUrl: string) => {
