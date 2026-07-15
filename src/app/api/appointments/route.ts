@@ -66,12 +66,12 @@ export async function POST(req: Request) {
     await Promise.allSettled([
       sendEmail({
         to: email,
-        subject: '🏠 [BDS Rental] Xác nhận yêu cầu đặt lịch hẹn xem nhà',
+        subject: '✅ [BDS Rental] Đặt lịch hẹn xem nhà thành công',
         html: getTenantConfirmationHtml(appointment, property, owner)
       }),
       owner?.email ? sendEmail({
         to: owner.email,
-        subject: '🔔 [BDS Rental] Có lịch hẹn xem nhà mới từ khách hàng',
+        subject: '🔔 [BDS Rental] Có khách hàng đặt lịch xem nhà của bạn',
         html: getOwnerNotificationHtml(appointment, property)
       }) : Promise.resolve(),
       sendEmail({

@@ -84,7 +84,7 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
         <style>
             body { font-family: -apple-system, sans-serif; background-color: #f8fafc; color: #334155; padding: 20px; }
             .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
-            .header { background-color: #0077bb; padding: 24px; text-align: center; color: #ffffff; }
+            .header { background-color: #10b981; padding: 24px; text-align: center; color: #ffffff; }
             .content { padding: 32px 24px; }
             .details-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; background-color: #f8fafc; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
             .details-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
@@ -98,16 +98,16 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
     <body>
         <div class="container">
             <div class="header">
-                <h1 style="margin:0; font-size:18px;">🏠 ĐẶT LỊCH HẸN XEM NHÀ THÀNH CÔNG</h1>
+                <h1 style="margin:0; font-size:18px;">✅ ĐẶT LỊCH HẸN XEM NHÀ THÀNH CÔNG</h1>
             </div>
             <div class="content">
                 <h2 style="font-size:15px; color:#1e293b; margin-top:0;">Xin chào ${appointment.name},</h2>
-                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Yêu cầu đặt lịch hẹn xem bất động sản của bạn đã được ghi nhận thành công. Dưới đây là thông tin chi tiết cuộc hẹn:</p>
+                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Cảm ơn bạn đã đặt lịch hẹn xem bất động sản! Yêu cầu của bạn đã được xác nhận thành công. Dưới đây là thông tin chi tiết cuộc hẹn:</p>
                 
                 <table class="details-table">
                     <tr>
                         <td class="label">Thời gian</td>
-                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ Khung giờ: ${formatTime(appointment.time)}</td>
+                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</td>
                     </tr>
                     <tr>
                         <td class="label">Bất động sản</td>
@@ -117,7 +117,7 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
                         </td>
                     </tr>
                     <tr>
-                        <td class="label">Họ tên khách</td>
+                        <td class="label">Họ tên</td>
                         <td class="value">${appointment.name}</td>
                     </tr>
                     <tr>
@@ -125,7 +125,7 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
                         <td class="value">${appointment.phone}</td>
                     </tr>
                     <tr>
-                        <td class="label">Email khách</td>
+                        <td class="label">Email</td>
                         <td class="value">${appointment.email || 'Không có'}</td>
                     </tr>
                     <tr>
@@ -143,7 +143,7 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
                     </div>
                 </div>
 
-                <p style="font-size:12px; color:#64748b; line-height: 1.5; margin-bottom:0;">Chủ nhà hoặc người phụ trách sẽ chủ động liên hệ trực tiếp với bạn qua số điện thoại <strong>${appointment.phone}</strong> để xác nhận trước khi cuộc hẹn diễn ra.</p>
+                <p style="font-size:13px; color:#475569; line-height:1.6; margin-bottom:0;">Chủ nhà hoặc người phụ trách sẽ chủ động liên hệ trực tiếp với bạn qua số điện thoại <strong>${appointment.phone}</strong> để xác nhận trước khi cuộc hẹn diễn ra. Nếu bạn cần thay đổi, vui lòng hủy lịch hẹn và đặt lại lịch mới.</p>
             </div>
             <div class="footer">
                 Cảm ơn bạn đã lựa chọn BDS Rental!<br>Đây là email tự động từ hệ thống, vui lòng không trả lời trực tiếp email này.
@@ -375,6 +375,75 @@ export function getAdminCancellationHtml(appointment: any, property: any, owner:
   `
 }
 
+export function getOwnerNotificationHtml(appointment: any, property: any) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: -apple-system, sans-serif; background-color: #f8fafc; color: #334155; padding: 20px; }
+            .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+            .header { background-color: #0077bb; padding: 24px; text-align: center; color: #ffffff; }
+            .content { padding: 32px 24px; }
+            .details-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; background-color: #f8fafc; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+            .details-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+            .details-table tr:last-child td { border-bottom: none; }
+            .details-table td.label { font-weight: 700; color: #64748b; width: 140px; }
+            .details-table td.value { color: #1e293b; }
+            .footer { background-color: #f8fafc; padding: 16px; text-align: center; font-size: 11px; color: #94a3b8; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 style="margin:0; font-size:18px;">🔔 CÓ KHÁCH HÀNG ĐẶT LỊCH XEM NHÀ CỦA BẠN</h1>
+            </div>
+            <div class="content">
+                <h2 style="font-size:15px; color:#1e293b; margin-top:0;">Kính gửi Chủ nhà / Môi giới,</h2>
+                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Hệ thống thông báo có khách hàng mới đặt lịch hẹn xem bất động sản của bạn. Dưới đây là thông tin chi tiết cuộc hẹn:</p>
+                
+                <table class="details-table">
+                    <tr>
+                        <td class="label">Thời gian</td>
+                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Bất động sản</td>
+                        <td class="value">
+                            <strong>${property.title}</strong><br>
+                            <span style="font-size:11px; color:#64748b;">${property.address}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Họ tên khách</td>
+                        <td class="value">${appointment.name}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Số điện thoại</td>
+                        <td class="value">${appointment.phone}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Email khách</td>
+                        <td class="value">${appointment.email || 'Không có'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Ghi chú</td>
+                        <td class="value">${appointment.message || 'Không có ghi chú.'}</td>
+                    </tr>
+                </table>
+
+                <p style="font-size:13px; color:#475569; line-height:1.6; margin-bottom:0;">Vui lòng chủ động liên hệ khách hàng qua số điện thoại <strong>${appointment.phone}</strong> để xác nhận và sắp xếp cuộc hẹn xem nhà. Bạn có thể xem và quản lý tất cả lịch hẹn trong trang cá nhân trên hệ thống.</p>
+            </div>
+            <div class="footer">
+                Cảm ơn bạn đã đồng hành cùng BDS Rental!<br>Đây là email tự động từ hệ thống, vui lòng không trả lời trực tiếp email này.
+            </div>
+        </div>
+    </body>
+    </html>
+  `
+}
+
 export function getAdminNotificationHtml(appointment: any, property: any, owner: any) {
   return `
     <!DOCTYPE html>
@@ -397,15 +466,15 @@ export function getAdminNotificationHtml(appointment: any, property: any, owner:
     <body>
         <div class="container">
             <div class="header">
-                <h1 style="margin:0; font-size:18px;">🔔 [ADMIN] CÓ LỊCH HẸN MỚI</h1>
+                <h1 style="margin:0; font-size:18px;">🔔 [ADMIN] CÓ LỊCH HẸN XEM NHÀ MỚI TRÊN HỆ THỐNG</h1>
             </div>
             <div class="content">
-                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Hệ thống ghi nhận cuộc hẹn mới giữa khách hàng và chủ nhà:</p>
+                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Hệ thống ghi nhận một lịch hẹn xem nhà mới. Dưới đây là thông tin chi tiết:</p>
                 
                 <table class="details-table">
                     <tr>
                         <td class="label">Thời gian</td>
-                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ Khung giờ: ${formatTime(appointment.time)}</td>
+                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</td>
                     </tr>
                     <tr>
                         <td class="label">Bất động sản</td>
@@ -434,10 +503,163 @@ export function getAdminNotificationHtml(appointment: any, property: any, owner:
                         <td class="label">Chủ nhà</td>
                         <td class="value">${owner?.name || 'Chủ nhà'} (${owner?.phone || 'Liên hệ'} - ${owner?.email || 'Liên hệ'})</td>
                     </tr>
+                    <tr>
+                        <td class="label">Trạng thái</td>
+                        <td class="value" style="color:#10b981; font-weight:700;">Đã xác nhận</td>
+                    </tr>
                 </table>
             </div>
             <div class="footer">
                 BDS Rental Admin Dashboard
+            </div>
+        </div>
+    </body>
+    </html>
+  `
+}
+
+export function getTenantApprovalHtml(appointment: any, property: any, owner: any) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: -apple-system, sans-serif; background-color: #f8fafc; color: #334155; padding: 20px; }
+            .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+            .header { background-color: #10b981; padding: 24px; text-align: center; color: #ffffff; }
+            .content { padding: 32px 24px; }
+            .details-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; background-color: #f8fafc; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+            .details-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+            .details-table tr:last-child td { border-bottom: none; }
+            .details-table td.label { font-weight: 700; color: #64748b; width: 140px; }
+            .details-table td.value { color: #1e293b; }
+            .footer { background-color: #f8fafc; padding: 16px; text-align: center; font-size: 11px; color: #94a3b8; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 style="margin:0; font-size:18px;">✓ LỊCH HẸN XEM NHÀ ĐÃ ĐƯỢC CHẤP NHẬN</h1>
+            </div>
+            <div class="content">
+                <h2 style="font-size:15px; color:#1e293b; margin-top:0;">Xin chào ${appointment.name},</h2>
+                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Chủ nhà <strong>${owner?.name || 'Chủ nhà'}</strong> đã chấp thuận lịch hẹn xem nhà của bạn. Vui lòng đến đúng giờ hẹn:</p>
+                
+                <table class="details-table">
+                    <tr>
+                        <td class="label">Thời gian</td>
+                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Bất động sản</td>
+                        <td class="value">
+                            <strong>${property.title}</strong><br>
+                            <span style="font-size:11px; color:#64748b;">${property.address}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Họ tên</td>
+                        <td class="value">${appointment.name}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Số điện thoại</td>
+                        <td class="value">${appointment.phone}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Email</td>
+                        <td class="value">${appointment.email || 'Không có'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Ghi chú</td>
+                        <td class="value">${appointment.message || 'Không có ghi chú.'}</td>
+                    </tr>
+                </table>
+
+                <div style="background-color:#e0f2fe; border: 1px solid #bae6fd; border-radius:12px; padding:16px; margin-bottom:0;">
+                    <h3 style="margin:0 0 8px; font-size:13px; color:#0369a1;">👤 Thông tin Chủ nhà / Môi giới:</h3>
+                    <div style="font-size:13px; color:#0c4a6e; line-height: 1.5;">
+                        <strong>Họ tên:</strong> ${owner?.name || 'Chủ nhà'}<br>
+                        <strong>Số điện thoại:</strong> ${owner?.phone || 'Liên hệ'}<br>
+                        <strong>Email:</strong> ${owner?.email || 'Liên hệ'}
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                Cảm ơn bạn đã lựa chọn BDS Rental!<br>Đây là email tự động từ hệ thống, vui lòng không trả lời trực tiếp email này.
+            </div>
+        </div>
+    </body>
+    </html>
+  `
+}
+
+export function getTenantRejectionHtml(appointment: any, property: any, owner: any, reason: string) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: -apple-system, sans-serif; background-color: #f8fafc; color: #334155; padding: 20px; }
+            .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+            .header { background-color: #f59e0b; padding: 24px; text-align: center; color: #ffffff; }
+            .content { padding: 32px 24px; }
+            .details-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; background-color: #f8fafc; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+            .details-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+            .details-table tr:last-child td { border-bottom: none; }
+            .details-table td.label { font-weight: 700; color: #64748b; width: 140px; }
+            .details-table td.value { color: #1e293b; }
+            .footer { background-color: #f8fafc; padding: 16px; text-align: center; font-size: 11px; color: #94a3b8; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 style="margin:0; font-size:18px;">⚠️ LỊCH HẸN BỊ TỪ CHỐI</h1>
+            </div>
+            <div class="content">
+                <h2 style="font-size:15px; color:#1e293b; margin-top:0;">Xin chào ${appointment.name},</h2>
+                <p style="font-size:13px; color:#475569; margin-bottom:20px;">Rất tiếc, lịch hẹn xem nhà sau đây của bạn đã bị từ chối bởi chủ nhà:</p>
+                
+                <table class="details-table">
+                    <tr>
+                        <td class="label">Thời gian</td>
+                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Bất động sản</td>
+                        <td class="value">
+                            <strong>${property.title}</strong><br>
+                            <span style="font-size:11px; color:#64748b;">${property.address}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Họ tên</td>
+                        <td class="value">${appointment.name}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Số điện thoại</td>
+                        <td class="value">${appointment.phone}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Email</td>
+                        <td class="value">${appointment.email || 'Không có'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Ghi chú</td>
+                        <td class="value">${appointment.message || 'Không có ghi chú.'}</td>
+                    </tr>
+                </table>
+
+                <div style="background-color:#fffbeb; border: 1px solid #fde68a; border-radius:12px; padding:16px; margin:0 0 24px; font-size:13px; color:#b45309; line-height: 1.5;">
+                    <strong>Lý do từ chối:</strong> ${reason || 'Không có lý do cụ thể.'}
+                </div>
+
+                <p style="font-size:13px; color:#475569; line-height:1.6; margin-bottom:0;">Bạn có thể liên hệ chủ nhà qua SĐT: <strong>${owner?.phone || 'Liên hệ'}</strong> để thỏa thuận lại lịch hẹn khác, hoặc đặt lại lịch mới trên website.</p>
+            </div>
+            <div class="footer">
+                Cảm ơn bạn đã sử dụng dịch vụ BDS Rental!<br>Đây là email tự động từ hệ thống, vui lòng không trả lời trực tiếp email này.
             </div>
         </div>
     </body>
