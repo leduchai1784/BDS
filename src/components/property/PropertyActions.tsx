@@ -120,22 +120,22 @@ export default function PropertyActions({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 mb-5 border-t border-slate-100 pt-4">
+    <div className="grid grid-cols-2 gap-3 mb-6">
       {/* Favorite Button */}
       <button
         type="button"
         onClick={toggleLike}
         disabled={isProcessing}
-        className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-2xl border text-xs font-bold transition cursor-pointer active:scale-97 disabled:opacity-50 ${
+        className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-2xl border text-sm font-semibold transition cursor-pointer active:scale-97 disabled:opacity-50 ${
           liked
-            ? 'bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100/70'
-            : 'bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100/70'
+            ? 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'
+            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
         }`}
       >
         {liked ? (
-          <i className="fa-solid fa-heart text-[13px] text-rose-500 animate-pulse-once"></i>
+          <i className="fa-solid fa-heart text-sm text-rose-500"></i>
         ) : (
-          <i className="fa-regular fa-heart text-[13px]"></i>
+          <i className="fa-regular fa-heart text-sm text-slate-400"></i>
         )}
         <span>{liked ? 'Đã thích' : 'Yêu thích'}</span>
       </button>
@@ -144,9 +144,9 @@ export default function PropertyActions({
       <button
         type="button"
         onClick={handleShare}
-        className="inline-flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100/70 border border-slate-100 text-slate-600 transition font-bold text-xs cursor-pointer active:scale-97"
+        className="inline-flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 transition font-semibold text-sm cursor-pointer active:scale-97"
       >
-        <i className="fa-solid fa-share-nodes text-[13px] text-slate-500"></i>
+        <i className="fa-solid fa-share-nodes text-sm text-slate-400"></i>
         <span>Chia sẻ</span>
       </button>
     </div>
