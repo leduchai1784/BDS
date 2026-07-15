@@ -150,13 +150,11 @@ export default function AppointmentsTable({ initialAppointments, searchParams }:
                           ? 'bg-slate-100 text-slate-500'
                           : 'bg-amber-50 text-amber-600'
                       }`}>
-                        {app.status === 'approved' 
-                          ? 'Đã duyệt' 
-                          : app.status === 'rejected' 
+                        {app.status === 'rejected' 
                           ? 'Từ chối' 
                           : app.status === 'cancelled' 
                           ? 'Đã hủy' 
-                          : 'Chờ duyệt'}
+                          : 'Đã xác nhận'}
                       </span>
                       {app.rejectReason && (
                         <span className="block text-[9px] text-red-400 italic font-semibold mt-0.5">Lý do: {app.rejectReason}</span>

@@ -110,14 +110,13 @@ export default function AppointmentsTab({
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'approved':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700">Đã xác nhận</span>
       case 'rejected':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-red-50 text-red-650">Bị từ chối</span>
       case 'cancelled':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-500">Đã hủy</span>
+      case 'approved':
       default:
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-55 text-amber-700">Chờ duyệt</span>
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700">Đã xác nhận</span>
     }
   }
 
