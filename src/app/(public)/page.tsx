@@ -54,7 +54,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     isNew: p.isNew,
     propertyType: p.propertyType,
     imagePath: p.propertyImages?.[0]?.imagePath || null,
-    createdAt: p.createdAt
+    createdAt: p.createdAt ? p.createdAt.toISOString() : null
   }))
 
   // 2. Fetch NKS API properties

@@ -76,7 +76,7 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     isNew: p.isNew,
     propertyType: p.propertyType,
     imagePath: p.propertyImages?.[0]?.imagePath || null,
-    createdAt: p.createdAt,
+    createdAt: p.createdAt ? p.createdAt.toISOString() : null,
     transactionType: p.transactionType
   }))
 
