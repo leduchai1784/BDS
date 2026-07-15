@@ -143,7 +143,12 @@ export default function ProfilePageClient({
                     </h4>
                     
                     <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-                      {isOwner ? (
+                      {user.role === 'admin' ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-violet-50 text-violet-650 border border-violet-100/85 shadow-sm">
+                          <i className="fa-solid fa-user-shield mr-1.5 text-violet-500" />
+                          Quản trị viên
+                        </span>
+                      ) : isOwner ? (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100/85 shadow-sm">
                           <i className="fa-solid fa-circle-check mr-1.5 text-emerald-500" />
                           Đối tác Chủ nhà
@@ -288,12 +293,12 @@ export default function ProfilePageClient({
                     <span>Tin yêu thích</span>
                   </button>
 
-                  {/* Upgrade Role (For Tenant) */}
-                  {!isOwner && (
+                  {/* Upgrade Role (For Tenant only) */}
+                  {user.role === 'tenant' && (
                     <button 
                       onClick={() => handleTabChange('register_owner')}
                       className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition ${
-                        activeTab === 'register_owner' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-650 border-transparent hover:bg-slate-50 hover:text-primary'
+                        activeTab === 'register_owner' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-655 border-transparent hover:bg-slate-50 hover:text-primary'
                       }`}
                     >
                       <i className="fa-solid fa-crown text-sm text-amber-500" />
