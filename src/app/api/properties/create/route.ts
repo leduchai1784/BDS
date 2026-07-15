@@ -73,13 +73,30 @@ export async function POST(req: Request) {
     }
 
     // 1. Dynamic category detection
-    const cat = await prisma.category.findFirst({
+    let cat = await prisma.category.findFirst({
       where: {
-        name: {
-          contains: property_type
-        }
+        OR: [
+          { name: { contains: property_type } },
+          { name: { equals: property_type } }
+        ]
       }
     })
+
+    // Bidirectional fallback check (e.g., matching "Căn hộ chung cư" to "Căn hộ")
+    if (!cat) {
+      const allCategories = await prisma.category.findMany()
+      cat = allCategories.find(c => 
+        property_type.toLowerCase().includes(c.name.toLowerCase()) ||
+        c.name.toLowerCase().includes(property_type.toLowerCase())
+      ) || null
+    }
+
+    // Dynamic database fallback to prevent properties_category_id_foreign violation
+    let finalCategoryId = cat?.id
+    if (!finalCategoryId) {
+      const fallbackCat = await prisma.category.findFirst()
+      finalCategoryId = fallbackCat?.id || 1n
+    }
 
     const slug = slugify(title)
 
@@ -87,7 +104,7 @@ export async function POST(req: Request) {
     const property = await prisma.property.create({
       data: {
         ownerId: userId,
-        categoryId: cat?.id || 1,
+        categoryId: finalCategoryId,
         title,
         slug,
         description,
