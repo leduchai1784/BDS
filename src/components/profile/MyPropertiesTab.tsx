@@ -138,9 +138,10 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                 {/* Edit */}
                 <Link
                   href={`/property/${p.id}/edit`}
-                  className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-650 hover:text-slate-800 text-[10px] font-bold rounded-lg transition cursor-pointer"
+                  title="Sửa tin"
+                  className="w-8 h-8 bg-slate-50 hover:bg-slate-100 text-slate-650 hover:text-slate-800 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 border border-slate-200/40"
                 >
-                  Sửa
+                  <i className="fa-solid fa-pen-to-square text-[13px]"></i>
                 </Link>
 
                 {/* Hide / Show */}
@@ -148,9 +149,18 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                   <button
                     onClick={() => handleToggleStatus(p.id, p.status)}
                     disabled={loadingId === p.id}
-                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-650 hover:text-slate-800 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                    title={p.status === 'rented' ? 'Hiện tin' : 'Ẩn tin'}
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border ${
+                      p.status === 'rented' 
+                        ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border-emerald-100/50' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200/50'
+                    }`}
                   >
-                    {p.status === 'rented' ? 'Hiện tin' : 'Ẩn tin'}
+                    {p.status === 'rented' ? (
+                      <i className="fa-solid fa-eye text-[13px]"></i>
+                    ) : (
+                      <i className="fa-solid fa-eye-slash text-[13px]"></i>
+                    )}
                   </button>
                 )}
 
@@ -158,18 +168,20 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                 <button
                   onClick={() => handleExtend(p.id)}
                   disabled={loadingId === p.id}
-                  className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-650 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                  title="Gia hạn (Đẩy top)"
+                  className="w-8 h-8 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border border-sky-100/50"
                 >
-                  Gia hạn (Đẩy top)
+                  <i className="fa-solid fa-arrow-trend-up text-[13px]"></i>
                 </button>
 
                 {/* Delete */}
                 <button
                   onClick={() => handleDelete(p.id)}
                   disabled={loadingId === p.id}
-                  className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-650 text-[10px] font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
+                  title="Xóa"
+                  className="w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border border-red-100/50"
                 >
-                  Xóa
+                  <i className="fa-solid fa-trash-can text-[13px]"></i>
                 </button>
               </div>
             </div>
