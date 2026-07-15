@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { createWorker } from 'tesseract.js'
 
 interface UserCccd {
@@ -53,14 +53,6 @@ function getCccdUrl(path?: string | null): string {
   return `https://data.nks.vn/storage/${cleanPath.replace('storage/', '')}`
 }
 
-function removeVietnameseAccents(str: string): string {
-  return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-}
-
 const compressImage = (file: File): Promise<string> => {
   return new Promise((resolve) => {
     const reader = new FileReader()
@@ -111,18 +103,6 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
 
   const [cccdFront, setCccdFront] = useState(getCccdUrl(user.cccdFront))
   const [cccdBack, setCccdBack] = useState(getCccdUrl(user.cccdBack))
-
-  // Provinces List for Issue Place matching
-  const [provincesList, setProvincesList] = useState<{ Id: string; Name: string }[]>([])
-
-  useEffect(() => {
-    fetch('/vietnam_provinces.json')
-      .then(res => res.json())
-      .then((data: any[]) => {
-        setProvincesList(data)
-      })
-      .catch(err => console.error('Failed to load provinces list:', err))
-  }, [])
 
   // OCR scanning highlight classes
   const [highlightNum, setHighlightNum] = useState(false)
@@ -218,38 +198,19 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
         }
       }
 
-      // 2. Nơi cấp (Match against standard Cccd patterns, or lookup the provinces list to get standard names)
+      // 2. Nơi cấp (Flexible keyword check)
       let issuePlace = ''
       const normalizedText = text.toLowerCase()
       const cccdKeywords = ['cục', 'cuc', 'trưởng', 'truong', 'cảnh', 'canh', 'sát', 'sat', 'quản', 'quan', 'lý', 'ly', 'dân cư', 'dan cu']
       const hasCccdKeywords = cccdKeywords.some(keyword => normalizedText.includes(keyword))
       
       if (hasCccdKeywords) {
-        issuePlace = 'Cục trưởng Cục Cảnh sát quản lý hành chính về trật tự xã hội'
+        issuePlace = 'Cục Cảnh sát QLHC về TTXH'
       } else {
-        // Try matching against provinces list
-        const cleanOcrText = removeVietnameseAccents(normalizedText)
-        const matchedProvince = provincesList.find(p => {
-          const cleanName = p.Name.toLowerCase()
-          const noAccentName = removeVietnameseAccents(cleanName)
-          return cleanOcrText.includes(cleanName) || cleanOcrText.includes(noAccentName)
-        })
-
-        if (matchedProvince) {
-          const provName = matchedProvince.Name
-          // Format based on central city vs province
-          if (['Hà Nội', 'Hồ Chí Minh', 'Hải Phòng', 'Đà Nẵng', 'Cần Thơ'].some(c => provName.includes(c))) {
-            issuePlace = `Công an TP. ${provName.replace('Thành phố ', '')}`
-          } else {
-            issuePlace = `Công an tỉnh ${provName.replace('Tỉnh ', '')}`
-          }
-        } else {
-          // Fallback to checking raw lines
-          for (const line of lines) {
-            if (/công\s*an|cong\s*an/i.test(line)) {
-              issuePlace = line
-              break
-            }
+        for (const line of lines) {
+          if (/công\s*an|cong\s*an/i.test(line)) {
+            issuePlace = line
+            break
           }
         }
       }
@@ -285,7 +246,56 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
         setCccdBack(base64Data)
       }
 
-      // Run Tesseract OCR scan directly on client-side
+      // 1. Try server-side Gemini OCR first
+      console.log(`--- Requesting Gemini OCR (${side}) ---`)
+      const res = await fetch('/api/profile/scan-cccd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Data, side })
+      })
+
+      const resData = await res.json()
+      if (res.ok && resData.success && resData.data) {
+        console.log('Gemini OCR Success:', resData.data)
+        const parsed = resData.data
+        if (side === 'front') {
+          if (parsed.number) {
+            setIdNumber(parsed.number)
+            setHighlightNum(true)
+            setTimeout(() => setHighlightNum(false), 1500)
+          }
+          if (parsed.dob) {
+            setDob(toInputDate(parsed.dob))
+          }
+          if (parsed.pob) {
+            setPob(parsed.pob)
+          }
+          if (parsed.permanent_address) {
+            setPermanentAddress(parsed.permanent_address)
+          }
+        } else {
+          if (parsed.issue_date) {
+            setIdDate(toInputDate(parsed.issue_date))
+            setHighlightIdDate(true)
+            setTimeout(() => setHighlightIdDate(false), 1500)
+          }
+          if (parsed.issue_place) {
+            // Standardize to matching string format
+            const lowerPlace = parsed.issue_place.toLowerCase()
+            if (lowerPlace.includes('cục cảnh sát') || lowerPlace.includes('cuc canh sat') || lowerPlace.includes('công an qlhc')) {
+              setIdPlace('Cục Cảnh sát QLHC về TTXH')
+            } else {
+              setIdPlace(parsed.issue_place)
+            }
+            setHighlightIdPlace(true)
+            setTimeout(() => setHighlightIdPlace(false), 1500)
+          }
+        }
+        return
+      }
+
+      // 2. Fallback to client-side Tesseract.js OCR
+      console.log('Gemini OCR unavailable/failed. Falling back to client-side Tesseract...')
       const worker = await createWorker('vie', 1, {
         logger: m => {
           if (m.status === 'recognizing text') {
@@ -521,7 +531,9 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   <div className="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20">
                     <div className="scanner-line"></div>
                     <i className="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-emerald-400"></i>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt trước... {frontProgress}%</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">
+                      {frontProgress > 0 ? `Đang nhận diện... ${frontProgress}%` : 'Đang quét ảnh...'}
+                    </span>
                   </div>
                 )}
 
@@ -563,7 +575,9 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                   <div className="absolute inset-0 bg-slate-950/65 flex flex-col items-center justify-center text-white z-20">
                     <div className="scanner-line"></div>
                     <i className="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-emerald-400"></i>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">Đang quét mặt sau... {backProgress}%</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 animate-pulse">
+                      {backProgress > 0 ? `Đang nhận diện... ${backProgress}%` : 'Đang quét ảnh...'}
+                    </span>
                   </div>
                 )}
 
