@@ -57,24 +57,21 @@ export async function POST(
       }
     })
 
-    // Send emails in background
+    // Send emails and await completion (required for serverless envs)
     const owner = property.owner
 
-    // Send cancel confirmation to tenant
-    sendEmail({
-      to: appointment.email || '',
-      subject: '❌ [BDS Rental] Lịch hẹn xem nhà đã bị hủy thành công',
-      html: getTenantCancellationHtml(updated, property, owner)
-    }).catch(err => console.error('Error sending tenant cancellation email:', err))
-
-    // Send cancellation to owner
-    if (owner && owner.email) {
+    await Promise.allSettled([
       sendEmail({
+        to: appointment.email || '',
+        subject: '❌ [BDS Rental] Lịch hẹn xem nhà đã bị hủy thành công',
+        html: getTenantCancellationHtml(updated, property, owner)
+      }),
+      owner?.email ? sendEmail({
         to: owner.email,
         subject: '❌ [BDS Rental] Lịch hẹn xem nhà đã bị hủy',
         html: getOwnerCancellationHtml(updated, property)
-      }).catch(err => console.error('Error sending owner cancellation email:', err))
-    }
+      }) : Promise.resolve()
+    ])
 
     return NextResponse.json({
       success: true,

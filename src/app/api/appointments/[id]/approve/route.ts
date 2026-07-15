@@ -53,12 +53,16 @@ export async function POST(
       }
     })
 
-    // Send approval notice email to tenant
-    sendEmail({
-      to: appointment.email || '',
-      subject: '✓ [BDS Rental] Lịch hẹn xem nhà của bạn đã được chấp thuận',
-      html: getTenantApprovalHtml(updated, property, property.owner)
-    }).catch(err => console.error('Error sending tenant approval email:', err))
+    // Send approval notice email to tenant and await it
+    try {
+      await sendEmail({
+        to: appointment.email || '',
+        subject: '✓ [BDS Rental] Lịch hẹn xem nhà của bạn đã được chấp thuận',
+        html: getTenantApprovalHtml(updated, property, property.owner)
+      })
+    } catch (err) {
+      console.error('Error sending tenant approval email:', err)
+    }
 
     return NextResponse.json({
       success: true,

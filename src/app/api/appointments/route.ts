@@ -59,32 +59,27 @@ export async function POST(req: Request) {
       }
     })
 
-    // Trigger emails asynchronously (Non-blocking)
+    // Send all emails in parallel and await their completion (required for serverless envs to prevent freezing)
     const owner = property.owner
     const adminEmail = process.env.SMTP_USER || 'admin@bdsrental.vn'
 
-    // 1. Send confirmation to tenant
-    sendEmail({
-      to: email,
-      subject: '🏠 [BDS Rental] Xác nhận yêu cầu đặt lịch hẹn xem nhà',
-      html: getTenantConfirmationHtml(appointment, property, owner)
-    }).catch(err => console.error('Error sending tenant confirmation email:', err))
-
-    // 2. Send notification to property owner
-    if (owner && owner.email) {
+    await Promise.allSettled([
       sendEmail({
+        to: email,
+        subject: '🏠 [BDS Rental] Xác nhận yêu cầu đặt lịch hẹn xem nhà',
+        html: getTenantConfirmationHtml(appointment, property, owner)
+      }),
+      owner?.email ? sendEmail({
         to: owner.email,
         subject: '🔔 [BDS Rental] Có lịch hẹn xem nhà mới từ khách hàng',
         html: getOwnerNotificationHtml(appointment, property)
-      }).catch(err => console.error('Error sending owner notification email:', err))
-    }
-
-    // 3. Send notification to Admin
-    sendEmail({
-      to: adminEmail,
-      subject: '🔔 [BDS Rental] Có lịch hẹn xem nhà mới trên hệ thống',
-      html: getAdminNotificationHtml(appointment, property, owner)
-    }).catch(err => console.error('Error sending admin notification email:', err))
+      }) : Promise.resolve(),
+      sendEmail({
+        to: adminEmail,
+        subject: '🔔 [BDS Rental] Có lịch hẹn xem nhà mới trên hệ thống',
+        html: getAdminNotificationHtml(appointment, property, owner)
+      })
+    ])
 
     return NextResponse.json({
       success: true,

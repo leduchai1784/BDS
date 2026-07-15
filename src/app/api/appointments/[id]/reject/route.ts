@@ -55,12 +55,16 @@ export async function POST(
       }
     })
 
-    // Send rejection email to tenant
-    sendEmail({
-      to: appointment.email || '',
-      subject: '⚠️ [BDS Rental] Lịch hẹn xem nhà bị từ chối',
-      html: getTenantRejectionHtml(updated, property, property.owner, reason || '')
-    }).catch(err => console.error('Error sending tenant rejection email:', err))
+    // Send rejection email to tenant and await it
+    try {
+      await sendEmail({
+        to: appointment.email || '',
+        subject: '⚠️ [BDS Rental] Lịch hẹn xem nhà bị từ chối',
+        html: getTenantRejectionHtml(updated, property, property.owner, reason || '')
+      })
+    } catch (err) {
+      console.error('Error sending tenant rejection email:', err)
+    }
 
     return NextResponse.json({
       success: true,
