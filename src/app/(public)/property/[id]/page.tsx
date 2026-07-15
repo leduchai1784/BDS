@@ -428,7 +428,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-md text-left relative">
               
               {/* Agent card details */}
-              <div className="flex items-center space-x-4 pb-4 border-b border-slate-100 mb-5">
+              <div className="flex items-center space-x-4 pb-4 border-b border-slate-100 mb-5 pr-20">
                 <img 
                   src={property.agent.avatar} 
                   alt={property.agent.name} 
@@ -441,7 +441,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               </div>
 
               {/* Call and Zalo contact anchors */}
-              <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 <a 
                   href={`tel:${property.agent.phone}`}
                   className="inline-flex items-center justify-center px-2 py-3 rounded-2xl text-white bg-green-500 hover:bg-green-600 shadow-md shadow-green-500/25 hover:shadow-green-600/35 transition font-bold text-xs cursor-pointer truncate"
