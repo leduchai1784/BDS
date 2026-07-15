@@ -252,6 +252,77 @@ export default async function ProfilePage() {
     where: { userId }
   })
 
+  // 8. Fetch admin datasets (only if admin)
+  let adminUsers: any[] = []
+  let adminProperties: any[] = []
+  let adminAppointments: any[] = []
+
+  if (dbUser.role === 'admin') {
+    const dbAdminUsers = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+    adminUsers = dbAdminUsers.map(u => ({
+      id: u.id.toString(),
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      avatar: u.avatar,
+      role: u.role,
+      status: u.status,
+      createdAt: u.createdAt ? u.createdAt.toISOString() : ''
+    }))
+
+    const dbAdminProperties = await prisma.property.findMany({
+      where: { deletedAt: null },
+      include: {
+        owner: {
+          select: { name: true, phone: true }
+        },
+        category: {
+          select: { name: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+    adminProperties = dbAdminProperties.map(p => ({
+      id: p.id,
+      title: p.title,
+      priceLabel: p.priceLabel,
+      address: p.address,
+      status: p.status,
+      owner: p.owner ? { name: p.owner.name, phone: p.owner.phone } : null,
+      categoryName: p.category?.name || 'Chưa phân loại',
+      createdAt: p.createdAt ? p.createdAt.toISOString() : ''
+    }))
+
+    const dbAdminAppointments = await prisma.appointment.findMany({
+      orderBy: { date: 'desc' }
+    })
+    const adminAppPropIds = dbAdminAppointments.map(a => a.propertyId)
+    const adminAppProps = await prisma.property.findMany({
+      where: { id: { in: adminAppPropIds } }
+    })
+    adminAppointments = dbAdminAppointments.map(app => {
+      const p = adminAppProps.find(x => x.id === app.propertyId)
+      return {
+        id: Number(app.id),
+        name: app.name,
+        phone: app.phone,
+        email: app.email,
+        date: app.date.toISOString(),
+        time: app.time.toISOString(),
+        message: app.message,
+        status: app.status,
+        rejectReason: app.rejectReason,
+        property: {
+          id: app.propertyId,
+          title: p?.title || 'Bất động sản',
+          address: p?.address || 'Liên hệ'
+        }
+      }
+    })
+  }
+
   const stats = {
     totalProperties: propertiesList.length,
     totalAppointments: tenantAppointments.length + ownerAppointments.length,
@@ -267,6 +338,9 @@ export default async function ProfilePage() {
       ownerAppointments={ownerAppointments}
       wishlistProperties={wishlistProperties}
       stats={stats}
+      adminUsers={adminUsers}
+      adminProperties={adminProperties}
+      adminAppointments={adminAppointments}
     />
   )
 }

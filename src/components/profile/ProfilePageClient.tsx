@@ -12,6 +12,9 @@ import RegisterOwnerForm from './RegisterOwnerForm'
 import AiMarketingStudio from './AiMarketingStudio'
 import { Toaster, toast } from 'sonner'
 import Link from 'next/link'
+import AdminUsersTab from './AdminUsersTab'
+import AdminPropertiesTab from './AdminPropertiesTab'
+import AdminAppointmentsTab from './AdminAppointmentsTab'
 
 interface ProfilePageClientProps {
   user: any
@@ -25,6 +28,9 @@ interface ProfilePageClientProps {
     totalViews?: number
     totalFavorites?: number
   }
+  adminUsers?: any[]
+  adminProperties?: any[]
+  adminAppointments?: any[]
 }
 
 export default function ProfilePageClient({
@@ -33,7 +39,10 @@ export default function ProfilePageClient({
   tenantAppointments,
   ownerAppointments,
   wishlistProperties,
-  stats
+  stats,
+  adminUsers = [],
+  adminProperties = [],
+  adminAppointments = []
 }: ProfilePageClientProps) {
   const [activeTab, setActiveTab] = useState('profile')
   const [activeSubTab, setActiveSubTab] = useState('info') // info, password, cccd, avatar
@@ -293,6 +302,66 @@ export default function ProfilePageClient({
                     <span>Tin yêu thích</span>
                   </button>
 
+                  {/* Admin Management Tabs */}
+                  {user.role === 'admin' && (
+                    <div className="border-t border-slate-100 mt-2 pt-2 space-y-1">
+                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest px-5 mb-1.5 text-left">Quản trị hệ thống</span>
+                      
+                      <button 
+                        onClick={() => handleTabChange('admin_users')}
+                        className={`flex items-center justify-between px-5 py-3 text-xs font-bold border-l-4 transition w-full text-left ${
+                          activeTab === 'admin_users' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <i className="fa-solid fa-users text-sm" />
+                          <span>Quản lý thành viên</span>
+                        </div>
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                          {adminUsers.length}
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => handleTabChange('admin_properties')}
+                        className={`flex items-center justify-between px-5 py-3 text-xs font-bold border-l-4 transition w-full text-left ${
+                          activeTab === 'admin_properties' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <i className="fa-solid fa-rectangle-list text-sm" />
+                          <span>Quản lý tin đăng</span>
+                        </div>
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                          {adminProperties.length}
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => handleTabChange('admin_appointments')}
+                        className={`flex items-center justify-between px-5 py-3 text-xs font-bold border-l-4 transition w-full text-left ${
+                          activeTab === 'admin_appointments' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <i className="fa-solid fa-calendar-check text-sm" />
+                          <span>Quản lý lịch hẹn</span>
+                        </div>
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                          {adminAppointments.length}
+                        </span>
+                      </button>
+
+                      <Link 
+                        href="/admin"
+                        className="flex items-center space-x-3 px-5 py-3 text-xs font-bold text-rose-600 hover:bg-rose-50 border-l-4 border-transparent hover:border-rose-500 transition"
+                      >
+                        <i className="fa-solid fa-chart-pie text-sm" />
+                        <span>Xem trang quản trị</span>
+                      </Link>
+                    </div>
+                  )}
+
                   {/* Upgrade Role (For Tenant only) */}
                   {user.role === 'tenant' && (
                     <button 
@@ -458,6 +527,21 @@ export default function ProfilePageClient({
             {/* 9. AI Content Studio Tab */}
             {activeTab === 'marketing' && isOwner && (
               <AiMarketingStudio properties={properties} />
+            )}
+
+            {/* 10. Admin Users Tab */}
+            {activeTab === 'admin_users' && user.role === 'admin' && (
+              <AdminUsersTab initialUsers={adminUsers} currentUserId={String(user.id)} />
+            )}
+
+            {/* 11. Admin Properties Tab */}
+            {activeTab === 'admin_properties' && user.role === 'admin' && (
+              <AdminPropertiesTab initialProperties={adminProperties} />
+            )}
+
+            {/* 12. Admin Appointments Tab */}
+            {activeTab === 'admin_appointments' && user.role === 'admin' && (
+              <AdminAppointmentsTab initialAppointments={adminAppointments} />
             )}
 
           </div>
