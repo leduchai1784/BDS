@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { sendEmail, getTenantCancellationHtml, getOwnerCancellationHtml } from '@/lib/mail'
+import { sendEmail, getTenantCancellationHtml, getOwnerCancellationHtml, getAdminCancellationHtml } from '@/lib/mail'
 
 export async function POST(
   req: Request,
@@ -59,6 +59,7 @@ export async function POST(
 
     // Send emails and await completion (required for serverless envs)
     const owner = property.owner
+    const adminEmail = process.env.SMTP_USER || 'admin@bdsrental.vn'
 
     await Promise.allSettled([
       sendEmail({
@@ -68,9 +69,14 @@ export async function POST(
       }),
       owner?.email ? sendEmail({
         to: owner.email,
-        subject: '❌ [BDS Rental] Lịch hẹn xem nhà đã bị hủy',
+        subject: '🔔 [BDS Rental] Khách hàng đã hủy lịch hẹn xem nhà',
         html: getOwnerCancellationHtml(updated, property)
-      }) : Promise.resolve()
+      }) : Promise.resolve(),
+      sendEmail({
+        to: adminEmail,
+        subject: '❌ [BDS Rental] Có lịch hẹn xem nhà bị hủy trên hệ thống',
+        html: getAdminCancellationHtml(updated, property, owner)
+      })
     ])
 
     return NextResponse.json({
