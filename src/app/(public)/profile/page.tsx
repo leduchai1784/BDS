@@ -13,14 +13,19 @@ async function fetchExternalLeads(): Promise<any[]> {
       return []
     }
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
+
     const response = await fetch(`${apiUrl}/leads`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      signal: AbortSignal.timeout(5000)
+      signal: controller.signal
     })
+
+    clearTimeout(timeoutId)
 
     if (response.ok) {
       const data = await response.json()
@@ -434,6 +439,7 @@ export default async function ProfilePage() {
 
     // Fetch property titles for admin appointments
     const appPropIds = Array.from(new Set(adminAppointments.map(a => a.propertyId)))
+      .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
     const appPropertiesList = await prisma.property.findMany({
       where: { id: { in: appPropIds } }
     })
