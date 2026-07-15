@@ -32,15 +32,7 @@ export async function GET() {
 
     const campaigns = await prisma.aiCampaign.findMany({
       where: { ownerId: userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        property: {
-          select: {
-            title: true,
-            priceLabel: true
-          }
-        }
-      }
+      orderBy: { createdAt: 'desc' }
     })
 
     return NextResponse.json({
