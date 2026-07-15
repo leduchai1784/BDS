@@ -1,14 +1,21 @@
 import nodemailer from 'nodemailer'
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: Number(process.env.SMTP_PORT) === 465, // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER || '',
-    pass: process.env.SMTP_PASSWORD || ''
+let transporter: nodemailer.Transporter | null = null
+
+function getTransporter() {
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: Number(process.env.SMTP_PORT) === 465,
+      auth: {
+        user: process.env.SMTP_USER || '',
+        pass: process.env.SMTP_PASSWORD || ''
+      }
+    })
   }
-})
+  return transporter
+}
 
 interface MailOptions {
   to: string
@@ -24,7 +31,8 @@ export async function sendEmail({ to, subject, html }: MailOptions) {
     const fromEmail = process.env.MAIL_FROM || 'noreply@bdsrental.vn'
     const fromName = process.env.MAIL_FROM_NAME || 'BDS Rental'
 
-    await transporter.sendMail({
+    const activeTransporter = getTransporter()
+    await activeTransporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
       to,
       subject,
