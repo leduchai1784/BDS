@@ -30,6 +30,7 @@ export default function AdminAppointmentsTab({ initialAppointments }: AdminAppoi
   const [isProcessing, setIsProcessing] = useState<number | null>(null)
 
   const handleApprove = async (id: number) => {
+    if (!confirm('Bạn có chắc chắn muốn duyệt lịch hẹn này?')) return
     setIsProcessing(id)
     try {
       const res = await fetch(`/api/appointments/${id}/approve`, {
@@ -52,7 +53,7 @@ export default function AdminAppointmentsTab({ initialAppointments }: AdminAppoi
 
   const handleReject = async (id: number) => {
     const reason = prompt('Nhập lý do từ chối lịch hẹn:')
-    if (reason === null) return // User cancelled prompt
+    if (reason === null) return // User cancelled
 
     setIsProcessing(id)
     try {
@@ -110,168 +111,156 @@ export default function AdminAppointmentsTab({ initialAppointments }: AdminAppoi
     return matchesSearch && matchesStatus
   })
 
-  const getStatusBadge = (s: string) => {
-    switch (s) {
-      case 'approved':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
-            <i className="fa-solid fa-circle-check mr-1 text-[9px]" /> Chấp thuận
-          </span>
-        )
-      case 'pending':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200">
-            <i className="fa-solid fa-clock mr-1 text-[9px]" /> Chờ duyệt
-          </span>
-        )
-      case 'rejected':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-650 border border-red-200">
-            <i className="fa-solid fa-circle-xmark mr-1 text-[9px]" /> Từ chối
-          </span>
-        )
-      case 'cancelled':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
-            <i className="fa-solid fa-ban mr-1 text-[9px]" /> Đã hủy
-          </span>
-        )
-      default:
-        return null
-    }
-  }
-
   return (
     <div className="space-y-6 text-left">
       {/* Title */}
       <div className="pb-5 border-b border-slate-100">
-        <h2 className="text-xl font-bold text-slate-800">Quản lý lịch hẹn xem nhà</h2>
-        <p className="text-xs text-slate-400 mt-1 font-semibold">Duyệt hoặc hủy các yêu cầu đặt lịch hẹn đi xem nhà trực tiếp của khách hàng.</p>
+        <h2 className="text-xl font-bold text-slate-800">Quản lý lịch hẹn</h2>
+        <p className="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và phê duyệt lịch đi xem nhà của khách hàng trên hệ thống.</p>
       </div>
 
-      {/* Filters Bar */}
-      <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-grow max-w-2xl">
+      {/* Filters & Search Card */}
+      <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
           {/* Keyword Search */}
-          <div className="relative">
+          <div className="sm:col-span-8 relative">
             <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
             <input
               type="text"
-              placeholder="Tên khách hàng, SĐT hoặc bất động sản..."
+              placeholder="Tìm kiếm theo tên khách hàng hoặc số điện thoại..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
             />
           </div>
 
-          {/* Status selector */}
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none cursor-pointer focus:border-primary transition"
-          >
-            <option value="">-- Tất cả lịch hẹn --</option>
-            <option value="pending">Chờ duyệt</option>
-            <option value="approved">Đã chấp thuận</option>
-            <option value="rejected">Từ chối</option>
-            <option value="cancelled">Đã hủy</option>
-          </select>
+          {/* Status filter */}
+          <div className="sm:col-span-4">
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none cursor-pointer focus:border-primary transition"
+            >
+              <option value="">-- Trạng thái --</option>
+              <option value="pending">Chờ duyệt</option>
+              <option value="approved">Đã duyệt</option>
+              <option value="rejected">Từ chối</option>
+              <option value="cancelled">Đã hủy</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Table view */}
-      <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <th className="px-6 py-4 text-left">Khách hàng</th>
-                <th className="px-6 py-4 text-left">Thời gian</th>
-                <th className="px-6 py-4 text-left">Bất động sản</th>
-                <th className="px-6 py-4 text-left">Trạng thái</th>
-                <th className="px-6 py-4 text-center">Hành động</th>
+      {/* Appointments Table Card */}
+      <div className="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
+          <table className="min-w-full text-left text-xs text-slate-600 font-semibold border-collapse">
+            <thead className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 sticky top-0 z-10">
+              <tr>
+                <th scope="col" className="px-6 py-4">Khách hàng</th>
+                <th scope="col" className="px-6 py-4">Ngày giờ hẹn</th>
+                <th scope="col" className="px-6 py-4">Bất động sản</th>
+                <th scope="col" className="px-6 py-4">Trạng thái</th>
+                <th scope="col" className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
+            <tbody className="divide-y divide-slate-100">
               {filteredAppointments.length > 0 ? (
                 filteredAppointments.map(app => (
                   <tr key={app.id} className="hover:bg-slate-50/50 transition">
-                    {/* Customer info */}
+                    {/* Guest info */}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <strong className="block text-slate-800 font-bold">{app.name}</strong>
-                      <div className="text-[10px] text-slate-400 mt-0.5">{app.phone}</div>
-                      {app.email && <div className="text-[10px] text-slate-400">{app.email}</div>}
-                    </td>
-
-                    {/* Date/Time */}
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-600">
-                      <div>{new Date(app.date).toLocaleDateString('vi-VN')}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">
-                        {new Date(app.time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                    </td>
-
-                    {/* Property title */}
-                    <td className="px-6 py-4 max-w-xs">
-                      <strong className="block text-slate-800 font-semibold truncate" title={app.property.title}>
-                        {app.property.title}
-                      </strong>
-                      <span className="block text-[10px] text-slate-400 truncate" title={app.property.address}>
-                        {app.property.address}
+                      <span className="block text-slate-800 font-bold text-[13px]">{app.name}</span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        <i className="fa-solid fa-phone mr-1" />
+                        {app.phone}
                       </span>
                     </td>
 
-                    {/* Status badge */}
+                    {/* Date/Time */}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(app.status)}
-                      {app.status === 'rejected' && app.rejectReason && (
-                        <div className="text-[10px] text-red-500 italic mt-1 font-semibold max-w-[150px] truncate" title={app.rejectReason}>
-                          Lý do: {app.rejectReason}
-                        </div>
+                      <span className="block text-slate-800 text-[13px]">
+                        {new Date(app.date).toLocaleDateString('vi-VN')}
+                      </span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        <i className="fa-solid fa-clock mr-1" />
+                        {new Date(app.time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </td>
+
+                    {/* Property */}
+                    <td className="px-6 py-4 max-w-[200px] truncate">
+                      {app.property ? (
+                        <a 
+                          href={`/property/${app.property.id}`} 
+                          className="hover:text-primary font-bold text-slate-850 block truncate text-[13px]"
+                          title={app.property.title}
+                        >
+                          {app.property.title}
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 italic">BĐS không tồn tại</span>
+                      )}
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {app.status === 'approved' ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">
+                          Đã duyệt
+                        </span>
+                      ) : app.status === 'pending' ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          Chờ duyệt
+                        </span>
+                      ) : app.status === 'rejected' ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">
+                          Từ chối
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-50 text-slate-500 border border-slate-200">
+                          Đã hủy
+                        </span>
                       )}
                     </td>
 
                     {/* Actions */}
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {/* Approve */}
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         {app.status === 'pending' && (
-                          <button
-                            onClick={() => handleApprove(app.id)}
-                            disabled={isProcessing === app.id}
-                            className="w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-600 flex items-center justify-center transition cursor-pointer"
-                            title="Chấp thuận lịch hẹn"
-                          >
-                            <i className="fa-solid fa-circle-check" />
-                          </button>
+                          <>
+                            {/* Approve */}
+                            <button
+                              onClick={() => handleApprove(app.id)}
+                              disabled={isProcessing === app.id}
+                              className="px-2.5 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-xl text-[10px] font-extrabold cursor-pointer transition shadow-sm"
+                            >
+                              Duyệt lịch
+                            </button>
+
+                            {/* Reject */}
+                            <button
+                              onClick={() => handleReject(app.id)}
+                              disabled={isProcessing === app.id}
+                              className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl text-[10px] font-extrabold cursor-pointer transition shadow-sm"
+                            >
+                              Từ chối
+                            </button>
+                          </>
                         )}
 
-                        {/* Reject */}
-                        {app.status === 'pending' && (
-                          <button
-                            onClick={() => handleReject(app.id)}
-                            disabled={isProcessing === app.id}
-                            className="w-8 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-250 text-amber-600 flex items-center justify-center transition cursor-pointer"
-                            title="Từ chối lịch hẹn"
-                          >
-                            <i className="fa-solid fa-circle-xmark" />
-                          </button>
-                        )}
-
-                        {/* Cancel */}
                         {(app.status === 'pending' || app.status === 'approved') && (
                           <button
                             onClick={() => handleCancel(app.id)}
                             disabled={isProcessing === app.id}
-                            className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-655 flex items-center justify-center transition cursor-pointer"
-                            title="Hủy lịch hẹn"
+                            className="px-2.5 py-1.5 bg-red-500 hover:bg-red-650 text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer"
                           >
-                            <i className="fa-solid fa-ban" />
+                            Hủy lịch
                           </button>
                         )}
 
                         {app.status !== 'pending' && app.status !== 'approved' && (
-                          <span className="text-[10px] text-slate-400 font-bold italic">Đã xử lý</span>
+                          <span className="text-[10px] text-slate-400">Không có thao tác</span>
                         )}
                       </div>
                     </td>
@@ -279,8 +268,9 @@ export default function AdminAppointmentsTab({ initialAppointments }: AdminAppoi
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-wider">
-                    Không tìm thấy yêu cầu đặt lịch nào
+                  <td colSpan={5} className="py-16 text-center text-slate-400 font-semibold">
+                    <i className="fa-solid fa-calendar-xmark text-3xl mb-3 block text-slate-350" />
+                    Chưa có lịch hẹn xem nhà nào trên hệ thống.
                   </td>
                 </tr>
               )}
