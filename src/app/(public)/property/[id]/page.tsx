@@ -6,6 +6,8 @@ import PropertyCard from '@/components/property/PropertyCard'
 import Link from 'next/link'
 import DetailMapWrapper from '@/components/property/DetailMapWrapper'
 import { notFound } from 'next/navigation'
+import { auth } from '@/lib/auth'
+import PropertyActions from '@/components/property/PropertyActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +18,22 @@ interface PropertyDetailPageProps {
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
   const resolvedParams = await params
   const id = resolvedParams.id
+
+  const session = await auth()
+  const userId = session?.user?.id ? Number(session.user.id) : null
+
+  let isFavorite = false
+  if (userId) {
+    const fav = await prisma.wishlist.findUnique({
+      where: {
+        userId_propertyId: {
+          userId,
+          propertyId: id
+        }
+      }
+    })
+    isFavorite = !!fav
+  }
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
 
@@ -440,6 +458,13 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                   Chat Zalo
                 </a>
               </div>
+
+              {/* Share & Favorite listing actions */}
+              <PropertyActions 
+                propertyId={property.id} 
+                propertyTitle={property.title} 
+                isFavoriteInitial={isFavorite}
+              />
 
               {/* Booking Scheduler Form */}
               <BookingForm 
