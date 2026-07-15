@@ -41,6 +41,20 @@ export async function sendEmail({ to, subject, html }: MailOptions) {
 // HTML Email Templates Builder (Port from resources/views/emails/*.blade.php)
 // ─────────────────────────────────────────────────────────────────────────────
 
+function formatTime(time: any): string {
+  if (!time) return 'N/A'
+  if (time instanceof Date) {
+    return time.toTimeString().substring(0, 5) // Extracts "hh:mm"
+  }
+  if (typeof time === 'string') {
+    if (time.includes('T')) {
+      return time.split('T')[1].substring(0, 5)
+    }
+    return time.substring(0, 5)
+  }
+  return String(time)
+}
+
 export function getTenantConfirmationHtml(appointment: any, property: any, owner: any) {
   return `
     <!DOCTYPE html>
@@ -79,7 +93,7 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
                     </tr>
                     <tr>
                         <td class="label">Thời gian hẹn</td>
-                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ Khung giờ: ${appointment.time}</td>
+                        <td class="value">📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ Khung giờ: ${formatTime(appointment.time)}</td>
                     </tr>
                     <tr>
                         <td class="label">Ghi chú của bạn</td>
@@ -90,9 +104,9 @@ export function getTenantConfirmationHtml(appointment: any, property: any, owner
                 <div class="agent-card">
                     <h3 style="margin:0 0 8px; font-size:13px; color:#0369a1;">👤 Thông tin Chủ nhà / Môi giới:</h3>
                     <div style="font-size:13px; color:#0c4a6e;">
-                        <strong>Họ tên:</strong> ${owner.name}<br>
-                        <strong>Số điện thoại:</strong> ${owner.phone}<br>
-                        <strong>Email:</strong> ${owner.email}
+                        <strong>Họ tên:</strong> ${owner?.name || 'Chủ nhà'}<br>
+                        <strong>Số điện thoại:</strong> ${owner?.phone || 'Liên hệ'}<br>
+                        <strong>Email:</strong> ${owner?.email || 'Liên hệ'}
                     </div>
                 </div>
 
@@ -121,9 +135,9 @@ export function getTenantCancellationHtml(appointment: any, property: any, owner
                 <h2 style="font-size:15px; color:#1e293b;">Xin chào ${appointment.name},</h2>
                 <p style="font-size:13px; color:#475569;">Chúng tôi xin thông báo lịch hẹn xem nhà sau đây của bạn đã bị hủy:</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Bất động sản:</strong> ${property.title}</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian hẹn cũ:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${appointment.time}</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian hẹn cũ:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</p>
                 <div style="background-color:#fef2f2; border: 1px solid #fca5a5; border-radius:12px; padding:16px; margin:24px 0; font-size:13px; color:#991b1b;">
-                    Lịch hẹn đã bị hủy bởi người dùng hoặc hệ thống. Nếu có thắc mắc, vui lòng liên hệ chủ nhà: <strong>${owner.name} (${owner.phone})</strong>.
+                    Lịch hẹn đã bị hủy bởi người dùng hoặc hệ thống. Nếu có thắc mắc, vui lòng liên hệ chủ nhà: <strong>${owner?.name || 'Chủ nhà'} (${owner?.phone || 'Liên hệ'})</strong>.
                 </div>
             </div>
         </div>
@@ -144,11 +158,11 @@ export function getTenantApprovalHtml(appointment: any, property: any, owner: an
             </div>
             <div style="padding:32px 24px;">
                 <h2 style="font-size:15px; color:#1e293b;">Xin chào ${appointment.name},</h2>
-                <p style="font-size:13px; color:#475569;">Chủ nhà <strong>${owner.name}</strong> đã chấp thuận lịch hẹn xem nhà của bạn. Vui lòng đến đúng giờ hẹn:</p>
+                <p style="font-size:13px; color:#475569;">Chủ nhà <strong>${owner?.name || 'Chủ nhà'}</strong> đã chấp thuận lịch hẹn xem nhà của bạn. Vui lòng đến đúng giờ hẹn:</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Bất động sản:</strong> ${property.title}</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Địa chỉ:</strong> ${property.address}</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian hẹn:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${appointment.time}</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>SĐT chủ nhà liên hệ:</strong> ${owner.phone}</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian hẹn:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>SĐT chủ nhà liên hệ:</strong> ${owner?.phone || 'Liên hệ'}</p>
             </div>
         </div>
     </body>
@@ -173,7 +187,7 @@ export function getTenantRejectionHtml(appointment: any, property: any, owner: a
                 <div style="background-color:#fffbeb; border: 1px solid #fde68a; border-radius:12px; padding:16px; margin:24px 0; font-size:13px; color:#b45309;">
                     <strong>Lý do từ chối:</strong> ${reason || 'Không có lý do cụ thể.'}
                 </div>
-                <p style="font-size:12px; color:#64748b;">Bạn có thể liên hệ chủ nhà qua SĐT: <strong>${owner.phone}</strong> để thỏa thuận lại lịch hẹn khác.</p>
+                <p style="font-size:12px; color:#64748b;">Bạn có thể liên hệ chủ nhà qua SĐT: <strong>${owner?.phone || 'Liên hệ'}</strong> để thỏa thuận lại lịch hẹn khác.</p>
             </div>
         </div>
     </body>
@@ -195,7 +209,7 @@ export function getOwnerNotificationHtml(appointment: any, property: any) {
                 <p style="font-size:13px; color:#475569;">Bạn nhận được yêu cầu đặt lịch hẹn xem nhà từ khách hàng:</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Bất động sản:</strong> ${property.title}</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Khách hàng:</strong> ${appointment.name} (${appointment.phone})</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian hẹn:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${appointment.time}</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian hẹn:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Lời nhắn:</strong> ${appointment.message || 'Không có.'}</p>
                 <p style="font-size:12px; color:#64748b;">Vui lòng truy cập trang cá nhân của bạn trên hệ thống để duyệt hoặc từ chối lịch hẹn này.</p>
             </div>
@@ -218,7 +232,7 @@ export function getOwnerCancellationHtml(appointment: any, property: any) {
             <div style="padding:32px 24px;">
                 <p style="font-size:13px; color:#475569;">Lịch hẹn xem nhà từ khách hàng <strong>${appointment.name}</strong> đã bị hủy:</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Bất động sản:</strong> ${property.title}</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian cũ:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${appointment.time}</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian cũ:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</p>
             </div>
         </div>
     </body>
@@ -240,8 +254,8 @@ export function getAdminNotificationHtml(appointment: any, property: any, owner:
                 <p style="font-size:13px; color:#475569;">Hệ thống ghi nhận cuộc hẹn mới giữa tenant và owner:</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Bất động sản:</strong> ${property.title}</p>
                 <p style="font-size:13px; color:#1e293b;"><strong>Khách hàng:</strong> ${appointment.name} (${appointment.phone} - ${appointment.email})</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>Chủ nhà:</strong> ${owner.name} (${owner.phone} - ${owner.email})</p>
-                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${appointment.time}</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>Chủ nhà:</strong> ${owner?.name || 'Chủ nhà'} (${owner?.phone || 'Liên hệ'} - ${owner?.email || 'Liên hệ'})</p>
+                <p style="font-size:13px; color:#1e293b;"><strong>Thời gian:</strong> 📅 ${new Date(appointment.date).toLocaleDateString('vi-VN')} tại ⏰ ${formatTime(appointment.time)}</p>
             </div>
         </div>
     </body>

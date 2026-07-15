@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     }).catch(err => console.error('Error sending tenant confirmation email:', err))
 
     // 2. Send notification to property owner
-    if (owner.email) {
+    if (owner && owner.email) {
       sendEmail({
         to: owner.email,
         subject: '🔔 [BDS Rental] Có lịch hẹn xem nhà mới từ khách hàng',
