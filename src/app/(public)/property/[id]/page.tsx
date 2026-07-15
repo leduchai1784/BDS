@@ -74,8 +74,8 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
         isVip: dbProp.isVip,
         isNew: dbProp.isNew,
         propertyType: dbProp.propertyType,
-        categoryId: dbProp.categoryId,
-        ownerId: dbProp.ownerId,
+        categoryId: dbProp.categoryId ? Number(dbProp.categoryId) : null,
+        ownerId: dbProp.ownerId ? Number(dbProp.ownerId) : null,
         images,
         agent: {
           name: agentName,

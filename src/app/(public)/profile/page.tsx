@@ -25,7 +25,7 @@ export default async function ProfilePage() {
 
   // Define details structure
   let mergedUser = {
-    id: dbUser.id,
+    id: Number(dbUser.id),
     name: dbUser.name,
     email: dbUser.email,
     phone: dbUser.phone || '',
