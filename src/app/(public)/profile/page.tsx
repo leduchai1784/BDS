@@ -108,6 +108,7 @@ export default async function ProfilePage() {
     address: p.address,
     status: p.status,
     viewsCount: p.viewsCount,
+    imagePath: p.propertyImages?.[0]?.imagePath || null,
     createdAt: p.createdAt ? p.createdAt.toISOString() : null
   }))
 

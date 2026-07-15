@@ -10,6 +10,7 @@ interface PropertyItem {
   address: string
   status: string
   viewsCount: number
+  imagePath?: string | null
   createdAt: string | null
 }
 
@@ -105,31 +106,45 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
           {list.map(p => (
             <div 
               key={p.id} 
-              className="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
-              <div className="space-y-2 flex-grow">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-primary transition">
-                    <Link href={`/property/${p.id}`}>{p.title}</Link>
-                  </h4>
-                  {/* Status Badges */}
-                  {p.status === 'approved' && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700">Đang hiển thị</span>
-                  )}
-                  {p.status === 'pending' && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-55 text-amber-700">Đang chờ duyệt</span>
-                  )}
-                  {p.status === 'rented' && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-500">Đang ẩn</span>
-                  )}
+              <div className="flex items-start gap-4 flex-grow text-left min-w-0">
+                {/* Property Thumbnail Image */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100/60 flex-shrink-0 relative">
+                  <img 
+                    src={p.imagePath ? (p.imagePath.startsWith('http') ? p.imagePath : `/${p.imagePath}`) : '/images/apartment_placeholder.png'} 
+                    alt={p.title} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/apartment_placeholder.png'
+                    }}
+                  />
                 </div>
-                <p className="text-[11px] text-slate-400 font-semibold">{p.address}</p>
-                <div className="flex items-center gap-4 text-[10px] text-slate-450 font-bold">
-                  <span>Giá: <strong className="text-cyan-650">{p.priceLabel}</strong></span>
-                  <span>Lượt xem: <strong>{p.viewsCount}</strong></span>
-                  {p.createdAt && (
-                    <span>Ngày đăng: <strong>{new Date(p.createdAt).toLocaleDateString('vi-VN')}</strong></span>
-                  )}
+
+                <div className="space-y-1.5 flex-grow min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-primary transition truncate max-w-full">
+                      <Link href={`/property/${p.id}`}>{p.title}</Link>
+                    </h4>
+                    {/* Status Badges */}
+                    {p.status === 'approved' && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700 whitespace-nowrap">Đang hiển thị</span>
+                    )}
+                    {p.status === 'pending' && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-55 text-amber-700 whitespace-nowrap">Đang chờ duyệt</span>
+                    )}
+                    {p.status === 'rented' && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-500 whitespace-nowrap">Đang ẩn</span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-semibold truncate">{p.address}</p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-slate-450 font-bold">
+                    <span>Giá: <strong className="text-cyan-650">{p.priceLabel}</strong></span>
+                    <span>Lượt xem: <strong>{p.viewsCount}</strong></span>
+                    {p.createdAt && (
+                      <span>Ngày đăng: <strong>{new Date(p.createdAt).toLocaleDateString('vi-VN')}</strong></span>
+                    )}
+                  </div>
                 </div>
               </div>
 
