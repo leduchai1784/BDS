@@ -535,7 +535,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                         frontInputRef.current.value = ''
                       }
                     }}
-                    className="text-[10px] font-black text-rose-500 hover:text-rose-600 transition flex items-center gap-1 cursor-pointer"
+                    className="text-[10px] font-black text-primary hover:text-primary-hover transition flex items-center gap-1 cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-rotate-left text-[9px]"></i> Đặt lại
                   </button>
@@ -597,7 +597,7 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
                         backInputRef.current.value = ''
                       }
                     }}
-                    className="text-[10px] font-black text-rose-500 hover:text-rose-600 transition flex items-center gap-1 cursor-pointer"
+                    className="text-[10px] font-black text-primary hover:text-primary-hover transition flex items-center gap-1 cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-rotate-left text-[9px]"></i> Đặt lại
                   </button>
