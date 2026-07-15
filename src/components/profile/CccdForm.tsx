@@ -198,15 +198,12 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
         }
       }
 
-      // 2. Nơi cấp (Flexible keyword check)
-      let issuePlace = ''
+      // 2. Nơi cấp (Defaulting to Cục Cảnh sát QLHC về TTXH)
+      let issuePlace = 'Cục Cảnh sát QLHC về TTXH'
       const normalizedText = text.toLowerCase()
-      const cccdKeywords = ['cục', 'cuc', 'trưởng', 'truong', 'cảnh', 'canh', 'sát', 'sat', 'quản', 'quan', 'lý', 'ly', 'dân cư', 'dan cu']
-      const hasCccdKeywords = cccdKeywords.some(keyword => normalizedText.includes(keyword))
+      const hasCccdKeywords = ['cục', 'cuc', 'cảnh sát', 'canh sat'].some(kw => normalizedText.includes(kw))
       
-      if (hasCccdKeywords) {
-        issuePlace = 'Cục Cảnh sát QLHC về TTXH'
-      } else {
+      if (!hasCccdKeywords) {
         for (const line of lines) {
           if (/công\s*an|cong\s*an/i.test(line)) {
             issuePlace = line
@@ -282,11 +279,15 @@ export default function CccdForm({ user, onSuccess }: CccdFormProps) {
           if (parsed.issue_place) {
             // Standardize to matching string format
             const lowerPlace = parsed.issue_place.toLowerCase()
-            if (lowerPlace.includes('cục cảnh sát') || lowerPlace.includes('cuc canh sat') || lowerPlace.includes('công an qlhc')) {
+            if (lowerPlace.includes('cục') || lowerPlace.includes('cuc') || lowerPlace.includes('cảnh sát') || lowerPlace.includes('canh sat') || !lowerPlace.includes('công an')) {
               setIdPlace('Cục Cảnh sát QLHC về TTXH')
             } else {
               setIdPlace(parsed.issue_place)
             }
+            setHighlightIdPlace(true)
+            setTimeout(() => setHighlightIdPlace(false), 1500)
+          } else {
+            setIdPlace('Cục Cảnh sát QLHC về TTXH')
             setHighlightIdPlace(true)
             setTimeout(() => setHighlightIdPlace(false), 1500)
           }
