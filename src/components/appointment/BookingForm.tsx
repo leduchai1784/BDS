@@ -208,7 +208,7 @@ export default function BookingForm({
               />
             </div>
             
-            <div className="relative" onMouseLeave={() => setIsTimeDropdownOpen(false)}>
+            <div className="relative">
               <button 
                 type="button"
                 onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}

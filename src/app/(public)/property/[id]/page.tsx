@@ -467,12 +467,28 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               />
 
               {/* Booking Scheduler Form */}
-              <BookingForm 
-                propertyId={property.id} 
-                propertyTitle={property.title}
-                propertyOwnerId={property.ownerId || 0}
-                agentName={property.agent.name}
-              />
+              {userId !== null && Number(property.ownerId) === userId ? (
+                <div className="border-t border-slate-100 pt-5 text-center">
+                  <div className="p-4 bg-slate-55 border border-slate-150 rounded-2xl">
+                    <i className="fa-solid fa-user-gear text-slate-400 text-base mb-1.5 block"></i>
+                    <h5 className="text-xs font-bold text-slate-700 mb-0.5">Đây là tin đăng của bạn</h5>
+                    <p className="text-[10px] text-slate-450 leading-relaxed font-semibold">Bạn có thể quản lý, sửa đổi hoặc ẩn tin đăng này trong trang Cá nhân của mình.</p>
+                    <Link 
+                      href="/profile?tab=properties"
+                      className="mt-3 inline-flex items-center justify-center px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 hover:text-slate-800 text-[10px] font-black rounded-xl transition cursor-pointer"
+                    >
+                      Quản lý tin đăng
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <BookingForm 
+                  propertyId={property.id} 
+                  propertyTitle={property.title}
+                  propertyOwnerId={property.ownerId || 0}
+                  agentName={property.agent.name}
+                />
+              )}
             </div>
           </div>
         </div>
