@@ -1,252 +1,244 @@
 'use client'
 
 import { useState } from 'react'
-
-interface UserItem {
-  id: string
-  name: string
-  email: string
-  phone: string | null
-  avatar: string | null
-  role: string
-  status: string
-  createdAt: string
-}
+import { toast } from 'sonner'
 
 interface AdminUsersTabProps {
-  initialUsers: UserItem[]
-  currentUserId: string
+  initialUsers: any[]
 }
 
-export default function AdminUsersTab({ initialUsers, currentUserId }: AdminUsersTabProps) {
-  const [users, setUsers] = useState<UserItem[]>(initialUsers)
-  const [search, setSearch] = useState('')
-  const [role, setRole] = useState('')
-  const [status, setStatus] = useState('')
-  const [isProcessing, setIsProcessing] = useState<string | null>(null)
+export default function AdminUsersTab({ initialUsers }: AdminUsersTabProps) {
+  const [users, setUsers] = useState(initialUsers)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterRole, setFilterRole] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
+  const [roleOpen, setRoleOpen] = useState(false)
+  const [statusOpen, setStatusOpen] = useState(false)
 
-  const toggleStatus = async (id: string) => {
-    if (id === currentUserId) return
-    setIsProcessing(id)
-
+  const handleToggleUserStatus = async (targetUserId: number, currentStatus: string) => {
+    const actionLabel = currentStatus === 'locked' ? 'mở khóa' : 'khóa'
+    if (!window.confirm(`Bạn có chắc chắn muốn ${actionLabel} tài khoản này?`)) return
     try {
-      const res = await fetch(`/api/admin/users/${id}/toggle-status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      const res = await fetch(`/api/admin/users/${targetUserId}/toggle-status`, {
+        method: 'POST'
       })
-
       const data = await res.json()
-      if (res.ok && data.success) {
-        setUsers(prev =>
-          prev.map(u => u.id === id ? { ...u, status: data.status } : u)
-        )
+      if (data.success) {
+        toast.success(data.message)
+        setUsers(prev => prev.map(u => u.id === targetUserId ? { ...u, status: data.status } : u))
       } else {
-        alert(data.error || 'Lỗi đổi trạng thái')
+        toast.error(data.error || 'Có lỗi xảy ra')
       }
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setIsProcessing(null)
+    } catch (e: any) {
+      toast.error(e.message || 'Lỗi mạng')
     }
   }
 
-  const deleteUser = async (id: string) => {
-    if (id === currentUserId) return
-    if (!confirm('Bạn có chắc chắn muốn xóa thành viên này? Hành động này không thể hoàn tác!')) return
-    setIsProcessing(id)
-
-    try {
-      const res = await fetch(`/api/admin/users/${id}`, {
-        method: 'DELETE'
-      })
-
-      const data = await res.json()
-      if (res.ok && data.success) {
-        setUsers(prev => prev.filter(u => u.id !== id))
-      } else {
-        alert(data.error || 'Lỗi xóa tài khoản')
-      }
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setIsProcessing(null)
-    }
-  }
-
-  // Filter clientside
+  // Filter logic matching bds_php
   const filteredUsers = users.filter(u => {
-    const matchesSearch = !search || 
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      (u.phone && u.phone.includes(search))
+    const textMatch = searchTerm.trim() === '' ||
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.phone && u.phone.includes(searchTerm))
 
-    const matchesRole = !role || u.role === role
-    const matchesStatus = !status || u.status === status
+    const roleMatch = filterRole === '' || u.role === filterRole
+    const statusMatch = filterStatus === '' || u.status === filterStatus
 
-    return matchesSearch && matchesRole && matchesStatus
+    return textMatch && roleMatch && statusMatch
   })
 
+  const getRoleLabel = (role: string) => {
+    if (role === 'admin') return 'Quản trị viên'
+    if (role === 'owner') return 'Chủ nhà'
+    if (role === 'tenant') return 'Khách thuê'
+    return '-- Tất cả vai trò --'
+  }
+
+  const getStatusLabel = (status: string) => {
+    if (status === 'active') return 'Hoạt động'
+    if (status === 'locked') return 'Đang khóa'
+    return '-- Trạng thái --'
+  }
+
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6">
       {/* Title */}
-      <div className="pb-5 border-b border-slate-100">
+      <div className="pb-5 border-b border-slate-100 mb-6 text-left">
         <h2 className="text-xl font-bold text-slate-800">Quản lý thành viên</h2>
         <p className="text-xs text-slate-400 mt-1 font-semibold">Theo dõi trạng thái và khóa/mở khóa tài khoản khách thuê, chủ nhà hoặc quản trị viên.</p>
       </div>
 
-      {/* Filters Bar */}
-      <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-grow">
-          {/* Keyword Search */}
-          <div className="relative">
-            <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
-            <input
-              type="text"
-              placeholder="Tên, email hoặc SĐT..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
+      {/* Filters & Search Card */}
+      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+          {/* Search Keyword */}
+          <div className="sm:col-span-6 relative">
+            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input 
+              type="text" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm theo tên, email hoặc SĐT..." 
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition"
             />
           </div>
 
-          {/* Role selector */}
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none cursor-pointer focus:border-primary transition"
-          >
-            <option value="">-- Tất cả vai trò --</option>
-            <option value="tenant">Khách thuê nhà</option>
-            <option value="owner">Đối tác Chủ nhà</option>
-            <option value="admin">Quản trị viên</option>
-          </select>
+          {/* Role Filter */}
+          <div className="relative sm:col-span-3">
+            <button 
+              type="button" 
+              onClick={() => setRoleOpen(!roleOpen)} 
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
+            >
+              <span>{filterRole ? getRoleLabel(filterRole) : '-- Tất cả vai trò --'}</span>
+              <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+            </button>
+          
+            {roleOpen && (
+              <div 
+                onMouseLeave={() => setRoleOpen(false)}
+                className="absolute z-35 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+              >
+                {['', 'tenant', 'owner', 'admin'].map((role) => (
+                  <button 
+                    key={role}
+                    type="button" 
+                    onClick={() => {
+                      setFilterRole(role)
+                      setRoleOpen(false)
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition ${filterRole === role ? 'bg-primary/5 text-primary font-bold' : ''}`}
+                  >
+                    {getRoleLabel(role)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* Status selector */}
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none cursor-pointer focus:border-primary transition"
-          >
-            <option value="">-- Trạng thái --</option>
-            <option value="active">Hoạt động</option>
-            <option value="locked">Đang khóa</option>
-          </select>
+          {/* Status Filter */}
+          <div className="relative sm:col-span-3">
+            <button 
+              type="button" 
+              onClick={() => setStatusOpen(!statusOpen)} 
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-primary rounded-xl text-slate-800 text-xs font-semibold outline-none transition cursor-pointer flex items-center justify-between text-left"
+            >
+              <span>{filterStatus ? getStatusLabel(filterStatus) : '-- Trạng thái --'}</span>
+              <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+            </button>
+          
+            {statusOpen && (
+              <div 
+                onMouseLeave={() => setStatusOpen(false)}
+                className="absolute z-35 mt-1 w-full bg-white border border-slate-150 rounded-2xl shadow-xl py-1 overflow-hidden"
+              >
+                {['', 'active', 'locked'].map((status) => (
+                  <button 
+                    key={status}
+                    type="button" 
+                    onClick={() => {
+                      setFilterStatus(status)
+                      setStatusOpen(false)
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 font-semibold transition ${filterStatus === status ? 'bg-primary/5 text-primary font-bold' : ''}`}
+                  >
+                    {getStatusLabel(status)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Table view */}
-      <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <th className="px-6 py-4 text-left">Thành viên</th>
-                <th className="px-6 py-4 text-left">Liên hệ</th>
-                <th className="px-6 py-4 text-left">Vai trò</th>
-                <th className="px-6 py-4 text-left">Trạng thái</th>
-                <th className="px-6 py-4 text-center">Hành động</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map(u => (
-                  <tr key={u.id} className="hover:bg-slate-50/50 transition">
-                    {/* User profile */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=0077bb&color=fff`}
-                          alt={u.name}
-                          className="w-8 h-8 rounded-full object-cover border border-slate-100"
-                        />
-                        <div>
-                          <strong className="block text-slate-800 font-bold">{u.name}</strong>
-                          <span className="text-[10px] text-slate-400 font-semibold">Mã: {u.id}</span>
-                        </div>
+      {/* Users Table Card */}
+      <div className="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden text-left">
+        <div className="overflow-x-auto max-h-[500px] overflow-y-auto pr-1 thin-scrollbar">
+          {filteredUsers.length > 0 ? (
+            <table className="min-w-full text-left text-xs text-slate-600 font-semibold">
+              <thead className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                <tr>
+                  <th scope="col" className="px-6 py-4">Thành viên</th>
+                  <th scope="col" className="px-6 py-4">Liên hệ</th>
+                  <th scope="col" className="px-6 py-4">Vai trò</th>
+                  <th scope="col" className="px-6 py-4">Trạng thái</th>
+                  <th scope="col" className="px-6 py-4 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredUsers.map((userItem) => (
+                  <tr key={userItem.id} className="hover:bg-slate-50/50 transition">
+                    {/* Avatar & Name */}
+                    <td className="px-6 py-4 flex items-center space-x-3.5">
+                      <img 
+                        src={userItem.avatar} 
+                        alt={userItem.name} 
+                        className="w-9 h-9 rounded-full object-cover border border-slate-100 shadow-sm"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userItem.name)}&background=0077bb&color=fff`
+                        }}
+                      />
+                      <div>
+                        <span className="font-bold text-slate-800 text-xs block leading-none">
+                          {userItem.name}
+                        </span>
+                        <span className="text-[9px] text-slate-400 block mt-1">ID: #{userItem.id}</span>
                       </div>
                     </td>
-
-                    {/* Contact */}
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-600">
-                      <div>{u.email}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">{u.phone || 'Chưa cập nhật SĐT'}</div>
+                    {/* Email & Phone */}
+                    <td className="px-6 py-4">
+                      <span className="block text-slate-750 font-semibold leading-none">{userItem.email}</span>
+                      <span className="text-[10px] text-slate-400 block mt-1">{userItem.phone || 'Chưa cập nhật SĐT'}</span>
                     </td>
-
-                    {/* Role badge */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {u.role === 'admin' ? (
-                        <span className="inline-flex px-2 py-0.5 rounded-md text-[9px] font-black bg-rose-50 text-rose-600 border border-rose-200 uppercase">
-                          Admin
-                        </span>
-                      ) : u.role === 'owner' ? (
-                        <span className="inline-flex px-2 py-0.5 rounded-md text-[9px] font-black bg-emerald-50 text-emerald-600 border border-emerald-200 uppercase">
-                          Chủ nhà
+                    {/* Role */}
+                    <td className="px-6 py-4">
+                      {userItem.role === 'admin' ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">Admin</span>
+                      ) : userItem.role === 'owner' ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Chủ nhà</span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-teal-50 text-teal-700 border border-teal-200">Khách thuê</span>
+                      )}
+                    </td>
+                    {/* Status */}
+                    <td className="px-6 py-4">
+                      {userItem.status === 'locked' ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-50 text-red-700 border border-red-200">
+                          <i className="fa-solid fa-lock mr-1.5 text-[8px]"></i> Đã khóa
                         </span>
                       ) : (
-                        <span className="inline-flex px-2 py-0.5 rounded-md text-[9px] font-black bg-blue-50 text-blue-600 border border-blue-200 uppercase">
-                          Khách thuê
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">
+                          <i className="fa-solid fa-circle-check mr-1.5 text-[8px]"></i> Hoạt động
                         </span>
                       )}
                     </td>
-
-                    {/* Status badge */}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {u.status === 'locked' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">
-                          <i className="fa-solid fa-lock mr-1 text-[9px]" /> Đang khóa
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
-                          <i className="fa-solid fa-circle-check mr-1 text-[9px]" /> Hoạt động
-                        </span>
-                      )}
-                    </td>
-
                     {/* Actions */}
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {u.id !== currentUserId ? (
-                          <>
-                            {/* Toggle Block status */}
-                            <button
-                              onClick={() => toggleStatus(u.id)}
-                              disabled={isProcessing === u.id}
-                              className={`w-8 h-8 rounded-lg border flex items-center justify-center transition cursor-pointer ${
-                                u.status === 'locked'
-                                  ? 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-600'
-                                  : 'bg-amber-50 hover:bg-amber-100 border-amber-200 text-amber-600'
-                              }`}
-                              title={u.status === 'locked' ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}
-                            >
-                              <i className={`fa-solid ${u.status === 'locked' ? 'fa-lock-open' : 'fa-lock'}`} />
-                            </button>
-
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => deleteUser(u.id)}
-                              disabled={isProcessing === u.id}
-                              className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 flex items-center justify-center transition cursor-pointer"
-                              title="Xóa tài khoản"
-                            >
-                              <i className="fa-solid fa-trash-can" />
-                            </button>
-                          </>
-                        ) : (
-                          <span className="text-[10px] text-slate-400 font-bold italic">Tài khoản của bạn</span>
-                        )}
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button 
+                          type="button" 
+                          onClick={() => handleToggleUserStatus(userItem.id, userItem.status)}
+                          title={userItem.status === 'locked' ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}
+                          className={`w-7 h-7 rounded-lg border text-xs cursor-pointer transition shadow-sm inline-flex items-center justify-center ${
+                            userItem.status === 'locked' 
+                              ? 'bg-green-50 hover:bg-green-100 text-green-600 border-green-200' 
+                              : 'bg-red-50 hover:bg-red-100 text-red-650 border-red-200'
+                          }`}
+                        >
+                          <i className={`fa-solid ${userItem.status === 'locked' ? 'fa-lock-open' : 'fa-lock'} text-[10px]`}></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-wider">
-                    Không tìm thấy thành viên nào phù hợp
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="py-16 text-center text-slate-400 font-semibold">
+              <i className="fa-solid fa-users-slash text-3xl mb-3 block text-slate-350"></i>
+              Chưa có thành viên nào thỏa mãn bộ lọc.
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -10,11 +10,12 @@ import AppointmentsTab from './AppointmentsTab'
 import WishlistTab from './WishlistTab'
 import RegisterOwnerForm from './RegisterOwnerForm'
 import AiMarketingStudio from './AiMarketingStudio'
-import { Toaster, toast } from 'sonner'
-import Link from 'next/link'
 import AdminUsersTab from './AdminUsersTab'
 import AdminPropertiesTab from './AdminPropertiesTab'
 import AdminAppointmentsTab from './AdminAppointmentsTab'
+import AdminLeadsTab from './AdminLeadsTab'
+import { Toaster, toast } from 'sonner'
+import Link from 'next/link'
 
 interface ProfilePageClientProps {
   user: any
@@ -31,6 +32,8 @@ interface ProfilePageClientProps {
   adminUsers?: any[]
   adminProperties?: any[]
   adminAppointments?: any[]
+  categories?: any[]
+  leads?: any[]
 }
 
 export default function ProfilePageClient({
@@ -42,7 +45,9 @@ export default function ProfilePageClient({
   stats,
   adminUsers = [],
   adminProperties = [],
-  adminAppointments = []
+  adminAppointments = [],
+  categories = [],
+  leads = []
 }: ProfilePageClientProps) {
   const [activeTab, setActiveTab] = useState('profile')
   const [activeSubTab, setActiveSubTab] = useState('info') // info, password, cccd, avatar
@@ -260,21 +265,95 @@ export default function ProfilePageClient({
                     </button>
                   )}
 
-                  {/* Appointments tab */}
-                  <button 
-                    onClick={() => handleTabChange('appointments')}
-                    className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
-                      activeTab === 'appointments' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <i className="fa-solid fa-calendar-days text-sm" />
-                      <span>Lịch hẹn</span>
-                    </div>
-                    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                      {stats.totalAppointments}
-                    </span>
-                  </button>
+                  {/* Appointments tab (Tenant and Owner only) */}
+                  {user.role !== 'admin' && (
+                    <button 
+                      onClick={() => handleTabChange('appointments')}
+                      className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'appointments' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <i className="fa-solid fa-calendar-days text-sm" />
+                        <span>Lịch hẹn</span>
+                      </div>
+                      <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                        {stats.totalAppointments}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Admin: Quản lý thành viên */}
+                  {user.role === 'admin' && (
+                    <button 
+                      onClick={() => handleTabChange('admin_users')}
+                      className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'admin_users' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <i className="fa-solid fa-users text-sm" />
+                        <span>Quản lý thành viên</span>
+                      </div>
+                      <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                        {adminUsers.length}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Admin: Quản lý tin đăng */}
+                  {user.role === 'admin' && (
+                    <button 
+                      onClick={() => handleTabChange('admin_properties')}
+                      className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'admin_properties' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <i className="fa-solid fa-list-check text-sm" />
+                        <span>Quản lý tin đăng</span>
+                      </div>
+                      <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                        {adminProperties.length}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Admin: Quản lý lịch hẹn */}
+                  {user.role === 'admin' && (
+                    <button 
+                      onClick={() => handleTabChange('admin_appointments')}
+                      className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'admin_appointments' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <i className="fa-solid fa-calendar-check text-sm" />
+                        <span>Quản lý lịch hẹn</span>
+                      </div>
+                      <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                        {adminAppointments.length}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Admin: Quản lý Lead */}
+                  {user.role === 'admin' && (
+                    <button 
+                      onClick={() => handleTabChange('leads')}
+                      className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'leads' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <i className="fa-solid fa-user-group text-sm" />
+                        <span>Quản lý Lead</span>
+                      </div>
+                      <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
+                        {leads.length}
+                      </span>
+                    </button>
+                  )}
 
                   {/* AI Content Studio tab (For Owner) */}
                   {isOwner && (
@@ -302,66 +381,6 @@ export default function ProfilePageClient({
                     <span>Tin yêu thích</span>
                   </button>
 
-                  {/* Admin Management Tabs */}
-                  {user.role === 'admin' && (
-                    <div className="border-t border-slate-100 mt-2 pt-2 space-y-1">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest px-5 mb-1.5 text-left">Quản trị hệ thống</span>
-                      
-                      <button 
-                        onClick={() => handleTabChange('admin_users')}
-                        className={`flex items-center justify-between px-5 py-3 text-xs font-bold border-l-4 transition w-full text-left ${
-                          activeTab === 'admin_users' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <i className="fa-solid fa-users text-sm" />
-                          <span>Quản lý thành viên</span>
-                        </div>
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                          {adminUsers.length}
-                        </span>
-                      </button>
-
-                      <button 
-                        onClick={() => handleTabChange('admin_properties')}
-                        className={`flex items-center justify-between px-5 py-3 text-xs font-bold border-l-4 transition w-full text-left ${
-                          activeTab === 'admin_properties' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <i className="fa-solid fa-rectangle-list text-sm" />
-                          <span>Quản lý tin đăng</span>
-                        </div>
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                          {adminProperties.length}
-                        </span>
-                      </button>
-
-                      <button 
-                        onClick={() => handleTabChange('admin_appointments')}
-                        className={`flex items-center justify-between px-5 py-3 text-xs font-bold border-l-4 transition w-full text-left ${
-                          activeTab === 'admin_appointments' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <i className="fa-solid fa-calendar-check text-sm" />
-                          <span>Quản lý lịch hẹn</span>
-                        </div>
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 font-bold text-[10px]">
-                          {adminAppointments.length}
-                        </span>
-                      </button>
-
-                      <Link 
-                        href="/admin"
-                        className="flex items-center space-x-3 px-5 py-3 text-xs font-bold text-rose-600 hover:bg-rose-50 border-l-4 border-transparent hover:border-rose-500 transition"
-                      >
-                        <i className="fa-solid fa-chart-pie text-sm" />
-                        <span>Xem trang quản trị</span>
-                      </Link>
-                    </div>
-                  )}
-
                   {/* Upgrade Role (For Tenant only) */}
                   {user.role === 'tenant' && (
                     <button 
@@ -388,69 +407,71 @@ export default function ProfilePageClient({
                 {/* Title */}
                 <div className="pb-5 border-b border-slate-100 text-left">
                   <h2 className="text-xl font-bold text-slate-800">Thông tin cá nhân</h2>
-                  <p className="text-xs text-slate-400 mt-1 font-semibold">Cập nhật hồ sơ và xem số liệu thống kê tài khoản của bạn.</p>
+                  <p className="text-xs text-slate-400 mt-1 font-semibold">Cập nhật hồ sơ cá nhân và đồng bộ với cổng thông tin NKS Online.</p>
                 </div>
-
+                
                 {/* Statistics Cards Grid */}
-                {isOwner ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-                    {/* Stat Item 1 */}
-                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-primary/5 text-primary flex items-center justify-center text-lg">
-                        <i className="fa-solid fa-list-check"></i>
+                {user.role !== 'admin' && (
+                  isOwner ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                      {/* Stat Item 1 */}
+                      <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-xl bg-primary/5 text-primary flex items-center justify-center text-lg">
+                          <i className="fa-solid fa-list-check"></i>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin đã đăng</span>
+                          <span className="text-xl font-black text-slate-800">{stats.totalProperties} tin</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin đã đăng</span>
-                        <span className="text-xl font-black text-slate-800">{stats.totalProperties} tin</span>
-                      </div>
-                    </div>
 
-                    {/* Stat Item 2 */}
-                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
-                        <i className="fa-solid fa-eye"></i>
+                      {/* Stat Item 2 */}
+                      <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
+                          <i className="fa-solid fa-eye"></i>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lượt xem tin</span>
+                          <span className="text-xl font-black text-slate-800">{stats.totalViews?.toLocaleString('vi-VN') || 0} lượt</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lượt xem tin</span>
-                        <span className="text-xl font-black text-slate-800">{stats.totalViews?.toLocaleString('vi-VN') || 0} lượt</span>
-                      </div>
-                    </div>
 
-                    {/* Stat Item 3 */}
-                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
-                        <i className="fa-solid fa-calendar-days"></i>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn khách đặt</span>
-                        <span className="text-xl font-black text-slate-800">{ownerAppointments.length} cuộc</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-                    {/* Stat Item 1 */}
-                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg">
-                        <i className="fa-solid fa-heart"></i>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin yêu thích</span>
-                        <span className="text-xl font-black text-slate-800">{stats.totalFavorites || 0} tin</span>
+                      {/* Stat Item 3 */}
+                      <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
+                          <i className="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn khách đặt</span>
+                          <span className="text-xl font-black text-slate-800">{ownerAppointments.length} cuộc</span>
+                        </div>
                       </div>
                     </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                      {/* Stat Item 1 */}
+                      <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg">
+                          <i className="fa-solid fa-heart"></i>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tin yêu thích</span>
+                          <span className="text-xl font-black text-slate-800">{stats.totalFavorites || 0} tin</span>
+                        </div>
+                      </div>
 
-                    {/* Stat Item 2 */}
-                    <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
-                        <i className="fa-solid fa-calendar-days"></i>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn</span>
-                        <span className="text-xl font-black text-slate-800">{tenantAppointments.length} cuộc</span>
+                      {/* Stat Item 2 */}
+                      <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg">
+                          <i className="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lịch hẹn</span>
+                          <span className="text-xl font-black text-slate-800">{tenantAppointments.length} cuộc</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )
                 )}
 
                 {/* Subtab Contents */}
@@ -529,19 +550,21 @@ export default function ProfilePageClient({
               <AiMarketingStudio properties={properties} />
             )}
 
-            {/* 10. Admin Users Tab */}
+            {/* Admin Tabs */}
             {activeTab === 'admin_users' && user.role === 'admin' && (
-              <AdminUsersTab initialUsers={adminUsers} currentUserId={String(user.id)} />
+              <AdminUsersTab initialUsers={adminUsers} />
             )}
 
-            {/* 11. Admin Properties Tab */}
             {activeTab === 'admin_properties' && user.role === 'admin' && (
-              <AdminPropertiesTab initialProperties={adminProperties} />
+              <AdminPropertiesTab initialProperties={adminProperties} categories={categories} />
             )}
 
-            {/* 12. Admin Appointments Tab */}
             {activeTab === 'admin_appointments' && user.role === 'admin' && (
               <AdminAppointmentsTab initialAppointments={adminAppointments} />
+            )}
+
+            {activeTab === 'leads' && user.role === 'admin' && (
+              <AdminLeadsTab initialLeads={leads} />
             )}
 
           </div>
