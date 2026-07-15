@@ -170,48 +170,25 @@ export default function AppointmentsTab({
           {currentList.map(item => (
             <div 
               key={item.id} 
-              className="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
+              className="bg-white border border-slate-100 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-b border-slate-100/60 pb-3">
-                <div className="space-y-1">
-                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-primary transition leading-tight">
+              {/* Left: Property Info and Status */}
+              <div className="space-y-1.5 flex-grow text-left min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-primary transition leading-tight truncate max-w-full">
                     <Link href={`/property/${item.property.id}`}>{item.property.title}</Link>
                   </h4>
-                  <p className="text-[10px] text-slate-400 font-semibold">{item.property.address}</p>
-                </div>
-                <div className="flex-shrink-0">
                   {getStatusBadge(item.status)}
                 </div>
+                <p className="text-[10px] text-slate-400 font-semibold truncate">{item.property.address}</p>
               </div>
 
-              {/* Client Info Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs font-medium text-slate-650">
-                <div>
-                  <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-450 mb-1">Thời gian gặp</span>
-                  <span>{formatDateTime(item.date, item.time)}</span>
-                </div>
-
-                <div>
-                  <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-450 mb-1">
-                    {activeSubTab === 'owner' ? 'Khách hàng' : 'Thông tin liên hệ'}
-                  </span>
-                  <div><strong>{item.name}</strong></div>
-                  <div className="text-[10px] text-slate-450">SĐT: {item.phone}</div>
-                </div>
-
-                <div>
-                  <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-450 mb-1">Ghi chú & Lời nhắn</span>
-                  <span className="text-[11px] italic truncate block max-w-xs">{item.message || 'Không có.'}</span>
-                </div>
-              </div>
-
-              {/* Actions footer */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100/60">
+              {/* Right: Actions */}
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setSelectedApp(item)}
-                  className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-600 text-[10px] font-bold rounded-lg transition cursor-pointer"
+                  className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-650 text-[10px] font-bold rounded-lg transition cursor-pointer"
                 >
                   Xem chi tiết
                 </button>
