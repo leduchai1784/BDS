@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -21,6 +22,7 @@ interface Message {
 }
 
 export default function ChatBot() {
+  const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -28,10 +30,13 @@ export default function ChatBot() {
   
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  const userId = session?.user?.id || 'guest'
+  const storageKey = `bds_chat_history_${userId}`
+
   // 1. Initialize: Load chat history from localStorage or load welcome message
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('bds_chat_history')
+      const saved = localStorage.getItem(storageKey)
       if (saved) {
         const parsed = JSON.parse(saved)
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -55,7 +60,7 @@ export default function ChatBot() {
     } catch (e) {
       loadWelcomeMessage()
     }
-  }, [])
+  }, [storageKey])
 
   // 2. Save chat history to localStorage whenever messages change
   useEffect(() => {
@@ -68,12 +73,12 @@ export default function ChatBot() {
           options: m.options,
           properties: m.properties
         }))
-        localStorage.setItem('bds_chat_history', JSON.stringify(sanitized))
+        localStorage.setItem(storageKey, JSON.stringify(sanitized))
       } catch (e) {
         // Ignore quota errors
       }
     }
-  }, [messages])
+  }, [messages, storageKey])
 
   // 3. Auto-scroll to bottom of conversation
   useEffect(() => {
@@ -95,7 +100,7 @@ export default function ChatBot() {
     }
     setMessages([welcomeMsg])
     try {
-      localStorage.setItem('bds_chat_history', JSON.stringify([welcomeMsg]))
+      localStorage.setItem(storageKey, JSON.stringify([welcomeMsg]))
     } catch (e) {}
   }
 
