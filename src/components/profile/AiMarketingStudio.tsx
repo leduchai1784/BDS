@@ -446,53 +446,59 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
                 {/* Property selector */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Chọn bất động sản nguồn</label>
-                  <select
-                    value={selectedPropertyId}
-                    onChange={(e) => setSelectedPropertyId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-750 focus:border-primary focus:outline-none transition cursor-pointer appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                  >
-                    <option value="">-- Chọn bất động sản của bạn --</option>
-                    {properties.map((prop) => (
-                      <option key={prop.id} value={prop.id}>
-                        {prop.title} ({prop.priceLabel || prop.price})
-                      </option>
-                    ))}
-                    <option value="mock_prop_1">Căn hộ dịch vụ Hà Đô Centrosa Quận 10 (14.5tr/tháng)</option>
-                    <option value="mock_prop_2">Nhà nguyên căn Hẻm xe hơi Lê Quang Định Bình Thạnh (4.2 tỷ)</option>
-                  </select>
+                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
+                    <select
+                      value={selectedPropertyId}
+                      onChange={(e) => setSelectedPropertyId(e.target.value)}
+                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
+                    >
+                      <option value="">-- Chọn bất động sản của bạn --</option>
+                      {properties.map((prop) => (
+                        <option key={prop.id} value={prop.id}>
+                          {prop.title} ({prop.priceLabel || prop.price})
+                        </option>
+                      ))}
+                      <option value="mock_prop_1">Căn hộ dịch vụ Hà Đô Centrosa Quận 10 (14.5tr/tháng)</option>
+                      <option value="mock_prop_2">Nhà nguyên căn Hẻm xe hơi Lê Quang Định Bình Thạnh (4.2 tỷ)</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Campaign Goal */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Mục tiêu chiến dịch</label>
-                  <select
-                    value={campaignGoal}
-                    onChange={(e) => setCampaignGoal(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-750 focus:border-primary focus:outline-none transition cursor-pointer appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                  >
-                    <option value="rent_fast">Đăng tin cho thuê nhanh (Đặc điểm nổi bật)</option>
-                    <option value="luxury_brand">Xây dựng thương hiệu căn hộ cao cấp</option>
-                    <option value="price_deal">Chương trình ưu đãi giảm giá / Cắt lỗ gấp</option>
-                    <option value="review_detail">Bài viết Review trải nghiệm chi tiết</option>
-                  </select>
+                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
+                    <select
+                      value={campaignGoal}
+                      onChange={(e) => setCampaignGoal(e.target.value)}
+                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
+                    >
+                      <option value="rent_fast">Đăng tin cho thuê nhanh (Đặc điểm nổi bật)</option>
+                      <option value="luxury_brand">Xây dựng thương hiệu căn hộ cao cấp</option>
+                      <option value="price_deal">Chương trình ưu đãi giảm giá / Cắt lỗ gấp</option>
+                      <option value="review_detail">Bài viết Review trải nghiệm chi tiết</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Tone */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Giọng văn của AI</label>
-                  <select
-                    value={campaignTone}
-                    onChange={(e) => setCampaignTone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-750 focus:border-primary focus:outline-none transition cursor-pointer appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                  >
-                    <option value="friendly">Thân thiện, cởi mở (Facebook/TikTok)</option>
-                    <option value="professional">Chuyên nghiệp, uy tín (SEO/Email)</option>
-                    <option value="funny">Hài hước, bắt trend độc lạ</option>
-                    <option value="emotional">Truyền cảm hứng, tạo cảm xúc tổ ấm</option>
-                  </select>
+                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
+                    <select
+                      value={campaignTone}
+                      onChange={(e) => setCampaignTone(e.target.value)}
+                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
+                    >
+                      <option value="friendly">Thân thiện, cởi mở (Facebook/TikTok)</option>
+                      <option value="professional">Chuyên nghiệp, uy tín (SEO/Email)</option>
+                      <option value="funny">Hài hước, bắt trend độc lạ</option>
+                      <option value="emotional">Truyền cảm hứng, tạo cảm xúc tổ ấm</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -889,30 +895,34 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
                 {/* Transaction type */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Loại giao dịch</label>
-                  <select
-                    value={studioTxType}
-                    onChange={(e) => setStudioTxType(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-750 focus:border-primary focus:outline-none transition cursor-pointer appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                  >
-                    <option value="rent">Cho thuê bất động sản</option>
-                    <option value="sale">Bán bất động sản</option>
-                  </select>
+                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
+                    <select
+                      value={studioTxType}
+                      onChange={(e) => setStudioTxType(e.target.value)}
+                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
+                    >
+                      <option value="rent">Cho thuê bất động sản</option>
+                      <option value="sale">Bán bất động sản</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Property Type */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Loại hình BĐS</label>
-                  <select
-                    value={studioPropType}
-                    onChange={(e) => setStudioPropType(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-750 focus:border-primary focus:outline-none transition cursor-pointer appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                  >
-                    {['Căn hộ chung cư', 'Nhà riêng / Nhà phố', 'Biệt thự cao cấp', 'Phòng trọ / Chung cư mini', 'Đất nền / Đất dự án', 'Mặt bằng kinh doanh', 'Văn phòng cho thuê'].map((type) => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </select>
+                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
+                    <select
+                      value={studioPropType}
+                      onChange={(e) => setStudioPropType(e.target.value)}
+                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
+                    >
+                      {['Căn hộ chung cư', 'Nhà riêng / Nhà phố', 'Biệt thự cao cấp', 'Phòng trọ / Chung cư mini', 'Đất nền / Đất dự án', 'Mặt bằng kinh doanh', 'Văn phòng cho thuê'].map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Price */}
@@ -942,17 +952,19 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
                 {/* Tone */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Giọng văn của AI</label>
-                  <select
-                    value={studioTone}
-                    onChange={(e) => setStudioTone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-750 focus:border-primary focus:outline-none transition cursor-pointer appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                  >
-                    <option value="friendly">Thân thiện, cởi mở (Facebook/TikTok)</option>
-                    <option value="professional">Chuyên nghiệp, uy tín (Website/Email)</option>
-                    <option value="funny">Hài hước, dí dỏm độc lạ</option>
-                    <option value="emotional">Truyền cảm hứng, tạo cảm xúc tổ ấm</option>
-                  </select>
+                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
+                    <select
+                      value={studioTone}
+                      onChange={(e) => setStudioTone(e.target.value)}
+                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
+                    >
+                      <option value="friendly">Thân thiện, cởi mở (Facebook/TikTok)</option>
+                      <option value="professional">Chuyên nghiệp, uy tín (Website/Email)</option>
+                      <option value="funny">Hài hước, dí dỏm độc lạ</option>
+                      <option value="emotional">Truyền cảm hứng, tạo cảm xúc tổ ấm</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
