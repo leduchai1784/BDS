@@ -74,24 +74,24 @@ async function fetchExternalLeads(): Promise<any[]> {
             budgetMax = demandType === 'rent' ? 15 : 6
           }
           
+          // Detect source: check note/demand first for chatbot (since chatbot also uses Website source term)
           let source = 'unknown'
-          if (acf.source && typeof acf.source === 'object') {
+          const noteText = (acf.note || '').toLowerCase()
+          const demandText = (demand || acf.demand || '').toLowerCase()
+          const titleText = (lead.title || '').toLowerCase()
+          
+          if (noteText.includes('chatbot') || noteText.includes('ai assistant') || noteText.includes('ai chatbot') || titleText.includes('chatbot') || demandText.includes('chatbot')) {
+            source = 'chatbot'
+          } else if (noteText.includes('lịch hẹn') || demandText.includes('đặt lịch hẹn') || noteText.includes('lịch xem nhà')) {
+            source = 'web'
+          } else if (acf.source && typeof acf.source === 'object') {
             const slug = acf.source.slug || ''
             if (slug === 'website') {
               source = 'web'
-            } else if (slug === 'chatbot') {
-              source = 'chatbot'
-            }
-          }
-          
-          if (source === 'unknown') {
-            const noteText = (acf.note || '').toLowerCase()
-            const demandText = (demand || acf.demand || '').toLowerCase()
-            const titleText = (lead.title || '').toLowerCase()
-            if (noteText.includes('chatbot') || noteText.includes('ai assistant') || titleText.includes('chatbot') || demandText.includes('chatbot')) {
-              source = 'chatbot'
-            } else if (noteText.includes('lịch hẹn') || demandText.includes('đặt lịch hẹn') || noteText.includes('lịch xem nhà')) {
-              source = 'web'
+            } else if (slug === 'facebook') {
+              source = 'facebook'
+            } else if (slug === 'relationship') {
+              source = 'referral'
             }
           }
           

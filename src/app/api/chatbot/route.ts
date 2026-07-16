@@ -26,18 +26,67 @@ async function syncChatbotLeadToCrm(message: string, replyText: string, history:
     const email = emailMatch ? emailMatch[0] : ''
 
     // Try to find a name from history or current message
-    let name = 'Khách hàng Chatbot'
-    const nameMatch = message.match(/(?:tên là|tôi tên|là|tên tôi là)\s*([A-ZÀ-Ỹa-zà-ỹ\s]{2,30})/i)
-    if (nameMatch) {
-      name = nameMatch[1].trim()
-    } else if (history && Array.isArray(history)) {
+    let name = ''
+    const namePatterns = [
+      /(?:tên\s+là|tôi\s+tên\s+là|mình\s+tên\s+là|em\s+tên\s+là|tên\s+của\s+tôi\s+là)\s+([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i,
+      /(?:tôi\s+là|mình\s+là|em\s+là|anh\s+là|chị\s+là)\s+([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i,
+      /(?:tôi\s+tên|mình\s+tên|em\s+tên|anh\s+tên|chị\s+tên)\s+([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i,
+    ]
+
+    // Search current message first
+    for (const pattern of namePatterns) {
+      const match = message.match(pattern)
+      if (match) {
+        name = match[1].trim()
+        break
+      }
+    }
+
+    // Fallback: search for capitalized words followed by phone context
+    if (!name) {
+      const phoneContextMatch = message.match(new RegExp(`\\b([A-ZÀ-Ỹ][a-zà-ỹ\\w]*(?:\\s+[A-ZÀ-Ỹ][a-zà-ỹ\\w]*){0,3})\\s*[,.-]?\\s*(?:là\\s+)?(?:số|sđt|đt|lấy\\s+số|điện\\s+thoại|phone|zalo|zlo)\\b`, 'i'))
+      if (phoneContextMatch) {
+        name = phoneContextMatch[1].trim()
+      }
+    }
+
+    // Then search history if not found
+    if (!name && history && Array.isArray(history)) {
       for (const turn of history) {
-        const hMatch = turn.content?.match(/(?:tên là|tôi tên|là|tên tôi là)\s*([A-ZÀ-Ỹa-zà-ỹ\s]{2,30})/i)
-        if (hMatch) {
-          name = hMatch[1].trim()
-          break
+        const text = turn.content || turn.text || ''
+        for (const pattern of namePatterns) {
+          const match = text.match(pattern)
+          if (match) {
+            name = match[1].trim()
+            break
+          }
+        }
+        if (name) break
+      }
+    }
+
+    // Also check AI replies for confirmed name like "Cảm ơn anh/chị [Name]"
+    if (!name && history && Array.isArray(history)) {
+      for (const turn of history) {
+        if (turn.role === 'assistant') {
+          const text = turn.content || turn.text || ''
+          const aiNameMatch = text.match(/(?:cảm ơn|chào)\s+(?:anh|chị|bạn)\s+([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ]+){0,3})/i)
+          if (aiNameMatch) {
+            name = aiNameMatch[1].trim()
+            break
+          }
         }
       }
+    }
+
+    // Clean up potential trailing chat particles like "nha", "nhé"
+    if (name) {
+      name = name.replace(/\s+(?:nha|nhé|nhe|nha\s+nha|nha\s+nhe|nhe\s+nha|nhe\s+nhe|nhé\s+nhé)$/i, '').trim()
+    }
+
+    // Default: use phone as identifier if no name found
+    if (!name) {
+      name = `KH ${phone}`
     }
 
     // Try to find the demand
