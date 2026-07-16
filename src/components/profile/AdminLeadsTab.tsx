@@ -173,11 +173,66 @@ export default function AdminLeadsTab({ initialLeads }: AdminLeadsTabProps) {
     return sourceMatch && textMatch
   })
 
-  const syncLeads = () => {
-    toast.success('Bắt đầu đồng bộ danh sách Leads từ NKS...')
-    setTimeout(() => {
-      toast.success('Đồng bộ dữ liệu Leads thành công!')
-    }, 1500)
+  const syncLeads = async () => {
+    const toastId = toast.loading('Đang đồng bộ danh sách Leads từ CRM...')
+    try {
+      const res = await fetch('/api/admin/leads')
+      const data = await res.json()
+      if (data.success && Array.isArray(data.leads)) {
+        setLeads(data.leads)
+        toast.success('Đồng bộ dữ liệu Leads thành công!', { id: toastId })
+      } else {
+        toast.error(data.error || 'Đồng bộ thất bại', { id: toastId })
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'Lỗi mạng', { id: toastId })
+    }
+  }
+
+  const handleSaveLeadChanges = async (leadId: string, updatedAcf: any) => {
+    const toastId = toast.loading('Đang lưu thay đổi lên CRM...')
+    try {
+      const res = await fetch(`/api/admin/leads/${leadId}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acf: updatedAcf })
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success(data.message || 'Lưu thay đổi thành công!', { id: toastId })
+        // Update local state
+        setLeads(prev => prev.map(l => l.id === leadId ? { 
+          ...l, 
+          status: updatedAcf.status || l.status,
+          notes: updatedAcf.note || l.notes 
+        } : l))
+      } else {
+        toast.error(data.error || 'Có lỗi xảy ra', { id: toastId })
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'Lỗi mạng', { id: toastId })
+    }
+  }
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa khách hàng tiềm năng này khỏi hệ thống CRM?')) return
+    const toastId = toast.loading('Đang xóa lead trên CRM...')
+    try {
+      const res = await fetch(`/api/admin/leads/${leadId}/delete`, {
+        method: 'POST'
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success(data.message || 'Xóa Lead thành công!', { id: toastId })
+        setLeads(prev => prev.filter(l => l.id !== leadId))
+        setDrawerOpen(false)
+        setSelectedLead(null)
+      } else {
+        toast.error(data.error || 'Có lỗi xảy ra', { id: toastId })
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'Lỗi mạng', { id: toastId })
+    }
   }
 
   return (
@@ -496,7 +551,10 @@ export default function AdminLeadsTab({ initialLeads }: AdminLeadsTabProps) {
                                 type="button" 
                                 onClick={() => {
                                   selectedLead.status = st
-                                  toast.success(`Đã cập nhật trạng thái Lead thành: ${getStatusLabel(st)}`)
+                                  handleSaveLeadChanges(selectedLead.id, {
+                                    status: st,
+                                    note: selectedLead.notes || ''
+                                  })
                                 }}
                                 className={`px-2.5 py-1.5 text-[10px] font-bold rounded-lg border transition cursor-pointer focus:outline-none ${selectedLead.status === st ? 'bg-primary text-white border-primary shadow-sm' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
                               >
@@ -519,10 +577,20 @@ export default function AdminLeadsTab({ initialLeads }: AdminLeadsTabProps) {
                             className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-primary rounded-xl text-xs font-semibold outline-none transition resize-none"
                             placeholder="Nhập ghi chú chăm sóc khách hàng..."
                           />
-                          <div className="flex justify-end pt-1">
+                          <div className="flex justify-between items-center pt-1">
                             <button 
                               type="button" 
-                              onClick={() => toast.success('Đã lưu ghi chú thành công!')}
+                              onClick={() => handleDeleteLead(selectedLead.id)}
+                              className="px-3 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-650 rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer"
+                            >
+                              Xóa Lead
+                            </button>
+                            <button 
+                              type="button" 
+                              onClick={() => handleSaveLeadChanges(selectedLead.id, {
+                                status: selectedLead.status || 'new',
+                                note: selectedLead.notes || ''
+                              })}
                               className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-[10px] font-bold transition shadow-sm cursor-pointer"
                             >
                               Lưu ghi chú

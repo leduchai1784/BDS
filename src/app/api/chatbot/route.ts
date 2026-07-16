@@ -6,6 +6,71 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export const dynamic = 'force-dynamic'
 
+async function syncChatbotLeadToCrm(message: string, replyText: string, history: any[]) {
+  try {
+    const phoneRegex = /(0[3|5|7|8|9][0-9]{8})\b/
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+
+    const phoneMatch = message.match(phoneRegex) || replyText.match(phoneRegex)
+    if (!phoneMatch) return
+
+    const phone = phoneMatch[1]
+    const emailMatch = message.match(emailRegex) || replyText.match(emailRegex)
+    const email = emailMatch ? emailMatch[0] : ''
+
+    // Try to find a name from history or current message
+    let name = 'Khách hàng Chatbot'
+    const nameMatch = message.match(/(?:tên là|tôi tên|là|tên tôi là)\s*([A-ZÀ-Ỹa-zà-ỹ\s]{2,30})/i)
+    if (nameMatch) {
+      name = nameMatch[1].trim()
+    } else if (history && Array.isArray(history)) {
+      for (const turn of history) {
+        const hMatch = turn.content?.match(/(?:tên là|tôi tên|là|tên tôi là)\s*([A-ZÀ-Ỹa-zà-ỹ\s]{2,30})/i)
+        if (hMatch) {
+          name = hMatch[1].trim()
+          break
+        }
+      }
+    }
+
+    // Try to find the demand
+    let demand = message
+    if (history && Array.isArray(history) && history.length > 0) {
+      demand = history.map((h: any) => h.role === 'user' ? h.content : '').filter(Boolean).join(' | ').slice(-200)
+    }
+
+    const token = process.env.SCRM_API_TOKEN
+    const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
+
+    if (token) {
+      await fetch(`${apiUrl}/lead/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: `${name} - ${phone}`,
+          acf: {
+            name: name,
+            phone: phone,
+            email: email,
+            zalo: phone,
+            demand: demand,
+            source: {
+              slug: 'chatbot',
+              name: 'AI Chatbot'
+            },
+            note: 'Khách hàng tiềm năng từ cuộc gọi/chat với AI Assistant'
+          }
+        })
+      })
+    }
+  } catch (err) {
+    console.error('Failed to sync chatbot lead to SCRM:', err)
+  }
+}
+
 // Simple in-memory IP rate limiter
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 
@@ -186,6 +251,9 @@ Nếu không tìm thấy bất động sản nào phù hợp, hãy trả lời l
         }
       }
     }
+
+    // Push lead to SCRM CRM if phone number exists in conversation
+    await syncChatbotLeadToCrm(message, replyText, history)
 
     return NextResponse.json({
       success: true,

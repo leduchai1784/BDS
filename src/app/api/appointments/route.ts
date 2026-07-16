@@ -81,6 +81,38 @@ export async function POST(req: Request) {
       })
     ])
 
+    // Push this guest to the external SCRM CRM API as a new lead
+    try {
+      const token = process.env.SCRM_API_TOKEN
+      const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
+      if (token) {
+        await fetch(`${apiUrl}/lead/create`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title: `${name} - ${phone}`,
+            acf: {
+              name: name,
+              phone: phone,
+              email: email,
+              zalo: phone,
+              demand: `Đặt lịch hẹn xem nhà: ${property?.title || 'BĐS'}. Lời nhắn: ${message || 'Không có'}`,
+              source: {
+                slug: 'website',
+                name: 'Website'
+              },
+              note: `Lịch hẹn xem nhà ngày ${date} lúc ${time}`
+            }
+          })
+        })
+      }
+    } catch (e) {
+      console.error('Failed to sync appointment lead to SCRM CRM API:', e)
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Booking created successfully',
