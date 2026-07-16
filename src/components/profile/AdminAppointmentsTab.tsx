@@ -69,6 +69,8 @@ export default function AdminAppointmentsTab({ initialAppointments }: AdminAppoi
             <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input 
               type="text" 
+              id="appointmentSearchTerm"
+              name="appointmentSearchTerm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm kiếm theo tên khách hàng hoặc số điện thoại..." 

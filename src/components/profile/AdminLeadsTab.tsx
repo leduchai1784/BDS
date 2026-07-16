@@ -203,6 +203,8 @@ export default function AdminLeadsTab({ initialLeads }: AdminLeadsTabProps) {
           <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
             type="text" 
+            id="leadSearchTerm"
+            name="leadSearchTerm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Tìm khách hàng, số điện thoại..."
@@ -471,6 +473,8 @@ export default function AdminLeadsTab({ initialLeads }: AdminLeadsTabProps) {
                           <label className="block text-[9px] font-bold uppercase tracking-wider text-slate-400 px-1">Ghi chú chăm sóc chi tiết</label>
                           <textarea 
                             rows={4} 
+                            id="leadCareNotes"
+                            name="leadCareNotes"
                             value={selectedLead.notes}
                             onChange={(e) => {
                               selectedLead.notes = e.target.value

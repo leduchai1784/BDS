@@ -76,6 +76,8 @@ export default function AdminUsersTab({ initialUsers }: AdminUsersTabProps) {
             <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input 
               type="text" 
+              id="userSearchTerm"
+              name="userSearchTerm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm kiếm theo tên, email hoặc SĐT..." 
