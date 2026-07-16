@@ -442,7 +442,7 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
           {/* Config Panel */}
           {!generating && !hasResults && (
             <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Property selector */}
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Chọn bất động sản nguồn</label>
