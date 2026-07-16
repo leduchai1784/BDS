@@ -264,14 +264,31 @@ Hãy tạo gói nội dung AI Content Studio.`
       }
     })
 
-    let replyText = result.response.text()
+    let replyText = result.response.text().trim()
 
-    // Clean JSON wrapper if model generates markdown blocks
-    replyText = replyText.replace(/^```json\s*/i, '')
-    replyText = replyText.replace(/```$/, '')
-    replyText = replyText.trim()
+    // Robust JSON extraction
+    function extractJSON(text: string): string {
+      const firstCurly = text.indexOf('{')
+      const firstSquare = text.indexOf('[')
+      let startIdx = -1
+      let endIdx = -1
 
-    const parsedData = JSON.parse(replyText)
+      if (firstCurly !== -1 && (firstSquare === -1 || firstCurly < firstSquare)) {
+        startIdx = firstCurly
+        endIdx = text.lastIndexOf('}')
+      } else if (firstSquare !== -1) {
+        startIdx = firstSquare
+        endIdx = text.lastIndexOf(']')
+      }
+
+      if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+        return text.substring(startIdx, endIdx + 1)
+      }
+      return text
+    }
+
+    const cleanedJson = extractJSON(replyText)
+    const parsedData = JSON.parse(cleanedJson)
 
     return NextResponse.json({
       success: true,
