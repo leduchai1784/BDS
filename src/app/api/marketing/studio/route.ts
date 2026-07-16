@@ -208,7 +208,9 @@ Hãy sinh nội dung Email, SMS và Prompts ảnh.`
       systemInstruction = `Bạn là Giám đốc Sáng tạo AI Content cho một đại lý bất động sản cao cấp. Dựa trên thông tin bất động sản do người dùng nhập tự do, hãy thiết kế một gói nội dung truyền thông toàn diện.
 Gói nội dung bao gồm:
 1. 3 bài đăng mạng xã hội (Facebook/Zalo) chất lượng cao.
-2. 2 kịch bản video TikTok ngắn (gồm title, visual, audio, overlay).
+2. 2 kịch bản video TikTok ngắn (gồm title, visual, audio, overlay, video_prompt, ai_suggestion).
+   - video_prompt: Đoạn prompt tiếng Anh chi tiết, mô tả kỹ góc quay, chuyển động camera chậm (camera panning, flythrough), ánh sáng điện ảnh, độ phân giải cao để đưa vào các công cụ sinh video AI (Runway Gen-3, Luma Dream Machine, Sora, Kling AI).
+   - ai_suggestion: Gợi ý công cụ AI tạo video tốt nhất cho cảnh này (Ví dụ: "Runway Gen-3 (tốt nhất cho flythrough nội thất)", "Luma Dream Machine (miễn phí và tạo chuyển động mượt mà)", "Kling AI (tốt nhất cho ngoại cảnh thực tế)").
 3. 1 kịch bản lời thoại thu âm (Voiceover) liền mạch, KHÔNG chứa emoji hay ký tự đặc biệt, viết bằng văn nói tự nhiên trôi chảy để máy đọc (Text-to-Speech) phát âm tiếng Việt chuẩn xác (độ dài 120-180 từ).
 4. 1 đoạn Prompt vẽ ảnh bằng tiếng Anh (Dùng tạo Thumbnail căn hộ, mô tả không gian thực tế, ánh sáng, góc chụp rộng, chất lượng photorealistic, cinematic).
 5. Danh sách 10 hashtags thịnh hành liên quan.
@@ -217,7 +219,17 @@ Gói nội dung bao gồm:
 Trả về bắt buộc là một đối tượng JSON chuẩn có cấu trúc chính xác sau:
 {
   "posts": [{"id": 1, "title": "...", "content": "..."}],
-  "videos": [{"id": 1, "title": "...", "visual": "...", "audio": "...", "overlay": "..."}],
+  "videos": [
+    {
+      "id": 1, 
+      "title": "...", 
+      "visual": "...", 
+      "audio": "...", 
+      "overlay": "...",
+      "video_prompt": "Prompt tiếng Anh chi tiết để sinh video AI cho kịch bản này...",
+      "ai_suggestion": "Gợi ý công cụ AI khuyên dùng (ví dụ Runway Gen-3 hoặc Luma Dream Machine) kèm lý do..."
+    }
+  ],
   "voice_script": "nội dung văn bản thoại thu âm...",
   "thumbnail_prompt": "Đoạn prompt tiếng Anh để sinh ảnh thumbnail...",
   "hashtags": ["tag1", "tag2", ...],

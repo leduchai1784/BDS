@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 
 interface PropertySelectOption {
   id: string
@@ -1218,25 +1219,75 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
 
                     {/* Active post display */}
                     {studioResult.posts?.[activeStudioPostIndex] && (
-                      <div className="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 text-left">
-                        <div className="flex justify-between items-center">
+                      <div className="space-y-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 text-left">
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-slate-150/60">
                           <h4 className="font-black text-slate-800 text-xs">
                             {studioResult.posts[activeStudioPostIndex].title}
                           </h4>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              copyText(
-                                studioResult.posts[activeStudioPostIndex].title +
-                                  '\n\n' +
-                                  studioResult.posts[activeStudioPostIndex].content
-                              )
-                            }
-                            className="px-2 py-1 bg-white border border-slate-200 hover:border-primary text-slate-500 hover:text-primary rounded-lg text-[9px] font-bold transition flex items-center gap-1 cursor-pointer focus:outline-none shadow-sm"
-                          >
-                            <i className="fa-solid fa-copy" />
-                            <span>Sao chép</span>
-                          </button>
+                          
+                          {/* Share Actions */}
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const title = studioResult.posts[activeStudioPostIndex].title
+                                const content = studioResult.posts[activeStudioPostIndex].content
+                                copyText(`${title}\n\n${content}`)
+                                toast.success('Đã copy nội dung! Đang chuyển sang Facebook...')
+                                window.open('https://www.facebook.com/', '_blank')
+                              }}
+                              className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-[9px] font-bold transition flex items-center gap-1 cursor-pointer focus:outline-none"
+                              title="Sao chép và Đăng Facebook"
+                            >
+                              <i className="fa-brands fa-facebook text-[10px]" />
+                              <span>Đăng Facebook</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const title = studioResult.posts[activeStudioPostIndex].title
+                                const content = studioResult.posts[activeStudioPostIndex].content
+                                copyText(`${title}\n\n${content}`)
+                                toast.success('Đã copy nội dung! Đang chuyển sang Zalo...')
+                                window.open('https://chat.zalo.me/', '_blank')
+                              }}
+                              className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-lg text-[9px] font-bold transition flex items-center gap-1 cursor-pointer focus:outline-none"
+                              title="Sao chép và gửi Zalo"
+                            >
+                              <i className="fa-solid fa-message text-[10px]" />
+                              <span>Gửi Zalo</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const title = studioResult.posts[activeStudioPostIndex].title
+                                const content = studioResult.posts[activeStudioPostIndex].content
+                                window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(content)}`, '_self')
+                              }}
+                              className="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-650 rounded-lg text-[9px] font-bold transition flex items-center gap-1 cursor-pointer focus:outline-none"
+                              title="Gửi Email"
+                            >
+                              <i className="fa-solid fa-envelope text-[10px]" />
+                              <span>Email</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                copyText(
+                                  studioResult.posts[activeStudioPostIndex].title +
+                                    '\n\n' +
+                                    studioResult.posts[activeStudioPostIndex].content
+                                )
+                              }
+                              className="px-2 py-1 bg-white border border-slate-200 hover:border-primary text-slate-500 hover:text-primary rounded-lg text-[9px] font-bold transition flex items-center gap-1 cursor-pointer focus:outline-none shadow-sm"
+                            >
+                              <i className="fa-solid fa-copy" />
+                              <span>Sao chép</span>
+                            </button>
+                          </div>
                         </div>
                         <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
                           {studioResult.posts[activeStudioPostIndex].content}
@@ -1270,23 +1321,63 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
                               <span>Copy</span>
                             </button>
                           </div>
-                          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-slate-50/10">
-                            <div>
-                              <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mô tả hình ảnh</span>
-                              <p className="text-slate-600 leading-relaxed font-medium">{vid.visual}</p>
-                            </div>
-                            <div className="space-y-2">
+                           <div className="p-4 space-y-4 bg-slate-50/10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                               <div>
-                                <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Lời thoại nói</span>
-                                <p className="text-slate-700 leading-relaxed font-bold bg-primary/5 p-2 rounded-lg border border-primary/5">
-                                  {vid.audio}
-                                </p>
+                                <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mô tả hình ảnh (Visual)</span>
+                                <p className="text-slate-600 leading-relaxed font-medium">{vid.visual}</p>
                               </div>
-                              <div>
-                                <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Chữ hiển thị</span>
-                                <p className="text-slate-500 font-mono text-[10px]">{vid.overlay}</p>
+                              <div className="space-y-2">
+                                <div>
+                                  <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Lời thoại nói (Voiceover)</span>
+                                  <p className="text-slate-700 leading-relaxed font-bold bg-primary/5 p-2 rounded-lg border border-primary/5">
+                                    {vid.audio}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Chữ hiển thị (Overlay)</span>
+                                  <p className="text-slate-500 font-mono text-[10px]">{vid.overlay}</p>
+                                </div>
                               </div>
                             </div>
+
+                            {/* AI Video Prompt & Suggestions */}
+                            {vid.video_prompt && (
+                              <div className="border-t border-slate-100 pt-3 mt-3 text-xs space-y-3">
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60 relative">
+                                  <div className="flex justify-between items-center mb-1">
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                                      <i className="fa-solid fa-wand-magic-sparkles text-primary" />
+                                      <span>Prompt tạo video bằng AI (Runway/Sora/Kling)</span>
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        copyText(vid.video_prompt)
+                                        toast.success('Đã copy Prompt tạo video!')
+                                      }}
+                                      className="px-2 py-0.5 bg-white border border-slate-200 hover:border-primary text-slate-500 hover:text-primary rounded text-[8px] font-bold transition flex items-center gap-1 cursor-pointer focus:outline-none"
+                                    >
+                                      <i className="fa-solid fa-copy" />
+                                      <span>Copy</span>
+                                    </button>
+                                  </div>
+                                  <p className="text-slate-600 font-mono text-[10px] leading-relaxed select-all">
+                                    {vid.video_prompt}
+                                  </p>
+                                </div>
+
+                                {vid.ai_suggestion && (
+                                  <div className="flex items-start gap-2 text-[11px] text-slate-600 font-semibold bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
+                                    <i className="fa-solid fa-circle-info text-emerald-600 mt-0.5" />
+                                    <div>
+                                      <span className="text-emerald-700 font-bold">Gợi ý AI khuyên dùng: </span>
+                                      <span>{vid.ai_suggestion}</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
