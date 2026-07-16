@@ -103,5 +103,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
     })
-  ]
+  ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = (user as any).role
+        token.id = user.id
+      }
+      // Fetch fresh role from DB on every request to prevent stale permissions after role upgrade
+      if (token?.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: Number(token.id) },
+            select: { role: true }
+          })
+          if (dbUser) {
+            token.role = dbUser.role
+          }
+        } catch (e) {
+          console.error('Failed to fetch fresh user role for token:', e)
+        }
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).role = token.role as string
+        session.user.id = token.id as string
+      }
+      return session
+    }
+  }
 })
