@@ -6,7 +6,8 @@ import { toast } from 'sonner'
 
 interface Message {
   role: 'user' | 'assistant'
-  content: string
+  content?: string
+  text?: string
   options?: string[]
   properties?: {
     id: string
@@ -35,10 +36,15 @@ export default function ChatBot() {
         const parsed = JSON.parse(saved)
         if (Array.isArray(parsed) && parsed.length > 0) {
           // Auto upgrade welcome message if old/invalid structure
-          if (parsed[0] && parsed[0].role === 'assistant' && (!parsed[0].options || parsed[0].options.length === 0)) {
+          if (parsed[0] && parsed[0].role === 'assistant' && (!parsed[0].options || parsed[0].options.length === 0 || !(parsed[0].content || parsed[0].text))) {
             loadWelcomeMessage()
           } else {
-            setMessages(parsed)
+            const mapped = parsed.map((m: any) => ({
+              ...m,
+              content: m.content || m.text || '',
+              text: m.content || m.text || ''
+            }))
+            setMessages(mapped)
           }
         } else {
           loadWelcomeMessage()
@@ -55,7 +61,14 @@ export default function ChatBot() {
   useEffect(() => {
     if (messages.length > 0) {
       try {
-        localStorage.setItem('bds_chat_history', JSON.stringify(messages))
+        const sanitized = messages.map(m => ({
+          role: m.role,
+          content: m.content || m.text || '',
+          text: m.content || m.text || '',
+          options: m.options,
+          properties: m.properties
+        }))
+        localStorage.setItem('bds_chat_history', JSON.stringify(sanitized))
       } catch (e) {
         // Ignore quota errors
       }
@@ -73,6 +86,7 @@ export default function ChatBot() {
     const welcomeMsg: Message = {
       role: 'assistant',
       content: 'Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:',
+      text: 'Xin chào! Tôi là Trợ lý AI của BDS Rental. Tôi có thể hỗ trợ bạn tìm kiếm thông tin gì hôm nay? Bạn có thể hỏi tôi về:',
       options: [
         'Tìm kiếm bất động sản theo khu vực, giá thuê?',
         'Kinh nghiệm thuê nhà an toàn?',
@@ -97,7 +111,7 @@ export default function ChatBot() {
     if (!query || isTyping) return
 
     // Add user message
-    const userMsg: Message = { role: 'user', content: query }
+    const userMsg: Message = { role: 'user', content: query, text: query }
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setIsTyping(true)
@@ -105,7 +119,7 @@ export default function ChatBot() {
     // Build request history (exclude properties and map model roles)
     const historyPayload = messages.map(m => ({
       role: m.role === 'user' ? 'user' : 'model',
-      content: m.content
+      content: m.content || m.text || ''
     }))
 
     try {
@@ -236,7 +250,7 @@ export default function ChatBot() {
                     ? 'bg-primary text-white rounded-tr-none'
                     : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
                 }`}>
-                  <div>{formatText(m.content)}</div>
+                  <div>{formatText(m.content || m.text || '')}</div>
 
                   {/* Interactive Option Chips inside assistant bubble (matching PHP style option chips) */}
                   {m.role === 'assistant' && m.options && m.options.length > 0 && (
