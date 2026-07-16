@@ -8,13 +8,20 @@ export const dynamic = 'force-dynamic'
 
 async function syncChatbotLeadToCrm(message: string, replyText: string, history: any[]) {
   try {
-    const phoneRegex = /(0[3|5|7|8|9][0-9]{8})\b/
+    // Support spaces, dots, hyphens, country code +84, 84, or standard 0
+    const phoneRegex = /(?:\+?84|0)(?:\s*[\d.-]){9,10}\b/
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
 
     const phoneMatch = message.match(phoneRegex) || replyText.match(phoneRegex)
     if (!phoneMatch) return
 
-    const phone = phoneMatch[1]
+    // Clean and normalize phone number
+    let phone = phoneMatch[0].replace(/[\s.-]/g, '')
+    if (phone.startsWith('+84')) {
+      phone = '0' + phone.substring(3)
+    } else if (phone.startsWith('84')) {
+      phone = '0' + phone.substring(2)
+    }
     const emailMatch = message.match(emailRegex) || replyText.match(emailRegex)
     const email = emailMatch ? emailMatch[0] : ''
 

@@ -18,7 +18,8 @@ async function fetchExternalLeads(): Promise<any[]> {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      signal: controller.signal
+      signal: controller.signal,
+      cache: 'no-store'
     })
 
     clearTimeout(timeoutId)

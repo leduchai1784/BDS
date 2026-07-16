@@ -15,9 +15,15 @@ export async function POST(
     const leadId = Number(resolvedParams.id)
     const { acf } = await req.json()
 
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    const token = process.env.SCRM_API_TOKEN || '01KWKATNQGB5TWXYDPJ671X3X1'
-    const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
+    let token = process.env.SCRM_API_TOKEN
+    if (!token || token.trim() === '' || token === 'undefined' || token === 'null' || token.length < 10) {
+      token = '01KWKATNQGB5TWXYDPJ671X3X1'
+    }
+
+    let apiUrl = process.env.SCRM_API_URL
+    if (!apiUrl || apiUrl.trim() === '' || apiUrl === 'undefined' || apiUrl === 'null' || !apiUrl.startsWith('http')) {
+      apiUrl = 'https://sdata.io.vn/wp-json/scrmai/v1'
+    }
 
     const response = await fetch(`${apiUrl}/lead/update`, {
       method: 'POST',
