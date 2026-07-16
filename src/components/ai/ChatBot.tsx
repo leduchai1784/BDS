@@ -225,9 +225,9 @@ export default function ChatBot() {
                 onClick={clearChat}
                 type="button"
                 className="p-1.5 rounded-lg hover:bg-white/10 text-white/90 hover:text-white transition focus:outline-none cursor-pointer"
-                title="Xóa cuộc trò chuyện"
+                title="Đặt lại cuộc trò chuyện"
               >
-                <i className="fa-solid fa-trash-can text-sm" />
+                <i className="fa-solid fa-arrow-rotate-left text-sm" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
