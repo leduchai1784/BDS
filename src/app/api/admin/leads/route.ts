@@ -84,6 +84,17 @@ async function fetchExternalLeads(): Promise<any[]> {
             }
           }
           
+          if (source === 'unknown') {
+            const noteText = (acf.note || '').toLowerCase()
+            const demandText = (demand || acf.demand || '').toLowerCase()
+            const titleText = (lead.title || '').toLowerCase()
+            if (noteText.includes('chatbot') || noteText.includes('ai assistant') || titleText.includes('chatbot') || demandText.includes('chatbot')) {
+              source = 'chatbot'
+            } else if (noteText.includes('lịch hẹn') || demandText.includes('đặt lịch hẹn') || noteText.includes('lịch xem nhà')) {
+              source = 'web'
+            }
+          }
+          
           let chatHistory: any[] = []
           if (acf.phone) {
             chatHistory = [
