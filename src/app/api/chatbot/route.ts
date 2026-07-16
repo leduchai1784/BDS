@@ -50,30 +50,38 @@ async function syncChatbotLeadToCrm(message: string, replyText: string, history:
     const token = process.env.SCRM_API_TOKEN || '01KWKATNQGB5TWXYDPJ671X3X1'
     const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
 
-    if (true) {
-      await fetch(`${apiUrl}/lead/create`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title: `${name} - ${phone}`,
-          acf: {
-            name: name,
-            phone: phone,
-            email: email,
-            zalo: phone,
-            demand: demand,
-            source: {
-              slug: 'chatbot',
-              name: 'AI Chatbot'
-            },
-            note: 'Khách hàng tiềm năng từ cuộc gọi/chat với AI Assistant'
-          }
-        })
-      })
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     }
+
+    // Step 1: Create the lead (gets back the ID)
+    const createRes = await fetch(`${apiUrl}/lead/create`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        title: `${name} - ${phone}`
+      })
+    })
+    const createData = await createRes.json()
+    if (!createData?.success || !createData?.id) return
+
+    // Step 2: Update the lead with root-level fields
+    // SCRM API only saves ACF fields when sent at root level via /lead/update
+    await fetch(`${apiUrl}/lead/update`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        id: createData.id,
+        name: name,
+        phone: phone,
+        email: email,
+        zalo: phone,
+        demand: demand,
+        source: 31,
+        note: 'Khách hàng tiềm năng từ AI Chatbot'
+      })
+    })
   } catch (err) {
     console.error('Failed to sync chatbot lead to SCRM:', err)
   }

@@ -84,36 +84,38 @@ export async function POST(req: Request) {
     // Push this guest to the external SCRM CRM API as a new lead
     try {
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-      let token = process.env.SCRM_API_TOKEN
-      if (!token || token.trim() === '' || token === 'undefined' || token === 'null' || token.length < 10) {
-        token = '01KWKATNQGB5TWXYDPJ671X3X1'
+      const token = process.env.SCRM_API_TOKEN || '01KWKATNQGB5TWXYDPJ671X3X1'
+      const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
 
-      let apiUrl = process.env.SCRM_API_URL
-      if (!apiUrl || apiUrl.trim() === '' || apiUrl === 'undefined' || apiUrl === 'null' || !apiUrl.startsWith('http')) {
-        apiUrl = 'https://sdata.io.vn/wp-json/scrmai/v1'
-      }
-      if (true) {
-        await fetch(`${apiUrl}/lead/create`, {
+      // Step 1: Create the lead (gets back the ID)
+      const createRes = await fetch(`${apiUrl}/lead/create`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          title: `${name} - ${phone}`
+        })
+      })
+      const createData = await createRes.json()
+
+      // Step 2: Update the lead with root-level fields
+      // SCRM API only saves ACF fields when sent at root level via /lead/update
+      if (createData?.success && createData?.id) {
+        await fetch(`${apiUrl}/lead/update`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
+          headers,
           body: JSON.stringify({
-            title: `${name} - ${phone}`,
-            acf: {
-              name: name,
-              phone: phone,
-              email: email,
-              zalo: phone,
-              demand: `Đặt lịch hẹn xem nhà: ${property?.title || 'BĐS'}. Lời nhắn: ${message || 'Không có'}`,
-              source: {
-                slug: 'website',
-                name: 'Website'
-              },
-              note: `Lịch hẹn xem nhà ngày ${date} lúc ${time}`
-            }
+            id: createData.id,
+            name: name,
+            phone: phone,
+            email: email,
+            zalo: phone,
+            demand: `Đặt lịch hẹn xem nhà: ${property?.title || 'BĐS'}. Lời nhắn: ${message || 'Không có'}`,
+            source: 31,
+            note: `Lịch hẹn xem nhà ngày ${date} lúc ${time}`
           })
         })
       }
