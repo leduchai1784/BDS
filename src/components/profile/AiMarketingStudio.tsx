@@ -444,61 +444,150 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
             <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Property selector */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative custom-dropdown-container">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Chọn bất động sản nguồn</label>
-                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
-                    <select
-                      value={selectedPropertyId}
-                      onChange={(e) => setSelectedPropertyId(e.target.value)}
-                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                    >
-                      <option value="">-- Chọn bất động sản của bạn --</option>
+                  <button
+                    type="button"
+                    onClick={() => setPropertyDropdownOpen(!propertyDropdownOpen)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-700 focus:outline-none transition flex items-center justify-between cursor-pointer text-left h-[42px]"
+                  >
+                    <span className="truncate pr-4">
+                      {selectedPropertyId === 'mock_prop_1' 
+                        ? 'Căn hộ dịch vụ Hà Đô Centrosa Quận 10 (14.5tr/tháng)'
+                        : selectedPropertyId === 'mock_prop_2'
+                        ? 'Nhà nguyên căn Hẻm xe hơi Lê Quang Định (4.2 tỷ)'
+                        : properties.find(p => p.id === selectedPropertyId)?.title 
+                          ? `${properties.find(p => p.id === selectedPropertyId)?.title} (${properties.find(p => p.id === selectedPropertyId)?.priceLabel || properties.find(p => p.id === selectedPropertyId)?.price})`
+                          : '-- Chọn bất động sản của bạn --'}
+                    </span>
+                    <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </button>
+
+                  {propertyDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-1.5 space-y-0.5 max-h-[220px] overflow-y-auto">
+                      <div
+                        onClick={() => { setSelectedPropertyId(''); setPropertyDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${!selectedPropertyId ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        -- Chọn bất động sản của bạn --
+                      </div>
                       {properties.map((prop) => (
-                        <option key={prop.id} value={prop.id}>
+                        <div
+                          key={prop.id}
+                          onClick={() => { setSelectedPropertyId(prop.id); setPropertyDropdownOpen(false); }}
+                          className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${selectedPropertyId === prop.id ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                        >
                           {prop.title} ({prop.priceLabel || prop.price})
-                        </option>
+                        </div>
                       ))}
-                      <option value="mock_prop_1">Căn hộ dịch vụ Hà Đô Centrosa Quận 10 (14.5tr/tháng)</option>
-                      <option value="mock_prop_2">Nhà nguyên căn Hẻm xe hơi Lê Quang Định Bình Thạnh (4.2 tỷ)</option>
-                    </select>
-                  </div>
+                      <div
+                        onClick={() => { setSelectedPropertyId('mock_prop_1'); setPropertyDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${selectedPropertyId === 'mock_prop_1' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Căn hộ dịch vụ Hà Đô Centrosa Quận 10 (14.5tr/tháng)
+                      </div>
+                      <div
+                        onClick={() => { setSelectedPropertyId('mock_prop_2'); setPropertyDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${selectedPropertyId === 'mock_prop_2' ? 'text-primary bg-primary/5' : 'text-slate-655'}`}
+                      >
+                        Nhà nguyên căn Hẻm xe hơi Lê Quang Định Bình Thạnh (4.2 tỷ)
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Campaign Goal */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative custom-dropdown-container">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Mục tiêu chiến dịch</label>
-                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
-                    <select
-                      value={campaignGoal}
-                      onChange={(e) => setCampaignGoal(e.target.value)}
-                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                    >
-                      <option value="rent_fast">Đăng tin cho thuê nhanh (Đặc điểm nổi bật)</option>
-                      <option value="luxury_brand">Xây dựng thương hiệu căn hộ cao cấp</option>
-                      <option value="price_deal">Chương trình ưu đãi giảm giá / Cắt lỗ gấp</option>
-                      <option value="review_detail">Bài viết Review trải nghiệm chi tiết</option>
-                    </select>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setGoalDropdownOpen(!goalDropdownOpen)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-700 focus:outline-none transition flex items-center justify-between cursor-pointer text-left h-[42px]"
+                  >
+                    <span>
+                      {campaignGoal === 'rent_fast' && 'Đăng tin cho thuê nhanh (Đặc điểm nổi bật)'}
+                      {campaignGoal === 'luxury_brand' && 'Xây dựng thương hiệu căn hộ cao cấp'}
+                      {campaignGoal === 'price_deal' && 'Chương trình ưu đãi giảm giá / Cắt lỗ gấp'}
+                      {campaignGoal === 'review_detail' && 'Bài viết Review trải nghiệm chi tiết'}
+                    </span>
+                    <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </button>
+
+                  {goalDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-1.5 space-y-0.5">
+                      <div
+                        onClick={() => { setCampaignGoal('rent_fast'); setGoalDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignGoal === 'rent_fast' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Đăng tin cho thuê nhanh (Đặc điểm nổi bật)
+                      </div>
+                      <div
+                        onClick={() => { setCampaignGoal('luxury_brand'); setGoalDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignGoal === 'luxury_brand' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Xây dựng thương hiệu căn hộ cao cấp
+                      </div>
+                      <div
+                        onClick={() => { setCampaignGoal('price_deal'); setGoalDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignGoal === 'price_deal' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Chương trình ưu đãi giảm giá / Cắt lỗ gấp
+                      </div>
+                      <div
+                        onClick={() => { setCampaignGoal('review_detail'); setGoalDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignGoal === 'review_detail' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Bài viết Review trải nghiệm chi tiết
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tone */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative custom-dropdown-container">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Giọng văn của AI</label>
-                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
-                    <select
-                      value={campaignTone}
-                      onChange={(e) => setCampaignTone(e.target.value)}
-                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                    >
-                      <option value="friendly">Thân thiện, cởi mở (Facebook/TikTok)</option>
-                      <option value="professional">Chuyên nghiệp, uy tín (SEO/Email)</option>
-                      <option value="funny">Hài hước, bắt trend độc lạ</option>
-                      <option value="emotional">Truyền cảm hứng, tạo cảm xúc tổ ấm</option>
-                    </select>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setToneDropdownOpen(!toneDropdownOpen)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-700 focus:outline-none transition flex items-center justify-between cursor-pointer text-left h-[42px]"
+                  >
+                    <span>
+                      {campaignTone === 'friendly' && 'Thân thiện, cởi mở (Facebook/TikTok)'}
+                      {campaignTone === 'professional' && 'Chuyên nghiệp, uy tín (SEO/Email)'}
+                      {campaignTone === 'funny' && 'Hài hước, bắt trend độc lạ'}
+                      {campaignTone === 'emotional' && 'Truyền cảm hứng, tạo cảm xúc tổ ấm'}
+                    </span>
+                    <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </button>
+
+                  {toneDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-1.5 space-y-0.5">
+                      <div
+                        onClick={() => { setCampaignTone('friendly'); setToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignTone === 'friendly' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Thân thiện, cởi mở (Facebook/TikTok)
+                      </div>
+                      <div
+                        onClick={() => { setCampaignTone('professional'); setToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignTone === 'professional' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Chuyên nghiệp, uy tín (SEO/Email)
+                      </div>
+                      <div
+                        onClick={() => { setCampaignTone('funny'); setToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignTone === 'funny' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Hài hước, bắt trend độc lạ
+                      </div>
+                      <div
+                        onClick={() => { setCampaignTone('emotional'); setToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${campaignTone === 'emotional' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Truyền cảm hứng, tạo cảm xúc tổ ấm
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -893,36 +982,62 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
                 </div>
 
                 {/* Transaction type */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative custom-dropdown-container">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Loại giao dịch</label>
-                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
-                    <select
-                      value={studioTxType}
-                      onChange={(e) => setStudioTxType(e.target.value)}
-                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                    >
-                      <option value="rent">Cho thuê bất động sản</option>
-                      <option value="sale">Bán bất động sản</option>
-                    </select>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStudioTxTypeDropdownOpen(!studioTxTypeDropdownOpen)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-700 focus:outline-none transition flex items-center justify-between cursor-pointer text-left h-[42px]"
+                  >
+                    <span>
+                      {studioTxType === 'rent' ? 'Cho thuê bất động sản' : 'Bán bất động sản'}
+                    </span>
+                    <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </button>
+
+                  {studioTxTypeDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-1.5 space-y-0.5">
+                      <div
+                        onClick={() => { setStudioTxType('rent'); setStudioTxTypeDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioTxType === 'rent' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Cho thuê bất động sản
+                      </div>
+                      <div
+                        onClick={() => { setStudioTxType('sale'); setStudioTxTypeDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioTxType === 'sale' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Bán bất động sản
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Property Type */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative custom-dropdown-container">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Loại hình BĐS</label>
-                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
-                    <select
-                      value={studioPropType}
-                      onChange={(e) => setStudioPropType(e.target.value)}
-                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                    >
+                  <button
+                    type="button"
+                    onClick={() => setStudioPropTypeDropdownOpen(!studioPropTypeDropdownOpen)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-700 focus:outline-none transition flex items-center justify-between cursor-pointer text-left h-[42px]"
+                  >
+                    <span>{studioPropType}</span>
+                    <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </button>
+
+                  {studioPropTypeDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-1.5 space-y-0.5 max-h-[220px] overflow-y-auto">
                       {['Căn hộ chung cư', 'Nhà riêng / Nhà phố', 'Biệt thự cao cấp', 'Phòng trọ / Chung cư mini', 'Đất nền / Đất dự án', 'Mặt bằng kinh doanh', 'Văn phòng cho thuê'].map((type) => (
-                        <option key={type} value={type}>{type}</option>
+                        <div
+                          key={type}
+                          onClick={() => { setStudioPropType(type); setStudioPropTypeDropdownOpen(false); }}
+                          className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioPropType === type ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                        >
+                          {type}
+                        </div>
                       ))}
-                    </select>
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Price */}
@@ -950,21 +1065,50 @@ export default function AiMarketingStudio({ properties }: AiMarketingStudioProps
                 </div>
 
                 {/* Tone */}
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative custom-dropdown-container">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Giọng văn của AI</label>
-                  <div className="border border-slate-200 bg-slate-50 rounded-2xl relative overflow-hidden">
-                    <select
-                      value={studioTone}
-                      onChange={(e) => setStudioTone(e.target.value)}
-                      className="w-full bg-transparent border-none px-4 py-3 text-xs font-semibold text-slate-750 focus:outline-none transition cursor-pointer appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundPosition: 'right 1rem center', backgroundSize: '1.25em', backgroundRepeat: 'no-repeat', paddingRight: '2.5rem' }}
-                    >
-                      <option value="friendly">Thân thiện, cởi mở (Facebook/TikTok)</option>
-                      <option value="professional">Chuyên nghiệp, uy tín (Website/Email)</option>
-                      <option value="funny">Hài hước, dí dỏm độc lạ</option>
-                      <option value="emotional">Truyền cảm hứng, tạo cảm xúc tổ ấm</option>
-                    </select>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStudioToneDropdownOpen(!studioToneDropdownOpen)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-semibold text-slate-700 focus:outline-none transition flex items-center justify-between cursor-pointer text-left h-[42px]"
+                  >
+                    <span>
+                      {studioTone === 'friendly' && 'Thân thiện, cởi mở (Facebook/TikTok)'}
+                      {studioTone === 'professional' && 'Chuyên nghiệp, uy tín (Website/Email)'}
+                      {studioTone === 'funny' && 'Hài hước, dí dỏm độc lạ'}
+                      {studioTone === 'emotional' && 'Truyền cảm hứng, tạo cảm xúc tổ ấm'}
+                    </span>
+                    <i className="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </button>
+
+                  {studioToneDropdownOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-1.5 space-y-0.5">
+                      <div
+                        onClick={() => { setStudioTone('friendly'); setStudioToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioTone === 'friendly' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Thân thiện, cởi mở (Facebook/TikTok)
+                      </div>
+                      <div
+                        onClick={() => { setStudioTone('professional'); setStudioToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioTone === 'professional' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Chuyên nghiệp, uy tín (Website/Email)
+                      </div>
+                      <div
+                        onClick={() => { setStudioTone('funny'); setStudioToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioTone === 'funny' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Hài hước, dí dỏm độc lạ
+                      </div>
+                      <div
+                        onClick={() => { setStudioTone('emotional'); setStudioToneDropdownOpen(false); }}
+                        className={`p-2.5 hover:bg-slate-50 rounded-xl transition cursor-pointer text-xs font-semibold ${studioTone === 'emotional' ? 'text-primary bg-primary/5' : 'text-slate-650'}`}
+                      >
+                        Truyền cảm hứng, tạo cảm xúc tổ ấm
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
