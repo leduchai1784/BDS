@@ -1,58 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BDS Rental - Hệ thống Tìm kiếm & Cho thuê Bất động sản (Next.js & AI)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Chào mừng bạn đến với **BDS Rental** - Hệ thống tìm kiếm, đăng tin và quản lý bất động sản toàn diện tích hợp Trí tuệ nhân tạo (AI Assistant, AI Marketing Studio, AI OCR). Dự án được xây dựng bằng **Next.js 15 (App Router)** và **Prisma Client**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Các tính năng chính
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* **Tìm kiếm bất động sản**: Tìm kiếm theo bộ lọc nâng cao và hiển thị trực quan trên bản đồ tương tác **MapLibre GL JS** tích hợp GPS.
+* **Xác thực CCCD bằng AI OCR**: Tải ảnh CCCD, hệ thống tự động bóc tách thông tin qua FPT AI OCR API.
+* **Sales Chatbot AI**: Hỗ trợ khách hàng tư vấn dự án, so sánh bất động sản và gợi ý đặt lịch xem nhà trực tiếp.
+* **AI Marketing & Content Studio**: Sử dụng **Gemini Pro** để sinh 20 bài đăng Facebook, kịch bản video TikTok (kèm prompt tiếng Anh làm video), bài SEO HTML, Email, SMS chỉ với 1 click. Cho phép chia sẻ trực tiếp sang Facebook, Zalo, Email.
+* **Đặt lịch xem nhà**: Hệ thống quản lý lịch hẹn thông minh giữa chủ nhà và khách hàng, đồng bộ trực tiếp lên CRM Wordpress.
+* **Bảo mật**: Xác thực an toàn với **NextAuth.js v5**.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Yêu cầu hệ thống
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* **Node.js** >= 18.x
+* **NPM** >= 9.x
+* Cơ sở dữ liệu **PostgreSQL** (hoặc MySQL, SQLite được cấu hình qua Prisma)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## ⚙️ Cài đặt và Khởi chạy
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+### 1. Clone dự án và cài đặt dependencies
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/leduchai1784/BDS.git
+cd BDS
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Cấu hình biến môi trường (`.env`)
+Tạo file `.env` tại thư mục gốc của dự án và điền đầy đủ các thông số cấu hình sau:
 
-## Contributing
+```env
+# Database Connection (Prisma)
+DATABASE_URL="postgresql://username:password@localhost:5432/bds_rental?schema=public"
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# NextAuth Config (Xác thực)
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your_nextauth_secret_key" # Tạo ngẫu nhiên bằng lệnh: openssl rand -base64 32
 
-## Code of Conduct
+# Gemini AI API Config (AI Marketing Studio)
+GEMINI_API_KEY="your_gemini_api_key"
+GEMINI_MODEL="gemini-1.5-flash" # Hoặc gemini-1.5-pro, gemini-3.1-flash-lite
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# FPT AI OCR API (Quét căn cước công dân)
+FPT_OCR_API_KEY="your_fpt_ai_ocr_api_key"
 
-## Security Vulnerabilities
+# NKS API (Đồng bộ thông tin và bản đồ hành chính)
+NKS_API_URL="https://api.nks.vn"
+NKS_API_TOKEN="your_nks_api_token"
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Wordpress CRM Integration (Đồng bộ Lead & Appointments)
+WORDPRESS_CRM_API_URL="https://your-crm-domain.com/wp-json/wp/v2"
+WORDPRESS_CRM_USERNAME="your_username"
+WORDPRESS_CRM_PASSWORD="your_application_password"
+```
 
-## License
+### 3. Đồng bộ Cơ sở dữ liệu với Prisma
+Chạy các lệnh sau để khởi tạo Prisma Client và đồng bộ schema vào database của bạn:
+```bash
+# Generate Prisma Client
+npm run db:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Push schema lên Database
+npm run db:push
+```
+
+*(Tùy chọn) Chạy Seeder để nạp dữ liệu mẫu:*
+```bash
+node scratch/seed.js
+```
+
+### 4. Khởi chạy dự án ở chế độ Phát triển (Development)
+```bash
+npm run dev
+```
+Ứng dụng sẽ chạy tại địa chỉ: [http://localhost:3000](http://localhost:3000)
+
+### 5. Build dự án cho Production
+```bash
+npm run build
+npm run start
+```
+
+---
+
+## 📁 Cấu trúc Thư mục chính
+
+```bash
+├── src/
+│   ├── app/                 # Routes, API endpoints & Pages (App Router)
+│   │   ├── api/             # REST APIs (Auth, Profile, Marketing, Chatbot...)
+│   │   ├── listings/        # Trang danh sách bất động sản
+│   │   ├── map/             # Trang bản đồ tương tác MapLibre
+│   │   ├── profile/         # Dashboard cá nhân, AI Marketing Studio
+│   │   └── page.tsx         # Trang chủ chính
+│   ├── components/          # Reusable UI components (Navbar, Footer, Profile...)
+│   ├── lib/                 # Lib configs (Prisma Client, NextAuth, NKS API...)
+│   ├── store/               # Zustand global state management
+│   └── types/               # TypeScript type definitions
+├── prisma/
+│   └── schema.prisma        # Prisma database schema definition
+├── public/                  # Assets tĩnh (images, icons...)
+├── package.json             # Scripts và các gói dependencies
+└── tsconfig.json            # Cấu hình TypeScript compiler
+```
+
+---
+
+## 🔄 Quy trình Deploy (GitHub & Vercel Sync)
+
+Dự án được tích hợp cơ chế tự động triển khai (CI/CD) qua Vercel. Khi code được đẩy lên nhánh `main` của GitHub, Vercel sẽ tự động build và deploy lại ứng dụng:
+
+```bash
+# 1. Add các thay đổi
+git add .
+
+# 2. Commit code
+git commit -m "feat: mô tả tính năng mới"
+
+# 3. Push lên GitHub (Vercel tự động deploy lại)
+git push origin main
+```
