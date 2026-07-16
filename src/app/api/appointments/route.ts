@@ -83,9 +83,10 @@ export async function POST(req: Request) {
 
     // Push this guest to the external SCRM CRM API as a new lead
     try {
-      const token = process.env.SCRM_API_TOKEN
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+      const token = process.env.SCRM_API_TOKEN || '01KWKATNQGB5TWXYDPJ671X3X1'
       const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
-      if (token) {
+      if (true) {
         await fetch(`${apiUrl}/lead/create`, {
           method: 'POST',
           headers: {

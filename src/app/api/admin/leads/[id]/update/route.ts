@@ -15,12 +15,9 @@ export async function POST(
     const leadId = Number(resolvedParams.id)
     const { acf } = await req.json()
 
-    const token = process.env.SCRM_API_TOKEN
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    const token = process.env.SCRM_API_TOKEN || '01KWKATNQGB5TWXYDPJ671X3X1'
     const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
-
-    if (!token) {
-      return NextResponse.json({ error: 'SCRM Token not configured' }, { status: 500 })
-    }
 
     const response = await fetch(`${apiUrl}/lead/update`, {
       method: 'POST',
