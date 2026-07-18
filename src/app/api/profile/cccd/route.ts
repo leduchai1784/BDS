@@ -84,14 +84,26 @@ export async function POST(req: Request) {
       permanentAddress: permanent_address
     }
 
+    // Check if Cloudinary is configured
+    const hasCloudinary = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET)
+
     // If user has an NKS token (api account), bypass Cloudinary upload to save time and API quota.
     // NKS will host the images and return URLs which we sync back.
     if (cccd_front) {
       if (cccd_front.startsWith('data:image')) {
         if (hasNks) {
+          // NKS will handle the image; keep existing local URL for now
           localUpdateData.cccdFront = user?.cccdFront
+        } else if (hasCloudinary) {
+          try {
+            localUpdateData.cccdFront = await uploadToCloudinary(cccd_front)
+          } catch (e: any) {
+            console.warn('Cloudinary upload failed for cccd_front:', e.message)
+            localUpdateData.cccdFront = user?.cccdFront
+          }
         } else {
-          localUpdateData.cccdFront = await uploadToCloudinary(cccd_front)
+          // No Cloudinary and no NKS — keep existing
+          localUpdateData.cccdFront = user?.cccdFront
         }
       } else {
         localUpdateData.cccdFront = cccd_front
@@ -102,8 +114,16 @@ export async function POST(req: Request) {
       if (cccd_back.startsWith('data:image')) {
         if (hasNks) {
           localUpdateData.cccdBack = user?.cccdBack
+        } else if (hasCloudinary) {
+          try {
+            localUpdateData.cccdBack = await uploadToCloudinary(cccd_back)
+          } catch (e: any) {
+            console.warn('Cloudinary upload failed for cccd_back:', e.message)
+            localUpdateData.cccdBack = user?.cccdBack
+          }
         } else {
-          localUpdateData.cccdBack = await uploadToCloudinary(cccd_back)
+          // No Cloudinary and no NKS — keep existing
+          localUpdateData.cccdBack = user?.cccdBack
         }
       } else {
         localUpdateData.cccdBack = cccd_back
