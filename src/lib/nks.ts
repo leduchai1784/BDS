@@ -1,5 +1,10 @@
 import axios from 'axios'
 import { format, parse } from 'date-fns'
+import https from 'https'
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false
+})
 
 const BASE_URL = process.env.NKS_AUTH_BASE_URL || 'https://account.nks.vn/api/nks/user'
 
@@ -47,7 +52,7 @@ export async function loginNks(email: string, password: string): Promise<NksLogi
     const response = await axios.post(`${BASE_URL}/login`, {
       username: email,
       password: password,
-    }, { timeout: 10000 })
+    }, { timeout: 10000, httpsAgent })
 
     const json = response.data
 
@@ -80,7 +85,7 @@ export async function getNksUserInfo(token: string): Promise<NksResult> {
   try {
     const response = await axios.post(BASE_URL, {
       access_token: token
-    }, { timeout: 10000 })
+    }, { timeout: 10000, httpsAgent })
 
     const json = response.data
     if (json && json.success && json.data) {
@@ -253,7 +258,7 @@ export async function updateNksInfo(token: string, localUser: any, updateData: a
 
     const payload = { ...mergedData, access_token: token }
 
-    const response = await axios.post(`${BASE_URL}/updateInfo`, payload, { timeout: 10000 })
+    const response = await axios.post(`${BASE_URL}/updateInfo`, payload, { timeout: 10000, httpsAgent })
     const json = response.data
 
     return {
@@ -274,7 +279,7 @@ export async function updateNksAvatar(token: string, base64Data: string): Promis
     const response = await axios.post(`${BASE_URL}/updateAvatar`, {
       avatar: base64Data,
       access_token: token
-    }, { timeout: 15000 })
+    }, { timeout: 15000, httpsAgent })
 
     const json = response.data
     return {
@@ -301,7 +306,7 @@ export async function updateNksCccd(token: string, data: any): Promise<NksResult
       date: data.id_date || '',
       place: idPlace,
       access_token: token
-    }, { timeout: 20000 })
+    }, { timeout: 20000, httpsAgent })
 
     const json = response.data
     return {
@@ -324,7 +329,7 @@ export async function updateNksPassword(token: string, oldPassword: string, newP
       old_password: oldPassword,
       password: newPassword,
       access_token: token
-    }, { timeout: 10000 })
+    }, { timeout: 10000, httpsAgent })
 
     const json = response.data
     return {
