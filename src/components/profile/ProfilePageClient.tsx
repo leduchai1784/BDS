@@ -541,7 +541,11 @@ export default function ProfilePageClient({
                   <h3 className="text-base font-black text-slate-800">Đăng ký Đối tác Chủ nhà</h3>
                   <p className="text-[11px] text-slate-500 font-semibold">Nâng cấp tài khoản để bắt đầu đăng tin cho thuê, bán bất động sản miễn phí.</p>
                 </div>
-                <RegisterOwnerForm onSuccess={handleSuccess} />
+                <RegisterOwnerForm 
+                  onSuccess={handleSuccess} 
+                  initialPhone={user.phone || ''}
+                  initialCompany={user.company || ''}
+                />
               </div>
             )}
 

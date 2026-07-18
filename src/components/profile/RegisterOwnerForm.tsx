@@ -4,11 +4,13 @@ import { useState } from 'react'
 
 interface RegisterOwnerFormProps {
   onSuccess: (message: string) => void
+  initialPhone?: string
+  initialCompany?: string
 }
 
-export default function RegisterOwnerForm({ onSuccess }: RegisterOwnerFormProps) {
-  const [phone, setPhone] = useState('')
-  const [companyName, setCompanyName] = useState('')
+export default function RegisterOwnerForm({ onSuccess, initialPhone = '', initialCompany = '' }: RegisterOwnerFormProps) {
+  const [phone, setPhone] = useState(initialPhone)
+  const [companyName, setCompanyName] = useState(initialCompany)
 
   const [isSaving, setIsSaving] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
