@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react"
+import ChatBot from "@/components/ai/ChatBot"
+import ShareModal from "@/components/ShareModal"
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["vietnamese", "latin"],
@@ -13,9 +15,6 @@ export const metadata: Metadata = {
   title: "BDS Rental - Thuê Bất Động Sản Giá Tốt",
   description: "Kênh tìm kiếm phòng trọ, căn hộ chung cư, nhà nguyên căn, mặt bằng kinh doanh cho thuê uy tín, cập nhật liên tục với bộ lọc giá, diện tích thông minh.",
 };
-
-import ChatBot from "@/components/ai/ChatBot"
-import ShareModal from "@/components/ShareModal"
 
 export default function RootLayout({
   children,

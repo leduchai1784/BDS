@@ -120,6 +120,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           })
           if (dbUser) {
             token.role = dbUser.role
+          } else {
+            // If user was deleted from local DB, invalidate the session
+            return null
           }
         } catch (e) {
           console.error('Failed to fetch fresh user role for token:', e)
