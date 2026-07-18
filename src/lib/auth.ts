@@ -44,6 +44,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const mappedData = mapNksUserToLocal(fullNksUser, nksLogin.token)
 
+          // Resolve user role mapping dynamically from NKS API responses
+          let mappedRole = 'tenant'
+          const nksRoleId = Number(fullNksUser.role_id || fullNksUser.role?.id || 0)
+          const nksRoleName = String(fullNksUser.role?.name || '').toLowerCase()
+
+          if (nksRoleId === 1 || nksRoleName === 'admin') {
+            mappedRole = 'admin'
+          } else if (nksRoleId === 3 || nksRoleName === 'owner') {
+            mappedRole = 'owner'
+          } else if (nksRoleId === 4 || nksRoleName === 'agent' || nksRoleName === 'broker') {
+            mappedRole = 'agent'
+          }
+
           let localUser = await prisma.user.findUnique({ where: { email } })
 
           if (localUser) {
@@ -51,6 +64,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               where: { email },
               data: {
                 ...mappedData,
+                role: localUser.role === 'admin' ? 'admin' : mappedRole,
                 password: await bcrypt.hash(password, 12),
               }
             })
@@ -59,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               data: {
                 ...mappedData,
                 email,
-                role: 'tenant',
+                role: mappedRole,
                 status: 'active',
                 password: await bcrypt.hash(password, 12),
               }
