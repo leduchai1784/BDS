@@ -61,10 +61,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing avatar data' }, { status: 400 })
     }
 
-    // 1. Upload base64 image to Cloudinary instead of saving locally (prevents EROFS error on Vercel)
-    let finalAvatarPath = await uploadToCloudinary(avatar)
+    let finalAvatarPath = ''
+    let uploadedSuccessfully = false
 
-    // 2. Sync to NKS if user has NKS Token
+    // 1. Try to upload to Cloudinary (if credentials exist)
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME
+    const apiKey = process.env.CLOUDINARY_API_KEY
+    const apiSecret = process.env.CLOUDINARY_API_SECRET
+
+    if (cloudName && apiKey && apiSecret) {
+      try {
+        finalAvatarPath = await uploadToCloudinary(avatar)
+        uploadedSuccessfully = true
+      } catch (cloudinaryError: any) {
+        console.warn('Cloudinary upload failed, failing over to NKS:', cloudinaryError.message)
+      }
+    }
+
+    // 2. Sync to NKS and use NKS hosted avatar as primary/fallback URL
     const user = await prisma.user.findUnique({
       where: { id: userId }
     })
@@ -79,9 +93,21 @@ export async function POST(req: Request) {
         // Fetch hosted avatar URL from NKS
         const nksInfo = await getNksUserInfo(user.nksToken).catch(() => null)
         if (nksInfo?.success && nksInfo.data?.avatar) {
-          finalAvatarPath = nksInfo.data.avatar
+          let nksAvatar = nksInfo.data.avatar
+          // Force absolute path for NKS hosted avatars if relative path was returned
+          if (nksAvatar && !nksAvatar.startsWith('http')) {
+            nksAvatar = `https://data.nks.vn/storage/${nksAvatar}`
+          }
+          finalAvatarPath = nksAvatar
+          uploadedSuccessfully = true
         }
       }
+    }
+
+    if (!uploadedSuccessfully) {
+      return NextResponse.json({ 
+        error: 'Không thể upload ảnh lên hệ thống lưu trữ (Cloudinary & NKS đều thất bại hoặc thiếu cấu hình).' 
+      }, { status: 500 })
     }
 
     // Update avatar path in local database
