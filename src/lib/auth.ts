@@ -44,19 +44,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const mappedData = mapNksUserToLocal(fullNksUser, nksLogin.token)
 
-          // Nhận biết vai trò (Role) từ NKS API
+          // Nhận biết vai trò (Role) từ NKS API dựa vào name trong role
           let mappedRole = 'tenant' // Mặc định là tenant (khách thuê/người dùng thường)
-          const nksRoleId = Number(fullNksUser.role_id || fullNksUser.role?.id || 0)
           const nksRoleName = String(fullNksUser.role?.name || '').toLowerCase()
 
-          if (nksRoleId === 3 || nksRoleName === 'owner') {
+          if (nksRoleName === 'owner') {
             mappedRole = 'owner'
-          } else if (nksRoleId === 4 || nksRoleName === 'agent' || nksRoleName === 'broker' || nksRoleName === 'môi giới') {
+          } else if (nksRoleName === 'agent' || nksRoleName === 'broker' || nksRoleName === 'môi giới') {
             mappedRole = 'agent'
-          } else if (nksRoleId === 1 || nksRoleName === 'admin') {
+          } else if (nksRoleName === 'admin') {
             mappedRole = 'admin'
           } else {
-            mappedRole = 'tenant' // role_id = 2 hoặc user -> tenant
+            mappedRole = 'tenant' // user hoặc các role khác -> tenant
           }
 
           let localUser = await prisma.user.findUnique({ where: { email } })
