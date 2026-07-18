@@ -12,7 +12,26 @@ export async function POST(req: Request) {
     const userId = Number(session.user.id)
     const { phone, company_name } = await req.json()
 
-    // Upgrade user role to owner
+    // 1. Fetch current local user to get NKS Token
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    // 2. If NKS Token exists, call NKS API to upgrade role_id to 3
+    if (currentUser?.nksToken) {
+      try {
+        const { updateNksInfo } = require('@/lib/nks')
+        await updateNksInfo(currentUser.nksToken, currentUser, {
+          role_id: 3, // Owner Role ID
+          company: company_name || undefined,
+          phone: phone || undefined
+        })
+      } catch (nksError) {
+        console.error('Failed to sync owner role to NKS API:', nksError)
+      }
+    }
+
+    // 3. Upgrade local user role to owner in DB
     await prisma.user.update({
       where: { id: userId },
       data: {

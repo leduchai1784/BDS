@@ -202,7 +202,7 @@ export async function updateNksInfo(token: string, localUser: any, updateData: a
       'name', 'firstname', 'lastname', 'phone', 'email', 'gender', 'dob', 'pob',
       'id_number', 'id_date', 'id_place', 'permanent_address',
       'add_street', 'add_ward', 'add_district', 'add_province',
-      'intro', 'website', 'zalo_id', 'zalo_key'
+      'intro', 'website', 'zalo_id', 'zalo_key', 'role_id'
     ]
 
     const mergedData: any = {}
