@@ -17,17 +17,16 @@ export async function POST(req: Request) {
       where: { id: userId }
     })
 
-    // 2. If NKS Token exists, call NKS API to upgrade role_id to 3
+    // 2. If NKS Token exists, call NKS API to sync info (without manually sending role_id)
     if (currentUser?.nksToken) {
       try {
         const { updateNksInfo } = require('@/lib/nks')
         await updateNksInfo(currentUser.nksToken, currentUser, {
-          role_id: 3, // Owner Role ID
           company: company_name || undefined,
           phone: phone || undefined
         })
       } catch (nksError) {
-        console.error('Failed to sync owner role to NKS API:', nksError)
+        console.error('Failed to sync owner info to NKS API:', nksError)
       }
     }
 
