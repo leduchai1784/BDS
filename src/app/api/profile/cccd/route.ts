@@ -92,18 +92,18 @@ export async function POST(req: Request) {
     if (cccd_front) {
       if (cccd_front.startsWith('data:image')) {
         if (hasNks) {
-          // NKS will handle the image; keep existing local URL for now
+          // NKS will handle the image; keep existing local URL for now (we sync from NKS later)
           localUpdateData.cccdFront = user?.cccdFront
         } else if (hasCloudinary) {
           try {
             localUpdateData.cccdFront = await uploadToCloudinary(cccd_front)
           } catch (e: any) {
-            console.warn('Cloudinary upload failed for cccd_front:', e.message)
-            localUpdateData.cccdFront = user?.cccdFront
+            console.warn('Cloudinary upload failed for cccd_front, storing base64 locally:', e.message)
+            localUpdateData.cccdFront = cccd_front
           }
         } else {
-          // No Cloudinary and no NKS — keep existing
-          localUpdateData.cccdFront = user?.cccdFront
+          // No Cloudinary and no NKS — save base64 locally
+          localUpdateData.cccdFront = cccd_front
         }
       } else {
         localUpdateData.cccdFront = cccd_front
@@ -118,12 +118,12 @@ export async function POST(req: Request) {
           try {
             localUpdateData.cccdBack = await uploadToCloudinary(cccd_back)
           } catch (e: any) {
-            console.warn('Cloudinary upload failed for cccd_back:', e.message)
-            localUpdateData.cccdBack = user?.cccdBack
+            console.warn('Cloudinary upload failed for cccd_back, storing base64 locally:', e.message)
+            localUpdateData.cccdBack = cccd_back
           }
         } else {
-          // No Cloudinary and no NKS — keep existing
-          localUpdateData.cccdBack = user?.cccdBack
+          // No Cloudinary and no NKS — save base64 locally
+          localUpdateData.cccdBack = cccd_back
         }
       } else {
         localUpdateData.cccdBack = cccd_back

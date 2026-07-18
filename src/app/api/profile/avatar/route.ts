@@ -105,9 +105,9 @@ export async function POST(req: Request) {
     }
 
     if (!uploadedSuccessfully) {
-      return NextResponse.json({ 
-        error: 'Không thể upload ảnh lên hệ thống lưu trữ (Cloudinary & NKS đều thất bại hoặc thiếu cấu hình).' 
-      }, { status: 500 })
+      // Fallback: If both Cloudinary & NKS fail/are missing, store the raw base64 data in the local database
+      // This ensures the avatar changes successfully on screen and doesn't throw a 500 error.
+      finalAvatarPath = avatar
     }
 
     // Update avatar path in local database
