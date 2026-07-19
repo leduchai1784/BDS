@@ -280,40 +280,58 @@ export default function ChatBot() {
                     <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider flex items-center gap-1 pl-1">
                       <i className="fa-solid fa-paperclip text-[10px]" /> Bất động sản đề xuất:
                     </p>
-                    {m.properties.map(p => (
-                      <Link
-                        key={p.id}
-                        href={`/property/${p.id}`}
-                        target="_blank"
-                        className="block bg-white hover:bg-slate-50 border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow transition duration-200"
-                      >
-                        <div className="flex gap-3 p-2 text-left">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 relative">
-                            <img
-                              src={p.image ? (p.image.startsWith('http') ? p.image : `/${p.image}`) : '/images/apartment_1.png'}
-                              alt={p.title}
-                              className="w-full h-full object-cover"
-                            />
-                            {p.isVip && (
-                              <span className="absolute top-0.5 left-0.5 bg-amber-500 text-white text-[8px] font-bold px-1 rounded shadow-xs">VIP</span>
-                            )}
-                          </div>
-                          <div className="flex-grow min-w-0 flex flex-col justify-between">
-                            <div>
-                              <h4 className="font-bold text-xs text-slate-800 truncate">{p.title}</h4>
-                              <p className="text-[10px] text-slate-500 truncate mt-0.5 flex items-center gap-1 font-medium">
-                                <i className="fa-solid fa-location-dot text-[8px]" />
-                                <span>{p.location}</span>
-                              </p>
+                    {m.properties.map(p => {
+                      // Helper to format raw price if it is a number
+                      const displayPrice = (() => {
+                        if (!p.price) return 'Liên hệ'
+                        if (p.price.includes('tỷ') || p.price.includes('triệu') || p.price.includes('tr')) {
+                          return p.price
+                        }
+                        const num = parseFloat(p.price)
+                        if (isNaN(num)) return p.price
+                        if (num >= 1000000000) {
+                          return (num / 1000000000).toFixed(2).replace(/\.00$/, '').replace(/\.(\d)0$/, '.$1') + ' tỷ'
+                        }
+                        if (num >= 1000000) {
+                          return (num / 1000000).toFixed(0) + ' triệu'
+                        }
+                        return num.toLocaleString('vi-VN') + ' đ'
+                      })()
+
+                      return (
+                        <Link
+                          key={p.id}
+                          href={`/property/${p.id}`}
+                          className="block bg-white hover:bg-slate-50 border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow transition duration-200"
+                        >
+                          <div className="flex gap-3 p-2 text-left">
+                            <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 relative">
+                              <img
+                                src={p.image ? (p.image.startsWith('http') ? p.image : `/${p.image}`) : '/images/apartment_1.png'}
+                                alt={p.title}
+                                className="w-full h-full object-cover"
+                              />
+                              {p.isVip && (
+                                <span className="absolute top-0.5 left-0.5 bg-amber-500 text-white text-[8px] font-bold px-1 rounded shadow-xs">VIP</span>
+                              )}
                             </div>
-                            <div className="flex items-center justify-between mt-1 font-extrabold">
-                              <span className="text-xs text-primary">{p.price}</span>
-                              <span className="text-[9px] text-slate-405 font-medium">{p.area}</span>
+                            <div className="flex-grow min-w-0 flex flex-col justify-between">
+                              <div>
+                                <h4 className="font-bold text-xs text-slate-800 truncate">{p.title}</h4>
+                                <p className="text-[10px] text-slate-500 truncate mt-0.5 flex items-center gap-1 font-medium">
+                                  <i className="fa-solid fa-location-dot text-[8px]" />
+                                  <span>{p.location}</span>
+                                </p>
+                              </div>
+                              <div className="flex items-center justify-between mt-1 font-extrabold">
+                                <span className="text-xs text-primary">{displayPrice}</span>
+                                <span className="text-[9px] text-slate-405 font-medium">{p.area}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Link>
-                    ))}
+                        </Link>
+                      )
+                    })}
                   </div>
                 )}
               </div>
