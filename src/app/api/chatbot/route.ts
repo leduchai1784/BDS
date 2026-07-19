@@ -205,6 +205,7 @@ export async function POST(req: Request) {
     const [dbProps, nksPropsRaw] = await Promise.all([
       prisma.property.findMany({
         where: { status: 'approved', deletedAt: null },
+        include: { propertyImages: true },
         orderBy: { createdAt: 'desc' },
         take: 15
       }),
@@ -212,16 +213,20 @@ export async function POST(req: Request) {
     ])
 
     // Map db properties to standard objects matching NKS structure
-    const mappedDbProps = dbProps.map(p => ({
-      id: p.id,
-      title: p.title,
-      type: p.propertyType || 'Chung cư',
-      price: p.priceLabel,
-      area: p.area + 'm2',
-      location: p.address,
-      district: p.district,
-      image: '' // Local DB image mapping details
-    }))
+    const mappedDbProps = dbProps.map(p => {
+      // Find primary image or use the first available one
+      const primaryImg = p.propertyImages.find(img => img.isPrimary) || p.propertyImages[0]
+      return {
+        id: p.id,
+        title: p.title,
+        type: p.propertyType || 'Chung cư',
+        price: p.priceLabel || (p.price ? String(p.price) : ''),
+        area: p.area + 'm2',
+        location: p.address,
+        district: p.district,
+        image: primaryImg?.imagePath || ''
+      }
+    })
 
     const mappedNksProps = nksPropsRaw.map((p: any) => ({
       id: String(p.id),
