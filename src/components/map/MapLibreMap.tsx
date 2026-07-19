@@ -9,6 +9,8 @@ interface MapLibreMapProps {
   activeId: string | null
   setActiveId: (id: string | null | ((prev: string | null) => string | null)) => void
   hoveredId: string | null
+  initialLat?: number
+  initialLng?: number
 }
 
 function updateMarkerStyle(
@@ -46,7 +48,9 @@ export default function MapLibreMap({
   properties,
   activeId,
   setActiveId,
-  hoveredId
+  hoveredId,
+  initialLat,
+  initialLng
 }: MapLibreMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<maplibregl.Map | null>(null)
@@ -57,11 +61,15 @@ export default function MapLibreMap({
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return
 
+    const defaultCenter: [number, number] = initialLng && initialLat
+      ? [initialLng, initialLat]
+      : [106.6704, 10.7822]
+
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-      center: [106.6704, 10.7822], // Default center to HCMC
-      zoom: 12.5
+      center: defaultCenter,
+      zoom: initialLng && initialLat ? 15.5 : 12.5
     })
 
     // Navigation and Geolocate Controls
@@ -209,14 +217,16 @@ export default function MapLibreMap({
       if (!activeMarker.getPopup().isOpen()) {
         activeMarker.togglePopup()
       }
-    } else {
+    } else if (initialLng && initialLat) {
+      map.flyTo({ center: [initialLng, initialLat], zoom: 15.5, duration: 800 })
+    } else if (properties.length > 0) {
       map.fitBounds(bounds, {
         padding: { top: 80, bottom: 80, left: 50, right: 50 },
         maxZoom: 14,
         duration: 800
       })
     }
-  }, [properties])
+  }, [properties, initialLat, initialLng, activeId])
 
   // 3. Highlight marker on Hover change
   useEffect(() => {

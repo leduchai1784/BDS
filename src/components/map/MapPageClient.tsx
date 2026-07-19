@@ -68,6 +68,18 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
     }
   })
 
+  const [initialCoords] = useState<{ lat: number; lng: number } | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const lat = parseFloat(params.get('lat') || '')
+      const lng = parseFloat(params.get('lng') || '')
+      if (!isNaN(lat) && !isNaN(lng)) {
+        return { lat, lng }
+      }
+    }
+    return null
+  })
+
   // Filter list in memory for maximum speed and interactivity
   const filteredList = useMemo(() => {
     return initialProperties.filter(item => {
@@ -274,6 +286,8 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
             activeId={activeId}
             setActiveId={setActiveId}
             hoveredId={hoveredId}
+            initialLat={initialCoords?.lat}
+            initialLng={initialCoords?.lng}
           />
 
           {/* Floating Bottom Mobile Card Slider */}
