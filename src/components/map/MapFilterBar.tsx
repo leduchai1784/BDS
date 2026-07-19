@@ -1,42 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 interface MapFilterBarProps {
   keyword: string
-  setKeyword: (k: string) => void
+  setKeyword: (val: string) => void
   purpose: string
-  setPurpose: (p: string) => void
+  setPurpose: (val: string) => void
   propertyType: string
-  setPropertyType: (t: string) => void
+  setPropertyType: (val: string) => void
   price: string
-  setPrice: (pr: string) => void
+  setPrice: (val: string) => void
   bedrooms: string
-  setBedrooms: (b: string) => void
+  setBedrooms: (val: string) => void
   area: string
-  setArea: (a: string) => void
+  setArea: (val: string) => void
   bathrooms: string
-  setBathrooms: (b: string) => void
+  setBathrooms: (val: string) => void
   furniture: string
-  setFurniture: (f: string) => void
+  setFurniture: (val: string) => void
   direction: string
-  setDirection: (d: string) => void
+  setDirection: (val: string) => void
   onReset: () => void
 }
 
 const propertyTypeLabels: Record<string, string> = {
-  '': 'Loại hình (Tất cả)',
-  'apartment': 'Căn hộ',
+  '': 'Loại nhà đất',
+  'apartment': 'Chung cư',
   'house': 'Nhà riêng',
-  'room': 'Phòng trọ',
   'land': 'Đất nền',
-  'premises': 'Mặt bằng',
-  'office': 'Văn phòng',
-  'warehouse': 'Kho xưởng'
+  'villa': 'Biệt thự',
+  'shophouse': 'Shophouse'
 }
 
 function getPropertyTypeLabel(key: string): string {
-  return propertyTypeLabels[key] || 'Loại hình'
+  return propertyTypeLabels[key] || 'Loại nhà đất'
 }
 
 function getPriceLabel(key: string, purpose: string): string {
@@ -159,14 +157,13 @@ export default function MapFilterBar({
   const [minVal, setMinVal] = useState<number>(initRange.min)
   const [maxVal, setMaxVal] = useState<number>(initRange.max)
 
-  const handleApplyPrice = () => {
-    const finalMax = maxVal === 0 ? 999999999999 : maxVal
-    if (minVal === 0 && finalMax === 999999999999) {
+  const updatePriceFilter = (min: number, max: number) => {
+    const finalMax = max === 0 ? 999999999999 : max
+    if (min === 0 && finalMax === 999999999999) {
       setPrice('')
     } else {
-      setPrice(`slider_${minVal}_${finalMax}`)
+      setPrice(`slider_${min}_${finalMax}`)
     }
-    setActiveDropdown(null)
   }
 
   return (
@@ -174,10 +171,7 @@ export default function MapFilterBar({
       
       {/* Backdrop to close active dropdown */}
       {activeDropdown && (
-        <div 
-          className="fixed inset-0 z-40 bg-transparent"
-          onClick={() => setActiveDropdown(null)}
-        />
+        <div className="fixed inset-0 z-40 bg-transparent" onClick={() => setActiveDropdown(null)} />
       )}
 
       {/* 0. Search Keyword Input */}
@@ -276,7 +270,9 @@ export default function MapFilterBar({
                   value={minVal === 0 ? '' : minVal / divisor}
                   onChange={(e) => {
                     const parsed = parseFloat(e.target.value) || 0
-                    setMinVal(parsed * divisor)
+                    const newMin = parsed * divisor
+                    setMinVal(newMin)
+                    updatePriceFilter(newMin, maxVal)
                   }}
                   className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:bg-white focus:border-primary outline-none transition"
                 />
@@ -290,7 +286,9 @@ export default function MapFilterBar({
                   onChange={(e) => {
                     const cleanVal = e.target.value.replace(/[^0-9.]/g, '')
                     const parsed = parseFloat(cleanVal) || 0
-                    setMaxVal(parsed * divisor)
+                    const newMax = parsed * divisor
+                    setMaxVal(newMax)
+                    updatePriceFilter(minVal, newMax)
                   }}
                   className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:bg-white focus:border-primary outline-none transition"
                 />
@@ -313,11 +311,9 @@ export default function MapFilterBar({
                 value={maxVal >= 999999999999 ? sliderLimitMax + sliderStep : maxVal}
                 onChange={(e) => {
                   const val = parseFloat(e.target.value)
-                  if (val > sliderLimitMax) {
-                    setMaxVal(999999999999)
-                  } else {
-                    setMaxVal(val)
-                  }
+                  const newMax = val > sliderLimitMax ? 999999999999 : val
+                  setMaxVal(newMax)
+                  updatePriceFilter(minVal, newMax)
                 }}
                 className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
               />
@@ -331,38 +327,22 @@ export default function MapFilterBar({
             <div className="grid grid-cols-2 gap-2">
               {(purpose === 'rent' || purpose === '') && (
                 <>
-                  <button type="button" onClick={() => { setMinVal(0); setMaxVal(3000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 0 && maxVal === 3000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 3 triệu</button>
-                  <button type="button" onClick={() => { setMinVal(3000000); setMaxVal(5000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 3000000 && maxVal === 5000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 triệu</button>
-                  <button type="button" onClick={() => { setMinVal(5000000); setMaxVal(10000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 5000000 && maxVal === 10000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 triệu</button>
-                  <button type="button" onClick={() => { setMinVal(10000000); setMaxVal(20000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 10000000 && maxVal === 20000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>10 - 20 triệu</button>
-                  <button type="button" onClick={() => { setMinVal(20000000); setMaxVal(999999999999) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${minVal === 20000000 && maxVal >= 999999999999 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 20 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(0); setMaxVal(3000000); updatePriceFilter(0, 3000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 0 && maxVal === 3000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 3 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(3000000); setMaxVal(5000000); updatePriceFilter(3000000, 5000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 3000000 && maxVal === 5000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(5000000); setMaxVal(10000000); updatePriceFilter(5000000, 10000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 5000000 && maxVal === 10000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(10000000); setMaxVal(20000000); updatePriceFilter(10000000, 20000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 10000000 && maxVal === 20000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>10 - 20 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(20000000); setMaxVal(999999999999); updatePriceFilter(20000000, 999999999999); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${minVal === 20000000 && maxVal >= 999999999999 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 20 triệu</button>
                 </>
               )}
               {purpose === 'sale' && (
                 <>
-                  <button type="button" onClick={() => { setMinVal(0); setMaxVal(1000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 0 && maxVal === 1000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 1 tỷ</button>
-                  <button type="button" onClick={() => { setMinVal(1000000000); setMaxVal(3000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 1000000000 && maxVal === 3000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>1 - 3 tỷ</button>
-                  <button type="button" onClick={() => { setMinVal(3000000000); setMaxVal(5000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 3000000000 && maxVal === 5000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 tỷ</button>
-                  <button type="button" onClick={() => { setMinVal(5000000000); setMaxVal(10000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 5000000000 && maxVal === 10000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 tỷ</button>
-                  <button type="button" onClick={() => { setMinVal(10000000000); setMaxVal(999999999999) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${minVal === 10000000000 && maxVal >= 999999999999 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 10 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(0); setMaxVal(1000000000); updatePriceFilter(0, 1000000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 0 && maxVal === 1000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 1 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(1000000000); setMaxVal(3000000000); updatePriceFilter(1000000000, 3000000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 1000000000 && maxVal === 3000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>1 - 3 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(3000000000); setMaxVal(5000000000); updatePriceFilter(3000000000, 5000000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 3000000000 && maxVal === 5000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(5000000000); setMaxVal(10000000000); updatePriceFilter(5000000000, 10000000000); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 5000000000 && maxVal === 10000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(10000000000); setMaxVal(999999999999); updatePriceFilter(10000000000, 999999999999); setActiveDropdown(null) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${minVal === 10000000000 && maxVal >= 999999999999 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 10 tỷ</button>
                 </>
               )}
-            </div>
-            <div className="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-3.5">
-              <button 
-                type="button" 
-                onClick={() => { setPrice(''); setMinVal(0); setMaxVal(0); setActiveDropdown(null) }} 
-                className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer"
-              >
-                Xóa
-              </button>
-              <button 
-                type="button" 
-                onClick={handleApplyPrice} 
-                className="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer"
-              >
-                Áp dụng
-              </button>
             </div>
           </div>
         )}
@@ -502,23 +482,6 @@ export default function MapFilterBar({
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-1">
-              <button 
-                type="button" 
-                onClick={() => { setBathrooms(''); setFurniture(''); setDirection(''); setActiveDropdown(null) }} 
-                className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer"
-              >
-                Xóa lọc
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setActiveDropdown(null)} 
-                className="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer"
-              >
-                Áp dụng
-              </button>
             </div>
           </div>
         )}
