@@ -264,9 +264,20 @@ export default function Navbar() {
                 {/* Dropdown Panel */}
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left animate-dropdown">
-                    <Link href={user.role === 'admin' ? '/admin/dashboard' : '/profile'} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
-                      <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> {user.role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân'}
-                    </Link>
+                    {user.role === 'admin' ? (
+                      <>
+                        <Link href="/admin/dashboard" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                          <i className="fa-solid fa-chart-line mr-2 text-sm text-slate-400"></i> Trang quản lý
+                        </Link>
+                        <Link href="/profile" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                          <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
+                        </Link>
+                      </>
+                    ) : (
+                      <Link href="/profile" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
+                      </Link>
+                    )}
                     <Link href="/profile?tab=favorites" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                       <i className="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin yêu thích
                     </Link>
@@ -466,10 +477,23 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  <Link href={user.role === 'admin' ? '/admin/dashboard' : '/profile'} onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
-                    <i className="fa-solid fa-user-gear text-slate-400 text-lg w-6 text-center"></i>
-                    <span>{user.role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân'}</span>
-                  </Link>
+                   {user.role === 'admin' ? (
+                     <>
+                       <Link href="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
+                         <i className="fa-solid fa-chart-line text-slate-400 text-lg w-6 text-center"></i>
+                         <span>Trang quản lý</span>
+                       </Link>
+                       <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
+                         <i className="fa-solid fa-user-gear text-slate-400 text-lg w-6 text-center"></i>
+                         <span>Trang cá nhân</span>
+                       </Link>
+                     </>
+                   ) : (
+                     <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
+                       <i className="fa-solid fa-user-gear text-slate-400 text-lg w-6 text-center"></i>
+                       <span>Trang cá nhân</span>
+                     </Link>
+                   )}
                   <button 
                     onClick={handleLogout}
                     className="w-full text-left flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-red-500 hover:bg-red-50 transition cursor-pointer"
