@@ -233,28 +233,33 @@ export default function MapLibreMap({
     })
   }, [hoveredId, activeId, properties])
 
-  // 4. Center map and open popup on Active ID change (from sidebar click)
+  // 4. Center map and open popup on Active ID change (from sidebar click or initial URL param)
   useEffect(() => {
     if (!activeId) return
     const map = mapInstanceRef.current
-    const marker = markersRef.current[activeId]
-    if (!map || !marker) return
 
-    const coords = marker.getLngLat()
-    map.flyTo({ center: coords, zoom: 14.5, duration: 600 })
-    
-    // Close all other popups
-    Object.entries(markersRef.current).forEach(([id, m]) => {
-      if (id !== activeId && m.getPopup().isOpen()) {
-        m.getPopup().remove()
+    const timer = setTimeout(() => {
+      const marker = markersRef.current[activeId]
+      if (!map || !marker) return
+
+      const coords = marker.getLngLat()
+      map.flyTo({ center: coords, zoom: 15, duration: 600 })
+      
+      // Close all other popups
+      Object.entries(markersRef.current).forEach(([id, m]) => {
+        if (id !== activeId && m.getPopup().isOpen()) {
+          m.getPopup().remove()
+        }
+      })
+
+      // Open the popup if not already opened
+      if (!marker.getPopup().isOpen()) {
+        marker.togglePopup()
       }
-    })
+    }, 300)
 
-    // Open the popup if not already opened
-    if (!marker.getPopup().isOpen()) {
-      marker.togglePopup()
-    }
-  }, [activeId])
+    return () => clearTimeout(timer)
+  }, [activeId, properties])
 
   return (
     <div className="relative w-full h-full bg-slate-100">
