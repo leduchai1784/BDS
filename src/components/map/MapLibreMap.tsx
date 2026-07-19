@@ -214,15 +214,8 @@ export default function MapLibreMap({
       markersRef.current[p.id] = marker
     })
 
-    // Fit bounds or focus active marker
-    if (activeId && markersRef.current[activeId]) {
-      const activeMarker = markersRef.current[activeId]
-      const coords = activeMarker.getLngLat()
-      map.jumpTo({ center: coords, zoom: 15 })
-      if (!activeMarker.getPopup().isOpen()) {
-        activeMarker.togglePopup()
-      }
-    } else if (properties.length > 0) {
+    // Fit bounds to show all markers
+    if (properties.length > 0) {
       map.fitBounds(bounds, {
         padding: { top: 80, bottom: 80, left: 50, right: 50 },
         maxZoom: 14,
@@ -256,7 +249,7 @@ export default function MapLibreMap({
       if (!map || !marker) return
 
       const coords = marker.getLngLat()
-      map.jumpTo({ center: coords, zoom: 15 })
+      map.flyTo({ center: coords, zoom: 15, duration: 400 })
       
       // Close all other popups
       Object.entries(markersRef.current).forEach(([id, m]) => {
@@ -269,7 +262,7 @@ export default function MapLibreMap({
       if (!marker.getPopup().isOpen()) {
         marker.togglePopup()
       }
-    }, 300)
+    }, 650)
 
     return () => clearTimeout(timer)
   }, [activeId, properties])
