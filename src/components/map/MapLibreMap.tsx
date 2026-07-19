@@ -57,11 +57,24 @@ export default function MapLibreMap({
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return
 
+    let initialCenter: [number, number] = [106.6704, 10.7822]
+    let initialZoom = 12.5
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const latParam = parseFloat(params.get('lat') || '')
+      const lngParam = parseFloat(params.get('lng') || '')
+      if (!isNaN(latParam) && !isNaN(lngParam)) {
+        initialCenter = [lngParam, latParam]
+        initialZoom = 15
+      }
+    }
+
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-      center: [106.6704, 10.7822], // Default center to HCMC
-      zoom: 12.5
+      center: initialCenter,
+      zoom: initialZoom
     })
 
     // Navigation and Geolocate Controls
@@ -205,7 +218,7 @@ export default function MapLibreMap({
     if (activeId && markersRef.current[activeId]) {
       const activeMarker = markersRef.current[activeId]
       const coords = activeMarker.getLngLat()
-      map.flyTo({ center: coords, zoom: 15, duration: 800 })
+      map.jumpTo({ center: coords, zoom: 15 })
       if (!activeMarker.getPopup().isOpen()) {
         activeMarker.togglePopup()
       }
@@ -243,7 +256,7 @@ export default function MapLibreMap({
       if (!map || !marker) return
 
       const coords = marker.getLngLat()
-      map.flyTo({ center: coords, zoom: 15, duration: 600 })
+      map.jumpTo({ center: coords, zoom: 15 })
       
       // Close all other popups
       Object.entries(markersRef.current).forEach(([id, m]) => {
