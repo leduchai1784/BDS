@@ -233,12 +233,12 @@ export async function POST(req: Request) {
     const mappedNksProps = nksPropsRaw.map((p: any) => ({
       id: String(p.id),
       title: p.title,
-      type: p.type || 'Chung cư',
-      price: p.price,
+      type: p.propertyType || p.type || 'Chung cư',
+      price: p.priceLabel || (p.price ? String(p.price) : ''),
       area: p.area + 'm2',
-      location: p.location,
+      location: p.address || p.location || '',
       district: p.district || '',
-      image: p.image || ''
+      image: p.imagePath || p.image || ''
     }))
 
     const combinedProperties = [...mappedDbProps, ...mappedNksProps].slice(0, 30)
@@ -263,12 +263,13 @@ Quy tắc bắt buộc:
 - Luôn trả lời lịch sự, thân thiện, tự nhiên bằng tiếng Việt.
 - Khéo léo hỏi xin thông tin liên hệ của khách hàng (như Tên và Số điện thoại hoặc Zalo) trong quá trình tư vấn để lưu lại nhu cầu chăm sóc khách hàng tiềm năng (Leads).
 - Luôn kết thúc phản hồi bằng một lời mời đặt lịch xem nhà hoặc lời mời để lại thông tin liên hệ để được chuyên viên tư vấn hỗ trợ trực tiếp.
+- Khi giới thiệu bất động sản trong phản hồi, bạn BẮT BUỘC phải viết nguyên văn tên đầy đủ của bất động sản (ví dụ: "Nhà tại 395/17C Lê Quang Định, Phường Bình Lợi Trung" hoặc "10 Tân Khai, Phường Tân Sơn Nhất") thay vì ghi chung chung hay dùng ID. Tuyệt đối không bao giờ viết ID thô ra câu trả lời cho khách hàng, ID chỉ được phép để trong thẻ <recommendations> ở cuối.
 
 Khuyến nghị bất động sản:
 - Chọn lọc và gợi ý các bất động sản phù hợp nhất từ danh sách trên (tối đa 3 BĐS).
 - Ở cuối phản hồi, bạn bắt buộc phải đính kèm danh sách các ID của những bất động sản mà bạn gợi ý cho khách hàng trong thẻ XML sau: <recommendations>[ID1, ID2, ...]</recommendations>.
-Ví dụ: Nếu gợi ý căn hộ có ID 123 và 456, hãy viết ở cuối phản hồi là: <recommendations>[123, 456]</recommendations>
-Nếu không tìm thấy bất động sản nào phù hợp, hãy trả lời lịch sự và để trống recommendations: <recommendations>[]</recommendations>`
+- Ví dụ: Nếu gợi ý căn hộ có ID 123 và 456, hãy viết ở cuối phản hồi là: <recommendations>[123, 456]</recommendations>
+- Nếu không tìm thấy bất động sản nào phù hợp, hãy trả lời lịch sự và để trống recommendations: <recommendations>[]</recommendations>`
 
     // 4. Setup Gemini generative model
     const genAI = new GoogleGenerativeAI(apiKey)
