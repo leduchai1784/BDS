@@ -43,13 +43,22 @@ function getPriceLabel(key: string, purpose: string): string {
   if (!key) return 'Mức giá'
   if (key.startsWith('slider_')) {
     const parts = key.split('_')
-    const maxVal = parseFloat(parts[2])
-    if (maxVal === 0) return 'Tất cả mức giá'
-    if (purpose === 'sale') {
-      return `Dưới ${(maxVal / 1000000000).toFixed(1).replace('.0', '')} tỷ`
-    } else {
-      return `Dưới ${(maxVal / 1000000).toFixed(0)} triệu`
+    const minVal = parseFloat(parts[1]) || 0
+    const maxVal = parseFloat(parts[2]) || 0
+    const isSale = purpose === 'sale'
+    const divisor = isSale ? 1000000000 : 1000000
+    const unit = isSale ? 'tỷ' : 'tr'
+
+    const formatVal = (v: number) => {
+      return (v / divisor).toFixed(1).replace('.0', '') + ' ' + unit
     }
+
+    const hasNoMax = maxVal === 0 || maxVal >= 999999999999
+
+    if (minVal === 0 && hasNoMax) return 'Mức giá'
+    if (minVal === 0) return `Dưới ${formatVal(maxVal)}`
+    if (hasNoMax) return `Trên ${formatVal(minVal)}`
+    return `${formatVal(minVal)} - ${formatVal(maxVal)}`
   }
   if (purpose === 'sale') {
     const labels: Record<string, string> = {
@@ -121,32 +130,43 @@ export default function MapFilterBar({
   const isSaleMode = purpose === 'sale'
   const sliderLimitMax = isSaleMode ? 20000000000 : 50000000
   const sliderStep = isSaleMode ? 500000000 : 1000000
-  
-  const getInitialSliderVal = () => {
+  const divisor = isSaleMode ? 1000000000 : 1000000
+  const unit = isSaleMode ? 'tỷ' : 'triệu'
+
+  const getInitialMinMax = () => {
+    let min = 0
+    let max = 0
     if (price && price.startsWith('slider_')) {
-      return parseFloat(price.split('_')[2])
+      const parts = price.split('_')
+      min = parseFloat(parts[1]) || 0
+      max = parseFloat(parts[2]) || 0
+    } else {
+      if (price === 'under_3') max = 3000000
+      if (price === '3_5') { min = 3000000; max = 5000000 }
+      if (price === '5_10') { min = 5000000; max = 10000000 }
+      if (price === '10_20') { min = 10000000; max = 20000000 }
+      if (price === 'above_20') min = 20000000
+      if (price === 'under_1b') max = 1000000000
+      if (price === '1b_3b') { min = 1000000000; max = 3000000000 }
+      if (price === '3b_5b') { min = 3000000000; max = 5000000000 }
+      if (price === '5b_10b') { min = 5000000000; max = 10000000000 }
+      if (price === 'above_10b') min = 10000000000
     }
-    if (price === 'under_3') return 3000000
-    if (price === '3_5') return 5000000
-    if (price === '5_10') return 10000000
-    if (price === '10_20') return 20000000
-    if (price === 'above_20') return 50000000
-    if (price === 'under_1b') return 1000000000
-    if (price === '1b_3b') return 3000000000
-    if (price === '3b_5b') return 5000000000
-    if (price === '5b_10b') return 10000000000
-    if (price === 'above_10b') return 20000000000
-    return 0
+    return { min, max }
   }
 
-  const [tempSliderVal, setTempSliderVal] = useState<number>(getInitialSliderVal())
+  const initRange = getInitialMinMax()
+  const [minVal, setMinVal] = useState<number>(initRange.min)
+  const [maxVal, setMaxVal] = useState<number>(initRange.max)
 
-  const formatSliderValue = (val: number) => {
-    if (val === 0) return 'Tất cả mức giá'
-    if (isSaleMode) {
-      return `Dưới ${(val / 1000000000).toFixed(1).replace('.0', '')} tỷ`
+  const handleApplyPrice = () => {
+    const finalMax = maxVal === 0 ? 999999999999 : maxVal
+    if (minVal === 0 && finalMax === 999999999999) {
+      setPrice('')
+    } else {
+      setPrice(`slider_${minVal}_${finalMax}`)
     }
-    return `Dưới ${(val / 1000000).toFixed(0)} triệu`
+    setActiveDropdown(null)
   }
 
   return (
@@ -189,9 +209,9 @@ export default function MapFilterBar({
         </button>
         {activeDropdown === 'purpose' && (
           <div className="absolute left-0 mt-2 w-48 rounded-2xl bg-white border border-slate-150 shadow-2xl p-3 z-50 text-left flex flex-col space-y-1">
-            <button type="button" onClick={() => { setPurpose(''); setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${!purpose ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Tất cả giao dịch</button>
-            <button type="button" onClick={() => { setPurpose('rent'); setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'rent' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Cho thuê</button>
-            <button type="button" onClick={() => { setPurpose('sale'); setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'sale' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Mua bán</button>
+            <button type="button" onClick={() => { setPurpose(''); setPrice(''); setMinVal(0); setMaxVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${!purpose ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Tất cả giao dịch</button>
+            <button type="button" onClick={() => { setPurpose('rent'); setPrice(''); setMinVal(0); setMaxVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'rent' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Cho thuê</button>
+            <button type="button" onClick={() => { setPurpose('sale'); setPrice(''); setMinVal(0); setMaxVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'sale' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Mua bán</button>
           </div>
         )}
       </div>
@@ -230,7 +250,9 @@ export default function MapFilterBar({
           type="button"
           onClick={() => {
             setActiveDropdown(activeDropdown === 'price' ? null : 'price')
-            setTempSliderVal(getInitialSliderVal())
+            const current = getInitialMinMax()
+            setMinVal(current.min)
+            setMaxVal(current.max)
           }}
           className={`flex items-center justify-between space-x-1.5 px-4 py-2 border rounded-full text-xs font-bold transition cursor-pointer h-10 min-w-[120px] ${
             price ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
@@ -240,78 +262,103 @@ export default function MapFilterBar({
           <i className={`fa-solid fa-chevron-down text-[8px] transition duration-200 ${activeDropdown === 'price' ? 'rotate-180 text-primary' : 'text-slate-400'}`}></i>
         </button>
         {activeDropdown === 'price' && (
-          <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4.5 z-50 text-left">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 px-0.5">Thanh kéo lọc giá</span>
+          <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4 z-50 text-left">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 px-0.5">Nhập khoảng giá</span>
             
-            {/* Custom Slider component inside the dropdown */}
-            <div className="py-3 px-0.5 mb-3 bg-slate-50 rounded-2xl border border-slate-100">
-              <div className="flex justify-between items-center px-3 mb-1.5">
-                <span className="text-[10px] text-slate-500 font-bold">Mức giá kéo chọn:</span>
-                <span className="text-xs font-extrabold text-primary">{formatSliderValue(tempSliderVal)}</span>
-              </div>
-              <div className="px-3">
+            {/* Input boxes for Min and Max */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label className="block text-[9px] font-bold text-slate-400 mb-1 pl-0.5">Tối thiểu ({unit})</label>
                 <input 
-                  type="range"
+                  type="number"
+                  placeholder="Từ..."
                   min="0"
-                  max={sliderLimitMax}
-                  step={sliderStep}
-                  value={tempSliderVal}
-                  onChange={(e) => setTempSliderVal(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                  value={minVal === 0 ? '' : minVal / divisor}
+                  onChange={(e) => {
+                    const parsed = parseFloat(e.target.value) || 0
+                    setMinVal(parsed * divisor)
+                  }}
+                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:bg-white focus:border-primary outline-none transition"
                 />
-                <div className="flex justify-between text-[9px] text-slate-400 font-bold mt-1">
-                  <span>0đ</span>
-                  <span>{isSaleMode ? '20 Tỷ+' : '50 Triệu+'}</span>
-                </div>
+              </div>
+              <div>
+                <label className="block text-[9px] font-bold text-slate-400 mb-1 pl-0.5">Tối đa ({unit})</label>
+                <input 
+                  type="text"
+                  placeholder="Vô hạn"
+                  value={maxVal === 0 || maxVal >= 999999999999 ? '' : maxVal / divisor}
+                  onChange={(e) => {
+                    const cleanVal = e.target.value.replace(/[^0-9.]/g, '')
+                    const parsed = parseFloat(cleanVal) || 0
+                    setMaxVal(parsed * divisor)
+                  }}
+                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:bg-white focus:border-primary outline-none transition"
+                />
+              </div>
+            </div>
+
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Thanh kéo nhanh</span>
+            <div className="py-2.5 px-3 mb-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[9px] text-slate-400 font-bold">Mốc tối đa:</span>
+                <span className="text-xs font-extrabold text-primary">
+                  {maxVal === 0 || maxVal >= 999999999999 ? 'Vô hạn' : `${(maxVal / divisor).toFixed(1).replace('.0', '')} ${unit}`}
+                </span>
+              </div>
+              <input 
+                type="range"
+                min="0"
+                max={sliderLimitMax + sliderStep}
+                step={sliderStep}
+                value={maxVal >= 999999999999 ? sliderLimitMax + sliderStep : maxVal}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value)
+                  if (val > sliderLimitMax) {
+                    setMaxVal(999999999999)
+                  } else {
+                    setMaxVal(val)
+                  }
+                }}
+                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <div className="flex justify-between text-[8px] text-slate-400 font-bold mt-1">
+                <span>0đ</span>
+                <span>Vô hạn</span>
               </div>
             </div>
 
             <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Khoảng giá nhanh</span>
             <div className="grid grid-cols-2 gap-2">
-              <button 
-                type="button" 
-                onClick={() => { setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} 
-                className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${!price ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}
-              >
-                Tất cả mức giá
-              </button>
               {(purpose === 'rent' || purpose === '') && (
                 <>
-                  <button type="button" onClick={() => { setPrice('under_3'); setTempSliderVal(3000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === 'under_3' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 3 triệu</button>
-                  <button type="button" onClick={() => { setPrice('3_5'); setTempSliderVal(5000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '3_5' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 triệu</button>
-                  <button type="button" onClick={() => { setPrice('5_10'); setTempSliderVal(10000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '5_10' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 triệu</button>
-                  <button type="button" onClick={() => { setPrice('10_20'); setTempSliderVal(20000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '10_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>10 - 20 triệu</button>
-                  <button type="button" onClick={() => { setPrice('above_20'); setTempSliderVal(50000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${price === 'above_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 20 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(0); setMaxVal(3000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 0 && maxVal === 3000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 3 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(3000000); setMaxVal(5000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 3000000 && maxVal === 5000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(5000000); setMaxVal(10000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 5000000 && maxVal === 10000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(10000000); setMaxVal(20000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 10000000 && maxVal === 20000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>10 - 20 triệu</button>
+                  <button type="button" onClick={() => { setMinVal(20000000); setMaxVal(999999999999) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${minVal === 20000000 && maxVal >= 999999999999 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 20 triệu</button>
                 </>
               )}
               {purpose === 'sale' && (
                 <>
-                  <button type="button" onClick={() => { setPrice('under_1b'); setTempSliderVal(1000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === 'under_1b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 1 tỷ</button>
-                  <button type="button" onClick={() => { setPrice('1b_3b'); setTempSliderVal(3000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '1b_3b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>1 - 3 tỷ</button>
-                  <button type="button" onClick={() => { setPrice('3b_5b'); setTempSliderVal(5000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '3b_5b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 tỷ</button>
-                  <button type="button" onClick={() => { setPrice('5b_10b'); setTempSliderVal(10000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '5b_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 tỷ</button>
-                  <button type="button" onClick={() => { setPrice('above_10b'); setTempSliderVal(20000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${price === 'above_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 10 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(0); setMaxVal(1000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 0 && maxVal === 1000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 1 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(1000000000); setMaxVal(3000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 1000000000 && maxVal === 3000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>1 - 3 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(3000000000); setMaxVal(5000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 3000000000 && maxVal === 5000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(5000000000); setMaxVal(10000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${minVal === 5000000000 && maxVal === 10000000000 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 tỷ</button>
+                  <button type="button" onClick={() => { setMinVal(10000000000); setMaxVal(999999999999) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${minVal === 10000000000 && maxVal >= 999999999999 ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 10 tỷ</button>
                 </>
               )}
             </div>
             <div className="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-3.5">
               <button 
                 type="button" 
-                onClick={() => { setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} 
+                onClick={() => { setPrice(''); setMinVal(0); setMaxVal(0); setActiveDropdown(null) }} 
                 className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer"
               >
                 Xóa
               </button>
               <button 
                 type="button" 
-                onClick={() => {
-                  if (tempSliderVal === 0) {
-                    setPrice('')
-                  } else {
-                    setPrice(`slider_0_${tempSliderVal}`)
-                  }
-                  setActiveDropdown(null)
-                }} 
+                onClick={handleApplyPrice} 
                 className="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer"
               >
                 Áp dụng
