@@ -41,6 +41,16 @@ function getPropertyTypeLabel(key: string): string {
 
 function getPriceLabel(key: string, purpose: string): string {
   if (!key) return 'Mức giá'
+  if (key.startsWith('slider_')) {
+    const parts = key.split('_')
+    const maxVal = parseFloat(parts[2])
+    if (maxVal === 0) return 'Tất cả mức giá'
+    if (purpose === 'sale') {
+      return `Dưới ${(maxVal / 1000000000).toFixed(1).replace('.0', '')} tỷ`
+    } else {
+      return `Dưới ${(maxVal / 1000000).toFixed(0)} triệu`
+    }
+  }
   if (purpose === 'sale') {
     const labels: Record<string, string> = {
       'under_1b': 'Dưới 1 tỷ',
@@ -107,6 +117,37 @@ export default function MapFilterBar({
   onReset
 }: MapFilterBarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  
+  const isSaleMode = purpose === 'sale'
+  const sliderLimitMax = isSaleMode ? 20000000000 : 50000000
+  const sliderStep = isSaleMode ? 500000000 : 1000000
+  
+  const getInitialSliderVal = () => {
+    if (price && price.startsWith('slider_')) {
+      return parseFloat(price.split('_')[2])
+    }
+    if (price === 'under_3') return 3000000
+    if (price === '3_5') return 5000000
+    if (price === '5_10') return 10000000
+    if (price === '10_20') return 20000000
+    if (price === 'above_20') return 50000000
+    if (price === 'under_1b') return 1000000000
+    if (price === '1b_3b') return 3000000000
+    if (price === '3b_5b') return 5000000000
+    if (price === '5b_10b') return 10000000000
+    if (price === 'above_10b') return 20000000000
+    return 0
+  }
+
+  const [tempSliderVal, setTempSliderVal] = useState<number>(getInitialSliderVal())
+
+  const formatSliderValue = (val: number) => {
+    if (val === 0) return 'Tất cả mức giá'
+    if (isSaleMode) {
+      return `Dưới ${(val / 1000000000).toFixed(1).replace('.0', '')} tỷ`
+    }
+    return `Dưới ${(val / 1000000).toFixed(0)} triệu`
+  }
 
   return (
     <div className="relative flex flex-wrap items-center gap-2 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-slate-100 w-full z-40">
@@ -141,18 +182,16 @@ export default function MapFilterBar({
         <button
           type="button"
           onClick={() => setActiveDropdown(activeDropdown === 'purpose' ? null : 'purpose')}
-          className={`flex items-center justify-between space-x-1.5 px-4 py-2 border rounded-full text-xs font-bold transition cursor-pointer h-10 min-w-[120px] ${
-            purpose ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-          }`}
+          className="flex items-center justify-between space-x-1.5 px-4 py-2 border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded-full text-xs font-bold transition cursor-pointer h-10 min-w-[125px]"
         >
-          <span>{purpose === 'rent' ? 'Cho thuê' : purpose === 'sale' ? 'Mua bán' : 'Giao dịch'}</span>
+          <span>{purpose === 'rent' ? 'Cho thuê' : purpose === 'sale' ? 'Mua bán' : 'Hình thức'}</span>
           <i className={`fa-solid fa-chevron-down text-[8px] transition duration-200 ${activeDropdown === 'purpose' ? 'rotate-180 text-primary' : 'text-slate-400'}`}></i>
         </button>
         {activeDropdown === 'purpose' && (
-          <div className="absolute left-0 mt-2 w-44 rounded-2xl bg-white border border-slate-150 shadow-2xl p-3 z-50 text-left flex flex-col space-y-1">
-            <button type="button" onClick={() => { setPurpose(''); setPrice(''); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${!purpose ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Tất cả giao dịch</button>
-            <button type="button" onClick={() => { setPurpose('rent'); setPrice(''); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'rent' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Cho thuê</button>
-            <button type="button" onClick={() => { setPurpose('sale'); setPrice(''); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'sale' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Mua bán</button>
+          <div className="absolute left-0 mt-2 w-48 rounded-2xl bg-white border border-slate-150 shadow-2xl p-3 z-50 text-left flex flex-col space-y-1">
+            <button type="button" onClick={() => { setPurpose(''); setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${!purpose ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Tất cả giao dịch</button>
+            <button type="button" onClick={() => { setPurpose('rent'); setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'rent' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Cho thuê</button>
+            <button type="button" onClick={() => { setPurpose('sale'); setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${purpose === 'sale' ? 'bg-primary/5 text-primary' : 'text-slate-700 hover:bg-slate-50'}`}>Mua bán</button>
           </div>
         )}
       </div>
@@ -162,7 +201,7 @@ export default function MapFilterBar({
         <button
           type="button"
           onClick={() => setActiveDropdown(activeDropdown === 'type' ? null : 'type')}
-          className={`flex items-center justify-between space-x-1.5 px-4 py-2 border rounded-full text-xs font-bold transition cursor-pointer h-10 min-w-[120px] ${
+          className={`flex items-center justify-between space-x-1.5 px-4 py-2 border rounded-full text-xs font-bold transition cursor-pointer h-10 min-w-[140px] ${
             propertyType ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
           }`}
         >
@@ -189,7 +228,10 @@ export default function MapFilterBar({
       <div className="relative z-50">
         <button
           type="button"
-          onClick={() => setActiveDropdown(activeDropdown === 'price' ? null : 'price')}
+          onClick={() => {
+            setActiveDropdown(activeDropdown === 'price' ? null : 'price')
+            setTempSliderVal(getInitialSliderVal())
+          }}
           className={`flex items-center justify-between space-x-1.5 px-4 py-2 border rounded-full text-xs font-bold transition cursor-pointer h-10 min-w-[120px] ${
             price ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
           }`}
@@ -198,32 +240,82 @@ export default function MapFilterBar({
           <i className={`fa-solid fa-chevron-down text-[8px] transition duration-200 ${activeDropdown === 'price' ? 'rotate-180 text-primary' : 'text-slate-400'}`}></i>
         </button>
         {activeDropdown === 'price' && (
-          <div className="absolute left-0 mt-2 w-64 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4 z-50 text-left">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 px-0.5">Khoảng giá</span>
+          <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4.5 z-50 text-left">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 px-0.5">Thanh kéo lọc giá</span>
+            
+            {/* Custom Slider component inside the dropdown */}
+            <div className="py-3 px-0.5 mb-3 bg-slate-50 rounded-2xl border border-slate-100">
+              <div className="flex justify-between items-center px-3 mb-1.5">
+                <span className="text-[10px] text-slate-500 font-bold">Mức giá kéo chọn:</span>
+                <span className="text-xs font-extrabold text-primary">{formatSliderValue(tempSliderVal)}</span>
+              </div>
+              <div className="px-3">
+                <input 
+                  type="range"
+                  min="0"
+                  max={sliderLimitMax}
+                  step={sliderStep}
+                  value={tempSliderVal}
+                  onChange={(e) => setTempSliderVal(parseFloat(e.target.value))}
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+                <div className="flex justify-between text-[9px] text-slate-400 font-bold mt-1">
+                  <span>0đ</span>
+                  <span>{isSaleMode ? '20 Tỷ+' : '50 Triệu+'}</span>
+                </div>
+              </div>
+            </div>
+
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Khoảng giá nhanh</span>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={() => setPrice('')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${!price ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Tất cả mức giá</button>
+              <button 
+                type="button" 
+                onClick={() => { setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} 
+                className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${!price ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}
+              >
+                Tất cả mức giá
+              </button>
               {(purpose === 'rent' || purpose === '') && (
                 <>
-                  <button type="button" onClick={() => setPrice('under_3')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === 'under_3' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 3 triệu</button>
-                  <button type="button" onClick={() => setPrice('3_5')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '3_5' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 triệu</button>
-                  <button type="button" onClick={() => setPrice('5_10')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '5_10' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 triệu</button>
-                  <button type="button" onClick={() => setPrice('10_20')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '10_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>10 - 20 triệu</button>
-                  <button type="button" onClick={() => setPrice('above_20')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${price === 'above_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 20 triệu</button>
+                  <button type="button" onClick={() => { setPrice('under_3'); setTempSliderVal(3000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === 'under_3' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 3 triệu</button>
+                  <button type="button" onClick={() => { setPrice('3_5'); setTempSliderVal(5000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '3_5' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 triệu</button>
+                  <button type="button" onClick={() => { setPrice('5_10'); setTempSliderVal(10000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '5_10' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 triệu</button>
+                  <button type="button" onClick={() => { setPrice('10_20'); setTempSliderVal(20000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '10_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>10 - 20 triệu</button>
+                  <button type="button" onClick={() => { setPrice('above_20'); setTempSliderVal(50000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${price === 'above_20' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 20 triệu</button>
                 </>
               )}
               {purpose === 'sale' && (
                 <>
-                  <button type="button" onClick={() => setPrice('under_1b')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === 'under_1b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 1 tỷ</button>
-                  <button type="button" onClick={() => setPrice('1b_3b')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '1b_3b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>1 - 3 tỷ</button>
-                  <button type="button" onClick={() => setPrice('3b_5b')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '3b_5b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 tỷ</button>
-                  <button type="button" onClick={() => setPrice('5b_10b')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '5b_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 tỷ</button>
-                  <button type="button" onClick={() => setPrice('above_10b')} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${price === 'above_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 10 tỷ</button>
+                  <button type="button" onClick={() => { setPrice('under_1b'); setTempSliderVal(1000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === 'under_1b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Dưới 1 tỷ</button>
+                  <button type="button" onClick={() => { setPrice('1b_3b'); setTempSliderVal(3000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '1b_3b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>1 - 3 tỷ</button>
+                  <button type="button" onClick={() => { setPrice('3b_5b'); setTempSliderVal(5000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '3b_5b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>3 - 5 tỷ</button>
+                  <button type="button" onClick={() => { setPrice('5b_10b'); setTempSliderVal(10000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer ${price === '5b_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>5 - 10 tỷ</button>
+                  <button type="button" onClick={() => { setPrice('above_10b'); setTempSliderVal(20000000000) }} className={`px-2 py-1.5 border rounded-xl text-center text-[11px] font-bold transition cursor-pointer col-span-2 ${price === 'above_10b' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'}`}>Trên 10 tỷ</button>
                 </>
               )}
             </div>
             <div className="flex justify-between items-center border-t border-slate-100 pt-2.5 mt-3.5">
-              <button type="button" onClick={() => { setPrice(''); setActiveDropdown(null) }} className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer">Xóa</button>
-              <button type="button" onClick={() => setActiveDropdown(null)} className="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer">Áp dụng</button>
+              <button 
+                type="button" 
+                onClick={() => { setPrice(''); setTempSliderVal(0); setActiveDropdown(null) }} 
+                className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer"
+              >
+                Xóa
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  if (tempSliderVal === 0) {
+                    setPrice('')
+                  } else {
+                    setPrice(`slider_0_${tempSliderVal}`)
+                  }
+                  setActiveDropdown(null)
+                }} 
+                className="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-primary-hover transition cursor-pointer"
+              >
+                Áp dụng
+              </button>
             </div>
           </div>
         )}

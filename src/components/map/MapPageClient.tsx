@@ -92,16 +92,22 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
       // 4. Price
       if (price) {
         const pVal = item.price
-        if (price === 'under_3' && pVal >= 3000000) return false
-        if (price === '3_5' && (pVal < 3000000 || pVal > 5000000)) return false
-        if (price === '5_10' && (pVal < 5000000 || pVal > 10000000)) return false
-        if (price === '10_20' && (pVal < 10000000 || pVal > 20000000)) return false
-        if (price === 'above_20' && pVal <= 20000000) return false
-        if (price === 'under_1b' && pVal >= 1000000000) return false
-        if (price === '1b_3b' && (pVal < 1000000000 || pVal > 3000000000)) return false
-        if (price === '3b_5b' && (pVal < 3000000000 || pVal > 5000000000)) return false
-        if (price === '5b_10b' && (pVal < 5000000000 || pVal > 10000000000)) return false
-        if (price === 'above_10b' && pVal <= 10000000000) return false
+        if (price.startsWith('slider_')) {
+          const parts = price.split('_')
+          const maxVal = parseFloat(parts[2])
+          if (maxVal > 0 && pVal > maxVal) return false
+        } else {
+          if (price === 'under_3' && pVal >= 3000000) return false
+          if (price === '3_5' && (pVal < 3000000 || pVal > 5000000)) return false
+          if (price === '5_10' && (pVal < 5000000 || pVal > 10000000)) return false
+          if (price === '10_20' && (pVal < 10000000 || pVal > 20000000)) return false
+          if (price === 'above_20' && pVal <= 20000000) return false
+          if (price === 'under_1b' && pVal >= 1000000000) return false
+          if (price === '1b_3b' && (pVal < 1000000000 || pVal > 3000000000)) return false
+          if (price === '3b_5b' && (pVal < 3000000000 || pVal > 5000000000)) return false
+          if (price === '5b_10b' && (pVal < 5000000000 || pVal > 10000000000)) return false
+          if (price === 'above_10b' && pVal <= 10000000000) return false
+        }
       }
 
       // 5. Bedrooms
