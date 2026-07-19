@@ -256,49 +256,11 @@ export default function MapFilterBar({
           <i className={`fa-solid fa-chevron-down text-[8px] transition duration-200 ${activeDropdown === 'price' ? 'rotate-180 text-primary' : 'text-slate-400'}`}></i>
         </button>
         {activeDropdown === 'price' && (
-          <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4 z-50 text-left">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 px-0.5">Nhập khoảng giá</span>
-            
-            {/* Input boxes for Min and Max */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 mb-1 pl-0.5">Tối thiểu ({unit})</label>
-                <input 
-                  type="number"
-                  placeholder="Từ..."
-                  min="0"
-                  value={minVal === 0 ? '' : minVal / divisor}
-                  onChange={(e) => {
-                    const parsed = parseFloat(e.target.value) || 0
-                    const newMin = parsed * divisor
-                    setMinVal(newMin)
-                    updatePriceFilter(newMin, maxVal)
-                  }}
-                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:bg-white focus:border-primary outline-none transition"
-                />
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 mb-1 pl-0.5">Tối đa ({unit})</label>
-                <input 
-                  type="text"
-                  placeholder="Vô hạn"
-                  value={maxVal === 0 || maxVal >= 999999999999 ? '' : maxVal / divisor}
-                  onChange={(e) => {
-                    const cleanVal = e.target.value.replace(/[^0-9.]/g, '')
-                    const parsed = parseFloat(cleanVal) || 0
-                    const newMax = parsed * divisor
-                    setMaxVal(newMax)
-                    updatePriceFilter(minVal, newMax)
-                  }}
-                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:bg-white focus:border-primary outline-none transition"
-                />
-              </div>
-            </div>
-
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Thanh kéo nhanh</span>
-            <div className="py-2.5 px-3 mb-4 bg-slate-50 rounded-xl border border-slate-100">
+          <div className="absolute left-0 mt-2 w-64 rounded-2xl bg-white border border-slate-150 shadow-2xl p-4.5 z-50 text-left">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-0.5">Thanh kéo tối đa</span>
+            <div className="py-2.5 px-3 mb-4.5 bg-slate-50 rounded-xl border border-slate-100">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-[9px] text-slate-400 font-bold">Mốc tối đa:</span>
+                <span className="text-[9px] text-slate-400 font-bold">Mức giá trượt:</span>
                 <span className="text-xs font-extrabold text-primary">
                   {maxVal === 0 || maxVal >= 999999999999 ? 'Vô hạn' : `${(maxVal / divisor).toFixed(1).replace('.0', '')} ${unit}`}
                 </span>
@@ -313,7 +275,8 @@ export default function MapFilterBar({
                   const val = parseFloat(e.target.value)
                   const newMax = val > sliderLimitMax ? 999999999999 : val
                   setMaxVal(newMax)
-                  updatePriceFilter(minVal, newMax)
+                  setMinVal(0) // Reset min value when sliding maximum
+                  updatePriceFilter(0, newMax)
                 }}
                 className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
               />
