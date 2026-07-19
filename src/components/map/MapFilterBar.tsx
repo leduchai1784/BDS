@@ -126,8 +126,8 @@ export default function MapFilterBar({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   
   const isSaleMode = purpose === 'sale'
-  const sliderLimitMax = isSaleMode ? 20000000000 : 50000000
-  const sliderStep = isSaleMode ? 500000000 : 1000000
+  const sliderLimitMax = isSaleMode ? 20000000000 : 100000000
+  const sliderStep = isSaleMode ? 500000000 : 2000000
   const divisor = isSaleMode ? 1000000000 : 1000000
   const unit = isSaleMode ? 'tỷ' : 'triệu'
 
