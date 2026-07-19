@@ -31,6 +31,8 @@ async function syncChatbotLeadToCrm(message: string, replyText: string, history:
       /(?:tên\s+là|tôi\s+tên\s+là|mình\s+tên\s+là|em\s+tên\s+là|tên\s+của\s+tôi\s+là)\s+([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i,
       /(?:tôi\s+là|mình\s+là|em\s+là|anh\s+là|chị\s+là)\s+([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i,
       /(?:tôi\s+tên|mình\s+tên|em\s+tên|anh\s+tên|chị\s+tên)\s+([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i,
+      /([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})\s*[,.:-]?\s*(?:\+?84|0)(?:\s*[\d.-]){9,10}\b/i,
+      /(?:\+?84|0)(?:\s*[\d.-]){9,10}\b\s*[,.:-]?\s*([A-ZÀ-Ỹ][a-zà-ỹ\w]*(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ\w]*){0,3})/i
     ]
 
     // Search current message first
