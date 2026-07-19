@@ -284,11 +284,12 @@ export default function ChatBot() {
                       // Helper to format raw price if it is a number
                       const displayPrice = (() => {
                         if (!p.price) return 'Liên hệ'
-                        if (p.price.includes('tỷ') || p.price.includes('triệu') || p.price.includes('tr')) {
-                          return p.price
+                        const priceStr = String(p.price)
+                        if (priceStr.includes('tỷ') || priceStr.includes('triệu') || priceStr.includes('tr')) {
+                          return priceStr
                         }
-                        const num = parseFloat(p.price)
-                        if (isNaN(num)) return p.price
+                        const num = parseFloat(priceStr)
+                        if (isNaN(num)) return priceStr
                         if (num >= 1000000000) {
                           return (num / 1000000000).toFixed(2).replace(/\.00$/, '').replace(/\.(\d)0$/, '.$1') + ' tỷ'
                         }
