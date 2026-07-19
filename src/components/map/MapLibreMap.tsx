@@ -201,12 +201,21 @@ export default function MapLibreMap({
       markersRef.current[p.id] = marker
     })
 
-    // Fit bounds to show all markers
-    map.fitBounds(bounds, {
-      padding: { top: 80, bottom: 80, left: 50, right: 50 },
-      maxZoom: 14,
-      duration: 800
-    })
+    // Fit bounds or focus active marker
+    if (activeId && markersRef.current[activeId]) {
+      const activeMarker = markersRef.current[activeId]
+      const coords = activeMarker.getLngLat()
+      map.flyTo({ center: coords, zoom: 15, duration: 800 })
+      if (!activeMarker.getPopup().isOpen()) {
+        activeMarker.togglePopup()
+      }
+    } else {
+      map.fitBounds(bounds, {
+        padding: { top: 80, bottom: 80, left: 50, right: 50 },
+        maxZoom: 14,
+        duration: 800
+      })
+    }
   }, [properties])
 
   // 3. Highlight marker on Hover change

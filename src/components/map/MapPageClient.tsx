@@ -60,6 +60,11 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
       setBathrooms(params.get('bathrooms') || '')
       setFurniture(params.get('furniture') || '')
       setDirection(params.get('direction') || '')
+      
+      const targetId = params.get('id')
+      if (targetId) {
+        setActiveId(targetId)
+      }
     }
   })
 
