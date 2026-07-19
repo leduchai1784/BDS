@@ -264,7 +264,7 @@ export default function Navbar() {
                 {/* Dropdown Panel */}
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left animate-dropdown">
-                    <Link href="/profile" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                    <Link href={user.role === 'admin' ? '/admin/dashboard' : '/profile'} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                       <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> {user.role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân'}
                     </Link>
                     <Link href="/profile?tab=favorites" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
@@ -466,7 +466,7 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
+                  <Link href={user.role === 'admin' ? '/admin/dashboard' : '/profile'} onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-3 px-3 py-3 rounded-xl text-base font-semibold text-slate-700 hover:bg-slate-50 transition">
                     <i className="fa-solid fa-user-gear text-slate-400 text-lg w-6 text-center"></i>
                     <span>{user.role === 'admin' ? 'Trang quản lý' : 'Trang cá nhân'}</span>
                   </Link>
