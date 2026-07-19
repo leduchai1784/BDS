@@ -18,7 +18,6 @@ export default async function MapPage({ searchParams }: MapPageProps) {
   const province = typeof resolvedParams.province === 'string' ? resolvedParams.province : ''
   const district = typeof resolvedParams.district === 'string' ? resolvedParams.district : ''
   const ward = typeof resolvedParams.ward === 'string' ? resolvedParams.ward : ''
-  const targetId = typeof resolvedParams.id === 'string' ? resolvedParams.id : ''
 
   // 1. Fetch initially filtered DB properties
   const dbWhere = buildPrismaFilters({
@@ -30,8 +29,7 @@ export default async function MapPage({ searchParams }: MapPageProps) {
     ward
   })
 
-  // If a targetId is provided, we should ensure it gets loaded even if it doesn't match current filters
-  let dbPropertiesRaw = await prisma.property.findMany({
+  const dbPropertiesRaw = await prisma.property.findMany({
     where: dbWhere,
     include: {
       propertyImages: {
@@ -39,25 +37,6 @@ export default async function MapPage({ searchParams }: MapPageProps) {
       }
     }
   })
-
-  // If targetId is provided and not in the list, fetch and append it
-  if (targetId && !dbPropertiesRaw.some(p => p.id === targetId)) {
-    // Basic UUID validation before calling db
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    if (uuidRegex.test(targetId)) {
-      const targetProp = await prisma.property.findUnique({
-        where: { id: targetId },
-        include: {
-          propertyImages: {
-            where: { isPrimary: true }
-          }
-        }
-      })
-      if (targetProp) {
-        dbPropertiesRaw = [targetProp, ...dbPropertiesRaw]
-      }
-    }
-  }
 
   // Map DB properties
   const dbList = dbPropertiesRaw.map(p => ({
