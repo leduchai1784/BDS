@@ -357,7 +357,6 @@ export default function PropertiesTable({ initialProperties, categories, searchP
             <div className="flex justify-end gap-2 border-t border-slate-100 pt-4 items-center">
               <Link
                 href={`/property/${previewProperty.id}`}
-                target="_blank"
                 className="px-4 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-655 transition flex items-center gap-1 cursor-pointer"
               >
                 <i className="fa-solid fa-arrow-up-right-from-square" />
