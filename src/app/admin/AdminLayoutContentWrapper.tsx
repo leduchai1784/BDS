@@ -11,7 +11,7 @@ export default function AdminLayoutContentWrapper({ children }: { children: Reac
 
   const mainContentMargin = isMobileOpen
     ? "ml-0"
-    : isExpanded || isHovered
+    : isExpanded
     ? "lg:ml-[290px]"
     : "lg:ml-[90px]";
 
