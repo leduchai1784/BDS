@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -13,6 +13,15 @@ interface UserItem {
   role: string
   status: string
   createdAt: string
+}
+
+interface AgentProperty {
+  id: string
+  title: string
+  address: string
+  priceLabel: string
+  area: number
+  featureimg: string
 }
 
 interface UsersTableProps {
@@ -35,6 +44,41 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
   const [status, setStatus] = useState(searchParams.status || '')
   const [isProcessing, setIsProcessing] = useState<string | null>(null)
   const [previewUser, setPreviewUser] = useState<UserItem | null>(null)
+
+  // NKS Agent properties dynamic states
+  const [agentProperties, setAgentProperties] = useState<AgentProperty[]>([])
+  const [loadingProperties, setLoadingProperties] = useState(false)
+
+  // Fetch properties belonging to NKS Agent when selected
+  useEffect(() => {
+    if (!previewUser || previewUser.role !== 'agent') {
+      setAgentProperties([])
+      return
+    }
+
+    const fetchProperties = async () => {
+      setLoadingProperties(true)
+      try {
+        const query = new URLSearchParams()
+        if (previewUser.email) query.set('email', previewUser.email)
+        if (previewUser.phone) query.set('phone', previewUser.phone)
+
+        const res = await fetch(`/api/admin/users/agent-properties?${query.toString()}`)
+        if (res.ok) {
+          const data = await res.json()
+          if (data.success && Array.isArray(data.data)) {
+            setAgentProperties(data.data)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to get agent properties on client:', err)
+      } finally {
+        setLoadingProperties(false)
+      }
+    }
+
+    fetchProperties()
+  }, [previewUser])
 
   const handleFilter = () => {
     const params = new URLSearchParams()
@@ -258,7 +302,7 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
       {/* User Information Preview Modal */}
       {previewUser && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-[99999] p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-sm w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250 text-left">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-md w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250 text-left">
             <button 
               onClick={() => setPreviewUser(null)}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition cursor-pointer"
@@ -292,7 +336,7 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
               </div>
             </div>
 
-            <div className="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs font-semibold text-slate-600">
+            <div className="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs font-semibold text-slate-655">
               <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
                 <span className="text-slate-400 text-[10px] uppercase font-bold">Email</span>
                 <span className="text-slate-850 select-all truncate max-w-[180px] text-right font-bold">{previewUser.email}</span>
@@ -314,6 +358,48 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                 </span>
               </div>
             </div>
+
+            {/* DYNAMIC LISTINGS OF THE AGENT */}
+            {previewUser.role === 'agent' && (
+              <div className="space-y-2 pt-3 border-t border-slate-100">
+                <h4 className="text-[10px] uppercase font-bold text-slate-400">Danh sách tin đăng phụ trách ({agentProperties.length})</h4>
+                
+                {loadingProperties ? (
+                  <div className="py-6 flex items-center justify-center gap-2 text-slate-400 text-xs font-bold">
+                    <i className="fa-solid fa-spinner animate-spin text-primary text-sm" />
+                    <span>Đang tải tin đăng...</span>
+                  </div>
+                ) : agentProperties.length > 0 ? (
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1 no-scrollbar">
+                    {agentProperties.map(p => (
+                      <Link 
+                        key={p.id}
+                        href={`/property/${p.id}`}
+                        className="flex gap-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-100 p-2 rounded-xl transition items-center"
+                      >
+                        {p.featureimg ? (
+                          <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0">
+                            <img src={p.featureimg} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-slate-150 flex items-center justify-center text-slate-400 flex-shrink-0">
+                            <i className="fa-solid fa-house text-xs" />
+                          </div>
+                        )}
+                        <div className="text-left grow truncate min-w-0">
+                          <strong className="block text-[11px] text-slate-800 font-bold truncate leading-tight mb-0.5">{p.title}</strong>
+                          <span className="text-[10px] text-slate-400 truncate block mb-0.5">{p.address}</span>
+                          <span className="text-[10px] text-primary font-black block">{p.priceLabel}</span>
+                        </div>
+                        <i className="fa-solid fa-chevron-right text-[10px] text-slate-350 pr-1 flex-shrink-0" />
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-400 italic text-[11px] text-center py-4 font-semibold">Môi giới này hiện chưa phụ trách tin đăng nào.</p>
+                )}
+              </div>
+            )}
 
             <div className="flex justify-end gap-2 pt-2">
               <button
