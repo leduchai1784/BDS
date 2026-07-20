@@ -57,7 +57,7 @@ export default async function AdminDashboardPage() {
     user: {
       name: ap.name || ap.user?.name || "Khách hàng ẩn danh",
       email: ap.email || ap.user?.email || "Chưa cung cấp email",
-      avatar: ap.user?.avatar || "/images/user/user-01.png"
+      avatar: ap.user?.avatar || ""
     },
     propertyTitle: "Bất động sản #" + ap.propertyId.substring(0, 8),
     date: ap.date.toLocaleDateString('vi-VN'),

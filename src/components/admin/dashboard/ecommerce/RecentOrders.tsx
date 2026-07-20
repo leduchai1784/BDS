@@ -71,16 +71,19 @@ export default function RecentOrders({ appointments }: RecentOrdersProps) {
                 <TableRow key={ap.id}>
                   <TableCell className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-150 flex items-center justify-center flex-shrink-0 bg-gray-50">
-                        <img
-                          src={ap.user.avatar}
-                          alt={ap.user.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as any).src = "/images/user/user-01.png";
-                          }}
-                        />
-                      </div>
+                      {ap.user.avatar && ap.user.avatar.startsWith('http') ? (
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-150 flex items-center justify-center flex-shrink-0 bg-gray-50">
+                          <img
+                            src={ap.user.avatar}
+                            alt={ap.user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-brand-50 text-brand-650 font-bold text-sm uppercase border border-brand-100">
+                          {ap.user.name.charAt(0)}
+                        </div>
+                      )}
                       <div>
                         <span className="block font-semibold text-gray-800 dark:text-white/90">
                           {ap.user.name}

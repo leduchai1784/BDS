@@ -27,16 +27,17 @@ export default function ChatBot() {
   const pathname = usePathname()
   const { data: session } = useSession()
 
-  // Do not render AI Assistant when browsing admin dashboard pages
-  if (pathname?.startsWith('/admin')) {
-    return null
-  }
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Move the early return statement after hooks declarations to prevent violation of React Hook Rules
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   const userId = session?.user?.id || 'guest'
   const storageKey = `bds_chat_history_${userId}`
