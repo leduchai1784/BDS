@@ -109,7 +109,8 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   // 2. Fetch from NKS if not found in local DB
   if (!property) {
     const nksList = await getNksProperties()
-    const nksProp = nksList.find(p => p.id === id)
+    const cleanNksId = id.startsWith('nks-') ? id.replace('nks-', '') : id
+    const nksProp = nksList.find(p => p.id.toString() === cleanNksId.toString())
 
     if (nksProp) {
       // Map NKS details
