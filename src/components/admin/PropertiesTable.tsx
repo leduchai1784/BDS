@@ -12,6 +12,7 @@ interface PropertyItem {
   area: number
   status: string
   createdAt: string
+  featureimg?: string
   owner: {
     name: string
     email: string
@@ -291,29 +292,45 @@ export default function PropertiesTable({ initialProperties, categories, searchP
       {/* Quick Preview Modal Overlay */}
       {previewProperty && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250 text-left">
             <button 
               onClick={() => setPreviewProperty(null)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition cursor-pointer"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition cursor-pointer z-10"
             >
               <i className="fa-solid fa-xmark text-sm" />
             </button>
 
+            {previewProperty.featureimg && (
+              <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0">
+                <img 
+                  src={previewProperty.featureimg} 
+                  alt={previewProperty.title} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
             <div className="space-y-1.5">
-              <span className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase ${
-                previewProperty.status === 'approved' 
-                  ? 'bg-emerald-50 text-emerald-600'
-                  : previewProperty.status === 'rejected'
-                  ? 'bg-red-50 text-red-600'
-                  : 'bg-amber-50 text-amber-600'
-              }`}>
-                {previewProperty.status === 'approved' ? 'Đã duyệt' : previewProperty.status === 'rejected' ? 'Từ chối' : 'Chờ duyệt'}
-              </span>
+              {previewProperty.id.toString().startsWith('nks-') ? (
+                <span className="inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase bg-teal-50 text-teal-600 border border-teal-200/55">
+                  Tin NKS
+                </span>
+              ) : (
+                <span className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase ${
+                  previewProperty.status === 'approved' 
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : previewProperty.status === 'rejected'
+                    ? 'bg-red-50 text-red-650'
+                    : 'bg-amber-50 text-amber-600'
+                }`}>
+                  {previewProperty.status === 'approved' ? 'Đã duyệt' : previewProperty.status === 'rejected' ? 'Từ chối' : 'Chờ duyệt'}
+                </span>
+              )}
               <h3 className="text-sm font-black text-slate-850 leading-snug pr-8">{previewProperty.title}</h3>
               <p className="text-xs text-slate-400 font-semibold"><i className="fa-solid fa-location-dot mr-1" />{previewProperty.address}</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100 text-center text-xs font-semibold text-slate-600">
+            <div className="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100 text-center text-xs font-semibold text-slate-650">
               <div>
                 <span className="block text-[9px] text-slate-400 uppercase font-bold mb-0.5">Giá cả</span>
                 <strong className="text-slate-800 font-black">{previewProperty.priceLabel}</strong>
@@ -337,52 +354,59 @@ export default function PropertiesTable({ initialProperties, categories, searchP
             </div>
 
             {/* Modal Actions */}
-            <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
+            <div className="flex justify-end gap-2 border-t border-slate-100 pt-4 items-center">
               <Link
                 href={`/property/${previewProperty.id}`}
                 target="_blank"
-                className="px-4 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-650 transition flex items-center gap-1 cursor-pointer"
+                className="px-4 py-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-655 transition flex items-center gap-1 cursor-pointer"
               >
                 <i className="fa-solid fa-arrow-up-right-from-square" />
                 Trang chi tiết
               </Link>
 
-              {previewProperty.status === 'pending' && (
+              {!previewProperty.id.toString().startsWith('nks-') ? (
                 <>
+                  {previewProperty.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => updateStatus(previewProperty.id, 'approved')}
+                        disabled={isProcessing === previewProperty.id}
+                        className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                      >
+                        Phê duyệt
+                      </button>
+                      <button
+                        onClick={() => updateStatus(previewProperty.id, 'rejected')}
+                        disabled={isProcessing === previewProperty.id}
+                        className="px-4 py-2 bg-red-500 hover:bg-red-655 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                      >
+                        Từ chối
+                      </button>
+                    </>
+                  )}
+
+                  {previewProperty.status === 'approved' && (
+                    <button
+                      onClick={() => updateStatus(previewProperty.id, 'hidden')}
+                      disabled={isProcessing === previewProperty.id}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                    >
+                      Ẩn tin đăng
+                    </button>
+                  )}
+
                   <button
-                    onClick={() => updateStatus(previewProperty.id, 'approved')}
+                    onClick={() => deleteProperty(previewProperty.id)}
                     disabled={isProcessing === previewProperty.id}
-                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                    className="p-2.5 bg-red-50 hover:bg-red-500 hover:text-white text-red-650 border border-red-150 rounded-xl transition cursor-pointer flex items-center justify-center"
+                    title="Xóa tin đăng"
                   >
-                    Phê duyệt
-                  </button>
-                  <button
-                    onClick={() => updateStatus(previewProperty.id, 'rejected')}
-                    disabled={isProcessing === previewProperty.id}
-                    className="px-4 py-2 bg-red-500 hover:bg-red-650 text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                  >
-                    Từ chối
+                    <i className="fa-regular fa-trash-can text-sm" />
                   </button>
                 </>
+              ) : (
+                <span className="text-[11px] text-slate-400 font-bold select-none italic pr-2">Dữ liệu từ API NKS</span>
               )}
-
-              {previewProperty.status === 'approved' && (
-                <button
-                  onClick={() => updateStatus(previewProperty.id, 'hidden')}
-                  disabled={isProcessing === previewProperty.id}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  Ẩn tin đăng
-                </button>
-              )}
-
-              <button
-                onClick={() => deleteProperty(previewProperty.id)}
-                disabled={isProcessing === previewProperty.id}
-                className="p-2.5 bg-red-50 hover:bg-red-500 hover:text-white text-red-650 border border-red-150 rounded-xl transition cursor-pointer flex items-center justify-center"
-              >
-                <i className="fa-regular fa-trash-can text-sm" />
-              </button>
             </div>
           </div>
         </div>

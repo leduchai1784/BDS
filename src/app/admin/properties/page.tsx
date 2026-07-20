@@ -107,7 +107,8 @@ export default async function AdminPropertiesPage({ searchParams }: AdminPropert
     category: p.category ? {
       name: p.category.name
     } : null,
-    isNks: false
+    isNks: false,
+    featureimg: p.images ? (p.images.startsWith('[') ? JSON.parse(p.images)[0] : p.images) : ''
   }))
 
   const categoriesList = dbCategories.map(c => ({
