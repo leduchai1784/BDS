@@ -308,15 +308,14 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 flex-shrink-0">
-            <i className="fa-solid fa-hotel text-white text-base" />
+            <i className="fa-solid fa-house-chimney text-white text-lg" />
           </div>
           {(isExpanded || isHovered || isMobileOpen) && (
-            <div className="text-left">
-              <span className="font-black text-gray-900 dark:text-white text-base tracking-wider block leading-tight">BDS RENTAL</span>
-              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mt-0.5">Admin Portal</span>
-            </div>
+            <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white transition-colors duration-300">
+              BDS<span className="text-primary">Rental</span>
+            </span>
           )}
         </Link>
       </div>
