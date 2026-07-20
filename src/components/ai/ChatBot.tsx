@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 
+import { usePathname } from 'next/navigation'
+
 interface Message {
   role: 'user' | 'assistant'
   content?: string
@@ -22,7 +24,13 @@ interface Message {
 }
 
 export default function ChatBot() {
+  const pathname = usePathname()
   const { data: session } = useSession()
+
+  // Do not render AI Assistant when browsing admin dashboard pages
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
