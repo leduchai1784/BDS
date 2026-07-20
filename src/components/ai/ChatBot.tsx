@@ -34,11 +34,6 @@ export default function ChatBot() {
   
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Move the early return statement after hooks declarations to prevent violation of React Hook Rules
-  if (pathname?.startsWith('/admin')) {
-    return null
-  }
-
   const userId = session?.user?.id || 'guest'
   const storageKey = `bds_chat_history_${userId}`
 
@@ -192,6 +187,10 @@ export default function ChatBot() {
         </span>
       ))
     })
+  }
+
+  if (pathname?.startsWith('/admin')) {
+    return null
   }
 
   return (
