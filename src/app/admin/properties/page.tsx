@@ -44,7 +44,8 @@ async function fetchNksProperties(): Promise<any[]> {
           category: {
             name: item.rstype || 'Bất động sản'
           },
-          isNks: true
+          isNks: true,
+          featureimg: item.featureimg || ''
         }))
       }
     }
@@ -85,31 +86,35 @@ export default async function AdminPropertiesPage({ searchParams }: AdminPropert
       where,
       include: {
         category: true,
-        owner: true
+        owner: true,
+        propertyImages: true
       },
       orderBy: { createdAt: 'desc' }
     }),
     prisma.category.findMany()
   ])
 
-  const propertiesList = dbProperties.map(p => ({
-    id: p.id,
-    title: p.title,
-    address: p.address,
-    priceLabel: p.priceLabel,
-    area: p.area,
-    status: p.status,
-    createdAt: p.createdAt ? p.createdAt.toISOString() : '',
-    owner: p.owner ? {
-      name: p.owner.name,
-      email: p.owner.email
-    } : null,
-    category: p.category ? {
-      name: p.category.name
-    } : null,
-    isNks: false,
-    featureimg: p.images ? (p.images.startsWith('[') ? JSON.parse(p.images)[0] : p.images) : ''
-  }))
+  const propertiesList = dbProperties.map(p => {
+    const primaryImg = p.propertyImages.find(img => img.isPrimary) || p.propertyImages[0]
+    return {
+      id: p.id,
+      title: p.title,
+      address: p.address,
+      priceLabel: p.priceLabel,
+      area: p.area,
+      status: p.status,
+      createdAt: p.createdAt ? p.createdAt.toISOString() : '',
+      owner: p.owner ? {
+        name: p.owner.name,
+        email: p.owner.email
+      } : null,
+      category: p.category ? {
+        name: p.category.name
+      } : null,
+      isNks: false,
+      featureimg: primaryImg ? primaryImg.imagePath : ''
+    }
+  })
 
   const categoriesList = dbCategories.map(c => ({
     id: c.id.toString(),
