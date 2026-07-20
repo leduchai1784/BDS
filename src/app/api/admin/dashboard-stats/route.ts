@@ -51,10 +51,29 @@ export async function GET() {
     const appointmentCount = await prisma.appointment.count()
     const leadCount = await fetchExternalLeadsCount()
 
+    // Fetch external agents to sum into users count
+    let nksAgentsCount = 0
+    try {
+      const response = await fetch('https://online.nks.vn/api/nks/rsagents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+        next: { revalidate: 30 }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data?.success && Array.isArray(data.data)) {
+          nksAgentsCount = data.data.length
+        }
+      }
+    } catch (e) {
+      console.error('Failed to get nks agents count:', e)
+    }
+
     return NextResponse.json({
       success: true,
       stats: {
-        users: userCount,
+        users: userCount + nksAgentsCount,
         properties: propertyCount,
         appointments: appointmentCount,
         leads: leadCount

@@ -114,6 +114,7 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
             <option value="">-- Tất cả vai trò --</option>
             <option value="tenant">Khách thuê (Tenant)</option>
             <option value="owner">Chủ nhà (Owner)</option>
+            <option value="agent">Môi giới (NKS Agent)</option>
             <option value="admin">Quản trị viên (Admin)</option>
           </select>
 
@@ -175,9 +176,11 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                           ? 'bg-red-50 text-red-650'
                           : u.role === 'owner'
                           ? 'bg-primary-light text-primary'
+                          : u.role === 'agent'
+                          ? 'bg-teal-50 text-teal-600 border border-teal-200/55'
                           : 'bg-slate-100 text-slate-650'
                       }`}>
-                        {u.role === 'admin' ? 'Admin' : u.role === 'owner' ? 'Chủ nhà' : 'Khách thuê'}
+                        {u.role === 'admin' ? 'Admin' : u.role === 'owner' ? 'Chủ nhà' : u.role === 'agent' ? 'Môi giới (NKS)' : 'Khách thuê'}
                       </span>
                     </td>
                     <td className="px-6 py-3 text-left">
@@ -185,40 +188,48 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                         {u.status === 'locked' ? 'Khóa 🔒' : 'Hoạt động ✓'}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-left text-slate-500 font-semibold">{new Date(u.createdAt).toLocaleDateString('vi-VN')}</td>
+                    <td className="px-6 py-3 text-left text-slate-500 font-semibold">
+                      {u.id.toString().startsWith('nks-') ? 'Liên kết NKS' : new Date(u.createdAt).toLocaleDateString('vi-VN')}
+                    </td>
                     <td className="px-6 py-3 text-right space-x-2">
-                      <Link 
-                        href={`/admin/users/${u.id}`}
-                        className="inline-flex w-8 h-8 rounded-lg border border-slate-200/50 hover:bg-slate-50 items-center justify-center text-slate-500 hover:text-primary transition"
-                        title="Chi tiết"
-                      >
-                        <i className="fa-solid fa-circle-info text-xs" />
-                      </Link>
-
-                      {u.id !== currentUserId && (
+                      {!u.id.toString().startsWith('nks-') ? (
                         <>
-                          <button
-                            onClick={() => toggleStatus(u.id)}
-                            disabled={isProcessing === u.id}
-                            className={`w-8 h-8 rounded-lg border border-slate-200/50 items-center justify-center transition cursor-pointer inline-flex ${
-                              u.status === 'locked' 
-                                ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200/30'
-                                : 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200/30'
-                            }`}
-                            title={u.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
+                          <Link 
+                            href={`/admin/users/${u.id}`}
+                            className="inline-flex w-8 h-8 rounded-lg border border-slate-200/50 hover:bg-slate-50 items-center justify-center text-slate-500 hover:text-primary transition"
+                            title="Chi tiết"
                           >
-                            <i className={`fa-solid ${u.status === 'locked' ? 'fa-lock-open' : 'fa-lock'} text-xs`} />
-                          </button>
+                            <i className="fa-solid fa-circle-info text-xs" />
+                          </Link>
 
-                          <button
-                            onClick={() => deleteUser(u.id)}
-                            disabled={isProcessing === u.id}
-                            className="w-8 h-8 rounded-lg border border-red-100/50 bg-red-50 hover:bg-red-500 hover:text-white items-center justify-center text-red-650 transition cursor-pointer inline-flex"
-                            title="Xóa tài khoản"
-                          >
-                            <i className="fa-regular fa-trash-can text-xs" />
-                          </button>
+                          {u.id !== currentUserId && (
+                            <>
+                              <button
+                                onClick={() => toggleStatus(u.id)}
+                                disabled={isProcessing === u.id}
+                                className={`w-8 h-8 rounded-lg border border-slate-200/50 items-center justify-center transition cursor-pointer inline-flex ${
+                                  u.status === 'locked' 
+                                    ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200/30'
+                                    : 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200/30'
+                                }`}
+                                title={u.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
+                              >
+                                <i className={`fa-solid ${u.status === 'locked' ? 'fa-lock-open' : 'fa-lock'} text-xs`} />
+                              </button>
+
+                              <button
+                                onClick={() => deleteUser(u.id)}
+                                disabled={isProcessing === u.id}
+                                className="w-8 h-8 rounded-lg border border-red-100/50 bg-red-50 hover:bg-red-500 hover:text-white items-center justify-center text-red-650 transition cursor-pointer inline-flex"
+                                title="Xóa tài khoản"
+                              >
+                                <i className="fa-regular fa-trash-can text-xs" />
+                              </button>
+                            </>
+                          )}
                         </>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 font-bold select-none italic pr-3">Dữ liệu từ API NKS</span>
                       )}
                     </td>
                   </tr>
