@@ -70,11 +70,30 @@ export async function GET() {
       console.error('Failed to get nks agents count:', e)
     }
 
+    // Fetch external NKS properties count
+    let nksPropertiesCount = 0
+    try {
+      const response = await fetch('https://online.nks.vn/api/nks/rsitems', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+        next: { revalidate: 30 }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data?.success && Array.isArray(data.data)) {
+          nksPropertiesCount = data.data.length
+        }
+      }
+    } catch (e) {
+      console.error('Failed to get nks properties count:', e)
+    }
+
     return NextResponse.json({
       success: true,
       stats: {
         users: userCount + nksAgentsCount,
-        properties: propertyCount,
+        properties: propertyCount + nksPropertiesCount,
         appointments: appointmentCount,
         leads: leadCount
       }

@@ -193,17 +193,23 @@ export default function PropertiesTable({ initialProperties, categories, searchP
                       <div className="text-[9px] text-slate-400 select-all">{p.owner?.email || ''}</div>
                     </td>
                     <td className="px-6 py-3.5 text-left">
-                      <span className={`inline-flex px-2 py-0.5 rounded-md text-[8px] font-black uppercase ${
-                        p.status === 'approved' 
-                          ? 'bg-emerald-50 text-emerald-600'
-                          : p.status === 'rejected'
-                          ? 'bg-red-50 text-red-600'
-                          : p.status === 'hidden'
-                          ? 'bg-slate-100 text-slate-550'
-                          : 'bg-amber-50 text-amber-600'
-                      }`}>
-                        {p.status === 'approved' ? 'Đã duyệt' : p.status === 'rejected' ? 'Từ chối' : p.status === 'hidden' ? 'Đã ẩn' : 'Chờ duyệt'}
-                      </span>
+                      {p.id.toString().startsWith('nks-') ? (
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase bg-teal-50 text-teal-600 border border-teal-200/55">
+                          Tin NKS
+                        </span>
+                      ) : (
+                        <span className={`inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase ${
+                          p.status === 'approved' 
+                            ? 'bg-emerald-50 text-emerald-600'
+                            : p.status === 'rejected'
+                            ? 'bg-red-50 text-red-650'
+                            : p.status === 'hidden'
+                            ? 'bg-slate-100 text-slate-550'
+                            : 'bg-amber-50 text-amber-600'
+                        }`}>
+                          {p.status === 'approved' ? 'Đã duyệt' : p.status === 'rejected' ? 'Từ chối' : p.status === 'hidden' ? 'Đã ẩn' : 'Chờ duyệt'}
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-3.5 text-right space-x-1.5 whitespace-nowrap">
                       {/* Action buttons */}
@@ -214,53 +220,59 @@ export default function PropertiesTable({ initialProperties, categories, searchP
                         Xem nhanh
                       </button>
 
-                      {p.status === 'pending' && (
+                      {!p.id.toString().startsWith('nks-') ? (
                         <>
+                          {p.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => updateStatus(p.id, 'approved')}
+                                disabled={isProcessing === p.id}
+                                className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-500 hover:text-white border border-emerald-100 text-emerald-650 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                              >
+                                Duyệt
+                              </button>
+                              <button
+                                onClick={() => updateStatus(p.id, 'rejected')}
+                                disabled={isProcessing === p.id}
+                                className="px-2.5 py-1.5 bg-red-50 hover:bg-red-500 hover:text-white border border-red-100 text-red-650 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                              >
+                                Từ chối
+                              </button>
+                            </>
+                          )}
+
+                          {p.status === 'approved' && (
+                            <button
+                              onClick={() => updateStatus(p.id, 'hidden')}
+                              disabled={isProcessing === p.id}
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-700 hover:text-white border border-slate-200 text-slate-600 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Ẩn tin
+                            </button>
+                          )}
+
+                          {p.status === 'hidden' && (
+                            <button
+                              onClick={() => updateStatus(p.id, 'approved')}
+                              disabled={isProcessing === p.id}
+                              className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-500 hover:text-white border border-emerald-100 text-emerald-650 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Hiện tin
+                            </button>
+                          )}
+
                           <button
-                            onClick={() => updateStatus(p.id, 'approved')}
+                            onClick={() => deleteProperty(p.id)}
                             disabled={isProcessing === p.id}
-                            className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-500 hover:text-white border border-emerald-100 text-emerald-650 rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            className="p-1.5 bg-red-50 hover:bg-red-500 hover:text-white border border-red-100 text-red-605 rounded-lg transition cursor-pointer inline-flex items-center justify-center"
+                            title="Xóa tin đăng"
                           >
-                            Duyệt
-                          </button>
-                          <button
-                            onClick={() => updateStatus(p.id, 'rejected')}
-                            disabled={isProcessing === p.id}
-                            className="px-2.5 py-1.5 bg-red-50 hover:bg-red-500 hover:text-white border border-red-100 text-red-650 rounded-lg text-[10px] font-bold transition cursor-pointer"
-                          >
-                            Từ chối
+                            <i className="fa-regular fa-trash-can text-xs" />
                           </button>
                         </>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 font-bold select-none italic pr-3">Dữ liệu từ API NKS</span>
                       )}
-
-                      {p.status === 'approved' && (
-                        <button
-                          onClick={() => updateStatus(p.id, 'hidden')}
-                          disabled={isProcessing === p.id}
-                          className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-700 hover:text-white border border-slate-200 text-slate-600 rounded-lg text-[10px] font-bold transition cursor-pointer"
-                        >
-                          Ẩn tin
-                        </button>
-                      )}
-
-                      {p.status === 'hidden' && (
-                        <button
-                          onClick={() => updateStatus(p.id, 'approved')}
-                          disabled={isProcessing === p.id}
-                          className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-500 hover:text-white border border-emerald-100 text-emerald-650 rounded-lg text-[10px] font-bold transition cursor-pointer"
-                        >
-                          Hiện tin
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => deleteProperty(p.id)}
-                        disabled={isProcessing === p.id}
-                        className="p-1.5 bg-red-50 hover:bg-red-500 hover:text-white border border-red-100 text-red-605 rounded-lg transition cursor-pointer inline-flex items-center justify-center"
-                        title="Xóa tin đăng"
-                      >
-                        <i className="fa-regular fa-trash-can text-xs" />
-                      </button>
                     </td>
                   </tr>
                 ))

@@ -12,6 +12,49 @@ interface AdminPropertiesPageProps {
   }>
 }
 
+async function fetchNksProperties(): Promise<any[]> {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    const response = await fetch('https://online.nks.vn/api/nks/rsitems', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({}),
+      next: { revalidate: 30 } // Cache 30 seconds
+    })
+    if (response.ok) {
+      const data = await response.json()
+      if (data?.success && Array.isArray(data.data)) {
+        return data.data.map((item: any) => ({
+          id: `nks-${item.id}`,
+          title: item.title,
+          address: item.address || 'Đồng Nai',
+          priceLabel: item.formatedPrice || `${(item.price / 1000000000).toFixed(1)} tỷ`,
+          area: item.total_area || 0,
+          status: 'approved',
+          createdAt: new Date().toISOString(),
+          owner: item.sale ? {
+            name: item.sale.name,
+            email: item.sale.email || 'broker@nks.vn'
+          } : {
+            name: 'Môi giới NKS',
+            email: 'broker@nks.vn'
+          },
+          category: {
+            name: item.rstype || 'Bất động sản'
+          },
+          isNks: true
+        }))
+      }
+    }
+    return []
+  } catch (err) {
+    console.error('Failed to fetch NKS properties:', err)
+    return []
+  }
+}
+
 export default async function AdminPropertiesPage({ searchParams }: AdminPropertiesPageProps) {
   const resolvedSearchParams = await searchParams
   const search = resolvedSearchParams.search || ''
@@ -63,7 +106,8 @@ export default async function AdminPropertiesPage({ searchParams }: AdminPropert
     } : null,
     category: p.category ? {
       name: p.category.name
-    } : null
+    } : null,
+    isNks: false
   }))
 
   const categoriesList = dbCategories.map(c => ({
@@ -71,17 +115,33 @@ export default async function AdminPropertiesPage({ searchParams }: AdminPropert
     name: c.name
   }))
 
+  // Fetch external NKS properties
+  let nksProperties: any[] = []
+  if (status === '' || status === 'approved') {
+    nksProperties = await fetchNksProperties()
+    // Filter by search parameters if present
+    if (search) {
+      const lowSearch = search.toLowerCase()
+      nksProperties = nksProperties.filter(item => 
+        item.title.toLowerCase().includes(lowSearch) ||
+        item.address.toLowerCase().includes(lowSearch)
+      )
+    }
+  }
+
+  const combinedProperties = [...propertiesList, ...nksProperties]
+
   return (
     <div className="space-y-6">
       
       {/* Title Header */}
       <div className="text-left">
-        <h1 className="text-xl font-bold text-slate-800">Quản lý tin đăng</h1>
-        <p className="text-xs text-slate-400 mt-1 font-semibold">Phê duyệt tin đăng mới, ẩn tin vi phạm hoặc xóa tin đăng cũ khỏi hệ thống.</p>
+        <h1 className="text-xl font-bold text-slate-800 dark:text-white">Quản lý tin đăng</h1>
+        <p className="text-xs text-slate-400 dark:text-slate-400 mt-1 font-semibold">Phê duyệt tin đăng mới, ẩn tin vi phạm, và hiển thị các tin đăng BDS liên kết trực tiếp từ NKS Portal.</p>
       </div>
 
       <PropertiesTable 
-        initialProperties={propertiesList} 
+        initialProperties={combinedProperties} 
         categories={categoriesList} 
         searchParams={{ search, categoryId, status, id }} 
       />
