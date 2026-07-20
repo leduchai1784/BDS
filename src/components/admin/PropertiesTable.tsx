@@ -291,7 +291,7 @@ export default function PropertiesTable({ initialProperties, categories, searchP
 
       {/* Quick Preview Modal Overlay */}
       {previewProperty && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-[99999] p-4">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250 text-left">
             <button 
               onClick={() => setPreviewProperty(null)}
