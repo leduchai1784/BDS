@@ -14,10 +14,12 @@ export const metadata: Metadata = {
 
 export default function AdminDashboardPage() {
   return (
-    <div className="p-6 bg-slate-50 min-h-screen text-slate-800 font-sans text-left">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Bảng điều khiển thống kê</h1>
-        <p className="text-xs text-slate-500 font-medium mt-1">Tổng quan hoạt động và dữ liệu kinh doanh dự án</p>
+    <div className="w-full text-slate-800 font-sans text-left">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Bảng điều khiển thống kê</h1>
+          <p className="text-xs text-slate-500 font-medium mt-1">Tổng quan hoạt động và dữ liệu kinh doanh dự án</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-12 gap-4 md:gap-6">
