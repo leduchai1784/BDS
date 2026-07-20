@@ -34,6 +34,7 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
   const [role, setRole] = useState(searchParams.role || '')
   const [status, setStatus] = useState(searchParams.status || '')
   const [isProcessing, setIsProcessing] = useState<string | null>(null)
+  const [previewUser, setPreviewUser] = useState<UserItem | null>(null)
 
   const handleFilter = () => {
     const params = new URLSearchParams()
@@ -191,7 +192,15 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                     <td className="px-6 py-3 text-left text-slate-500 font-semibold">
                       {u.id.toString().startsWith('nks-') ? 'Liên kết NKS' : new Date(u.createdAt).toLocaleDateString('vi-VN')}
                     </td>
-                    <td className="px-6 py-3 text-right space-x-2">
+                    <td className="px-6 py-3 text-right space-x-2 whitespace-nowrap">
+                      {/* Xem thông tin nút */}
+                      <button
+                        onClick={() => setPreviewUser(u)}
+                        className="px-2.5 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-lg text-[10px] font-bold text-slate-550 transition cursor-pointer"
+                      >
+                        Xem thông tin
+                      </button>
+
                       {!u.id.toString().startsWith('nks-') ? (
                         <>
                           <Link 
@@ -246,6 +255,85 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
         </div>
       </div>
 
+      {/* User Information Preview Modal */}
+      {previewUser && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-[99999] p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-sm w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250 text-left">
+            <button 
+              onClick={() => setPreviewUser(null)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition cursor-pointer"
+            >
+              <i className="fa-solid fa-xmark text-sm" />
+            </button>
+
+            <div className="flex flex-col items-center text-center space-y-3 pt-4">
+              <div className="w-20 h-20 rounded-full border-2 border-primary/20 bg-slate-50 overflow-hidden flex items-center justify-center shadow-lg shadow-slate-100">
+                {previewUser.avatar ? (
+                  <img src={previewUser.avatar} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="w-full h-full flex items-center justify-center bg-brand-50 text-brand-650 font-bold text-2xl uppercase">
+                    {previewUser.name.charAt(0)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h3 className="font-black text-slate-850 text-sm">{previewUser.name}</h3>
+                <span className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                  previewUser.role === 'admin' 
+                    ? 'bg-red-50 text-red-650'
+                    : previewUser.role === 'owner'
+                    ? 'bg-primary-light text-primary'
+                    : previewUser.role === 'agent'
+                    ? 'bg-teal-50 text-teal-600 border border-teal-200/55'
+                    : 'bg-slate-100 text-slate-650'
+                }`}>
+                  {previewUser.role === 'admin' ? 'Quản trị viên' : previewUser.role === 'owner' ? 'Chủ nhà' : previewUser.role === 'agent' ? 'Môi giới NKS' : 'Khách thuê'}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs font-semibold text-slate-600">
+              <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
+                <span className="text-slate-400 text-[10px] uppercase font-bold">Email</span>
+                <span className="text-slate-850 select-all truncate max-w-[180px] text-right font-bold">{previewUser.email}</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
+                <span className="text-slate-400 text-[10px] uppercase font-bold">Số điện thoại</span>
+                <span className="text-slate-850 select-all font-bold">{previewUser.phone || '—'}</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
+                <span className="text-slate-400 text-[10px] uppercase font-bold">Trạng thái</span>
+                <span className={`font-black ${previewUser.status === 'locked' ? 'text-red-500' : 'text-emerald-500'}`}>
+                  {previewUser.status === 'locked' ? 'Khóa 🔒' : 'Hoạt động ✓'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-slate-400 text-[10px] uppercase font-bold">Nguồn dữ liệu</span>
+                <span className="text-slate-850 font-bold">
+                  {previewUser.id.toString().startsWith('nks-') ? 'Liên kết NKS Portal' : 'Thành viên hệ thống'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setPreviewUser(null)}
+                className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Đóng
+              </button>
+              {!previewUser.id.toString().startsWith('nks-') && (
+                <Link
+                  href={`/admin/users/${previewUser.id}`}
+                  className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1 shadow-md shadow-primary/10"
+                >
+                  Chi tiết tài khoản
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
