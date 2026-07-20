@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -13,15 +13,6 @@ interface UserItem {
   role: string
   status: string
   createdAt: string
-}
-
-interface AgentProperty {
-  id: string
-  title: string
-  address: string
-  priceLabel: string
-  area: number
-  featureimg: string
 }
 
 interface UsersTableProps {
@@ -43,42 +34,6 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
   const [role, setRole] = useState(searchParams.role || '')
   const [status, setStatus] = useState(searchParams.status || '')
   const [isProcessing, setIsProcessing] = useState<string | null>(null)
-  const [previewUser, setPreviewUser] = useState<UserItem | null>(null)
-
-  // NKS Agent properties dynamic states
-  const [agentProperties, setAgentProperties] = useState<AgentProperty[]>([])
-  const [loadingProperties, setLoadingProperties] = useState(false)
-
-  // Fetch properties belonging to NKS Agent when selected
-  useEffect(() => {
-    if (!previewUser || previewUser.role !== 'agent') {
-      setAgentProperties([])
-      return
-    }
-
-    const fetchProperties = async () => {
-      setLoadingProperties(true)
-      try {
-        const query = new URLSearchParams()
-        if (previewUser.email) query.set('email', previewUser.email)
-        if (previewUser.phone) query.set('phone', previewUser.phone)
-
-        const res = await fetch(`/api/admin/users/agent-properties?${query.toString()}`)
-        if (res.ok) {
-          const data = await res.json()
-          if (data.success && Array.isArray(data.data)) {
-            setAgentProperties(data.data)
-          }
-        }
-      } catch (err) {
-        console.error('Failed to get agent properties on client:', err)
-      } finally {
-        setLoadingProperties(false)
-      }
-    }
-
-    fetchProperties()
-  }, [previewUser])
 
   const handleFilter = () => {
     const params = new URLSearchParams()
@@ -237,24 +192,16 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                       {u.id.toString().startsWith('nks-') ? 'Liên kết NKS' : new Date(u.createdAt).toLocaleDateString('vi-VN')}
                     </td>
                     <td className="px-6 py-3 text-right space-x-2 whitespace-nowrap">
-                      {/* Xem thông tin nút */}
-                      <button
-                        onClick={() => setPreviewUser(u)}
-                        className="px-2.5 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-lg text-[10px] font-bold text-slate-550 transition cursor-pointer"
+                      {/* Xem thông tin nút dẫn thẳng sang trang chi tiết */}
+                      <Link
+                        href={`/admin/users/${u.id}`}
+                        className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-lg text-[10px] font-bold text-slate-550 transition inline-flex items-center justify-center cursor-pointer"
                       >
                         Xem thông tin
-                      </button>
+                      </Link>
 
-                      {!u.id.toString().startsWith('nks-') ? (
+                      {!u.id.toString().startsWith('nks-') && (
                         <>
-                          <Link 
-                            href={`/admin/users/${u.id}`}
-                            className="inline-flex w-8 h-8 rounded-lg border border-slate-200/50 hover:bg-slate-50 items-center justify-center text-slate-500 hover:text-primary transition"
-                            title="Chi tiết"
-                          >
-                            <i className="fa-solid fa-circle-info text-xs" />
-                          </Link>
-
                           {u.id !== currentUserId && (
                             <>
                               <button
@@ -281,8 +228,6 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                             </>
                           )}
                         </>
-                      ) : (
-                        <span className="text-[10px] text-slate-400 font-bold select-none italic pr-3">Dữ liệu từ API NKS</span>
                       )}
                     </td>
                   </tr>
@@ -299,127 +244,6 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
         </div>
       </div>
 
-      {/* User Information Preview Modal */}
-      {previewUser && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-[99999] p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-md w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-250 text-left">
-            <button 
-              onClick={() => setPreviewUser(null)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition cursor-pointer"
-            >
-              <i className="fa-solid fa-xmark text-sm" />
-            </button>
-
-            <div className="flex flex-col items-center text-center space-y-3 pt-4">
-              <div className="w-20 h-20 rounded-full border-2 border-primary/20 bg-slate-50 overflow-hidden flex items-center justify-center shadow-lg shadow-slate-100">
-                {previewUser.avatar ? (
-                  <img src={previewUser.avatar} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="w-full h-full flex items-center justify-center bg-brand-50 text-brand-650 font-bold text-2xl uppercase">
-                    {previewUser.name.charAt(0)}
-                  </span>
-                )}
-              </div>
-              <div>
-                <h3 className="font-black text-slate-850 text-sm">{previewUser.name}</h3>
-                <span className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                  previewUser.role === 'admin' 
-                    ? 'bg-red-50 text-red-650'
-                    : previewUser.role === 'owner'
-                    ? 'bg-primary-light text-primary'
-                    : previewUser.role === 'agent'
-                    ? 'bg-teal-50 text-teal-600 border border-teal-200/55'
-                    : 'bg-slate-100 text-slate-650'
-                }`}>
-                  {previewUser.role === 'admin' ? 'Quản trị viên' : previewUser.role === 'owner' ? 'Chủ nhà' : previewUser.role === 'agent' ? 'Môi giới NKS' : 'Khách thuê'}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs font-semibold text-slate-655">
-              <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
-                <span className="text-slate-400 text-[10px] uppercase font-bold">Email</span>
-                <span className="text-slate-850 select-all truncate max-w-[180px] text-right font-bold">{previewUser.email}</span>
-              </div>
-              <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
-                <span className="text-slate-400 text-[10px] uppercase font-bold">Số điện thoại</span>
-                <span className="text-slate-850 select-all font-bold">{previewUser.phone || '—'}</span>
-              </div>
-              <div className="flex justify-between items-center py-1 border-b border-slate-100/50">
-                <span className="text-slate-400 text-[10px] uppercase font-bold">Trạng thái</span>
-                <span className={`font-black ${previewUser.status === 'locked' ? 'text-red-500' : 'text-emerald-500'}`}>
-                  {previewUser.status === 'locked' ? 'Khóa 🔒' : 'Hoạt động ✓'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-slate-400 text-[10px] uppercase font-bold">Nguồn dữ liệu</span>
-                <span className="text-slate-850 font-bold">
-                  {previewUser.id.toString().startsWith('nks-') ? 'Liên kết NKS Portal' : 'Thành viên hệ thống'}
-                </span>
-              </div>
-            </div>
-
-            {/* DYNAMIC LISTINGS OF THE AGENT */}
-            {previewUser.role === 'agent' && (
-              <div className="space-y-2 pt-3 border-t border-slate-100">
-                <h4 className="text-[10px] uppercase font-bold text-slate-400">Danh sách tin đăng phụ trách ({agentProperties.length})</h4>
-                
-                {loadingProperties ? (
-                  <div className="py-6 flex items-center justify-center gap-2 text-slate-400 text-xs font-bold">
-                    <i className="fa-solid fa-spinner animate-spin text-primary text-sm" />
-                    <span>Đang tải tin đăng...</span>
-                  </div>
-                ) : agentProperties.length > 0 ? (
-                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1 no-scrollbar">
-                    {agentProperties.map(p => (
-                      <Link 
-                        key={p.id}
-                        href={`/property/${p.id}`}
-                        className="flex gap-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-100 p-2 rounded-xl transition items-center"
-                      >
-                        {p.featureimg ? (
-                          <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0">
-                            <img src={p.featureimg} className="w-full h-full object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-slate-150 flex items-center justify-center text-slate-400 flex-shrink-0">
-                            <i className="fa-solid fa-house text-xs" />
-                          </div>
-                        )}
-                        <div className="text-left grow truncate min-w-0">
-                          <strong className="block text-[11px] text-slate-800 font-bold truncate leading-tight mb-0.5">{p.title}</strong>
-                          <span className="text-[10px] text-slate-400 truncate block mb-0.5">{p.address}</span>
-                          <span className="text-[10px] text-primary font-black block">{p.priceLabel}</span>
-                        </div>
-                        <i className="fa-solid fa-chevron-right text-[10px] text-slate-350 pr-1 flex-shrink-0" />
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-400 italic text-[11px] text-center py-4 font-semibold">Môi giới này hiện chưa phụ trách tin đăng nào.</p>
-                )}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setPreviewUser(null)}
-                className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 text-xs font-bold rounded-xl transition cursor-pointer"
-              >
-                Đóng
-              </button>
-              {!previewUser.id.toString().startsWith('nks-') && (
-                <Link
-                  href={`/admin/users/${previewUser.id}`}
-                  className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1 shadow-md shadow-primary/10"
-                >
-                  Chi tiết tài khoản
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

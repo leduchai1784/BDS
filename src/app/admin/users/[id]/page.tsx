@@ -8,9 +8,160 @@ interface AdminUserDetailPageProps {
   params: Promise<{ id: string }>
 }
 
+async function fetchNksAgentDetails(id: string): Promise<{ agent: any; properties: any[] }> {
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    const agentId = id.replace('nks-', '')
+
+    // 1. Fetch agent info
+    const agentRes = await fetch('https://online.nks.vn/api/nks/rsagents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+      next: { revalidate: 30 }
+    })
+    
+    if (!agentRes.ok) return { agent: null, properties: [] }
+    const agentData = await agentRes.json()
+    if (!agentData?.success || !Array.isArray(agentData.data)) return { agent: null, properties: [] }
+    
+    const agent = agentData.data.find((a: any) => a.id.toString() === agentId)
+    if (!agent) return { agent: null, properties: [] }
+
+    // 2. Fetch agent properties
+    const itemsRes = await fetch('https://online.nks.vn/api/nks/rsitems', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+      next: { revalidate: 30 }
+    })
+
+    let properties: any[] = []
+    if (itemsRes.ok) {
+      const itemsData = await itemsRes.json()
+      if (itemsData?.success && Array.isArray(itemsData.data)) {
+        properties = itemsData.data.filter((item: any) => {
+          const saleEmail = item.sale?.email?.toLowerCase() || ''
+          const salePhone = item.sale?.phone || ''
+          const matchEmail = agent.email && saleEmail === agent.email.toLowerCase()
+          const matchPhone = agent.phone && salePhone.replace(/\D/g, '') === agent.phone.replace(/\D/g, '')
+          return matchEmail || matchPhone
+        }).map((item: any) => ({
+          id: `nks-${item.id}`,
+          title: item.title,
+          address: item.address || 'Đồng Nai',
+          priceLabel: item.formatedPrice || `${(item.price / 1000000000).toFixed(1)} tỷ`
+        }))
+      }
+    }
+
+    return { agent, properties }
+  } catch (err) {
+    console.error('Failed to get agent NKS details:', err)
+    return { agent: null, properties: [] }
+  }
+}
+
 export default async function AdminUserDetailPage({ params }: AdminUserDetailPageProps) {
   const resolvedParams = await params
-  const userId = BigInt(resolvedParams.id)
+  const idStr = resolvedParams.id
+
+  const isNks = idStr.startsWith('nks-')
+
+  if (isNks) {
+    const { agent, properties } = await fetchNksAgentDetails(idStr)
+    if (!agent) {
+      notFound()
+    }
+
+    return (
+      <div className="space-y-6 text-left">
+        {/* Breadcrumbs */}
+        <nav className="flex text-xs font-semibold text-slate-500 mb-6 space-x-2">
+          <Link href="/admin" className="hover:text-primary transition">Bảng điều khiển</Link>
+          <span>/</span>
+          <Link href="/admin/users" className="hover:text-primary transition">Quản lý thành viên</Link>
+          <span>/</span>
+          <span className="text-slate-800">Chi tiết môi giới NKS</span>
+        </nav>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* User Card & Info */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6 h-fit">
+            <div className="flex flex-col items-center text-center space-y-3">
+              <div className="w-20 h-20 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center">
+                {agent.avatar ? (
+                  <img src={agent.avatar} className="w-full h-full object-cover" />
+                ) : (
+                  <i className="fa-regular fa-user text-slate-300 text-3xl" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-800">{agent.name}</h2>
+                <span className="inline-block px-2.5 py-0.5 mt-1.5 rounded-md text-[9px] font-black uppercase bg-teal-50 text-teal-600 border border-teal-200/55">
+                  Môi giới NKS
+                </span>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-100 pt-4 space-y-3 text-xs font-semibold">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Email:</span>
+                <span className="text-slate-700 select-all">{agent.email || 'Chưa cung cấp'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Số điện thoại:</span>
+                <span className="text-slate-700 select-all">{agent.phone || 'Chưa cung cấp'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Trạng thái:</span>
+                <span className="font-black text-emerald-500">Hoạt động ✓</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Nguồn liên kết:</span>
+                <span className="text-slate-700">NKS Portal (API)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Panel lists */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+              <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Tin đăng phụ trách ({properties.length})</h3>
+              
+              <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto pr-1">
+                {properties.length > 0 ? (
+                  properties.map(p => (
+                    <div key={p.id} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
+                      <div className="space-y-0.5 truncate">
+                        <strong className="block text-xs font-bold text-slate-800 truncate max-w-md">{p.title}</strong>
+                        <span className="block text-[10px] text-slate-400 font-semibold">{p.address} | {p.priceLabel}</span>
+                      </div>
+                      <Link 
+                        href={`/property/${p.id}`}
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-primary hover:text-white rounded-lg text-[9px] font-bold transition cursor-pointer"
+                      >
+                        Xem tin
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center text-slate-450 text-xs font-semibold">
+                    Môi giới này chưa phụ trách tin đăng nào.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    )
+  }
+
+  // Else, normal database flow
+  const userId = BigInt(idStr)
 
   const user = await prisma.user.findUnique({
     where: { id: userId }
