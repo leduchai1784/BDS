@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,6 +18,35 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   if (session.user.role !== 'admin') {
     redirect('/')
+  }
+
+  // Fetch statistics directly on the server
+  const userCount = await prisma.user.count()
+  const propertyCount = await prisma.property.count()
+  const appointmentCount = await prisma.appointment.count()
+
+  // Helper to fetch external leads count
+  let leadCount = 0
+  try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    const token = process.env.SCRM_API_TOKEN || '01KWKATNQGB5TWXYDPJ671X3X1'
+    const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
+    const response = await fetch(`${apiUrl}/leads`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      next: { revalidate: 60 } // cache 60 seconds
+    })
+    if (response.ok) {
+      const data = await response.json()
+      if (data?.success && Array.isArray(data.data)) {
+        leadCount = data.data.length
+      }
+    }
+  } catch (e) {
+    console.error('Sidebar leads count error:', e)
   }
 
   const user = session.user as any
@@ -41,7 +71,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           {/* Navigation Links */}
           <nav className="p-4 space-y-1.5 text-left">
             <Link 
-              href="/admin" 
+              href="/admin/dashboard" 
               className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
             >
               <i className="fa-solid fa-chart-pie text-sm w-5" />
@@ -50,26 +80,46 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
             <Link 
               href="/admin/users" 
-              className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
+              className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
             >
-              <i className="fa-solid fa-users text-sm w-5" />
-              <span>Quản lý thành viên</span>
+              <div className="flex items-center space-x-3">
+                <i className="fa-solid fa-users text-sm w-5" />
+                <span>Quản lý thành viên</span>
+              </div>
+              <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded-md text-[10px] font-black">{userCount}</span>
             </Link>
 
             <Link 
               href="/admin/properties" 
-              className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
+              className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
             >
-              <i className="fa-solid fa-house-chimney text-sm w-5" />
-              <span>Quản lý tin đăng</span>
+              <div className="flex items-center space-x-3">
+                <i className="fa-solid fa-house-chimney text-sm w-5" />
+                <span>Quản lý tin đăng</span>
+              </div>
+              <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded-md text-[10px] font-black">{propertyCount}</span>
             </Link>
 
             <Link 
               href="/admin/appointments" 
-              className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
+              className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
             >
-              <i className="fa-regular fa-calendar-check text-sm w-5" />
-              <span>Quản lý lịch hẹn</span>
+              <div className="flex items-center space-x-3">
+                <i className="fa-regular fa-calendar-check text-sm w-5" />
+                <span>Quản lý lịch hẹn</span>
+              </div>
+              <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded-md text-[10px] font-black">{appointmentCount}</span>
+            </Link>
+
+            <Link 
+              href="/admin/reports" 
+              className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
+            >
+              <div className="flex items-center space-x-3">
+                <i className="fa-solid fa-address-book text-sm w-5" />
+                <span>Quản lý Lead</span>
+              </div>
+              <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded-md text-[10px] font-black">{leadCount}</span>
             </Link>
 
             <Link 
@@ -78,14 +128,6 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             >
               <i className="fa-solid fa-tags text-sm w-5" />
               <span>Quản lý danh mục</span>
-            </Link>
-
-            <Link 
-              href="/admin/reports" 
-              className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold transition hover:bg-slate-800 hover:text-white"
-            >
-              <i className="fa-solid fa-chart-line text-sm w-5" />
-              <span>Báo cáo thống kê</span>
             </Link>
           </nav>
         </div>
