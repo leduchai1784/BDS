@@ -23,80 +23,70 @@ type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
+  statsKey?: 'users' | 'properties' | 'appointments' | 'leads';
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
 const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    icon: <PieChartIcon />,
+    name: "Thống kê tổng quan",
+    path: "/admin/dashboard",
   },
   {
     icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    name: "Quản lý thành viên",
+    path: "/admin/users",
+    statsKey: "users",
   },
   {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    icon: <GridIcon />,
+    name: "Quản lý tin đăng",
+    path: "/admin/properties",
+    statsKey: "properties",
   },
   {
-    name: "Pages",
+    icon: <CalenderIcon />,
+    name: "Quản lý lịch hẹn",
+    path: "/admin/appointments",
+    statsKey: "appointments",
+  },
+  {
     icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
+    name: "Quản lý Lead",
+    path: "/admin/reports",
+    statsKey: "leads",
   },
 ];
 
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
-  },
-];
+const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
+  const [stats, setStats] = useState<Record<string, number>>({
+    users: 0,
+    properties: 0,
+    appointments: 0,
+    leads: 0,
+  });
+
+  useEffect(() => {
+    async function getStats() {
+      try {
+        const res = await fetch("/api/admin/dashboard-stats");
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.success && data?.stats) {
+            setStats(data.stats);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading sidebar counts:", err);
+      }
+    }
+    getStats();
+  }, []);
 
   const renderMenuItems = (
     navItems: NavItem[],
@@ -112,7 +102,7 @@ const AppSidebar: React.FC = () => {
                 openSubmenu?.type === menuType && openSubmenu?.index === index
                   ? "menu-item-active"
                   : "menu-item-inactive"
-              } cursor-pointer ${
+               } cursor-pointer ${
                 !isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
@@ -159,7 +149,18 @@ const AppSidebar: React.FC = () => {
                   {nav.icon}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className={`menu-item-text`}>{nav.name}</span>
+                  <>
+                    <span className={`menu-item-text`}>{nav.name}</span>
+                    {nav.statsKey && (
+                      <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        isActive(nav.path)
+                          ? "bg-brand-600 text-white"
+                          : "bg-gray-100 text-slate-550 dark:bg-gray-800 dark:text-slate-400"
+                      }`}>
+                        {stats[nav.statsKey] || 0}
+                      </span>
+                    )}
+                  </>
                 )}
               </Link>
             )
@@ -356,22 +357,7 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(navItems, "main")}
             </div>
 
-            <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>
+            {/* Others section removed */}
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
