@@ -389,6 +389,8 @@ export async function getNksProperties(): Promise<any[]> {
           price = Number(item.price)
         }
 
+        const isRent = (item.rentprice && Number(item.rentprice) > 0) || (item.formatedRentPrice && item.formatedRentPrice.includes('tháng'))
+
         let priceLabel = 'Thỏa thuận'
         if (item.formatedRentPrice) {
           priceLabel = item.formatedRentPrice.replace('triệu', 'tr').trim() + '/tháng'
@@ -410,8 +412,8 @@ export async function getNksProperties(): Promise<any[]> {
           price,
           priceLabel,
           area,
-          bedroom: Number(item.bedroom) || 0,
-          bathroom: Number(item.bathroom) || 0,
+          bedroom: Number(item.bedroom || item.bed) || 0,
+          bathroom: Number(item.bathroom || item.bath) || 0,
           floors: Number(item.floors) || 0,
           address: location || item.province || 'Thành phố Hồ Chí Minh',
           district: item.district || 'HCMC',
@@ -422,7 +424,11 @@ export async function getNksProperties(): Promise<any[]> {
           isVip: !!item.is_vip || false,
           isNew: !!item.is_new || false,
           propertyType,
+          isRent: !!isRent,
+          saleEmail: item.email || item.sale?.email || '',
+          salePhone: item.phone || item.sale?.phone || '',
           sale: item.sale ? {
+            id: item.sale.id,
             name: item.sale.name || (item.sale.firstname ? `${item.sale.lastname || ''} ${item.sale.firstname}`.trim() : 'Môi giới NKS'),
             phone: item.sale.phone || '',
             email: item.sale.email || '',
