@@ -53,8 +53,13 @@ const navItems: NavItem[] = [
   {
     icon: <PageIcon />,
     name: "Quản lý Lead",
-    path: "/admin/reports",
+    path: "/admin/leads",
     statsKey: "leads",
+  },
+  {
+    icon: <TableIcon />,
+    name: "Báo cáo & Thống kê",
+    path: "/admin/reports",
   },
 ];
 
