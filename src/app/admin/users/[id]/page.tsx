@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import UserDetailTabs from '@/components/admin/UserDetailTabs'
 
 export const dynamic = 'force-dynamic'
 
@@ -125,43 +126,9 @@ export default async function AdminUserDetailPage({ params }: AdminUserDetailPag
             </div>
           </div>
 
-          {/* Action Panel lists */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Tin đăng phụ trách ({properties.length})</h3>
-              
-              <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto pr-1">
-                {properties.length > 0 ? (
-                  properties.map(p => (
-                    <div key={p.id} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
-                      <div className="space-y-0.5 truncate">
-                        <strong className="block text-xs font-bold text-slate-800 truncate max-w-md">{p.title}</strong>
-                        <span className="block text-[10px] text-slate-400 font-semibold">{p.address} | {p.priceLabel}</span>
-                      </div>
-                      <Link 
-                        href={`/property/${p.id}`}
-                        className="px-3 py-1.5 bg-slate-100 hover:bg-primary hover:text-white rounded-lg text-[9px] font-bold transition cursor-pointer"
-                      >
-                        Xem tin
-                      </Link>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-8 text-center text-slate-450 text-xs font-semibold">
-                    Môi giới này chưa phụ trách tin đăng nào.
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Lịch hẹn đã đặt */}
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Lịch hẹn đã đặt (0)</h3>
-              
-              <div className="py-8 text-center text-slate-450 text-xs font-semibold">
-                Môi giới này chưa có lịch hẹn nào trên hệ thống.
-              </div>
-            </div>
+          {/* Tabbed Panel */}
+          <div className="lg:col-span-2">
+            <UserDetailTabs properties={properties} appointments={[]} isNks={true} />
           </div>
 
         </div>
@@ -286,59 +253,17 @@ export default async function AdminUserDetailPage({ params }: AdminUserDetailPag
           </div>
         </div>
 
-        {/* Action Panel lists */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Properties list */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Tin đăng đã đăng ({propertiesList.length})</h3>
-              
-              <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto pr-1">
-                {propertiesList.length > 0 ? (
-                  propertiesList.map(p => (
-                    <div key={p.id} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
-                      <div className="space-y-0.5 truncate">
-                        <strong className="block text-xs font-bold text-slate-800 truncate max-w-md">{p.title}</strong>
-                        <span className="block text-[10px] text-slate-400 font-semibold">{p.address} | {p.priceLabel}</span>
-                      </div>
-                      <Link 
-                        href={`/admin/properties?id=${p.id}`}
-                        className="px-3 py-1.5 bg-slate-100 hover:bg-primary hover:text-white rounded-lg text-[9px] font-bold transition cursor-pointer"
-                      >
-                        Xem tin
-                      </Link>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-8 text-center text-slate-450 text-xs font-semibold">
-                    Thành viên này chưa đăng tin nào.
-                  </div>
-                )}
-              </div>
-            </div>
-
-          {/* Tenant appointments list */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-            <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Lịch hẹn đã đặt ({mappedAppointments.length})</h3>
-            
-            <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto pr-1">
-              {mappedAppointments.length > 0 ? (
-                mappedAppointments.map(app => (
-                  <div key={app.id} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
-                    <div className="space-y-0.5 truncate">
-                      <strong className="block text-xs font-bold text-slate-850 truncate max-w-md">{app.property.title}</strong>
-                      <span className="block text-[10px] text-slate-400 font-semibold">Đặt ngày: {app.date} | Trạng thái: {app.status}</span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-8 text-center text-slate-450 text-xs font-semibold">
-                  Thành viên này chưa đặt lịch hẹn xem nhà nào.
-                </div>
-              )}
-            </div>
-          </div>
-
+        {/* Tabbed Panel */}
+        <div className="lg:col-span-2">
+          <UserDetailTabs 
+            properties={propertiesList.map(p => ({
+              id: p.id,
+              title: p.title,
+              address: p.address,
+              priceLabel: p.priceLabel
+            }))}
+            appointments={mappedAppointments}
+          />
         </div>
 
       </div>
