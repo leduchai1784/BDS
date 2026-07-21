@@ -153,6 +153,15 @@ export default async function AdminUserDetailPage({ params }: AdminUserDetailPag
                 )}
               </div>
             </div>
+
+            {/* Lịch hẹn đã đặt */}
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+              <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Lịch hẹn đã đặt (0)</h3>
+              
+              <div className="py-8 text-center text-slate-450 text-xs font-semibold">
+                Môi giới này chưa có lịch hẹn nào trên hệ thống.
+              </div>
+            </div>
           </div>
 
         </div>
@@ -280,9 +289,8 @@ export default async function AdminUserDetailPage({ params }: AdminUserDetailPag
         {/* Action Panel lists */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Owner properties list */}
-          {user.role === 'owner' && (
-            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+          {/* Properties list */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
               <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Tin đăng đã đăng ({propertiesList.length})</h3>
               
               <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto pr-1">
@@ -303,12 +311,11 @@ export default async function AdminUserDetailPage({ params }: AdminUserDetailPag
                   ))
                 ) : (
                   <div className="py-8 text-center text-slate-450 text-xs font-semibold">
-                    Chủ nhà này chưa đăng tin nào.
+                    Thành viên này chưa đăng tin nào.
                   </div>
                 )}
               </div>
             </div>
-          )}
 
           {/* Tenant appointments list */}
           <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
