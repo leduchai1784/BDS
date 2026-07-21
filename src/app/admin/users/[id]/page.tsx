@@ -30,29 +30,59 @@ async function fetchNksAgentDetails(id: string): Promise<{ agent: any; propertie
     if (!agent) return { agent: null, properties: [] }
 
     // 2. Fetch agent properties
-    const itemsRes = await fetch('https://online.nks.vn/api/nks/rsitems', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({}),
-      next: { revalidate: 30 }
-    })
-
     let properties: any[] = []
-    if (itemsRes.ok) {
-      const itemsData = await itemsRes.json()
-      if (itemsData?.success && Array.isArray(itemsData.data)) {
-        properties = itemsData.data.filter((item: any) => {
-          const saleEmail = item.sale?.email?.toLowerCase() || ''
-          const salePhone = item.sale?.phone || ''
-          const matchEmail = agent.email && saleEmail === agent.email.toLowerCase()
-          const matchPhone = agent.phone && salePhone.replace(/\D/g, '') === agent.phone.replace(/\D/g, '')
-          return matchEmail || matchPhone
-        }).map((item: any) => ({
-          id: `nks-${item.id}`,
-          title: item.title,
-          address: item.address || 'Đồng Nai',
-          priceLabel: item.formatedPrice || `${(item.price / 1000000000).toFixed(1)} tỷ`
-        }))
+    
+    // Try user authenticated endpoint if token exists
+    if (agent.access_token) {
+      try {
+        const userItemsRes = await fetch('https://account.nks.vn/api/nks/user/rsitems', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: agent.access_token }),
+          next: { revalidate: 0 }
+        })
+        if (userItemsRes.ok) {
+          const userItemsData = await userItemsRes.json()
+          const itemsList = userItemsData?.data || userItemsData?.items || (Array.isArray(userItemsData) ? userItemsData : [])
+          if (Array.isArray(itemsList) && itemsList.length > 0) {
+            properties = itemsList.map((item: any) => ({
+              id: `nks-${item.id}`,
+              title: item.title,
+              address: item.address || 'Đồng Nai',
+              priceLabel: item.formatedPrice || `${(item.price / 1000000000).toFixed(1)} tỷ`
+            }))
+          }
+        }
+      } catch (e) {
+        console.warn('account.nks.vn user items API call failed, falling back to public items filter:', e)
+      }
+    }
+
+    // Fallback to filtering public items if no properties found via token
+    if (properties.length === 0) {
+      const itemsRes = await fetch('https://online.nks.vn/api/nks/rsitems', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+        next: { revalidate: 30 }
+      })
+
+      if (itemsRes.ok) {
+        const itemsData = await itemsRes.json()
+        if (itemsData?.success && Array.isArray(itemsData.data)) {
+          properties = itemsData.data.filter((item: any) => {
+            const saleEmail = item.sale?.email?.toLowerCase() || ''
+            const salePhone = item.sale?.phone || ''
+            const matchEmail = agent.email && saleEmail === agent.email.toLowerCase()
+            const matchPhone = agent.phone && salePhone.replace(/\D/g, '') === agent.phone.replace(/\D/g, '')
+            return matchEmail || matchPhone
+          }).map((item: any) => ({
+            id: `nks-${item.id}`,
+            title: item.title,
+            address: item.address || 'Đồng Nai',
+            priceLabel: item.formatedPrice || `${(item.price / 1000000000).toFixed(1)} tỷ`
+          }))
+        }
       }
     }
 
