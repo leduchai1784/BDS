@@ -406,14 +406,40 @@ export async function getNksProperties(): Promise<any[]> {
           featureImg = 'https:' + featureImg
         }
 
+        // Extract images array if available
+        let allImages: string[] = []
+        if (featureImg) {
+          allImages.push(featureImg)
+        }
+        if (item.images) {
+          try {
+            const parsedImgs = typeof item.images === 'string' ? JSON.parse(item.images) : item.images
+            if (Array.isArray(parsedImgs)) {
+              parsedImgs.forEach((img: string) => {
+                let fullImgUrl = img
+                if (!fullImgUrl.startsWith('http') && !fullImgUrl.startsWith('//')) {
+                  fullImgUrl = `https://data.nks.vn/storage/${img.replace(/^\//, '')}`
+                } else if (fullImgUrl.startsWith('//')) {
+                  fullImgUrl = 'https:' + fullImgUrl
+                }
+                if (!allImages.includes(fullImgUrl)) {
+                  allImages.push(fullImgUrl)
+                }
+              })
+            }
+          } catch (e) {}
+        }
+
         return {
           id,
           title,
           price,
           priceLabel,
+          sqrPriceLabel: item.formatedSqrPrice ? `${item.formatedSqrPrice}/m²` : '',
           area,
-          bedroom: Number(item.bedroom || item.bed) || 0,
-          bathroom: Number(item.bathroom || item.bath) || 0,
+          bedroom: Number(item.bed || item.bedroom) || 0,
+          bathroom: Number(item.bath || item.bathroom) || 0,
+          direction: item.direction || 'Không xác định',
           floors: Number(item.floors) || 0,
           address: location || item.province || 'Thành phố Hồ Chí Minh',
           district: item.district || 'HCMC',
@@ -421,6 +447,7 @@ export async function getNksProperties(): Promise<any[]> {
           latitude: lat,
           longitude: lng,
           imagePath: featureImg,
+          images: allImages,
           isVip: !!item.is_vip || false,
           isNew: !!item.is_new || false,
           propertyType,
