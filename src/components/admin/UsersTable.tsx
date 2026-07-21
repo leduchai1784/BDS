@@ -192,42 +192,28 @@ export default function UsersTable({ initialUsers, currentUserId, searchParams }
                       {u.id.toString().startsWith('nks-') ? 'Liên kết NKS' : new Date(u.createdAt).toLocaleDateString('vi-VN')}
                     </td>
                     <td className="px-6 py-3 text-right space-x-2 whitespace-nowrap">
-                      {/* Xem thông tin nút dẫn thẳng sang trang chi tiết */}
+                      {/* Xem thông tin icon con mắt */}
                       <Link
                         href={`/admin/users/${u.id}`}
-                        className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-lg text-[10px] font-bold text-slate-550 transition inline-flex items-center justify-center cursor-pointer"
+                        className="w-8 h-8 rounded-lg border border-slate-200/60 bg-slate-50 hover:bg-primary hover:text-white hover:border-primary text-slate-600 transition inline-flex items-center justify-center cursor-pointer"
+                        title="Xem thông tin"
                       >
-                        Xem thông tin
+                        <i className="fa-solid fa-eye text-xs" />
                       </Link>
 
-                      {!u.id.toString().startsWith('nks-') && (
-                        <>
-                          {u.id !== currentUserId && (
-                            <>
-                              <button
-                                onClick={() => toggleStatus(u.id)}
-                                disabled={isProcessing === u.id}
-                                className={`w-8 h-8 rounded-lg border border-slate-200/50 items-center justify-center transition cursor-pointer inline-flex ${
-                                  u.status === 'locked' 
-                                    ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200/30'
-                                    : 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200/30'
-                                }`}
-                                title={u.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
-                              >
-                                <i className={`fa-solid ${u.status === 'locked' ? 'fa-lock-open' : 'fa-lock'} text-xs`} />
-                              </button>
-
-                              <button
-                                onClick={() => deleteUser(u.id)}
-                                disabled={isProcessing === u.id}
-                                className="w-8 h-8 rounded-lg border border-red-100/50 bg-red-50 hover:bg-red-500 hover:text-white items-center justify-center text-red-650 transition cursor-pointer inline-flex"
-                                title="Xóa tài khoản"
-                              >
-                                <i className="fa-regular fa-trash-can text-xs" />
-                              </button>
-                            </>
-                          )}
-                        </>
+                      {!u.id.toString().startsWith('nks-') && u.id !== currentUserId && (
+                        <button
+                          onClick={() => toggleStatus(u.id)}
+                          disabled={isProcessing === u.id}
+                          className={`w-8 h-8 rounded-lg border border-slate-200/50 items-center justify-center transition cursor-pointer inline-flex ${
+                            u.status === 'locked' 
+                              ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200/30'
+                              : 'bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200/30'
+                          }`}
+                          title={u.status === 'locked' ? 'Mở khóa' : 'Khóa tài khoản'}
+                        >
+                          <i className={`fa-solid ${u.status === 'locked' ? 'fa-lock-open' : 'fa-lock'} text-xs`} />
+                        </button>
                       )}
                     </td>
                   </tr>
