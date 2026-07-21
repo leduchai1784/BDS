@@ -113,10 +113,11 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
     const nksProp = nksList.find(p => p.id.toString() === cleanNksId.toString())
 
     if (nksProp) {
-      // Map NKS details
-      const agentName = 'Môi giới BDS'
-      const agentPhone = '0977.758.217'
-      const agentAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(agentName)}&background=0077bb&color=fff`
+      // Map NKS details from sale object
+      const agentName = nksProp.sale?.name || 'Môi giới BDS'
+      const agentPhone = nksProp.sale?.phone || '0977.758.217'
+      const agentEmail = nksProp.sale?.email || 'info@bdsrental.vn'
+      const agentAvatar = nksProp.sale?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(agentName)}&background=0077bb&color=fff`
 
       property = {
         id: nksProp.id,
@@ -149,7 +150,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
           name: agentName,
           phone: agentPhone,
           avatar: agentAvatar,
-          email: 'info@bdsrental.vn',
+          email: agentEmail,
           zalo: agentPhone
         }
       }

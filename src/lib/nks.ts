@@ -421,7 +421,13 @@ export async function getNksProperties(): Promise<any[]> {
           imagePath: featureImg,
           isVip: !!item.is_vip || false,
           isNew: !!item.is_new || false,
-          propertyType
+          propertyType,
+          sale: item.sale ? {
+            name: item.sale.name || (item.sale.firstname ? `${item.sale.lastname || ''} ${item.sale.firstname}`.trim() : 'Môi giới NKS'),
+            phone: item.sale.phone || '',
+            email: item.sale.email || '',
+            avatar: item.sale.avatar || null
+          } : null
         }
       })
     }
