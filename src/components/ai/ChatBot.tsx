@@ -177,6 +177,12 @@ export default function ChatBot() {
     const query = text.trim()
     if (!query || isTyping) return
 
+    // If user clicks on lead registration option chip
+    if (query.includes('📝') || query.toLowerCase().includes('đăng ký') || query.toLowerCase().includes('đặt lịch xem nhà')) {
+      setShowLeadForm(true)
+      return
+    }
+
     // Add user message
     const userMsg: Message = { role: 'user', content: query, text: query }
     setMessages(prev => [...prev, userMsg])
@@ -203,6 +209,7 @@ export default function ChatBot() {
           {
             role: 'assistant',
             content: data.reply,
+            options: data.options,
             properties: data.properties
           }
         ])
@@ -292,16 +299,6 @@ export default function ChatBot() {
             </div>
             
             <div className="flex items-center gap-1">
-              <button
-                onClick={() => setShowLeadForm(!showLeadForm)}
-                type="button"
-                className="px-2 py-1 bg-white/15 hover:bg-white/25 border border-white/20 rounded-lg text-[10px] font-bold text-white transition flex items-center gap-1 cursor-pointer"
-                title="Điền form tư vấn nhanh"
-              >
-                <i className="fa-solid fa-pen-to-square text-[10px]" />
-                <span>Form Lead</span>
-              </button>
-
               <button
                 onClick={clearChat}
                 type="button"
