@@ -70,12 +70,20 @@ async function fetchNksAgentDetails(id: string): Promise<{ agent: any; propertie
       if (itemsRes.ok) {
         const itemsData = await itemsRes.json()
         if (itemsData?.success && Array.isArray(itemsData.data)) {
+          const seenIds = new Set<string>()
           properties = itemsData.data.filter((item: any) => {
+            const saleId = item.sale?.id?.toString() || item.user_id?.toString() || ''
             const saleEmail = item.sale?.email?.toLowerCase() || ''
-            const salePhone = item.sale?.phone || ''
+            
+            const matchId = saleId && agent.id && saleId === agent.id.toString()
             const matchEmail = agent.email && saleEmail === agent.email.toLowerCase()
-            const matchPhone = agent.phone && salePhone.replace(/\D/g, '') === agent.phone.replace(/\D/g, '')
-            return matchEmail || matchPhone
+            
+            // If match by ID or Email
+            return matchId || matchEmail
+          }).filter((item: any) => {
+            if (seenIds.has(item.id.toString())) return false
+            seenIds.add(item.id.toString())
+            return true
           }).map((item: any) => ({
             id: `nks-${item.id}`,
             title: item.title,

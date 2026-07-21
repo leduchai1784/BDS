@@ -67,15 +67,22 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, data: [] })
     }
 
-    // Filter properties belonging to this agent
-    const agentProperties = data.data.filter((item: any) => {
-      const saleEmail = item.sale?.email?.toLowerCase() || ''
-      const salePhone = item.sale?.phone || ''
-      
-      const matchEmail = email && saleEmail === email.toLowerCase()
-      const matchPhone = phone && salePhone.replace(/\D/g, '') === phone.replace(/\D/g, '')
+    const agentId = searchParams.get('id') || searchParams.get('agent_id') || ''
 
-      return matchEmail || matchPhone
+    // Filter properties belonging to this agent
+    const seenIds = new Set<string>()
+    const agentProperties = data.data.filter((item: any) => {
+      const saleId = item.sale?.id?.toString() || item.user_id?.toString() || ''
+      const saleEmail = item.sale?.email?.toLowerCase() || ''
+      
+      const matchId = agentId && saleId === agentId.toString()
+      const matchEmail = email && saleEmail === email.toLowerCase()
+
+      return matchId || matchEmail
+    }).filter((item: any) => {
+      if (seenIds.has(item.id.toString())) return false
+      seenIds.add(item.id.toString())
+      return true
     }).map((item: any) => ({
       id: `nks-${item.id}`,
       title: item.title,
