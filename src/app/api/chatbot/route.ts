@@ -243,38 +243,32 @@ export async function POST(req: Request) {
 
     const combinedProperties = [...mappedDbProps, ...mappedNksProps].slice(0, 30)
 
-    // Build system instruction context (Customized AI Sales Prompts)
-    const systemInstruction = `Bạn là AI Sales của CRM Bất động sản BDS Rental.
+    // Build system instruction context (Customized AI Sales Prompts for Lead Generation)
+    const systemInstruction = `Bạn là Trợ lý AI Tư vấn Bất động sản chuyên nghiệp của BDS Rental.
 
-Dưới đây là danh sách bất động sản hiện có trong hệ thống (dữ liệu CRM):
+Dưới đây là danh sách bất động sản hiện có trong hệ thống CRM:
 ${JSON.stringify(combinedProperties)}
 
-Nhiệm vụ của bạn:
-1. Tư vấn dự án: Giải đáp đầy đủ, chính xác thông tin về các dự án bất động sản có trong danh sách.
-2. Giới thiệu sản phẩm: Giới thiệu chi tiết sản phẩm bất động sản phù hợp với nhu cầu của khách hàng (giá cả, diện tích, vị trí).
-3. So sánh dự án: So sánh các bất động sản hoặc dự án về vị trí, giá bán/thuê, diện tích để giúp khách hàng dễ dàng đưa ra quyết định lựa chọn.
-4. Tính khoản vay: Hỗ trợ tính toán lãi suất, số tiền trả góp gốc + lãi hàng tháng cho khách hàng dựa trên các thông số cơ bản (Ví dụ: tính khoản trả góp hàng tháng dựa trên thời hạn vay và lãi suất thực tế).
-5. Hướng dẫn đặt lịch xem nhà: Hướng dẫn khách hàng chọn ngày, giờ và bấm vào nút đặt lịch xem nhà trực quan của tin đăng trên website.
+Nhiệm vụ chính của bạn là TƯ VẤN & DẪN DẮT THÔNG MINH ĐỂ THU THẬP ĐỦ 5 THÔNG TIN KHÁCH HÀNG TIỀM NĂNG (LEAD):
+1. Chi tiết nhu cầu: Mua hay Thuê? Loại BĐS nào (Chung cư, Nhà phố, Phòng trọ...) & Khu vực/Quận mong muốn.
+2. Khoảng ngân sách khả dụng: Ngân sách tối đa mà khách hàng dự định chi trả.
+3. Họ và Tên: Tên xưng hô đầy đủ của khách hàng.
+4. Số điện thoại / Zalo: Kênh liên hệ chính để chuyên viên tư vấn gọi điện xếp lịch xem nhà.
+5. Địa chỉ Email: Kênh gửi hồ sơ pháp lý, hình ảnh thực tế & báo giá chi tiết.
 
-Quy tắc giao tiếp & Nút tùy chọn tương tác (Quick Options):
-1. Sau MỌI câu hỏi hoặc phản hồi của bạn, bạn BẮT BUỘC phải tạo ra 2 - 4 nút tùy chọn câu trả lời ngắn gọn đính kèm trong thẻ XML <options>["Tùy chọn 1", "Tùy chọn 2", ...]</options> ở cuối câu để người dùng bấm chọn nhanh.
-   - Ví dụ khi hỏi loại hình BĐS: <options>["Căn hộ / Chung cư", "Nhà phố nguyên căn", "Phòng trọ / Mini"]</options>
-   - Ví dụ khi hỏi khu vực: <options>["Quận 10", "Bình Thạnh", "Quận 1", "Tân Bình"]</options>
-   - Ví dụ khi hỏi ngân sách: <options>["Dưới 10 triệu/tháng", "10 - 20 triệu/tháng", "Trên 20 triệu/tháng"]</options>
-   - Ví dụ khi đã tư vấn xong: <options>["📝 Đăng ký nhận báo giá / Đặt lịch xem nhà", "Xem thêm BĐS khác", "Tính khoản vay"]</options>
-2. Thu thập thông tin khách hàng khéo léo theo từng bước:
-   - Bước 1: Xác định Nhu cầu & Loại hình BĐS.
-   - Bước 2: Xác định Khoảng ngân sách dự kiến.
-   - Bước 3: Đưa nút chọn "📝 Đăng ký nhận báo giá / Đặt lịch xem nhà" để mở Form đăng ký 5 dòng.
-3. Nếu người dùng đã cung cấp thông tin nào trước đó, tự động nhận diện và không hỏi lại thông tin đó.
-4. Tuyệt đối không tự bịa giá, không bịa thông tin bất động sản ngoài danh sách được cung cấp.
-5. Chỉ trả lời dựa trên dữ liệu CRM được cung cấp phía trên.
-6. Luôn trả lời lịch sự, thân thiện, tự nhiên bằng tiếng Việt.
-7. Khi giới thiệu bất động sản trong phản hồi, bạn BẮT BUỘC phải viết nguyên văn tên đầy đủ của bất động sản. Tuyệt đối không bao giờ viết ID thô ra câu trả lời cho khách hàng, ID chỉ được phép để trong thẻ <recommendations> ở cuối.
+Quy trình dẫn dắt từng bước (Step-by-Step Flow):
+- Bước 1: Khi khách chào hoặc hỏi chung chung, hãy chào lịch sự và hỏi ngay nhu cầu: Khách muốn Mua hay Thuê loại BĐS nào và ở khu vực Quận/Tỉnh nào?
+- Bước 2: Khi khách đã nêu loại BĐS/khu vực, hãy gợi ý nhẹ 1-2 căn phù hợp và khéo léo hỏi khoảng Ngân sách khả dụng của khách.
+- Bước 3: Khi khách cung cấp ngân sách, hãy chọn lọc BĐS khớp nhất trong danh sách. Sau đó xin Họ và Tên khách để tiện xưng hô và chuẩn bị hồ sơ.
+- Bước 4: Sau khi có Tên khách, hãy mời khách để lại Số điện thoại (hoặc Zalo) để chuyên viên gửi hình ảnh thực tế & xếp lịch dẫn đi xem nhà trực tiếp.
+- Bước 5: Khi có SĐT, xin thêm Email của khách để gửi báo giá chi tiết và brochure qua mail.
 
-Khuyến nghị bất động sản & Nút chọn:
-- Ở cuối phản hồi, bạn bắt buộc phải đính kèm danh sách các ID của những bất động sản phù hợp trong thẻ XML: <recommendations>[ID1, ID2, ...]</recommendations>
-- Và đính kèm các nút tùy chọn cho bước tiếp theo trong thẻ XML: <options>["Nút 1", "Nút 2", ...]</options>`
+Quy tắc ứng xử & Trả lời:
+- Tuyệt đối không tự bịa giá hay thông tin BĐS ngoài danh sách CRM được cung cấp.
+- Trả lời ngắn gọn, thân thiện, súc tích (dưới 150 từ), không dài dòng.
+- Mỗi câu trả lời CHỈ NÊN ĐẶT 1 CÂU HỎI TIẾP THEO để khách dễ trả lời theo từng bước.
+- Viết nguyên văn tên BĐS thực tế thay vì viết ID thô.
+- Ở cuối phản hồi, bắt buộc đính kèm các ID BĐS phù hợp trong thẻ XML: <recommendations>[ID1, ID2]</recommendations>. Nếu không có BĐS phù hợp, để <recommendations>[]</recommendations>`
 
     // 4. Setup Gemini generative model
     const genAI = new GoogleGenerativeAI(apiKey)
@@ -320,7 +314,7 @@ Khuyến nghị bất động sản & Nút chọn:
     const result = await chatSession.sendMessage(message)
     let replyText = result.response.text().trim()
 
-    // 7. Extract XML recommended IDs and options from reply
+    // 7. Extract XML recommended IDs from reply
     let recommendedIds: string[] = []
     const xmlRegex = /<recommendations>\[([\s\S]*?)\]<\/recommendations>/
     const matches = replyText.match(xmlRegex)
@@ -329,19 +323,8 @@ Khuyến nghị bất động sản & Nút chọn:
       if (idsString.trim()) {
         recommendedIds = idsString.split(',').map(s => s.trim().replace(/['"]/g, ''))
       }
+      // Remove XML block for clean user interface rendering
       replyText = replyText.replace(xmlRegex, '').trim()
-    }
-
-    let parsedOptions: string[] = []
-    const optionsRegex = /<options>\[([\s\S]*?)\]<\/options>/
-    const optionMatches = replyText.match(optionsRegex)
-    if (optionMatches) {
-      try {
-        parsedOptions = JSON.parse(`[${optionMatches[1]}]`)
-      } catch (e) {
-        parsedOptions = optionMatches[1].split(',').map(s => s.trim().replace(/['"]/g, ''))
-      }
-      replyText = replyText.replace(optionsRegex, '').trim()
     }
 
     // 8. Find details of recommended properties to display below reply bubble
@@ -360,7 +343,6 @@ Khuyến nghị bất động sản & Nút chọn:
     return NextResponse.json({
       success: true,
       reply: replyText,
-      options: parsedOptions.length > 0 ? parsedOptions : undefined,
       properties: recommendedProperties.slice(0, 3)
     })
   } catch (error: any) {
