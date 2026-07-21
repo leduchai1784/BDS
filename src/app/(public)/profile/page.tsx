@@ -11,7 +11,7 @@ async function fetchExternalLeads(): Promise<any[]> {
     const apiUrl = process.env.SCRM_API_URL || 'https://sdata.io.vn/wp-json/scrmai/v1'
 
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
+    const timeoutId = setTimeout(() => controller.abort(), 10000)
 
     const response = await fetch(`${apiUrl}/leads`, {
       method: 'POST',
@@ -19,6 +19,7 @@ async function fetchExternalLeads(): Promise<any[]> {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
+      body: JSON.stringify({}),
       signal: controller.signal,
       cache: 'no-store'
     })
