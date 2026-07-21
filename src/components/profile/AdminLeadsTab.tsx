@@ -337,7 +337,7 @@ export default function AdminLeadsTab({ initialLeads }: AdminLeadsTabProps) {
 
       {/* DRAWER FOR LEAD DETAILS */}
       {drawerOpen && selectedLead && (
-        <div className="fixed inset-0 z-[100] overflow-hidden" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[99999] overflow-hidden" role="dialog" aria-modal="true">
           <div className="absolute inset-0 overflow-hidden">
             {/* Backdrop */}
             <div 

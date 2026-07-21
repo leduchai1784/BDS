@@ -170,14 +170,8 @@ export default async function AdminLeadsPage() {
 
   return (
     <div className="space-y-6 text-left">
-      {/* Header section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-black text-slate-800 tracking-tight">Quản lý Lead (Khách hàng tiềm năng)</h1>
-          <p className="text-xs text-slate-500 font-semibold mt-0.5">
-            Danh sách khách hàng tiềm năng thu thập từ AI Chatbot & Form hệ thống
-          </p>
-        </div>
+      {/* Breadcrumb nav */}
+      <div className="flex justify-end">
         <nav className="flex text-xs font-semibold text-slate-500 space-x-2">
           <Link href="/admin" className="hover:text-primary transition">Bảng điều khiển</Link>
           <span>/</span>
