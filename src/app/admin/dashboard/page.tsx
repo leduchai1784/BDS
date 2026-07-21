@@ -69,13 +69,13 @@ export default async function AdminDashboardPage() {
   }))
 
   return (
-    <div className="w-full text-slate-800 font-sans text-left space-y-6">
+    <div className="w-full text-slate-800 dark:text-slate-100 font-sans text-left space-y-6">
       
       {/* Header banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-850 tracking-tight">Thống kê tổng quan</h1>
-          <p className="text-xs text-slate-500 font-semibold mt-1">Báo cáo lượt xem, chỉ số hoạt động & đồng bộ dữ liệu theo thời gian thực</p>
+          <h1 className="text-2xl font-black text-slate-850 dark:text-white tracking-tight">Thống kê tổng quan</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">Báo cáo lượt xem, chỉ số hoạt động & đồng bộ dữ liệu theo thời gian thực</p>
         </div>
       </div>
 
