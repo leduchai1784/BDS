@@ -32,6 +32,64 @@ export default function ChatBot() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   
+  // Lead Form States
+  const [showLeadForm, setShowLeadForm] = useState(false)
+  const [isSubmittingLead, setIsSubmittingLead] = useState(false)
+  const [leadFormData, setLeadFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    demand: '',
+    budget: ''
+  })
+
+  const submitLeadForm = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!leadFormData.phone || !leadFormData.name) {
+      toast.error('Vui lòng nhập Họ tên và Số điện thoại!')
+      return
+    }
+
+    setIsSubmittingLead(true)
+    try {
+      const summaryText = `[Form Đăng Ký Tư Vấn Lead]
+- Họ và tên: ${leadFormData.name}
+- SĐT: ${leadFormData.phone}
+- Email: ${leadFormData.email || 'Chưa cung cấp'}
+- Nhu cầu: ${leadFormData.demand || 'Cần tư vấn BĐS'}
+- Khoảng ngân sách: ${leadFormData.budget || 'Thỏa thuận'}`
+
+      // Add user message in chat
+      setMessages(prev => [...prev, { role: 'user', content: summaryText, text: summaryText }])
+      setShowLeadForm(false)
+
+      const res = await fetch('/api/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: summaryText, history: [] })
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        toast.success('Đã gửi thông tin tư vấn thành công!')
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `Cảm ơn anh/chị **${leadFormData.name}**! Chuyên viên tư vấn của BDS Rental đã tiếp nhận thông tin và sẽ liên hệ qua SĐT **${leadFormData.phone}** trong thời gian sớm nhất.`
+          }
+        ])
+        setLeadFormData({ name: '', phone: '', email: '', demand: '', budget: '' })
+      } else {
+        toast.error(data.reply || 'Gửi thất bại')
+      }
+    } catch (err) {
+      toast.error('Lỗi kết nối máy chủ')
+    } finally {
+      setIsSubmittingLead(false)
+    }
+  }
+  
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const userId = session?.user?.id || 'guest'
@@ -235,6 +293,16 @@ export default function ChatBot() {
             
             <div className="flex items-center gap-1">
               <button
+                onClick={() => setShowLeadForm(!showLeadForm)}
+                type="button"
+                className="px-2 py-1 bg-white/15 hover:bg-white/25 border border-white/20 rounded-lg text-[10px] font-bold text-white transition flex items-center gap-1 cursor-pointer"
+                title="Điền form tư vấn nhanh"
+              >
+                <i className="fa-solid fa-pen-to-square text-[10px]" />
+                <span>Form Lead</span>
+              </button>
+
+              <button
                 onClick={clearChat}
                 type="button"
                 className="p-1.5 rounded-lg hover:bg-white/10 text-white/90 hover:text-white transition focus:outline-none cursor-pointer"
@@ -252,6 +320,99 @@ export default function ChatBot() {
               </button>
             </div>
           </div>
+
+          {/* Inline 5-Field Lead Form Overlay */}
+          {showLeadForm && (
+            <form onSubmit={submitLeadForm} className="p-4 bg-white border-b border-slate-200 text-xs space-y-2.5 animate-in slide-in-from-top-2 duration-150">
+              <div className="flex items-center justify-between font-bold text-slate-800 text-xs border-b border-slate-100 pb-2">
+                <span className="flex items-center gap-1.5 text-primary">
+                  <i className="fa-solid fa-file-signature text-sm" />
+                  Đăng ký tư vấn BĐS (5 Dòng)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowLeadForm(false)}
+                  className="text-slate-400 hover:text-slate-600 text-sm"
+                >
+                  <i className="fa-solid fa-xmark" />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">1. Họ và tên (*)</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ví dụ: Nguyễn Văn A"
+                  value={leadFormData.name}
+                  onChange={(e) => setLeadFormData(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary text-xs font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">2. Số điện thoại (*)</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="0912345678"
+                    value={leadFormData.phone}
+                    onChange={(e) => setLeadFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary text-xs font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">3. Địa chỉ Email</label>
+                  <input
+                    type="email"
+                    placeholder="khach@gmail.com"
+                    value={leadFormData.email}
+                    onChange={(e) => setLeadFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary text-xs font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">4. Chi tiết nhu cầu (Loại hình, Vị trí)</label>
+                <input
+                  type="text"
+                  placeholder="Cần thuê chung cư 2PN Quận 10"
+                  value={leadFormData.demand}
+                  onChange={(e) => setLeadFormData(prev => ({ ...prev, demand: e.target.value }))}
+                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">5. Khoảng ngân sách khả dụng</label>
+                <input
+                  type="text"
+                  placeholder="Tầm 10 - 15 triệu/tháng"
+                  value={leadFormData.budget}
+                  onChange={(e) => setLeadFormData(prev => ({ ...prev, budget: e.target.value }))}
+                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-primary text-xs font-semibold"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmittingLead}
+                className="w-full py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer mt-1"
+              >
+                {isSubmittingLead ? (
+                  <i className="fa-solid fa-spinner animate-spin text-sm" />
+                ) : (
+                  <>
+                    <i className="fa-solid fa-paper-plane text-xs" />
+                    <span>Gửi thông tin tư vấn</span>
+                  </>
+                )}
+              </button>
+            </form>
+          )}
 
           {/* Messages list */}
           <div className="flex-grow p-4 overflow-y-auto bg-slate-50 space-y-4 scrollbar-thin">
