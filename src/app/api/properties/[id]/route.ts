@@ -93,8 +93,8 @@ export async function PUT(
     }
 
     const user = session.user as any
-    if (user.role !== 'owner') {
-      return NextResponse.json({ error: 'Chỉ đối tác chủ nhà mới có thể chỉnh sửa.' }, { status: 403 })
+    if (!['owner', 'agent', 'admin'].includes(user.role)) {
+      return NextResponse.json({ error: 'Chỉ đối tác chủ nhà hoặc môi giới mới có thể chỉnh sửa.' }, { status: 403 })
     }
 
     const userId = Number(user.id)

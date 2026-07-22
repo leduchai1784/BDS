@@ -265,6 +265,19 @@ export default function ProfilePageClient({
                     </button>
                   )}
 
+                  {/* Agent Profile tab (For Agent only) */}
+                  {user.role === 'agent' && (
+                    <button 
+                      onClick={() => handleTabChange('agent_profile')}
+                      className={`flex items-center space-x-3 px-5 py-4 text-xs font-bold border-l-4 transition ${
+                        activeTab === 'agent_profile' ? 'bg-primary/5 text-primary border-primary font-extrabold' : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <i className="fa-solid fa-id-badge text-sm text-amber-500" />
+                      <span>Hồ sơ Môi giới</span>
+                    </button>
+                  )}
+
                   {/* Appointments tab (Tenant and Owner only) */}
                   {user.role !== 'admin' && (
                     <button 
@@ -546,6 +559,103 @@ export default function ProfilePageClient({
                   initialPhone={user.phone || ''}
                   initialCompany={user.company || ''}
                 />
+              </div>
+            )}
+
+            {/* Agent Profile Tab */}
+            {activeTab === 'agent_profile' && user.role === 'agent' && (
+              <div className="space-y-8 text-left">
+                <div className="pb-5 border-b border-slate-100">
+                  <h2 className="text-xl font-bold text-slate-800">Hồ sơ Môi giới NKS</h2>
+                  <p className="text-xs text-slate-400 mt-1 font-semibold">Thông tin môi giới chuyên nghiệp đồng bộ từ NKS API.</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Slogan */}
+                  <div className="sm:col-span-2 bg-amber-50/50 border border-amber-100 p-5 rounded-2xl">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <i className="fa-solid fa-quote-left text-amber-400 text-sm" />
+                      <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Slogan Môi giới</span>
+                    </div>
+                    <p className="text-sm font-semibold text-slate-700">{user.rslogan || 'Chưa cập nhật slogan'}</p>
+                  </div>
+
+                  {/* Bio */}
+                  <div className="sm:col-span-2 bg-slate-50 border border-slate-100 p-5 rounded-2xl">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <i className="fa-solid fa-user-pen text-slate-400 text-sm" />
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Giới thiệu bản thân</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600 leading-relaxed">{user.rsbio || user.intro || 'Chưa có thông tin giới thiệu'}</p>
+                  </div>
+
+                  {/* Experience */}
+                  <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <i className="fa-solid fa-briefcase text-blue-400 text-sm" />
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kinh nghiệm</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600">{user.rsexperience || 'Chưa cập nhật'}</p>
+                  </div>
+
+                  {/* Location */}
+                  <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <i className="fa-solid fa-location-dot text-red-400 text-sm" />
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Khu vực hoạt động</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600">{user.rslocation || 'Chưa cập nhật'}</p>
+                  </div>
+
+                  {/* Achievement */}
+                  <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <i className="fa-solid fa-trophy text-yellow-500 text-sm" />
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Thành tựu</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600">{user.rsachievement || 'Chưa cập nhật'}</p>
+                  </div>
+
+                  {/* Certificate */}
+                  <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <i className="fa-solid fa-certificate text-emerald-500 text-sm" />
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chứng chỉ Môi giới</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600">{user.rscertificate || 'Chưa cập nhật'}</p>
+                  </div>
+                </div>
+
+                {/* Contact Info */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 p-6 rounded-2xl">
+                  <h3 className="text-sm font-black text-slate-800 mb-4 flex items-center space-x-2">
+                    <i className="fa-solid fa-address-card text-amber-500" />
+                    <span>Thông tin liên hệ công khai</span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="flex items-center space-x-3">
+                      <i className="fa-solid fa-phone text-emerald-500 text-sm" />
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase block">Điện thoại</span>
+                        <span className="text-xs font-bold text-slate-700">{user.phone || 'Chưa cập nhật'}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <i className="fa-solid fa-envelope text-blue-500 text-sm" />
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase block">Email</span>
+                        <span className="text-xs font-bold text-slate-700">{user.email}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <i className="fa-solid fa-globe text-cyan-500 text-sm" />
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase block">Website</span>
+                        <span className="text-xs font-bold text-slate-700">{user.website || 'Chưa cập nhật'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

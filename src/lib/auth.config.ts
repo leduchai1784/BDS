@@ -19,9 +19,9 @@ export const authConfig = {
         return isLoggedIn
       }
 
-      // Owner routes: require owner role
+      // Owner routes: require owner, agent, or admin role
       if (pathname.startsWith('/owner')) {
-        if (isLoggedIn && user?.role === 'owner') return true
+        if (isLoggedIn && ['owner', 'agent', 'admin'].includes(user?.role)) return true
         return false
       }
 

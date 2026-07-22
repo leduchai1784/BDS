@@ -71,8 +71,8 @@ export default function PropertyCreatePage() {
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/property/create')
-    } else if (status === 'authenticated' && user?.role !== 'owner') {
-      toast.error('Chỉ dành cho Đối tác Chủ nhà. Vui lòng nâng cấp tài khoản trước.')
+    } else if (status === 'authenticated' && !['owner', 'agent', 'admin'].includes(user?.role)) {
+      toast.error('Chỉ dành cho Đối tác Chủ nhà hoặc Môi giới. Vui lòng nâng cấp tài khoản.')
       router.push('/profile?tab=register_owner')
     }
   }, [status, user, router])

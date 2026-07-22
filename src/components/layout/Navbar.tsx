@@ -1,6 +1,4 @@
-'use client'
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
@@ -28,6 +26,8 @@ export default function Navbar() {
   // LocalStorage state
   const [diaChiMoi, setDiaChiMoi] = useState(false)
 
+  const userDropdownRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     // Read initial scrolled state or path change
     const checkScroll = () => {
@@ -38,6 +38,17 @@ export default function Navbar() {
     window.addEventListener('scroll', checkScroll)
     return () => window.removeEventListener('scroll', checkScroll)
   }, [pathname])
+
+  // Click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   // Handle localStorage state
   useEffect(() => {
@@ -233,10 +244,9 @@ export default function Navbar() {
 
             {/* User Account State */}
             {status === 'authenticated' && user ? (
-              <div className="relative flex-shrink-0">
+              <div ref={userDropdownRef} className="relative flex-shrink-0">
                 <button 
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  onBlur={() => setTimeout(() => setUserDropdownOpen(false), 200)}
                   type="button"
                   className={`flex items-center space-x-1.5 lg:space-x-2.5 focus:outline-none cursor-pointer py-1.5 px-2.5 rounded-xl transition whitespace-nowrap flex-shrink-0 ${
                     isScrolled ? 'hover:bg-slate-50' : 'hover:bg-white/10'
@@ -266,38 +276,43 @@ export default function Navbar() {
                   <div className="absolute right-0 mt-2.5 w-48 rounded-2xl overflow-hidden bg-white border border-slate-150/50 shadow-xl py-2 z-50 text-left animate-dropdown">
                     {user.role === 'admin' ? (
                       <>
-                        <Link href="/admin/dashboard" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <Link href="/admin/dashboard" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                           <i className="fa-solid fa-chart-line mr-2 text-sm text-slate-400"></i> Trang quản lý
                         </Link>
-                        <Link href="/profile" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <Link href="/profile" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                           <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
                         </Link>
                       </>
                     ) : (
-                      <Link href="/profile" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                      <Link href="/profile" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                         <i className="fa-solid fa-user-gear mr-2 text-sm text-slate-400"></i> Trang cá nhân
                       </Link>
                     )}
-                    <Link href="/profile?tab=favorites" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                    <Link href="/profile?tab=favorites" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                       <i className="fa-solid fa-heart mr-2 text-sm text-slate-400"></i> Tin yêu thích
                     </Link>
-                    {user.role === 'owner' ? (
+                    {['owner', 'agent', 'admin'].includes(user.role) ? (
                       <>
-                        <Link href="/profile?tab=properties" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        {user.role === 'agent' && (
+                          <Link href="/profile?tab=agent_profile" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-amber-600 hover:bg-amber-50 transition">
+                            <i className="fa-solid fa-id-badge mr-2 text-sm text-amber-500"></i> Hồ sơ Môi giới
+                          </Link>
+                        )}
+                        <Link href="/profile?tab=properties" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                           <i className="fa-solid fa-list-check mr-2 text-sm text-slate-400"></i> Quản lý tin đăng
                         </Link>
-                        <Link href="/profile?tab=appointments" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <Link href="/profile?tab=appointments" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                           <i className="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn
                         </Link>
                       </>
                     ) : user.role === 'tenant' ? (
-                      <Link href="/profile?tab=appointments" className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                      <Link href="/profile?tab=appointments" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                         <i className="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn
                       </Link>
                     ) : null}
                     <div className="border-t border-slate-100 my-1"></div>
                     <button 
-                      onClick={handleLogout}
+                      onClick={(e) => { setUserDropdownOpen(false); handleLogout(e); }}
                       className="w-full text-left block px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition cursor-pointer"
                     >
                       <i className="fa-solid fa-right-from-bracket mr-2 text-sm text-red-400"></i> Đăng xuất
@@ -472,7 +487,7 @@ export default function Navbar() {
                     <div className="text-left">
                       <span className="block text-sm font-extrabold text-slate-800 leading-none">{user.name}</span>
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                        {user.role === 'admin' ? 'Quản trị viên' : (user.role === 'owner' ? 'Đối tác Chủ nhà' : 'Khách thuê nhà')}
+                        {user.role === 'admin' ? 'Quản trị viên' : (user.role === 'owner' ? 'Đối tác Chủ nhà' : (user.role === 'agent' ? 'Môi giới NKS' : 'Khách thuê nhà'))}
                       </span>
                     </div>
                   </div>

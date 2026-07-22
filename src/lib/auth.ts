@@ -44,53 +44,95 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const mappedData = mapNksUserToLocal(fullNksUser, nksLogin.token)
 
-          // Nhận biết vai trò (Role) từ NKS API dựa vào name trong role
-          let mappedRole = 'tenant' // Mặc định là tenant (khách thuê/người dùng thường)
-          const nksRoleName = String(fullNksUser.role?.name || '').toLowerCase()
+          // Nhận biết vai trò (Role) từ NKS API linh hoạt dựa vào role_id, role.id hoặc role.name
+          let mappedRole = 'agent' // Mặc định tài khoản NKS API là Agent
+          const roleId = Number(fullNksUser.role_id || fullNksUser.role?.id || 0)
+          const nksRoleName = String(fullNksUser.role?.name || fullNksUser.role_name || fullNksUser.role || '').toLowerCase()
 
-          if (nksRoleName === 'owner') {
-            mappedRole = 'owner'
-          } else if (nksRoleName === 'agent' || nksRoleName === 'broker' || nksRoleName === 'môi giới') {
-            mappedRole = 'agent'
-          } else if (nksRoleName === 'admin') {
+          if (roleId === 1 || nksRoleName.includes('admin') || nksRoleName.includes('quản trị')) {
             mappedRole = 'admin'
+          } else if (roleId === 2 || nksRoleName.includes('owner') || nksRoleName.includes('chủ nhà')) {
+            mappedRole = 'owner'
+          } else if (roleId === 3 || roleId === 4 || nksRoleName.includes('agent') || nksRoleName.includes('broker') || nksRoleName.includes('môi giới') || nksRoleName.includes('sale')) {
+            mappedRole = 'agent'
+          } else if (roleId === 5 || nksRoleName.includes('tenant') || nksRoleName.includes('user') || nksRoleName.includes('khách')) {
+            mappedRole = 'tenant'
           } else {
-            mappedRole = 'tenant' // user hoặc các role khác -> tenant
+            mappedRole = 'agent' // Mặc định NKS API user là agent
           }
 
-          let localUser = await prisma.user.findUnique({ where: { email } })
+          let userId = '100'
+          let userRole = mappedRole
+          let userName = mappedData.name || fullNksUser.name || 'NKS Agent'
+          let userAvatar = mappedData.avatar || fullNksUser.avatar || null
 
-          if (localUser) {
-            localUser = await prisma.user.update({
-              where: { email },
-              data: {
-                ...mappedData,
-                role: localUser.role === 'admin' ? 'admin' : mappedRole,
-                password: await bcrypt.hash(password, 12),
-              }
-            })
-          } else {
-            localUser = await prisma.user.create({
-              data: {
-                ...mappedData,
-                email,
-                role: mappedRole,
-                status: 'active',
-                password: await bcrypt.hash(password, 12),
-              }
-            })
-          }
+          try {
+            let localUser = await prisma.user.findUnique({ where: { email } })
 
-          if (localUser.status === 'locked') {
-            throw new Error('ACCOUNT_LOCKED')
+            if (localUser) {
+              localUser = await prisma.user.update({
+                where: { email },
+                data: {
+                  ...mappedData,
+                  role: localUser.role === 'admin' ? 'admin' : mappedRole,
+                  password: await bcrypt.hash(password, 12),
+                }
+              })
+            } else {
+              localUser = await prisma.user.create({
+                data: {
+                  ...mappedData,
+                  email,
+                  role: mappedRole,
+                  status: 'active',
+                  password: await bcrypt.hash(password, 12),
+                }
+              })
+            }
+
+            if (localUser.status === 'locked') {
+              throw new Error('ACCOUNT_LOCKED')
+            }
+
+            userId = String(localUser.id)
+            userRole = localUser.role
+            userName = localUser.name
+            userAvatar = localUser.avatar
+          } catch (dbErr: any) {
+            if (dbErr.message === 'ACCOUNT_LOCKED') throw dbErr
+            console.error('Non-fatal error syncing NKS user to DB:', dbErr.message)
+            // Fallback try simple create
+            try {
+              let localUser = await prisma.user.findUnique({ where: { email } })
+              if (!localUser) {
+                localUser = await prisma.user.create({
+                  data: {
+                    email,
+                    name: userName,
+                    phone: mappedData.phone || null,
+                    avatar: userAvatar,
+                    role: mappedRole,
+                    status: 'active',
+                    nksUserId: mappedData.nksUserId || null,
+                    nksToken: nksLogin.token,
+                    password: await bcrypt.hash(password, 12),
+                  }
+                })
+              }
+              userId = String(localUser.id)
+              userRole = localUser.role
+            } catch (retryErr: any) {
+              console.error('DB sync retry failed:', retryErr.message)
+            }
           }
 
           return {
-            id: String(localUser.id),
-            email: localUser.email,
-            name: localUser.name,
-            role: localUser.role,
-            image: localUser.avatar
+            id: userId,
+            email: email,
+            name: userName,
+            role: userRole,
+            image: userAvatar,
+            nksToken: nksLogin.token
           }
         }
 
@@ -125,19 +167,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.role = (user as any).role
         token.id = user.id
+        token.nksToken = (user as any).nksToken
       }
       // Fetch fresh role from DB on every request to prevent stale permissions after role upgrade
       if (token?.id) {
         try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: Number(token.id) },
-            select: { role: true }
-          })
-          if (dbUser) {
-            token.role = dbUser.role
-          } else {
-            // If user was deleted from local DB, invalidate the session
-            return null
+          const uId = Number(token.id)
+          if (!isNaN(uId) && uId > 0) {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: uId },
+              select: { role: true, nksToken: true }
+            })
+            if (dbUser) {
+              token.role = dbUser.role
+              if (dbUser.nksToken) token.nksToken = dbUser.nksToken
+            }
           }
         } catch (e) {
           console.error('Failed to fetch fresh user role for token:', e)
@@ -147,7 +191,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).role = token.role as string
+        (session.user as any).role = token.role as string;
+        (session.user as any).nksToken = token.nksToken as string
         session.user.id = token.id as string
       }
       return session

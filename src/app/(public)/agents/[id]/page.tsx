@@ -17,7 +17,7 @@ export default async function AgentDetailPage({ params }: AgentDetailPageProps) 
     where: { id: BigInt(agentId) }
   })
 
-  if (!agent || agent.role !== 'owner' || agent.status !== 'active') {
+  if (!agent || !['owner', 'agent'].includes(agent.role) || agent.status !== 'active') {
     notFound()
   }
 

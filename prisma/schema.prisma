@@ -45,6 +45,12 @@ model User {
   province         String?       @db.VarChar(255)
   district         String?       @db.VarChar(255)
   ward             String?       @db.VarChar(255)
+  rslogan          String?       @db.VarChar(500)
+  rsbio            String?       @db.Text
+  rsexperience     String?       @db.VarChar(500)
+  rslocation       String?       @db.VarChar(500)
+  rsachievement    String?       @db.VarChar(500)
+  rscertificate    String?       @db.VarChar(500)
   aiCampaigns      AiCampaign[]
   appointments     Appointment[]
   demands          demands[]

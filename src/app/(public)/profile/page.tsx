@@ -170,11 +170,39 @@ export default async function ProfilePage() {
   }
 
   const userId = Number(session.user.id)
+  const userEmail = session.user.email || ''
+  const nksToken = (session.user as any).nksToken || ''
 
-  // 1. Fetch user from local DB
-  const dbUser = await prisma.user.findUnique({
+  // 1. Fetch user from local DB (by id first, then by email as fallback)
+  let dbUser = await prisma.user.findUnique({
     where: { id: userId }
   })
+
+  if (!dbUser && userEmail) {
+    dbUser = await prisma.user.findUnique({
+      where: { email: userEmail }
+    })
+  }
+
+  // If still not in local DB but has NKS token, auto-create
+  if (!dbUser && userEmail && nksToken) {
+    try {
+      const bcrypt = await import('bcryptjs')
+      dbUser = await prisma.user.create({
+        data: {
+          email: userEmail,
+          name: session.user.name || 'NKS Agent',
+          avatar: session.user.image || null,
+          role: (session.user as any).role || 'agent',
+          status: 'active',
+          nksToken: nksToken,
+          password: await bcrypt.hash('nks_synced_user', 12),
+        }
+      })
+    } catch (e: any) {
+      console.error('Failed to auto-create user in profile page:', e.message)
+    }
+  }
 
   if (!dbUser) {
     redirect('/login')
@@ -209,7 +237,13 @@ export default async function ProfilePage() {
     addProvince: dbUser.addProvince || '',
     addDistrict: dbUser.addDistrict || '',
     addWard: dbUser.addWard || '',
-    joinDate: dbUser.createdAt ? new Date(dbUser.createdAt).toLocaleDateString('vi-VN') : ''
+    joinDate: dbUser.createdAt ? new Date(dbUser.createdAt).toLocaleDateString('vi-VN') : '',
+    rslogan: dbUser.rslogan || '',
+    rsbio: dbUser.rsbio || '',
+    rsexperience: dbUser.rsexperience || '',
+    rslocation: dbUser.rslocation || '',
+    rsachievement: dbUser.rsachievement || '',
+    rscertificate: dbUser.rscertificate || '',
   }
 
   // 2. Sync with NKS if nksToken is active
@@ -236,6 +270,12 @@ export default async function ProfilePage() {
         if (u.add_province) mergedUser.province = u.add_province
         if (u.add_district) mergedUser.district = u.add_district
         if (u.add_ward) mergedUser.ward = u.add_ward
+        if (u.rslogan) mergedUser.rslogan = u.rslogan
+        if (u.rsbio) mergedUser.rsbio = u.rsbio
+        if (u.rsexperience) mergedUser.rsexperience = u.rsexperience
+        if (u.rslocation) mergedUser.rslocation = u.rslocation
+        if (u.rsachievement) mergedUser.rsachievement = u.rsachievement
+        if (u.rscertificate) mergedUser.rscertificate = u.rscertificate
       }
     } catch (e) {
       console.warn('Failed to fetch NKS profile details for dashboard sync:', e)

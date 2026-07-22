@@ -24,7 +24,7 @@ export default async function AgentsPage({ searchParams }: AgentsPageProps) {
 
   // Query conditions matching Laravel AgentController
   const andFilters: any[] = [
-    { role: 'owner' },
+    { role: { in: ['owner', 'agent'] } },
     { status: 'active' }
   ]
 

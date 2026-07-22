@@ -155,6 +155,12 @@ export function mapNksUserToLocal(nksUser: any, token: string): any {
     zaloKey: nksUser.zalo_key || null,
     intro: nksUser.intro || null,
     website: nksUser.website || null,
+    rslogan: nksUser.rslogan || null,
+    rsbio: nksUser.rsbio || null,
+    rsexperience: nksUser.rsexperience || null,
+    rslocation: nksUser.rslocation || null,
+    rsachievement: nksUser.rsachievement || null,
+    rscertificate: nksUser.rscertificate || null,
   }
 }
 
