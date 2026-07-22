@@ -22,13 +22,19 @@ export const authConfig = {
 
       // Owner routes: require owner, agent, or admin role
       if (pathname.startsWith('/owner')) {
-        if (isLoggedIn && ['owner', 'agent', 'admin'].includes(user?.role)) return true
+        if (isLoggedIn) {
+          if (['owner', 'agent', 'admin'].includes(user?.role)) return true
+          return Response.redirect(new URL('/unauthorized?required=owner_agent', nextUrl))
+        }
         return false
       }
 
       // Admin routes: require admin role
       if (pathname.startsWith('/admin')) {
-        if (isLoggedIn && user?.role === 'admin') return true
+        if (isLoggedIn) {
+          if (user?.role === 'admin') return true
+          return Response.redirect(new URL('/unauthorized?required=admin', nextUrl))
+        }
         return false
       }
 

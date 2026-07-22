@@ -205,6 +205,9 @@ export default function Navbar() {
             <Link href="/news" className={`font-bold text-sm lg:text-base transition duration-150 whitespace-nowrap ${navClass('/news')}`}>
               Tin tức
             </Link>
+            <Link href="/system" className={`font-bold text-sm lg:text-base transition duration-150 whitespace-nowrap ${navClass('/system')}`}>
+              Hệ thống BDS
+            </Link>
           </nav>
 
           {/* Actions (Profile & CTA) */}
@@ -475,6 +478,14 @@ export default function Navbar() {
             >
               <i className="fa-solid fa-newspaper text-slate-400 mr-3 text-base w-5 text-center transition-colors"></i>
               <span>Tin tức</span>
+            </Link>
+            <Link 
+              href="/system" 
+              onClick={() => setMobileMenuOpen(false)} 
+              className={`block px-3 py-3 rounded-xl text-base font-semibold transition flex items-center ${isActive('/system') ? 'text-primary bg-primary-light font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-primary'}`}
+            >
+              <i className="fa-solid fa-network-wired text-slate-400 mr-3 text-base w-5 text-center transition-colors"></i>
+              <span>Hệ thống BDS</span>
             </Link>
             
             <div className="pt-4 border-t border-slate-100 flex flex-col space-y-2">
