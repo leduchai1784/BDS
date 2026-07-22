@@ -791,45 +791,136 @@ export default function PropertyCreatePage() {
 
             <div className="border-t border-slate-100 my-6" />
 
-            {/* Section 4: Images urls */}
+            {/* Section 4: Images upload */}
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-wider text-primary">4. Hình ảnh bất động sản</h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Primary cover image */}
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1 font-bold">Liên kết ảnh chính <span className="text-red-500">*</span></label>
-                  <div className="flex items-start space-x-4">
-                    <div className="w-24 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center flex-shrink-0">
-                      {imageUrl ? (
-                        <img src={imageUrl} className="w-full h-full object-cover" />
-                      ) : (
-                        <i className="fa-regular fa-image text-slate-300 text-2xl" />
-                      )}
-                    </div>
-                    <div className="flex-grow text-left">
-                      <input 
-                        type="text" 
-                        value={imageUrl} 
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        required
-                        placeholder="https://example.com/cover.jpg" 
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition"
-                      />
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left side: Main cover image upload */}
+                <div className="space-y-2 bg-slate-50/60 p-4 rounded-2xl border border-slate-200/80">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 px-1 flex items-center justify-between">
+                    <span>Ảnh đại diện chính <span className="text-red-500">*</span></span>
+                    {imageUrl && <span className="text-[10px] text-emerald-600 font-semibold">Đã chọn ảnh</span>}
+                  </label>
+
+                  <div className="relative group">
+                    {imageUrl ? (
+                      <div className="relative w-full h-48 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 shadow-xs">
+                        <img src={imageUrl} alt="Ảnh chính" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                          <label className="px-3 py-1.5 bg-white text-slate-800 rounded-lg text-xs font-bold shadow-md cursor-pointer hover:bg-slate-50 transition">
+                            Thay ảnh khác
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                  const reader = new FileReader()
+                                  reader.onload = (ev) => {
+                                    if (ev.target?.result) setImageUrl(ev.target.result as string)
+                                  }
+                                  reader.readAsDataURL(file)
+                                }
+                              }}
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setImageUrl('')}
+                            className="px-3 py-1.5 bg-rose-500 text-white rounded-lg text-xs font-bold shadow-md hover:bg-rose-600 transition"
+                          >
+                            Xóa ảnh
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer bg-white hover:bg-slate-50/80 hover:border-primary/50 transition">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                          <div className="w-12 h-12 mb-2 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <i className="fa-solid fa-cloud-arrow-up text-lg" />
+                          </div>
+                          <p className="mb-1 text-xs font-bold text-slate-700">Tải lên ảnh chính</p>
+                          <p className="text-[10px] text-slate-400">PNG, JPG, WEBP (Tối đa 10MB)</p>
+                        </div>
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          className="hidden"
+                          required={!imageUrl}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              const reader = new FileReader()
+                              reader.onload = (ev) => {
+                                if (ev.target?.result) setImageUrl(ev.target.result as string)
+                              }
+                              reader.readAsDataURL(file)
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
                   </div>
                 </div>
 
-                {/* Sub Gallery */}
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Danh sách liên kết ảnh phụ (Gallery)</label>
-                  <textarea 
-                    value={galleryUrlsText}
-                    onChange={(e) => setGalleryUrlsText(e.target.value)}
-                    rows={3}
-                    placeholder="Mỗi dòng một liên kết ảnh..." 
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition resize-none"
-                  />
+                {/* Right side: Sub gallery images upload */}
+                <div className="space-y-2 bg-slate-50/60 p-4 rounded-2xl border border-slate-200/80">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 px-1 flex items-center justify-between">
+                    <span>Ảnh bổ sung (Album ảnh phụ)</span>
+                    <span className="text-[10px] text-slate-400 font-semibold">{galleryUrlsText ? galleryUrlsText.split('\n').filter(Boolean).length : 0} ảnh</span>
+                  </label>
+
+                  {/* Multiple file upload button */}
+                  <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer bg-white hover:bg-slate-50/80 hover:border-primary/50 transition text-center">
+                    <i className="fa-solid fa-plus-circle text-primary mr-2" />
+                    <span className="text-xs font-bold text-slate-700">Thêm ảnh phụ từ thiết bị</span>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || [])
+                        if (files.length > 0) {
+                          const existingList = galleryUrlsText ? galleryUrlsText.split('\n').filter(Boolean) : []
+                          files.forEach(file => {
+                            const reader = new FileReader()
+                            reader.onload = (ev) => {
+                              if (ev.target?.result) {
+                                existingList.push(ev.target.result as string)
+                                setGalleryUrlsText(existingList.join('\n'))
+                              }
+                            }
+                            reader.readAsDataURL(file)
+                          })
+                        }
+                      }}
+                    />
+                  </label>
+
+                  {/* Gallery Thumbnails List */}
+                  {galleryUrlsText && (
+                    <div className="grid grid-cols-4 gap-2 mt-3 max-h-36 overflow-y-auto p-1">
+                      {galleryUrlsText.split('\n').filter(Boolean).map((url, idx) => (
+                        <div key={idx} className="relative group w-full h-16 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                          <img src={url} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const list = galleryUrlsText.split('\n').filter(Boolean)
+                              list.splice(idx, 1)
+                              setGalleryUrlsText(list.join('\n'))
+                            }}
+                            className="absolute top-1 right-1 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-md hover:bg-rose-600 transition"
+                          >
+                            <i className="fa-solid fa-xmark" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
