@@ -120,7 +120,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 })
               }
               userId = String(localUser.id)
-              userRole = localUser.role
+              userRole = mappedRole
             } catch (retryErr: any) {
               console.error('DB sync retry failed:', retryErr.message)
             }
