@@ -6,7 +6,8 @@ export const authConfig = {
     error: '/login'
   },
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt',
+    maxAge: 3 * 24 * 60 * 60 // 3 ngày
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
