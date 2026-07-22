@@ -111,6 +111,7 @@ export default function PropertyCreatePage() {
   const [selectedDistrict, setSelectedDistrict] = useState<District | null>(null)
   const [districtOpen, setDistrictOpen] = useState(false)
 
+  const [nksAdministratives, setNksAdministratives] = useState<Ward[]>([])
   const [wardSearch, setWardSearch] = useState('')
   const [selectedWard, setSelectedWard] = useState<Ward | null>(null)
   const [wardOpen, setWardOpen] = useState(false)
@@ -225,8 +226,8 @@ export default function PropertyCreatePage() {
     setIsSubmitting(true)
     setErrorMsg('')
 
-    if (!selectedProvince || !selectedDistrict || !selectedWard || !address) {
-      setErrorMsg('Vui lòng chọn đầy đủ thông tin Tỉnh/Thành, Quận/Huyện, Phường/Xã và Địa chỉ chi tiết.')
+    if (!selectedProvince || !selectedWard || !address) {
+      setErrorMsg('Vui lòng chọn đầy đủ thông tin Tỉnh/Thành, Phường/Xã và Địa chỉ chi tiết.')
       setIsSubmitting(false)
       return
     }
@@ -264,7 +265,7 @@ export default function PropertyCreatePage() {
           furniture,
           description,
           city: selectedProvince.Name,
-          district: selectedDistrict.Name,
+          district: selectedDistrict?.Name || selectedProvince.Name,
           ward: selectedWard.Name,
           address,
           latitude,
@@ -299,7 +300,11 @@ export default function PropertyCreatePage() {
       )
     : []
 
-  const filteredWards = selectedDistrict
+  const filteredWards = selectedProvince && nksAdministratives.length > 0
+    ? nksAdministratives.filter(w => 
+        !wardSearch || w.Name.toLowerCase().includes(wardSearch.toLowerCase())
+      )
+    : selectedDistrict
     ? selectedDistrict.Wards.filter(w => 
         !wardSearch || w.Name.toLowerCase().includes(wardSearch.toLowerCase())
       )
@@ -617,7 +622,7 @@ export default function PropertyCreatePage() {
               <h3 className="text-xs font-black uppercase tracking-wider text-primary">2. Vị trí bất động sản</h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Province Selector */}
+                {/* NKS Province Selector */}
                 <div className="space-y-1 relative" ref={provinceRef}>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Tỉnh/Thành phố <span className="text-red-500">*</span></label>
                   <div className="relative">
@@ -640,11 +645,23 @@ export default function PropertyCreatePage() {
                           onClick={() => {
                             setSelectedProvince(p)
                             setProvinceSearch(p.Name)
-                            setSelectedDistrict(null)
-                            setDistrictSearch('')
                             setSelectedWard(null)
                             setWardSearch('')
                             setProvinceOpen(false)
+
+                            // Fetch NKS Administratives for selected province
+                            fetch(`https://online.nks.vn/api/nks/administratives?province_id=${p.Id}&slcBox=true`, { method: 'POST' })
+                              .then(res => res.json())
+                              .then(data => {
+                                if (data && data.success && Array.isArray(data.data)) {
+                                  const adminWards: Ward[] = data.data.map((item: any) => ({
+                                    Id: String(item.id),
+                                    Name: item.title
+                                  }))
+                                  setNksAdministratives(adminWards)
+                                }
+                              })
+                              .catch(err => console.error('Error fetching NKS administratives:', err))
                           }}
                           className="px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition text-left"
                         >
@@ -655,60 +672,23 @@ export default function PropertyCreatePage() {
                   )}
                 </div>
 
-                {/* District Selector */}
-                <div className="space-y-1 relative" ref={districtRef}>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Quận/Huyện <span className="text-red-500">*</span></label>
+                {/* NKS Administrative / Ward Selector */}
+                <div className="space-y-1 relative" ref={wardRef}>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã (Đơn vị hành chính) <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <input 
                       type="text" 
-                      placeholder="-- Chọn Quận/Huyện --"
-                      value={districtSearch}
-                      onChange={(e) => { setDistrictSearch(e.target.value); setDistrictOpen(true) }}
-                      onFocus={() => setDistrictOpen(true)}
+                      placeholder="-- Chọn Phường/Xã / Khu vực --"
+                      value={wardSearch}
+                      onChange={(e) => { setWardSearch(e.target.value); setWardOpen(true) }}
+                      onFocus={() => setWardOpen(true)}
                       disabled={!selectedProvince}
                       required 
                       className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition text-left disabled:opacity-60 disabled:cursor-not-allowed"
                     />
                     <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
                   </div>
-                  {districtOpen && selectedProvince && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                      {filteredDistricts.map(d => (
-                        <div 
-                          key={d.Id}
-                          onClick={() => {
-                            setSelectedDistrict(d)
-                            setDistrictSearch(d.Name)
-                            setSelectedWard(null)
-                            setWardSearch('')
-                            setDistrictOpen(false)
-                          }}
-                          className="px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-primary-light hover:text-primary cursor-pointer transition text-left"
-                        >
-                          {d.Name}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Ward Selector */}
-                <div className="space-y-1 relative" ref={wardRef}>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Phường/Xã <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <input 
-                      type="text" 
-                      placeholder="-- Chọn Phường/Xã --"
-                      value={wardSearch}
-                      onChange={(e) => { setWardSearch(e.target.value); setWardOpen(true) }}
-                      onFocus={() => setWardOpen(true)}
-                      disabled={!selectedDistrict}
-                      required 
-                      className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none cursor-pointer transition text-left disabled:opacity-60 disabled:cursor-not-allowed"
-                    />
-                    <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
-                  </div>
-                  {wardOpen && selectedDistrict && (
+                  {wardOpen && selectedProvince && (
                     <div className="absolute z-50 w-full mt-1 bg-white border border-slate-150 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                       {filteredWards.map(w => (
                         <div 
