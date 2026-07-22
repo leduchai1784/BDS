@@ -173,45 +173,62 @@ export default async function ProfilePage() {
   const userEmail = session.user.email || ''
   const nksToken = (session.user as any).nksToken || ''
 
-  // 1. Fetch user from local DB (by id first, then by email as fallback)
+  let nksUser: any = null
+  if (nksToken) {
+    try {
+      const nksRes = await getNksUserInfo(nksToken)
+      if (nksRes?.success && nksRes.data) {
+        nksUser = nksRes.data
+      }
+    } catch (e) {
+      console.warn('Failed to fetch NKS profile details directly from API:', e)
+    }
+  }
+
+  // 2. Fetch user from local DB (by id first, then by email)
   let dbUser = await prisma.user.findUnique({
     where: { id: userId }
   })
 
-  if (!dbUser && userEmail) {
+  const emailToLookup = nksUser?.email || userEmail
+  if (!dbUser && emailToLookup) {
     dbUser = await prisma.user.findUnique({
-      where: { email: userEmail }
+      where: { email: emailToLookup }
     })
   }
 
-  // If still not in local DB but has NKS token, auto-create
-  if (!dbUser && userEmail && nksToken) {
+  // 3. Auto-sync NKS data to local DB if record does not exist yet
+  if (!dbUser && nksUser && emailToLookup) {
     try {
       const bcrypt = await import('bcryptjs')
+      const mappedRole = (session.user as any).role || (nksUser.role_id === 4 || nksUser.role?.name === 'agent' ? 'agent' : 'owner')
       dbUser = await prisma.user.create({
         data: {
-          email: userEmail,
-          name: session.user.name || 'NKS Agent',
-          avatar: session.user.image || null,
-          role: (session.user as any).role || 'agent',
+          email: emailToLookup,
+          name: nksUser.name || session.user.name || 'NKS Agent',
+          phone: nksUser.phone || null,
+          avatar: nksUser.avatar || null,
+          role: mappedRole,
           status: 'active',
           nksToken: nksToken,
+          nksUserId: String(nksUser.id),
           password: await bcrypt.hash('nks_synced_user', 12),
         }
       })
-    } catch (e: any) {
-      console.error('Failed to auto-create user in profile page:', e.message)
+    } catch (createErr: any) {
+      console.error('Failed to auto-sync user from NKS API to local DB:', createErr.message)
     }
   }
 
-  if (!dbUser) {
+  // If both NKS API and DB return empty, show error screen
+  if (!nksUser && !dbUser) {
     return (
       <div className="min-h-screen pt-32 pb-16 flex flex-col items-center justify-center bg-slate-50 px-4">
         <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl max-w-md w-full text-center">
           <i className="fa-solid fa-triangle-exclamation text-red-500 text-4xl mb-4 animate-bounce"></i>
-          <h2 className="text-lg font-bold text-slate-800 mb-2">Lỗi đồng bộ dữ liệu</h2>
+          <h2 className="text-lg font-bold text-slate-800 mb-2">Lỗi kết nối hệ thống</h2>
           <p className="text-xs text-slate-500 mb-6 font-semibold leading-relaxed">
-            Hệ thống không tìm thấy hoặc chưa đồng bộ kịp thông tin tài khoản của bạn trong cơ sở dữ liệu. Vui lòng đăng xuất và đăng nhập lại để làm mới phiên làm việc.
+            Hệ thống không thể tải dữ liệu tài khoản từ NKS API hoặc Cơ sở dữ liệu. Vui lòng kiểm tra lại kết nối mạng, đăng xuất và thử lại.
           </p>
           <a 
             href="/api/auth/signout" 
@@ -224,78 +241,44 @@ export default async function ProfilePage() {
     )
   }
 
-  // Define details structure
+  // 4. Build mergedUser prioritizing NKS API payload, fallback to DB
+  const userSource = nksUser || dbUser || {}
+  
   let mergedUser = {
-    id: Number(dbUser.id),
-    name: dbUser.name,
-    email: dbUser.email,
-    phone: dbUser.phone || '',
-    role: dbUser.role || 'tenant',
-    firstname: dbUser.firstname || '',
-    lastname: dbUser.lastname || '',
-    gender: dbUser.gender !== null ? Number(dbUser.gender) : 0,
-    dob: dbUser.dob || '',
-    pob: dbUser.pob || '',
-    idNumber: dbUser.idNumber || '',
-    idDate: dbUser.idDate || '',
-    idPlace: dbUser.idPlace || '',
-    permanentAddress: dbUser.permanentAddress || '',
-    intro: dbUser.intro || '',
-    website: dbUser.website || '',
-    companyName: dbUser.company || '',
-    cccdFront: dbUser.cccdFront || '',
-    cccdBack: dbUser.cccdBack || '',
-    avatar: dbUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(dbUser.name)}&background=0077bb&color=fff`,
-    province: dbUser.province || '',
-    district: dbUser.district || '',
-    ward: dbUser.ward || '',
-    addStreet: dbUser.addStreet || '',
-    addProvince: dbUser.addProvince || '',
-    addDistrict: dbUser.addDistrict || '',
-    addWard: dbUser.addWard || '',
-    joinDate: dbUser.createdAt ? new Date(dbUser.createdAt).toLocaleDateString('vi-VN') : '',
-    rslogan: dbUser.rslogan || '',
-    rsbio: dbUser.rsbio || '',
-    rsexperience: dbUser.rsexperience || '',
-    rslocation: dbUser.rslocation || '',
-    rsachievement: dbUser.rsachievement || '',
-    rscertificate: dbUser.rscertificate || '',
-  }
-
-  // 2. Sync with NKS if nksToken is active
-  if (dbUser.nksToken) {
-    try {
-      const nksRes = await getNksUserInfo(dbUser.nksToken)
-      if (nksRes?.success && nksRes.data) {
-        const u = nksRes.data
-        mergedUser.firstname = u.firstname || mergedUser.firstname
-        mergedUser.lastname = u.lastname || mergedUser.lastname
-        if (u.name) mergedUser.name = u.name
-        if (u.phone) mergedUser.phone = u.phone
-        if (u.avatar) mergedUser.avatar = u.avatar
-        if (u.gender !== undefined) mergedUser.gender = Number(u.gender)
-        if (u.dob) mergedUser.dob = u.dob
-        if (u.pob) mergedUser.pob = u.pob
-        if (u.id_number) mergedUser.idNumber = u.id_number
-        if (u.id_date) mergedUser.idDate = u.id_date
-        if (u.id_place) mergedUser.idPlace = u.id_place
-        if (u.permanent_address) mergedUser.permanentAddress = u.permanent_address
-        if (u.cccd_front) mergedUser.cccdFront = u.cccd_front
-        if (u.cccd_back) mergedUser.cccdBack = u.cccd_back
-        if (u.add_street) mergedUser.addStreet = u.add_street
-        if (u.add_province) mergedUser.province = u.add_province
-        if (u.add_district) mergedUser.district = u.add_district
-        if (u.add_ward) mergedUser.ward = u.add_ward
-        if (u.rslogan) mergedUser.rslogan = u.rslogan
-        if (u.rsbio) mergedUser.rsbio = u.rsbio
-        if (u.rsexperience) mergedUser.rsexperience = u.rsexperience
-        if (u.rslocation) mergedUser.rslocation = u.rslocation
-        if (u.rsachievement) mergedUser.rsachievement = u.rsachievement
-        if (u.rscertificate) mergedUser.rscertificate = u.rscertificate
-      }
-    } catch (e) {
-      console.warn('Failed to fetch NKS profile details for dashboard sync:', e)
-    }
+    id: Number(dbUser?.id || userSource.id || userId),
+    name: userSource.name || dbUser?.name || '',
+    email: userSource.email || dbUser?.email || userEmail,
+    phone: userSource.phone || dbUser?.phone || '',
+    role: (session.user as any).role || dbUser?.role || (nksUser?.role_id === 4 || nksUser?.role?.name === 'agent' ? 'agent' : 'tenant'),
+    firstname: userSource.firstname || dbUser?.firstname || '',
+    lastname: userSource.lastname || dbUser?.lastname || '',
+    gender: userSource.gender !== undefined && userSource.gender !== null ? Number(userSource.gender) : (dbUser?.gender !== null ? Number(dbUser?.gender) : 0),
+    dob: userSource.dob || userSource.formatedDob || dbUser?.dob || '',
+    pob: userSource.pob || dbUser?.pob || '',
+    idNumber: userSource.id_number || dbUser?.idNumber || '',
+    idDate: userSource.id_date || userSource.formatedCccdDate || dbUser?.idDate || '',
+    idPlace: userSource.id_place || dbUser?.idPlace || '',
+    permanentAddress: userSource.permanent_address || dbUser?.permanentAddress || '',
+    intro: userSource.intro || dbUser?.intro || '',
+    website: userSource.website || dbUser?.website || '',
+    companyName: userSource.company || dbUser?.company || '',
+    cccdFront: userSource.cccd_front || dbUser?.cccdFront || '',
+    cccdBack: userSource.cccd_back || dbUser?.cccdBack || '',
+    avatar: userSource.avatar || dbUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userSource.name || 'User')}&background=0077bb&color=fff`,
+    province: userSource.add_province || dbUser?.province || '',
+    district: userSource.add_district || dbUser?.district || '',
+    ward: userSource.add_ward || dbUser?.ward || '',
+    addStreet: userSource.add_street || dbUser?.addStreet || '',
+    addProvince: userSource.add_province || dbUser?.addProvince || '',
+    addDistrict: userSource.add_district || dbUser?.addDistrict || '',
+    addWard: dbUser?.addWard || dbUser?.addWard || '',
+    joinDate: dbUser?.createdAt ? new Date(dbUser.createdAt).toLocaleDateString('vi-VN') : '',
+    rslogan: userSource.rslogan || dbUser?.rslogan || '',
+    rsbio: userSource.rsbio || dbUser?.rsbio || '',
+    rsexperience: userSource.rsexperience || dbUser?.rsexperience || '',
+    rslocation: userSource.rslocation || dbUser?.rslocation || '',
+    rsachievement: userSource.rsachievement || dbUser?.rsachievement || '',
+    rscertificate: userSource.rscertificate || dbUser?.rscertificate || '',
   }
 
   // 3. Fetch properties owned by user
