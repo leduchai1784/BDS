@@ -108,6 +108,7 @@ export async function POST(req: Request) {
         title,
         slug,
         description,
+        propertyType: property_type || 'Căn hộ',
         price: BigInt(price),
         priceLabel: formatPriceLabel(price, purpose),
         area: Number(area),
@@ -128,8 +129,7 @@ export async function POST(req: Request) {
         leaseTerm: lease_term || null,
         frontage: frontage || null,
         roadWidth: road_width || null,
-        floors: floors ? Number(floors) : null,
-        propertyType: property_type
+        floors: floors ? Number(floors) : null
       }
     })
 

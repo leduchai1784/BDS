@@ -74,7 +74,7 @@ export default function PropertyCreatePage() {
   // Form fields states
   const [purpose, setPurpose] = useState<'rent' | 'sale'>('rent')
   const [title, setTitle] = useState('')
-  const [propertyType, setPropertyType] = useState('Căn hộ chung cư')
+  const [propertyType, setPropertyType] = useState('Căn hộ')
   const [price, setPrice] = useState('')
   const [area, setArea] = useState('')
   const [bedroom, setBedroom] = useState('0')
@@ -375,13 +375,10 @@ export default function PropertyCreatePage() {
                   required
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer"
                 >
-                  <option value="Căn hộ chung cư">Căn hộ chung cư</option>
-                  <option value="Nhà nguyên căn">Nhà nguyên căn</option>
-                  <option value="Phòng trọ">Phòng trọ</option>
-                  <option value="Đất">Đất</option>
-                  <option value="Mặt bằng">Mặt bằng</option>
-                  <option value="Văn phòng">Văn phòng</option>
-                  <option value="Kho, nhà xưởng">Kho, nhà xưởng</option>
+                  <option value="Căn hộ">Căn hộ (Chung cư / Căn hộ dịch vụ)</option>
+                  <option value="Nhà phố">Nhà phố (Nhà riêng / Nhà nguyên căn)</option>
+                  <option value="Biệt thự">Biệt thự (Villa)</option>
+                  <option value="Mặt bằng">Mặt bằng (Kinh doanh / Văn phòng)</option>
                 </select>
               </div>
 
