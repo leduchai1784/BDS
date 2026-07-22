@@ -42,9 +42,15 @@ export default function PropertyCreatePage() {
   const districtRef = useRef<HTMLDivElement>(null)
   const wardRef = useRef<HTMLDivElement>(null)
 
+  const typeDropdownRef = useRef<HTMLDivElement>(null)
+  const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false)
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (typeDropdownRef.current && !typeDropdownRef.current.contains(event.target as Node)) {
+        setIsTypeDropdownOpen(false)
+      }
       if (provinceRef.current && !provinceRef.current.contains(event.target as Node)) {
         setProvinceOpen(false)
       }
@@ -366,25 +372,47 @@ export default function PropertyCreatePage() {
                 />
               </div>
 
-              {/* Property Type Selector */}
-              <div className="space-y-1">
+              {/* Property Type Custom Rounded Selector */}
+              <div className="space-y-1 relative" ref={typeDropdownRef}>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình nhà đất <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <select 
-                    value={propertyType}
-                    onChange={(e) => setPropertyType(e.target.value)}
-                    required
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-2xl text-xs font-extrabold text-slate-800 outline-none transition cursor-pointer appearance-none pr-10 shadow-xs"
-                  >
-                    <option value="Căn hộ">Căn hộ</option>
-                    <option value="Nhà phố">Nhà phố</option>
-                    <option value="Biệt thự">Biệt thự</option>
-                    <option value="Mặt bằng">Mặt bằng</option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                    <i className="fa-solid fa-chevron-down text-xs" />
+                
+                <button
+                  type="button"
+                  onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-primary hover:border-primary/50 rounded-2xl text-xs font-extrabold text-slate-800 outline-none transition cursor-pointer flex items-center justify-between shadow-xs text-left"
+                >
+                  <span>{propertyType}</span>
+                  <i className={`fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-200 ${isTypeDropdownOpen ? 'rotate-180 text-primary' : ''}`} />
+                </button>
+
+                {/* Rounded Dropdown Menu */}
+                {isTypeDropdownOpen && (
+                  <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200/80 rounded-2xl shadow-xl z-50 p-1.5 space-y-1 animate-in fade-in duration-150">
+                    {[
+                      { value: 'Căn hộ', icon: 'fa-building' },
+                      { value: 'Nhà phố', icon: 'fa-house-chimney' },
+                      { value: 'Biệt thự', icon: 'fa-house-user' },
+                      { value: 'Mặt bằng', icon: 'fa-store' }
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => {
+                          setPropertyType(item.value)
+                          setIsTypeDropdownOpen(false)
+                        }}
+                        className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-extrabold text-left flex items-center space-x-2.5 transition cursor-pointer ${
+                          propertyType === item.value
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
+                        }`}
+                      >
+                        <i className={`fa-solid ${item.icon} text-xs w-4 text-center ${propertyType === item.value ? 'text-white' : 'text-slate-400'}`} />
+                        <span>{item.value}</span>
+                      </button>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Price & Area Specs Grid */}
