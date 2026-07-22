@@ -181,6 +181,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (dbUser) {
               token.role = dbUser.role
               if (dbUser.nksToken) token.nksToken = dbUser.nksToken
+            } else {
+              // Tài khoản đã bị xóa khỏi DB local -> Hủy Token để xóa Cookie trình duyệt
+              return null
             }
           }
         } catch (e) {
