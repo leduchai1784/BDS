@@ -205,7 +205,23 @@ export default async function ProfilePage() {
   }
 
   if (!dbUser) {
-    redirect('/login')
+    return (
+      <div className="min-h-screen pt-32 pb-16 flex flex-col items-center justify-center bg-slate-50 px-4">
+        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl max-w-md w-full text-center">
+          <i className="fa-solid fa-triangle-exclamation text-red-500 text-4xl mb-4 animate-bounce"></i>
+          <h2 className="text-lg font-bold text-slate-800 mb-2">Lỗi đồng bộ dữ liệu</h2>
+          <p className="text-xs text-slate-500 mb-6 font-semibold leading-relaxed">
+            Hệ thống không tìm thấy hoặc chưa đồng bộ kịp thông tin tài khoản của bạn trong cơ sở dữ liệu. Vui lòng đăng xuất và đăng nhập lại để làm mới phiên làm việc.
+          </p>
+          <a 
+            href="/api/auth/signout" 
+            className="inline-flex items-center justify-center px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-md"
+          >
+            <i className="fa-solid fa-right-from-bracket mr-2"></i> Đăng xuất & Thử lại
+          </a>
+        </div>
+      </div>
+    )
   }
 
   // Define details structure
