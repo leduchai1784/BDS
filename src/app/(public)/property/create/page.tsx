@@ -147,8 +147,8 @@ export default function PropertyCreatePage() {
       setSelectedProvince(hcm)
       setProvinceSearch(hcm.Name)
 
-      // Fetch NKS Administratives for HCMC
-      fetch(`https://online.nks.vn/api/nks/administratives?province_id=${hcm.Id}&slcBox=true`, { method: 'POST' })
+      // Fetch NKS Administratives for HCMC via Proxy
+      fetch(`/api/nks/administratives?province_id=${hcm.Id}`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (data && data.success && Array.isArray(data.data)) {
@@ -174,9 +174,9 @@ export default function PropertyCreatePage() {
     toast.success('Đã điền tự động dữ liệu mẫu tại TP. Hồ Chí Minh!')
   }
 
-  // Load Administrative divisions directly from NKS API
+  // Load Administrative divisions directly from NKS Proxy API
   useEffect(() => {
-    fetch('https://online.nks.vn/api/nks/provinces?country_id=192&slcBox=true', { method: 'POST' })
+    fetch('/api/nks/provinces', { method: 'POST' })
       .then(res => res.json())
       .then(data => {
         if (data && data.success && Array.isArray(data.data)) {
@@ -187,18 +187,9 @@ export default function PropertyCreatePage() {
             Districts: []
           }))
           setProvinces(nksProvList)
-        } else {
-          // Fallback to local dataset
-          fetch('/vietnam_provinces.json')
-            .then(res => res.json())
-            .then(data => setProvinces(data))
         }
       })
-      .catch(() => {
-        fetch('/vietnam_provinces.json')
-          .then(res => res.json())
-          .then(data => setProvinces(data))
-      })
+      .catch(err => console.error('Error loading NKS provinces:', err))
   }, [])
 
   // Geocoding function using proxy geocode API
@@ -659,8 +650,8 @@ export default function PropertyCreatePage() {
                             setWardSearch('')
                             setProvinceOpen(false)
 
-                            // Fetch NKS Administratives for selected province
-                            fetch(`https://online.nks.vn/api/nks/administratives?province_id=${p.Id}&slcBox=true`, { method: 'POST' })
+                            // Fetch NKS Administratives for selected province via Proxy
+                            fetch(`/api/nks/administratives?province_id=${p.Id}`, { method: 'POST' })
                               .then(res => res.json())
                               .then(data => {
                                 if (data && data.success && Array.isArray(data.data)) {
