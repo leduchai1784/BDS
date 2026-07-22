@@ -45,20 +45,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const mappedData = mapNksUserToLocal(fullNksUser, nksLogin.token)
 
           // Nhận biết vai trò (Role) từ NKS API linh hoạt dựa vào role_id, role.id hoặc role.name
-          let mappedRole = 'agent' // Mặc định tài khoản NKS API là Agent
+          let mappedRole = 'tenant' // Mặc định tài khoản NKS API là Khách thuê (User)
           const roleId = Number(fullNksUser.role_id || fullNksUser.role?.id || 0)
           const nksRoleName = String(fullNksUser.role?.name || fullNksUser.role_name || fullNksUser.role || '').toLowerCase()
 
           if (roleId === 1 || nksRoleName.includes('admin') || nksRoleName.includes('quản trị')) {
             mappedRole = 'admin'
-          } else if (roleId === 2 || nksRoleName.includes('owner') || nksRoleName.includes('chủ nhà')) {
+          } else if (roleId === 3 || nksRoleName.includes('owner') || nksRoleName.includes('chủ nhà')) {
             mappedRole = 'owner'
-          } else if (roleId === 3 || roleId === 4 || nksRoleName.includes('agent') || nksRoleName.includes('broker') || nksRoleName.includes('môi giới') || nksRoleName.includes('sale')) {
+          } else if (roleId === 4 || nksRoleName.includes('agent') || nksRoleName.includes('broker') || nksRoleName.includes('môi giới') || nksRoleName.includes('sale')) {
             mappedRole = 'agent'
-          } else if (roleId === 5 || nksRoleName.includes('tenant') || nksRoleName.includes('user') || nksRoleName.includes('khách')) {
+          } else if (roleId === 2 || roleId === 5 || nksRoleName.includes('tenant') || nksRoleName.includes('user') || nksRoleName.includes('khách')) {
             mappedRole = 'tenant'
           } else {
-            mappedRole = 'agent' // Mặc định NKS API user là agent
+            mappedRole = 'tenant' // Mặc định là tenant cho an toàn bảo mật
           }
 
           let userId = '100'
