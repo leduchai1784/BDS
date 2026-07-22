@@ -92,7 +92,7 @@ export default function ProfilePageClient({
     setUser((prev: any) => ({ ...prev, avatar: newAvatarUrl }))
   }
 
-  const isOwner = user.role === 'owner'
+  const isOwner = ['owner', 'agent'].includes(user.role)
   const isCCCDVerified = !!user.idNumber
 
   return (
@@ -138,10 +138,10 @@ export default function ProfilePageClient({
                     
                     <button 
                       onClick={() => handleTabChange('profile', 'avatar')}
-                      className="absolute bottom-0.5 left-0.5 w-6 h-6 rounded-full bg-white hover:bg-slate-50 text-slate-500 hover:text-primary border border-slate-200 shadow-md flex items-center justify-center cursor-pointer transition-all active:scale-90 z-10 p-0"
+                      className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-200 cursor-pointer"
                       title="Thay đổi ảnh đại diện"
                     >
-                      <i className="fa-solid fa-camera text-[9px]" />
+                      <i className="fa-solid fa-camera text-white text-base" />
                     </button>
                   </div>
 
@@ -162,7 +162,12 @@ export default function ProfilePageClient({
                           <i className="fa-solid fa-user-shield mr-1.5 text-violet-500" />
                           Quản trị viên
                         </span>
-                      ) : isOwner ? (
+                      ) : user.role === 'agent' ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-100/85 shadow-sm">
+                          <i className="fa-solid fa-id-badge mr-1.5 text-amber-500" />
+                          Môi giới NKS
+                        </span>
+                      ) : user.role === 'owner' ? (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100/85 shadow-sm">
                           <i className="fa-solid fa-circle-check mr-1.5 text-emerald-500" />
                           Đối tác Chủ nhà
