@@ -46,17 +46,24 @@ export default function FilterPanel() {
   const [furniture, setFurniture] = useState('')
   const [direction, setDirection] = useState('')
 
-  // Load provinces JSON
+  // Load NKS provinces API
   useEffect(() => {
     const loadLocations = async () => {
       try {
-        const res = await fetch('/vietnam_provinces.json')
+        const res = await fetch('/api/nks/provinces', { method: 'POST' })
         if (res.ok) {
           const data = await res.json()
-          setProvinces(data)
+          if (data && data.success && Array.isArray(data.data)) {
+            const nksProvs = data.data.map((p: any) => ({
+              Id: String(p.id),
+              Name: p.title,
+              Districts: []
+            }))
+            setProvinces(nksProvs)
+          }
         }
       } catch (err) {
-        console.error('Failed to load vietnam_provinces.json', err)
+        console.error('Failed to load NKS provinces', err)
       }
     }
     loadLocations()

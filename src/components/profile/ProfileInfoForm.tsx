@@ -96,43 +96,32 @@ export default function ProfileInfoForm({ user, onSuccess }: ProfileInfoFormProp
     }
   }, [user.dob])
 
-  // Load Vietnam Administrative divisions
+  // Load NKS Administrative divisions
   useEffect(() => {
-    fetch('/vietnam_provinces.json')
+    fetch('/api/nks/provinces', { method: 'POST' })
       .then(res => res.json())
-      .then((data: Province[]) => {
-        setProvinces(data)
-        
-        // Initial match for user's province (by ID or by Name)
-        const savedProvince = user.addProvince || user.province
-        if (savedProvince) {
-          const searchVal = savedProvince.toLowerCase()
-          const matchedProv = data.find(p => p.Id.toLowerCase() === searchVal || p.Name.toLowerCase() === searchVal)
-          if (matchedProv) {
-            setSelectedProvince(matchedProv)
-            setProvinceSearch(matchedProv.Name)
-            
-            // Match user's ward (by ID or by Name)
-            const savedWard = user.addWard || user.ward
-            if (savedWard) {
-              const searchWardVal = savedWard.toLowerCase()
-              for (const dist of matchedProv.Districts) {
-                const matchedW = dist.Wards.find(w => w.Id.toLowerCase() === searchWardVal || w.Name.toLowerCase() === searchWardVal)
-                if (matchedW) {
-                  setSelectedWard({
-                    ...matchedW,
-                    DistrictName: dist.Name,
-                    DistrictId: dist.Id
-                  })
-                  setWardSearch(matchedW.Name)
-                  break
-                }
-              }
+      .then((data: any) => {
+        if (data && data.success && Array.isArray(data.data)) {
+          const nksProvs: Province[] = data.data.map((p: any) => ({
+            Id: String(p.id),
+            Name: p.title,
+            Districts: []
+          }))
+          setProvinces(nksProvs)
+          
+          // Initial match for user's province (by ID or by Name)
+          const savedProvince = user.addProvince || user.province
+          if (savedProvince) {
+            const searchVal = savedProvince.toLowerCase()
+            const matchedProv = nksProvs.find(p => p.Id.toLowerCase() === searchVal || p.Name.toLowerCase() === searchVal)
+            if (matchedProv) {
+              setSelectedProvince(matchedProv)
+              setProvinceSearch(matchedProv.Name)
             }
           }
         }
       })
-      .catch(err => console.error('Failed to load provinces list:', err))
+      .catch(err => console.error('Failed to load NKS provinces list:', err))
   }, [user.province, user.addProvince, user.ward, user.addWard])
 
   const handleCancel = () => {

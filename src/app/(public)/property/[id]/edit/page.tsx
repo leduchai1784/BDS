@@ -120,12 +120,21 @@ export default function PropertyEditPage() {
   const [initialDistrict, setInitialDistrict] = useState('')
   const [initialWard, setInitialWard] = useState('')
 
-  // Load Administrative divisions
+  // Load NKS Administrative divisions
   useEffect(() => {
-    fetch('/vietnam_provinces.json')
+    fetch('/api/nks/provinces', { method: 'POST' })
       .then(res => res.json())
-      .then(data => setProvinces(data))
-      .catch(err => console.error('Failed to load provinces list:', err))
+      .then(data => {
+        if (data && data.success && Array.isArray(data.data)) {
+          const nksProvs = data.data.map((p: any) => ({
+            Id: String(p.id),
+            Name: p.title,
+            Districts: []
+          }))
+          setProvinces(nksProvs)
+        }
+      })
+      .catch(err => console.error('Failed to load NKS provinces list:', err))
   }, [])
 
   // Fetch existing property details
