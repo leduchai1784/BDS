@@ -365,21 +365,8 @@ export async function getNksProperties(): Promise<any[]> {
           }
         }
 
-        const rsType = (item.rstype || '').toLowerCase()
-        let propertyType = 'apartment'
-        if (rsType.includes('căn hộ') || rsType.includes('chung cư')) {
-          propertyType = 'apartment'
-        } else if (rsType.includes('biệt thự') || rsType.includes('villa')) {
-          propertyType = 'house'
-        } else if (rsType.includes('văn phòng')) {
-          propertyType = 'office'
-        } else if (rsType.includes('nhà nguyên căn') || rsType.includes('nhà')) {
-          propertyType = 'house'
-        } else if (rsType.includes('mặt bằng')) {
-          propertyType = 'premises'
-        } else if (rsType.includes('phòng trọ')) {
-          propertyType = 'room'
-        }
+        const rsType = item.rstype || 'Căn hộ'
+        const propertyType = rsType // Keep exact original NKS category string
 
         const area = Number(item.total_area) || 55
         let price = 0
@@ -516,18 +503,72 @@ export const getNksWardsByProvince = unstable_cache(
   { revalidate: 86400 }
 )
 
-/**
- * Fetch all wards (defaulting to HCMC) from NKS API
- */
 export async function getNksWards(): Promise<any[]> {
-  const provinces = await getNksProvinces()
-  let hcmProvince = provinces.find(p => {
-    const title = p.title || ''
-    return title.toLowerCase().includes('hồ chí minh') || title.toLowerCase().includes('hcm')
-  })
-  
-  const provinceId = hcmProvince?.id ? Number(hcmProvince.id) : 79
-  return getNksWardsByProvince(provinceId)
+  return getNksWardsByProvince(79)
 }
 
+/**
+ * 7. Tạo tin đăng (Authentication)
+ * URL: https://account.nks.vn/api/nks/user/rsitem/create
+ */
+export async function createNksProperty(token: string, payload: any): Promise<NksResult> {
+  try {
+    const response = await axios.post(`${BASE_URL}/rsitem/create`, {
+      access_token: token,
+      ...payload
+    }, { timeout: 15000, httpsAgent })
 
+    const json = response.data
+    if (json && json.success) {
+      return { success: true, message: json.message || 'Tạo tin đăng NKS thành công.', data: json.data }
+    }
+    return { success: false, message: json?.message || 'Không thể tạo tin đăng trên NKS.' }
+  } catch (error: any) {
+    console.error('NKS createProperty failed:', error.message)
+    return { success: false, message: error.response?.data?.message || 'Lỗi kết nối NKS API tạo tin.' }
+  }
+}
+
+/**
+ * 8. Cập nhật tin đăng (Authentication)
+ * URL: https://account.nks.vn/api/nks/user/rsitem/update
+ */
+export async function updateNksProperty(token: string, payload: any): Promise<NksResult> {
+  try {
+    const response = await axios.post(`${BASE_URL}/rsitem/update`, {
+      access_token: token,
+      ...payload
+    }, { timeout: 15000, httpsAgent })
+
+    const json = response.data
+    if (json && json.success) {
+      return { success: true, message: json.message || 'Cập nhật tin đăng NKS thành công.', data: json.data }
+    }
+    return { success: false, message: json?.message || 'Không thể cập nhật tin đăng NKS.' }
+  } catch (error: any) {
+    console.error('NKS updateProperty failed:', error.message)
+    return { success: false, message: error.response?.data?.message || 'Lỗi kết nối NKS API cập nhật.' }
+  }
+}
+
+/**
+ * 9. Xóa tin đăng (Authentication)
+ * URL: https://account.nks.vn/api/nks/user/rsitem/delete
+ */
+export async function deleteNksProperty(token: string, propertyId: string | number): Promise<NksResult> {
+  try {
+    const response = await axios.post(`${BASE_URL}/rsitem/delete`, {
+      access_token: token,
+      id: propertyId
+    }, { timeout: 10000, httpsAgent })
+
+    const json = response.data
+    if (json && json.success) {
+      return { success: true, message: json.message || 'Rsitem deleted successfully.' }
+    }
+    return { success: false, message: json?.message || 'Không thể xóa tin đăng trên NKS.' }
+  } catch (error: any) {
+    console.error('NKS deleteProperty failed:', error.message)
+    return { success: false, message: error.response?.data?.message || 'Lỗi kết nối NKS API xóa tin.' }
+  }
+}
