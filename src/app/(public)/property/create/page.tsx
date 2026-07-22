@@ -722,30 +722,32 @@ export default function PropertyCreatePage() {
                 </div>
               </div>
 
-              {/* Coordinates display */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Vĩ độ (Latitude)</label>
+              {/* Single Geolocation input field matching NKS API */}
+              <div className="space-y-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1 flex items-center justify-between">
+                  <span>Tọa độ vị trí (geolocation) <span className="text-red-500">*</span></span>
+                  <span className="text-[10px] text-slate-400 font-normal">Định dạng: Vĩ độ, Kinh độ</span>
+                </label>
+                <div className="relative">
                   <input 
-                    type="number" 
-                    step="any"
-                    value={latitude}
-                    onChange={(e) => setLatitude(Number(e.target.value))}
+                    type="text" 
+                    value={`${latitude}, ${longitude}`}
+                    onChange={(e) => {
+                      const parts = e.target.value.split(',').map(p => p.trim())
+                      if (parts.length === 2) {
+                        const lat = parseFloat(parts[0])
+                        const lng = parseFloat(parts[1])
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                          setLatitude(lat)
+                          setLongitude(lng)
+                        }
+                      }
+                    }}
                     required 
-                    className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold outline-none"
+                    placeholder="10.937584, 106.862955"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-mono font-bold text-slate-800 outline-none transition"
                   />
-                </div>
-                
-                <div className="space-y-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Kinh độ (Longitude)</label>
-                  <input 
-                    type="number" 
-                    step="any"
-                    value={longitude}
-                    onChange={(e) => setLongitude(Number(e.target.value))}
-                    required 
-                    className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold outline-none"
-                  />
+                  <i className="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-primary text-xs" />
                 </div>
               </div>
 
