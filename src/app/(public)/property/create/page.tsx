@@ -116,8 +116,8 @@ export default function PropertyCreatePage() {
   const [wardOpen, setWardOpen] = useState(false)
 
   const [address, setAddress] = useState('')
-  const [latitude, setLatitude] = useState(21.0285)
-  const [longitude, setLongitude] = useState(105.8521)
+  const [latitude, setLatitude] = useState(10.7769)
+  const [longitude, setLongitude] = useState(106.7009)
 
   // Images
   const [imageUrl, setImageUrl] = useState('')
