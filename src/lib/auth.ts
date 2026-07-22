@@ -169,8 +169,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id
         token.nksToken = (user as any).nksToken
       }
-      // Fetch fresh role from DB on every request to prevent stale permissions after role upgrade
-      if (token?.id) {
+      // Fetch fresh role from DB on subsequent requests to prevent stale permissions, but DO NOT overwrite the login payload
+      else if (token?.id) {
         try {
           const uId = Number(token.id)
           if (!isNaN(uId) && uId > 0) {
