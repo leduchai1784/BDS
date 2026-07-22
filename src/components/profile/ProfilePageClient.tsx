@@ -92,7 +92,9 @@ export default function ProfilePageClient({
     setUser((prev: any) => ({ ...prev, avatar: newAvatarUrl }))
   }
 
-  const isOwner = ['owner', 'agent'].includes(user.role)
+  const isOwner = user.role === 'owner'
+  const isAgent = user.role === 'agent'
+  const canManageProperties = isOwner || isAgent
   const isCCCDVerified = !!user.idNumber
 
   return (
@@ -252,8 +254,8 @@ export default function ProfilePageClient({
                     </div>
                   )}
 
-                  {/* Properties tab (For Owner) */}
-                  {isOwner && (
+                  {/* Properties tab (For Owner & Agent) */}
+                  {canManageProperties && (
                     <button 
                       onClick={() => handleTabChange('properties')}
                       className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
@@ -373,8 +375,8 @@ export default function ProfilePageClient({
                     </button>
                   )}
 
-                  {/* AI Content Studio tab (For Owner) */}
-                  {isOwner && (
+                  {/* AI Content Studio tab (For Owner & Agent) */}
+                  {canManageProperties && (
                     <button 
                       onClick={() => handleTabChange('marketing')}
                       className={`flex items-center justify-between px-5 py-4 text-xs font-bold border-l-4 transition ${
@@ -430,7 +432,7 @@ export default function ProfilePageClient({
                 
                 {/* Statistics Cards Grid */}
                 {user.role !== 'admin' && (
-                  isOwner ? (
+                  canManageProperties ? (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                       {/* Stat Item 1 */}
                       <div className="bg-slate-50 border border-slate-100/50 p-5 rounded-2xl flex items-center space-x-4">
@@ -534,7 +536,7 @@ export default function ProfilePageClient({
             )}
 
             {/* 5. Properties Tab */}
-            {activeTab === 'properties' && isOwner && (
+            {activeTab === 'properties' && canManageProperties && (
               <MyPropertiesTab initialProperties={properties} onSuccess={handleSuccess} />
             )}
 
@@ -543,7 +545,7 @@ export default function ProfilePageClient({
               <AppointmentsTab 
                 initialTenantAppointments={tenantAppointments} 
                 initialOwnerAppointments={ownerAppointments} 
-                isOwner={isOwner} 
+                isOwner={canManageProperties} 
               />
             )}
 
@@ -553,7 +555,7 @@ export default function ProfilePageClient({
             )}
 
             {/* 8. Register Owner Tab */}
-            {activeTab === 'register_owner' && !isOwner && (
+            {activeTab === 'register_owner' && !canManageProperties && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-base font-black text-slate-800">Đăng ký Đối tác Chủ nhà</h3>
@@ -665,7 +667,7 @@ export default function ProfilePageClient({
             )}
 
             {/* 9. AI Content Studio Tab */}
-            {activeTab === 'marketing' && isOwner && (
+            {activeTab === 'marketing' && canManageProperties && (
               <AiMarketingStudio properties={properties} />
             )}
 
