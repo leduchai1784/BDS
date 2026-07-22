@@ -133,7 +133,6 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
         bathroom: nksProp.bathroom,
         direction: nksProp.direction || 'Không xác định',
         furniture: 'Cơ bản',
-        legal: 'Sổ đỏ/Sổ hồng',
         floors: nksProp.floors,
         frontage: null,
         roadWidth: null,
