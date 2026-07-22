@@ -457,7 +457,7 @@ export default async function ProfilePage() {
 
   let adminData: any = {}
 
-  if (dbUser.role === 'admin') {
+  if (mergedUser.role === 'admin') {
     // Fetch all categories
     const categories = await prisma.category.findMany({
       orderBy: { name: 'asc' }
