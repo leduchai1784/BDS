@@ -163,12 +163,31 @@ export default function PropertyCreatePage() {
     toast.success('Đã điền tự động dữ liệu đăng tin mẫu!')
   }
 
-  // Load Administrative divisions
+  // Load Administrative divisions directly from NKS API
   useEffect(() => {
-    fetch('/vietnam_provinces.json')
+    fetch('https://online.nks.vn/api/nks/provinces', { method: 'POST' })
       .then(res => res.json())
-      .then(data => setProvinces(data))
-      .catch(err => console.error('Failed to load provinces list:', err))
+      .then(data => {
+        if (data && data.success && Array.isArray(data.data)) {
+          // Map NKS Provinces (id, title -> Id, Name)
+          const nksProvList: Province[] = data.data.map((item: any) => ({
+            Id: String(item.id),
+            Name: item.title,
+            Districts: []
+          }))
+          setProvinces(nksProvList)
+        } else {
+          // Fallback to local dataset
+          fetch('/vietnam_provinces.json')
+            .then(res => res.json())
+            .then(data => setProvinces(data))
+        }
+      })
+      .catch(() => {
+        fetch('/vietnam_provinces.json')
+          .then(res => res.json())
+          .then(data => setProvinces(data))
+      })
   }, [])
 
   // Geocoding function using proxy geocode API

@@ -21,6 +21,8 @@ export interface NksResult {
   data?: any
 }
 
+
+
 // Map common long Vietnamese ID places to standard short forms
 function sanitizeNksString(str: string | null | undefined, maxLength = 50): string {
   if (!str) return ''
