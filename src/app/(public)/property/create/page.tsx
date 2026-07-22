@@ -369,17 +369,22 @@ export default function PropertyCreatePage() {
               {/* Property Type Selector */}
               <div className="space-y-1">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 px-1">Loại hình nhà đất <span className="text-red-500">*</span></label>
-                <select 
-                  value={propertyType}
-                  onChange={(e) => setPropertyType(e.target.value)}
-                  required
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-xl text-xs font-semibold outline-none transition cursor-pointer"
-                >
-                  <option value="Căn hộ">Căn hộ (Chung cư / Căn hộ dịch vụ)</option>
-                  <option value="Nhà phố">Nhà phố (Nhà riêng / Nhà nguyên căn)</option>
-                  <option value="Biệt thự">Biệt thự (Villa)</option>
-                  <option value="Mặt bằng">Mặt bằng (Kinh doanh / Văn phòng)</option>
-                </select>
+                <div className="relative">
+                  <select 
+                    value={propertyType}
+                    onChange={(e) => setPropertyType(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-primary focus:bg-white rounded-2xl text-xs font-extrabold text-slate-800 outline-none transition cursor-pointer appearance-none pr-10 shadow-xs"
+                  >
+                    <option value="Căn hộ">Căn hộ</option>
+                    <option value="Nhà phố">Nhà phố</option>
+                    <option value="Biệt thự">Biệt thự</option>
+                    <option value="Mặt bằng">Mặt bằng</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <i className="fa-solid fa-chevron-down text-xs" />
+                  </div>
+                </div>
               </div>
 
               {/* Price & Area Specs Grid */}
