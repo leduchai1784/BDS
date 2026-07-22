@@ -128,45 +128,55 @@ export default function PropertyCreatePage() {
   const [errorMsg, setErrorMsg] = useState('')
 
   const fillSampleData = () => {
-    setTitle('Căn hộ chung cư cao cấp view Vinhomes Riverside cực đẹp')
+    setTitle('Căn hộ 2PN Vinhomes Central Park Full Nội Thất Cao Cấp View Sông')
     setPurpose('rent')
-    setPropertyType('Căn hộ chung cư')
-    setPrice('12000000')
-    setArea('75')
+    setPropertyType('Căn hộ')
+    setPrice('18000000')
+    setArea('78')
     setBedroom('2')
     setBathroom('2')
-    setDeposit('24000000')
+    setDeposit('36000000')
     setLeaseTerm('Tối thiểu 1 năm')
     setDirection('Đông Nam')
-    setLegal('Sổ hồng lâu dài')
-    setFurniture('Đầy đủ đồ cao cấp chỉ việc xách vali vào ở')
-    setDescription('Cho thuê căn hộ chung cư cao cấp thiết kế cực kỳ hiện đại và sang trọng. Căn hộ gồm 2 phòng ngủ, 2 nhà vệ sinh, ban công rộng hướng Đông Nam đón gió mát mẻ, tầm nhìn trực diện sang khu biệt thự Vinhomes Riverside. Đã trang bị đầy đủ nội thất tivi, tủ lạnh, máy giặt, điều hòa các phòng, giường đệm cao cấp, sofa da bếp từ xịn xò. Cư dân miễn phí gửi xe, sử dụng bể bơi bốn mùa.')
+    setFurniture('Full nội thất cao cấp xách vali vào ở ngay')
+    setDescription('Cho thuê căn hộ 2 phòng ngủ cao cấp tại Vinhomes Central Park, Bình Thạnh, TP. Hồ Chí Minh. Ban công view sông thoáng mát, đầy đủ tiện ích công viên 14ha, hồ bơi, gym, Vincom Landmark 81. Đã trang bị đầy đủ nội thất sang trọng.')
     
-    // Auto-locate Hà Nội -> Long Biên -> Phúc Lợi
-    const hn = provinces.find(p => p.Name.includes('Hà Nội'))
-    if (hn) {
-      setSelectedProvince(hn)
-      const lb = hn.Districts.find(d => d.Name.includes('Long Biên'))
-      if (lb) {
-        setSelectedDistrict(lb)
-        const pl = lb.Wards.find(w => w.Name.includes('Phúc Lợi'))
-        if (pl) {
-          setSelectedWard(pl)
-        }
-      }
+    // Auto-locate TP. Hồ Chí Minh
+    const hcm = provinces.find(p => p.Name.includes('Hồ Chí Minh') || p.Name.includes('HCM'))
+    if (hcm) {
+      setSelectedProvince(hcm)
+      setProvinceSearch(hcm.Name)
+
+      // Fetch NKS Administratives for HCMC
+      fetch(`https://online.nks.vn/api/nks/administratives?province_id=${hcm.Id}&slcBox=true`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.success && Array.isArray(data.data)) {
+            const adminWards: Ward[] = data.data.map((item: any) => ({
+              Id: String(item.id),
+              Name: item.title
+            }))
+            setNksAdministratives(adminWards)
+            if (adminWards.length > 0) {
+              setSelectedWard(adminWards[0])
+              setWardSearch(adminWards[0].Name)
+            }
+          }
+        })
+        .catch(err => console.error('Error fetching sample NKS administratives:', err))
     }
-    setAddress('Căn hộ 1506, Tòa Park 2, Vinhomes Symphony')
-    setLatitude(21.0435)
-    setLongitude(105.9123)
+    setAddress('208 Nguyễn Hữu Cảnh, Tòa Park 6, Vinhomes Central Park')
+    setLatitude(10.7934)
+    setLongitude(106.7214)
     setImageUrl('https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/ewjyvlwq88ixefrpstmu.jpg')
     setGalleryUrlsText('https://res.cloudinary.com/dj8t18pke/image/upload/v1782101764/careoe841i7otf8cv8yl.jpg\nhttps://res.cloudinary.com/dj8t18pke/image/upload/v1782101763/wdowpvg4qnnnivn8t0yu.jpg')
     
-    toast.success('Đã điền tự động dữ liệu đăng tin mẫu!')
+    toast.success('Đã điền tự động dữ liệu mẫu tại TP. Hồ Chí Minh!')
   }
 
   // Load Administrative divisions directly from NKS API
   useEffect(() => {
-    fetch('https://online.nks.vn/api/nks/provinces', { method: 'POST' })
+    fetch('https://online.nks.vn/api/nks/provinces?country_id=192&slcBox=true', { method: 'POST' })
       .then(res => res.json())
       .then(data => {
         if (data && data.success && Array.isArray(data.data)) {
