@@ -17,7 +17,7 @@ export default async function SystemRedirectPage() {
   }
   
   if (role === 'owner' || role === 'agent') {
-    redirect('/profile?tab=properties')
+    redirect('/owner/dashboard')
   }
 
   // Mặc định cho tenant (khách thuê)
