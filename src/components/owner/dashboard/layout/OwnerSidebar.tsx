@@ -40,6 +40,16 @@ const managementItems: NavItem[] = [
     path: "/owner/appointments",
     statsKey: "appointments",
   },
+  {
+    icon: <i className="fa-regular fa-lightbulb text-lg" />,
+    name: "AI Content",
+    path: "/owner/ai-content",
+  },
+  {
+    icon: <i className="fa-solid fa-bolt text-lg" />,
+    name: "AI Marketing",
+    path: "/owner/ai-marketing",
+  },
 ];
 
 const OwnerSidebar: React.FC = () => {
