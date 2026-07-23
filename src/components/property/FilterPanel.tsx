@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Ward {
@@ -20,7 +20,7 @@ interface Province {
   Districts: District[]
 }
 
-export default function FilterPanel() {
+function FilterPanelContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -457,5 +457,17 @@ export default function FilterPanel() {
         </div>
       )}
     </form>
+  )
+}
+
+export default function FilterPanel() {
+  return (
+    <Suspense fallback={
+      <div className="bg-white rounded-3xl p-6 shadow-md border border-slate-100 mb-8 h-24 flex items-center justify-center">
+        <span className="text-xs text-slate-400 font-bold">Đang tải bộ lọc...</span>
+      </div>
+    }>
+      <FilterPanelContent />
+    </Suspense>
   )
 }

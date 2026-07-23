@@ -1,12 +1,13 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface SortSelectorProps {
   currentSort: string
 }
 
-export default function SortSelector({ currentSort }: SortSelectorProps) {
+function SortSelectorContent({ currentSort }: SortSelectorProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -35,5 +36,13 @@ export default function SortSelector({ currentSort }: SortSelectorProps) {
         <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]"></i>
       </div>
     </div>
+  )
+}
+
+export default function SortSelector(props: SortSelectorProps) {
+  return (
+    <Suspense fallback={<div className="text-xs text-slate-400">Đang tải...</div>}>
+      <SortSelectorContent {...props} />
+    </Suspense>
   )
 }

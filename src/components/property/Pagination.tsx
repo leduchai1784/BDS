@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 
@@ -8,7 +9,7 @@ interface PaginationProps {
   totalPages: number
 }
 
-export default function Pagination({ currentPage, totalPages }: PaginationProps) {
+function PaginationContent({ currentPage, totalPages }: PaginationProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -100,5 +101,13 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
         )}
       </nav>
     </div>
+  )
+}
+
+export default function Pagination(props: PaginationProps) {
+  return (
+    <Suspense fallback={null}>
+      <PaginationContent {...props} />
+    </Suspense>
   )
 }
