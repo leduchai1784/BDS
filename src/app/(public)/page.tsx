@@ -216,7 +216,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Link 
-                href="/property/create" 
+                href="/owner/properties/create" 
                 className="inline-flex items-center justify-center px-6 py-3.5 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-primary/35 transition cursor-pointer"
               >
                 <i className="fa-solid fa-circle-plus mr-2"></i> Đăng tin cho thuê ngay

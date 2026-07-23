@@ -64,7 +64,7 @@ export default function OwnerPropertiesPage() {
         </div>
 
         <Link
-          href="/property/create"
+          href="/owner/properties/create"
           className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs transition shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/25 cursor-pointer active:scale-95"
         >
           <i className="fa-solid fa-plus-circle text-sm" />
@@ -82,7 +82,7 @@ export default function OwnerPropertiesPage() {
             <h3 className="text-sm font-extrabold text-slate-700 dark:text-slate-300">Không có tin đăng nào</h3>
             <p className="text-xs text-slate-400 mt-1">Bạn chưa đăng bất động sản nào trên hệ thống BDS Rental.</p>
             <Link
-              href="/property/create"
+              href="/owner/properties/create"
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-bold text-xs transition mt-4"
             >
               Tạo tin đăng ngay

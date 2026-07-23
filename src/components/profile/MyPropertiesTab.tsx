@@ -93,7 +93,7 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
           <p className="text-[11px] text-slate-500 font-semibold">Danh sách các bất động sản bạn đang đăng bán hoặc cho thuê.</p>
         </div>
         <Link 
-          href="/property/create" 
+          href="/owner/properties/create" 
           className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 transition cursor-pointer"
         >
           <i className="fa-solid fa-plus mr-1.5" />

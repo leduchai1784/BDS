@@ -149,7 +149,7 @@ export default function AiContentPage() {
                 </label>
                 {properties.length === 0 ? (
                   <div className="text-xs text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/20 px-3 py-2.5 rounded-xl border border-amber-100 dark:border-amber-900/30">
-                    Bạn chưa đăng tin bất động sản nào. <Link href="/property/create" className="underline font-bold">Đăng tin ngay</Link>
+                    Bạn chưa đăng tin bất động sản nào. <Link href="/owner/properties/create" className="underline font-bold">Đăng tin ngay</Link>
                   </div>
                 ) : (
                   <select
