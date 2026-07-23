@@ -80,7 +80,6 @@ export default function OwnerDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1 */}
         <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute -right-5 -bottom-5 w-20 h-20 bg-primary/5 rounded-full pointer-events-none"></div>
           <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-lg">
             <i className="fa-solid fa-house" />
           </div>
@@ -92,7 +91,6 @@ export default function OwnerDashboardPage() {
 
         {/* Card 2 */}
         <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute -right-5 -bottom-5 w-20 h-20 bg-emerald-500/5 rounded-full pointer-events-none"></div>
           <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-lg">
             <i className="fa-solid fa-circle-check" />
           </div>
@@ -104,7 +102,6 @@ export default function OwnerDashboardPage() {
 
         {/* Card 3 */}
         <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute -right-5 -bottom-5 w-20 h-20 bg-amber-500/5 rounded-full pointer-events-none"></div>
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-lg">
             <i className="fa-solid fa-eye" />
           </div>
@@ -116,7 +113,6 @@ export default function OwnerDashboardPage() {
 
         {/* Card 4 */}
         <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute -right-5 -bottom-5 w-20 h-20 bg-indigo-500/5 rounded-full pointer-events-none"></div>
           <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-lg">
             <i className="fa-solid fa-calendar-check" />
           </div>

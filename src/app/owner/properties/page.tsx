@@ -65,7 +65,7 @@ export default function OwnerPropertiesPage() {
 
         <Link
           href="/property/create"
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-primary to-indigo-650 hover:shadow-lg text-white font-bold text-xs transition"
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs transition shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/25 cursor-pointer active:scale-95"
         >
           <i className="fa-solid fa-plus-circle text-sm" />
           Đăng tin mới

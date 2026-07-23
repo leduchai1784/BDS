@@ -45,7 +45,7 @@ function UnauthorizedContent() {
         <div className="flex flex-col gap-3">
           <Link
             href="/"
-            className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-indigo-650 hover:from-primary-hover hover:to-indigo-700 text-white text-xs font-bold transition-all hover:shadow-lg shadow-primary/20 transform hover:-translate-y-0.5 cursor-pointer"
+            className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/25 transform hover:-translate-y-0.5 cursor-pointer"
           >
             <i className="fa-solid fa-house mr-2" />
             Quay lại trang chủ
