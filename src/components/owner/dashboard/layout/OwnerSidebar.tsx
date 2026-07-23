@@ -124,7 +124,7 @@ const OwnerSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed top-0 bottom-0 left-0 z-99999 flex flex-col bg-white border-r border-gray-200 dark:border-gray-800 dark:bg-gray-900 transition-all duration-300 ease-in-out ${
+      className={`fixed top-0 bottom-0 left-0 z-99999 flex flex-col bg-white border-r border-gray-200 dark:border-gray-800 dark:bg-gray-900 transition-all duration-150 ease-out ${
         isMobileOpen
           ? "translate-x-0"
           : "max-lg:-translate-x-full"

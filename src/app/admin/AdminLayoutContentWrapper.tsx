@@ -19,7 +19,7 @@ export default function AdminLayoutContentWrapper({ children }: { children: Reac
     <div className="min-h-screen xl:flex bg-slate-50 dark:bg-gray-950 text-slate-800 dark:text-slate-200 font-sans">
       <AppSidebar />
       <Backdrop />
-      <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
+      <div className={`flex-1 transition-all duration-150 ease-out ${mainContentMargin}`}>
         <AppHeader />
         <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 text-left">{children}</div>
       </div>
