@@ -167,19 +167,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.role = (user as any).role
         token.id = user.id
+        token.avatar = (user as any).image || (user as any).avatar || null
         token.nksToken = (user as any).nksToken
       }
-      // Fetch fresh role from DB on subsequent requests to prevent stale permissions, but DO NOT overwrite the login payload
+      // Fetch fresh role and avatar from DB on subsequent requests to prevent stale permissions
       else if (token?.id) {
         try {
           const uId = Number(token.id)
           if (!isNaN(uId) && uId > 0) {
             const dbUser = await prisma.user.findUnique({
               where: { id: uId },
-              select: { role: true, nksToken: true }
+              select: { role: true, nksToken: true, avatar: true }
             })
             if (dbUser) {
               token.role = dbUser.role
+              token.avatar = dbUser.avatar
               if (dbUser.nksToken) token.nksToken = dbUser.nksToken
             } else {
               // Tài khoản đã bị xóa khỏi DB local -> Hủy Token để xóa Cookie trình duyệt
@@ -195,8 +197,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).role = token.role as string;
-        (session.user as any).nksToken = token.nksToken as string
-        session.user.id = token.id as string
+        (session.user as any).avatar = token.avatar as string;
+        (session.user as any).nksToken = token.nksToken as string;
+        session.user.image = token.avatar as string;
+        session.user.id = token.id as string;
       }
       return session
     }

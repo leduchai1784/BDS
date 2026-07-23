@@ -21,7 +21,7 @@ export default function UserDropdown() {
   const user = session?.user as any;
   const userName = user?.name || "Quản trị viên";
   const userEmail = user?.email || "admin@example.com";
-  const userAvatar = user?.avatar || "";
+  const userAvatar = user?.avatar || user?.image || user?.picture || "";
 
   return (
     <div className="relative">
