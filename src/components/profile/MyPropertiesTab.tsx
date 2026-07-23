@@ -136,7 +136,7 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                   </div>
                   <p className="text-[11px] text-slate-400 font-semibold truncate">{p.address}</p>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-slate-450 font-bold">
-                    <span>Giá: <strong className="text-cyan-650">{p.priceLabel}</strong></span>
+                    <span>Giá: <strong className="text-primary">{p.priceLabel}</strong></span>
                     <span>Lượt xem: <strong>{p.viewsCount}</strong></span>
                     {p.createdAt && (
                       <span>Ngày đăng: <strong>{new Date(p.createdAt).toLocaleDateString('vi-VN')}</strong></span>
@@ -179,7 +179,7 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                   onClick={() => handleExtend(p.id)}
                   disabled={loadingId === p.id}
                   title="Gia hạn (Đẩy top)"
-                  className="w-8 h-8 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border border-sky-100/50"
+                  className="w-8 h-8 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border border-primary/20"
                 >
                   <i className="fa-solid fa-arrow-trend-up text-[13px]"></i>
                 </button>
