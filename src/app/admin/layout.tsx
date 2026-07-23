@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import React from 'react'
 import { auth } from '@/lib/auth'
-import { ThemeProvider } from "@/context/ThemeContext"
 import { SidebarProvider } from "@/context/SidebarContext"
 import AdminLayoutContentWrapper from "./AdminLayoutContentWrapper"
 
@@ -23,12 +22,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <ThemeProvider>
-      <SidebarProvider>
-        <AdminLayoutContentWrapper>
-          {children}
-        </AdminLayoutContentWrapper>
-      </SidebarProvider>
-    </ThemeProvider>
+    <SidebarProvider>
+      <AdminLayoutContentWrapper>
+        {children}
+      </AdminLayoutContentWrapper>
+    </SidebarProvider>
   )
 }

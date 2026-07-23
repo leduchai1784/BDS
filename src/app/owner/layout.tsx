@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import React from 'react'
 import { auth } from '@/lib/auth'
-import { ThemeProvider } from "@/context/ThemeContext"
 import { SidebarProvider } from "@/context/SidebarContext"
 import OwnerLayoutContentWrapper from "@/components/owner/dashboard/layout/OwnerLayoutContentWrapper"
 
@@ -24,12 +23,10 @@ export default async function OwnerLayout({ children }: OwnerLayoutProps) {
   }
 
   return (
-    <ThemeProvider>
-      <SidebarProvider>
-        <OwnerLayoutContentWrapper>
-          {children}
-        </OwnerLayoutContentWrapper>
-      </SidebarProvider>
-    </ThemeProvider>
+    <SidebarProvider>
+      <OwnerLayoutContentWrapper>
+        {children}
+      </OwnerLayoutContentWrapper>
+    </SidebarProvider>
   )
 }
