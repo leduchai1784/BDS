@@ -40,7 +40,7 @@ const navItems: NavItem[] = [
 ];
 
 const OwnerSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen } = useSidebar();
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user as any;
@@ -90,12 +90,12 @@ const OwnerSidebar: React.FC = () => {
                 <span className={isActive ? "text-white" : "text-slate-500"}>
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered) && (
+                {isExpanded && (
                   <span className="text-sm font-medium">{nav.name}</span>
                 )}
               </div>
               
-              {(isExpanded || isHovered) && nav.statsKey && stats[nav.statsKey] > 0 && (
+              {isExpanded && nav.statsKey && stats[nav.statsKey] > 0 && (
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                   isActive ? "bg-white/20 text-white" : "bg-slate-100 dark:bg-gray-800 text-slate-655"
                 }`}>
@@ -116,10 +116,8 @@ const OwnerSidebar: React.FC = () => {
           ? "translate-x-0"
           : "max-lg:-translate-x-full"
       } ${
-        isExpanded || isHovered ? "w-[290px]" : "w-[90px]"
+        isExpanded ? "w-[290px]" : "w-[90px]"
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Sidebar Header (Logo) */}
       <div className="flex items-center justify-between gap-2 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
@@ -127,7 +125,7 @@ const OwnerSidebar: React.FC = () => {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold">
             <i className="fa-solid fa-house-chimney text-xs"></i>
           </div>
-          {(isExpanded || isHovered) && (
+          {isExpanded && (
             <span className="font-extrabold text-sm text-slate-800 dark:text-white">
               BDS <span className="text-primary">System</span>
             </span>
@@ -138,7 +136,7 @@ const OwnerSidebar: React.FC = () => {
       {/* Navigation Links */}
       <div className="flex-1 py-4 overflow-y-auto px-4 space-y-6">
         <div>
-          {(isExpanded || isHovered) && (
+          {isExpanded && (
             <span className="block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
               Chức năng quản trị
             </span>
@@ -156,7 +154,7 @@ const OwnerSidebar: React.FC = () => {
           <span>
             <i className="fa-solid fa-arrow-left text-sm" />
           </span>
-          {(isExpanded || isHovered) && (
+          {isExpanded && (
             <span className="text-sm font-medium">Về web chính</span>
           )}
         </Link>
