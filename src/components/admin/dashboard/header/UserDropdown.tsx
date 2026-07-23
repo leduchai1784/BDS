@@ -29,16 +29,16 @@ export default function UserDropdown() {
         onClick={toggleDropdown} 
         className="flex items-center text-gray-700 dark:text-gray-400 dropdown-toggle focus:outline-none cursor-pointer"
       >
-        {userAvatar && userAvatar.startsWith('http') ? (
+        {userAvatar ? (
           <span className="mr-3 overflow-hidden rounded-full h-11 w-11 border border-gray-200 flex items-center justify-center bg-gray-50 flex-shrink-0">
             <img
-              src={userAvatar}
+              src={userAvatar.startsWith('http') || userAvatar.startsWith('/') ? userAvatar : `/${userAvatar}`}
               alt="Avatar"
               className="w-full h-full object-cover"
             />
           </span>
         ) : (
-          <span className="mr-3 overflow-hidden rounded-full h-11 w-11 flex items-center justify-center bg-brand-50 text-brand-650 font-bold text-sm uppercase border border-brand-100 flex-shrink-0">
+          <span className="mr-3 overflow-hidden rounded-full h-11 w-11 flex items-center justify-center bg-primary/10 text-primary font-bold text-sm uppercase border border-primary/20 flex-shrink-0">
             {userName.charAt(0)}
           </span>
         )}
