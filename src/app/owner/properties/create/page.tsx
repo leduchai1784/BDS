@@ -1018,29 +1018,29 @@ export default function OwnerPropertyCreatePage() {
               <div className="space-y-3 pt-2">
                 <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1">Định vị & Ô nhập tọa độ bất động sản</span>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Vĩ độ (Latitude) <span className="text-rose-500">*</span></label>
-                    <input 
-                      type="number" 
-                      step="any"
-                      value={latitude}
-                      onChange={(e) => setLatitude(Number(e.target.value) || 0)}
-                      placeholder="Ví dụ: 10.7769" 
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-semibold outline-none transition"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Kinh độ (Longitude) <span className="text-rose-500">*</span></label>
-                    <input 
-                      type="number" 
-                      step="any"
-                      value={longitude}
-                      onChange={(e) => setLongitude(Number(e.target.value) || 0)}
-                      placeholder="Ví dụ: 106.7009" 
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-semibold outline-none transition"
-                    />
-                  </div>
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">
+                    Tọa độ vị trí (Vĩ độ, Kinh độ) <span className="text-rose-500">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    value={`${latitude}, ${longitude}`}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      const parts = val.split(',').map(s => s.trim())
+                      if (parts.length >= 2) {
+                        const lat = parseFloat(parts[0])
+                        const lng = parseFloat(parts[1])
+                        if (!isNaN(lat)) setLatitude(lat)
+                        if (!isNaN(lng)) setLongitude(lng)
+                      }
+                    }}
+                    placeholder="Ví dụ: 10.7769, 106.7009" 
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-semibold outline-none transition"
+                  />
+                  <span className="block text-[9px] text-slate-400 font-semibold italic mt-0.5 px-1">
+                    Nhập theo định dạng "Vĩ độ, Kinh độ" (Ví dụ: 10.7769, 106.7009) hoặc di chuyển ghim trên bản đồ bên dưới.
+                  </span>
                 </div>
 
                 <MapPicker 
