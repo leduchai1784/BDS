@@ -120,10 +120,10 @@ const OwnerSidebar: React.FC = () => {
       }`}
     >
       {/* Sidebar Header (Logo) */}
-      <div className="flex items-center justify-between gap-2 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold">
-            <i className="fa-solid fa-house-chimney text-xs"></i>
+      <div className="flex items-center justify-between gap-2 px-6 h-[72px] border-b border-gray-200 dark:border-gray-800">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-md shadow-primary/20 flex-shrink-0">
+            <i className="fa-solid fa-house-chimney text-sm"></i>
           </div>
           {isExpanded && (
             <span className="font-extrabold text-sm text-slate-800 dark:text-white">

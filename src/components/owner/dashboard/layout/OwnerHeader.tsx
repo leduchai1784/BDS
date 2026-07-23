@@ -18,11 +18,11 @@ const OwnerHeader: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 flex w-full bg-white border-gray-200 z-99999 dark:border-gray-800 dark:bg-gray-900 lg:border-b">
-      <div className="flex flex-col items-center justify-between grow lg:flex-row lg:px-6">
-        <div className="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4">
+    <header className="sticky top-0 flex w-full h-[72px] bg-white border-b border-gray-200 z-99999 dark:border-gray-800 dark:bg-gray-900">
+      <div className="flex items-center justify-between grow px-4 sm:px-6 h-full">
+        <div className="flex items-center gap-2 sm:gap-4">
           <button
-            className="items-center justify-center w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-99999 dark:border-gray-800 lg:flex dark:text-gray-400 lg:h-11 lg:w-11 lg:border"
+            className="flex items-center justify-center w-10 h-10 text-primary border border-primary/20 rounded-xl z-99999 hover:bg-primary-light dark:hover:bg-primary/10 transition duration-150 cursor-pointer"
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
           >
@@ -61,17 +61,15 @@ const OwnerHeader: React.FC = () => {
         </div>
 
         {/* Mobile Actions or Breadcrumbs */}
-        <div className="flex items-center justify-between w-full px-4 py-4 border-b border-gray-200 dark:border-gray-800 sm:px-6 lg:justify-end lg:border-b-0 lg:px-0 lg:py-0">
-          <div className="flex items-center gap-2 sm:gap-4 lg:ml-auto">
-            {/* Dark Mode Toggle */}
-            <ThemeToggleButton />
+        <div className="flex items-center gap-2 sm:gap-4 lg:ml-auto">
+          {/* Dark Mode Toggle */}
+          <ThemeToggleButton />
 
-            {/* Notification Icon */}
-            <NotificationDropdown />
+          {/* Notification Icon */}
+          <NotificationDropdown />
 
-            {/* User Avatar & Dropdown */}
-            <UserDropdown />
-          </div>
+          {/* User Avatar & Dropdown */}
+          <UserDropdown />
         </div>
       </div>
     </header>
