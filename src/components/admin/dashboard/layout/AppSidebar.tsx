@@ -26,12 +26,15 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
+const overviewItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "Dashboard",
     path: "/admin/dashboard",
   },
+];
+
+const managementItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "Quản lý thành viên",
@@ -245,7 +248,7 @@ const AppSidebar: React.FC = () => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+      const items = menuType === "main" ? [...overviewItems, ...managementItems] : othersItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -327,13 +330,14 @@ const AppSidebar: React.FC = () => {
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
+            {/* Overview section */}
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                className={`mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 ${
                   !isExpanded
                     ? "lg:justify-center"
-                    : "justify-start"
+                    : "justify-start px-4"
                 }`}
               >
                 {isExpanded || isMobileOpen ? (
@@ -342,10 +346,22 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(overviewItems, "main")}
             </div>
 
-            {/* Others section removed */}
+            {/* Management section */}
+            <div>
+              {isExpanded || isMobileOpen ? (
+                <h2 className="mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 justify-start px-4">
+                  Quản lý
+                </h2>
+              ) : (
+                <h2 className="mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 lg:justify-center">
+                  <HorizontaLDots />
+                </h2>
+              )}
+              {renderMenuItems(managementItems, "main")}
+            </div>
           </div>
         </nav>
       </div>

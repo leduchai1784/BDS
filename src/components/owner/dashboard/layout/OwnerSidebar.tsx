@@ -19,12 +19,15 @@ type NavItem = {
   statsKey?: 'properties' | 'appointments';
 };
 
-const navItems: NavItem[] = [
+const overviewItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "Dashboard",
     path: "/owner/dashboard",
   },
+];
+
+const managementItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Quản lý tin đăng",
@@ -140,13 +143,24 @@ const OwnerSidebar: React.FC = () => {
 
       {/* Navigation Links */}
       <div className="flex-1 py-4 overflow-y-auto px-4 space-y-6">
+        {/* Overview section */}
         <div>
           {isExpanded && (
             <span className="block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
               Tổng quan
             </span>
           )}
-          {renderMenuItems(navItems)}
+          {renderMenuItems(overviewItems)}
+        </div>
+
+        {/* Management section */}
+        <div>
+          {isExpanded && (
+            <span className="block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              Quản lý
+            </span>
+          )}
+          {renderMenuItems(managementItems)}
         </div>
       </div>
 
