@@ -130,9 +130,6 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                     {p.status === 'approved' && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-green-55 text-green-700 whitespace-nowrap">Đang hiển thị</span>
                     )}
-                    {p.status === 'pending' && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-55 text-amber-700 whitespace-nowrap">Đang chờ duyệt</span>
-                    )}
                     {p.status === 'rented' && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-500 whitespace-nowrap">Đang ẩn</span>
                     )}
@@ -154,30 +151,28 @@ export default function MyPropertiesTab({ initialProperties, onSuccess }: MyProp
                 <Link
                   href={`/property/${p.id}/edit`}
                   title="Sửa tin"
-                  className="w-8 h-8 bg-slate-50 hover:bg-slate-100 text-slate-650 hover:text-slate-800 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 border border-slate-200/40"
+                  className="w-8 h-8 bg-slate-50 hover:bg-slate-100 text-slate-655 hover:text-slate-800 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 border border-slate-200/40"
                 >
                   <i className="fa-solid fa-pen-to-square text-[13px]"></i>
                 </Link>
 
                 {/* Hide / Show */}
-                {p.status !== 'pending' && (
-                  <button
-                    onClick={() => handleToggleStatus(p.id, p.status)}
-                    disabled={loadingId === p.id}
-                    title={p.status === 'rented' ? 'Hiện tin' : 'Ẩn tin'}
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border ${
-                      p.status === 'rented' 
-                        ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border-emerald-100/50' 
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200/50'
-                    }`}
-                  >
-                    {p.status === 'rented' ? (
-                      <i className="fa-solid fa-eye text-[13px]"></i>
-                    ) : (
-                      <i className="fa-solid fa-eye-slash text-[13px]"></i>
-                    )}
-                  </button>
-                )}
+                <button
+                  onClick={() => handleToggleStatus(p.id, p.status)}
+                  disabled={loadingId === p.id}
+                  title={p.status === 'rented' ? 'Hiện tin' : 'Ẩn tin'}
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer active:scale-95 disabled:opacity-50 border ${
+                    p.status === 'rented' 
+                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border-emerald-100/50' 
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-slate-200/50'
+                  }`}
+                >
+                  {p.status === 'rented' ? (
+                    <i className="fa-solid fa-eye text-[13px]"></i>
+                  ) : (
+                    <i className="fa-solid fa-eye-slash text-[13px]"></i>
+                  )}
+                </button>
 
                 {/* Extend */}
                 <button

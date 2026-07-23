@@ -6,7 +6,7 @@ import Link from 'next/link'
 interface DashboardStats {
   totalProperties: number;
   activeProperties: number;
-  pendingProperties: number;
+  totalViews: number;
   totalAppointments: number;
   pendingAppointments: number;
   recentAppointments: any[];
@@ -16,7 +16,7 @@ export default function OwnerDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
     activeProperties: 0,
-    pendingProperties: 0,
+    totalViews: 0,
     totalAppointments: 0,
     pendingAppointments: 0,
     recentAppointments: []
@@ -33,14 +33,14 @@ export default function OwnerDashboardPage() {
             const properties = json.data.properties || []
             const appointments = json.data.receivedAppointments || []
             
-            const activeProps = properties.filter((p: any) => p.status === 'active').length
-            const pendingProps = properties.filter((p: any) => p.status === 'pending').length
+            const activeProps = properties.filter((p: any) => p.status === 'active' || p.status === 'approved').length
+            const totalViews = properties.reduce((acc: number, p: any) => acc + (p.viewsCount || 0), 0)
             const pendingAppoints = appointments.filter((a: any) => a.status === 'pending').length
 
             setStats({
               totalProperties: properties.length,
               activeProperties: activeProps,
-              pendingProperties: pendingProps,
+              totalViews: totalViews,
               totalAppointments: appointments.length,
               pendingAppointments: pendingAppoints,
               recentAppointments: appointments.slice(0, 5)
@@ -69,7 +69,7 @@ export default function OwnerDashboardPage() {
       {/* Title */}
       <div>
         <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-          Hệ thống BDS - Tổng quan
+          Quản lý BDS - Tổng quan
         </h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
           Báo cáo thống kê và quản lý hoạt động tin đăng của đối tác.
@@ -106,11 +106,11 @@ export default function OwnerDashboardPage() {
         <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
           <div className="absolute -right-5 -bottom-5 w-20 h-20 bg-amber-500/5 rounded-full pointer-events-none"></div>
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-lg">
-            <i className="fa-solid fa-clock-rotate-left" />
+            <i className="fa-solid fa-eye" />
           </div>
           <div>
-            <span className="block text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Tin chờ duyệt</span>
-            <span className="block text-2xl font-black text-slate-800 dark:text-white mt-0.5">{stats.pendingProperties}</span>
+            <span className="block text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Tổng lượt xem tin</span>
+            <span className="block text-2xl font-black text-slate-800 dark:text-white mt-0.5">{stats.totalViews}</span>
           </div>
         </div>
 

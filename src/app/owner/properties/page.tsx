@@ -128,10 +128,9 @@ export default function OwnerPropertiesPage() {
                       <td className="py-4 font-bold text-slate-655">{p.area} m²</td>
                       <td className="py-4">
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          p.status === 'active' ? 'bg-emerald-50 text-emerald-600' :
-                          p.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
+                          p.status === 'active' || p.status === 'approved' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
                         }`}>
-                          {p.status === 'active' ? 'Đang hiển thị' : p.status === 'pending' ? 'Chờ duyệt' : 'Đã khóa/Hết hạn'}
+                          {p.status === 'active' || p.status === 'approved' ? 'Đang hiển thị' : 'Đã khóa/Hết hạn'}
                         </span>
                       </td>
                       <td className="py-4 text-right space-x-1 whitespace-nowrap">
