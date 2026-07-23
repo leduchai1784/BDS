@@ -480,27 +480,14 @@ export default function OwnerPropertyCreatePage() {
     <div className="space-y-6 text-left max-w-4xl mx-auto">
       <Toaster position="top-right" richColors />
 
-      {/* Header Title & Draft Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-gray-800 pb-5">
-        <div>
-          <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-            Đăng tin mới
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
-            Giao diện tạo tin đăng từng bước chuyên nghiệp liên kết đồng bộ NKS.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={saveDraft}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-gray-850 hover:bg-slate-50 dark:hover:bg-gray-855 rounded-xl text-xs font-bold text-slate-655 dark:text-slate-300 transition cursor-pointer active:scale-95"
-          >
-            <i className="fa-solid fa-floppy-disk text-slate-400" />
-            Lưu bản nháp
-          </button>
-        </div>
+      {/* Header Title */}
+      <div className="border-b border-slate-100 dark:border-gray-800 pb-5">
+        <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+          Đăng tin mới
+        </h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
+          Giao diện tạo tin đăng từng bước chuyên nghiệp liên kết đồng bộ NKS.
+        </p>
       </div>
 
       {/* Draft Notification Alert Banner */}
@@ -637,31 +624,19 @@ export default function OwnerPropertyCreatePage() {
                 </div>
               </div>
 
-              {/* Selection cards for Property Type */}
+              {/* Dropdown for Property Type */}
               <div className="space-y-1">
-                <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 px-1">Loại hình bất động sản</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {[
-                    { type: 'Căn hộ', icon: 'fa-building' },
-                    { type: 'Nhà phố', icon: 'fa-house-user' },
-                    { type: 'Biệt thự', icon: 'fa-hotel' },
-                    { type: 'Mặt bằng', icon: 'fa-shop' }
-                  ].map((item) => (
-                    <button
-                      key={item.type}
-                      type="button"
-                      onClick={() => setPropertyType(item.type)}
-                      className={`flex flex-col items-center justify-center p-4 border rounded-2xl transition cursor-pointer focus:outline-none ${
-                        propertyType === item.type 
-                          ? 'border-primary bg-primary/5 text-primary shadow-sm shadow-primary/5' 
-                          : 'border-slate-100 dark:border-gray-850 bg-white dark:bg-gray-950 hover:bg-slate-50 text-slate-655 dark:text-slate-400'
-                      }`}
-                    >
-                      <i className={`fa-solid ${item.icon} text-lg mb-2`} />
-                      <span className="text-xs font-bold">{item.type}</span>
-                    </button>
-                  ))}
-                </div>
+                <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Loại hình bất động sản <span className="text-rose-500">*</span></label>
+                <select 
+                  value={propertyType} 
+                  onChange={(e) => setPropertyType(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-55 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-xl text-xs font-bold outline-none transition"
+                >
+                  <option value="Căn hộ">Căn hộ</option>
+                  <option value="Nhà phố">Nhà phố</option>
+                  <option value="Biệt thự">Biệt thự</option>
+                  <option value="Mặt bằng">Mặt bằng</option>
+                </select>
               </div>
 
               {/* Title */}
@@ -1183,38 +1158,49 @@ export default function OwnerPropertyCreatePage() {
               Quay lại
             </button>
 
-            {currentStep < 4 ? (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  if (isStepValid(currentStep)) {
-                    setCurrentStep(prev => prev + 1)
-                  } else {
-                    toast.warning('Vui lòng điền đầy đủ các thông tin bắt buộc trước khi tiếp tục!')
-                  }
-                }}
-                className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition cursor-pointer active:scale-95 shadow-md shadow-primary/10 hover:shadow-primary/20"
+                onClick={saveDraft}
+                className="px-5 py-3 rounded-xl border border-slate-200 dark:border-gray-850 hover:bg-slate-50 dark:hover:bg-gray-850 text-slate-655 dark:text-slate-300 text-xs font-bold transition cursor-pointer active:scale-95 flex items-center gap-1.5"
               >
-                Tiếp theo
-                <i className="fa-solid fa-arrow-right-long ml-2" />
+                <i className="fa-solid fa-floppy-disk text-slate-400" />
+                Lưu bản nháp
               </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-400 text-white text-xs font-bold transition cursor-pointer active:scale-95 shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/25 flex items-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <i className="fa-solid fa-spinner animate-spin" /> Đang đăng tin...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-circle-check" /> Đăng tin ngay
-                  </>
-                )}
-              </button>
-            )}
+
+              {currentStep < 4 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isStepValid(currentStep)) {
+                      setCurrentStep(prev => prev + 1)
+                    } else {
+                      toast.warning('Vui lòng điền đầy đủ các thông tin bắt buộc trước khi tiếp tục!')
+                    }
+                  }}
+                  className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition cursor-pointer active:scale-95 shadow-md shadow-primary/10 hover:shadow-primary/20"
+                >
+                  Tiếp theo
+                  <i className="fa-solid fa-arrow-right-long ml-2" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-400 text-white text-xs font-bold transition cursor-pointer active:scale-95 shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/25 flex items-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <i className="fa-solid fa-spinner animate-spin" /> Đang đăng tin...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-circle-check" /> Đăng tin ngay
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
         </form>
