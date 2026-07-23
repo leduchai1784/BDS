@@ -11,6 +11,7 @@ interface Property {
   priceLabel?: string;
   area: number;
   address?: string;
+  transactionType?: string;
   status: string;
   viewsCount?: number;
   createdAt: string;
@@ -24,7 +25,7 @@ export default function OwnerPropertiesPage() {
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterTab, setFilterTab] = useState<'all' | 'live' | 'hidden'>('all')
+  const [filterTab, setFilterTab] = useState<'all' | 'rent' | 'sale' | 'hidden'>('all')
 
   // Delete modal state
   const [deleteModalItem, setDeleteModalItem] = useState<Property | null>(null)
@@ -111,7 +112,7 @@ export default function OwnerPropertiesPage() {
       const data = await res.json()
       if (res.ok && data.success) {
         setProperties(prev => prev.filter(p => p.id !== deleteModalItem.id))
-        toast.success('Đã xóa tin đăng và đồng bộ hệ thống NKS thành công!')
+        toast.success('Đã xóa tin đăng thành công!')
         setDeleteModalItem(null)
       } else {
         toast.error(data.error || 'Lỗi khi xóa tin đăng.')
@@ -144,15 +145,20 @@ export default function OwnerPropertiesPage() {
   // Calculated Stats
   const totalCount = properties.length
   const liveCount = properties.filter(p => p.status === 'active' || p.status === 'approved').length
+  const rentCount = properties.filter(p => (p.status === 'active' || p.status === 'approved') && (p.transactionType === 'rent' || (p.priceLabel && p.priceLabel.includes('tháng')))).length
+  const saleCount = properties.filter(p => (p.status === 'active' || p.status === 'approved') && (p.transactionType === 'sale' || (p.priceLabel && !p.priceLabel.includes('tháng')))).length
   const hiddenCount = totalCount - liveCount
   const totalViews = properties.reduce((acc, p) => acc + (p.viewsCount || 0), 0)
 
   // Filtered Properties List
   const filteredProperties = properties.filter(p => {
     const isLive = p.status === 'active' || p.status === 'approved'
-    if (filterTab === 'live' && !isLive) return false
+    const isRent = p.transactionType === 'rent' || (p.priceLabel && p.priceLabel.includes('tháng'))
+
     if (filterTab === 'hidden' && isLive) return false
-    
+    if (filterTab === 'rent' && (!isLive || !isRent)) return false
+    if (filterTab === 'sale' && (!isLive || isRent)) return false
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim()
       const titleMatch = p.title.toLowerCase().includes(q)
@@ -181,7 +187,7 @@ export default function OwnerPropertiesPage() {
             Quản lý tin đăng
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-            Quản lý, chỉnh sửa, ẩn hiện và xem phân tích toàn bộ bất động sản của bạn.
+            Quản lý, chỉnh sửa, xem riêng tin Thuê/Bán và ẩn hiện tất cả tin đăng của bạn.
           </p>
         </div>
 
@@ -230,7 +236,7 @@ export default function OwnerPropertiesPage() {
         </div>
       </div>
 
-      {/* Sticky Top Toolbar Layout (Fixed Search Input & Filter Tabs on Scroll) */}
+      {/* Sticky Top Toolbar Layout (Separate Tabs to View Rent / Sale / Hidden Individually) */}
       <div className="sticky top-0 z-20 py-2 bg-slate-50/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-slate-100/80 dark:border-gray-800/80 transition-all">
         <div className="bg-white dark:bg-gray-900 border border-slate-150 dark:border-gray-800 rounded-2xl p-3 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Search Bar */}
@@ -253,8 +259,8 @@ export default function OwnerPropertiesPage() {
             )}
           </div>
 
-          {/* Filter Status Tabs */}
-          <div className="flex bg-slate-100 dark:bg-gray-850 p-1 rounded-xl shrink-0 self-start sm:self-auto">
+          {/* Separate Purpose Filter Tabs */}
+          <div className="flex bg-slate-100 dark:bg-gray-850 p-1 rounded-xl shrink-0 flex-wrap self-start sm:self-auto gap-0.5">
             <button
               onClick={() => setFilterTab('all')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
@@ -264,12 +270,20 @@ export default function OwnerPropertiesPage() {
               Tất cả ({totalCount})
             </button>
             <button
-              onClick={() => setFilterTab('live')}
+              onClick={() => setFilterTab('rent')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                filterTab === 'live' ? 'bg-white dark:bg-gray-800 text-emerald-600 dark:text-emerald-400 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                filterTab === 'rent' ? 'bg-white dark:bg-gray-800 text-primary shadow-xs' : 'text-slate-500 hover:text-slate-800'
               }`}
             >
-              Đang hiển thị ({liveCount})
+              Cho thuê ({rentCount})
+            </button>
+            <button
+              onClick={() => setFilterTab('sale')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                filterTab === 'sale' ? 'bg-white dark:bg-gray-800 text-amber-600 dark:text-amber-400 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Mua bán ({saleCount})
             </button>
             <button
               onClick={() => setFilterTab('hidden')}
@@ -283,131 +297,133 @@ export default function OwnerPropertiesPage() {
         </div>
       </div>
 
-      {/* Property Cards List (Compact & Balanced Scale) */}
-      {filteredProperties.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-2xl p-10 text-center shadow-2xs">
-          <div className="w-12 h-12 bg-slate-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-lg">
-            <i className="fa-solid fa-folder-open" />
-          </div>
-          <h3 className="text-xs font-extrabold text-slate-700 dark:text-slate-300">Không tìm thấy tin đăng phù hợp</h3>
-          <p className="text-[11px] text-slate-400 mt-1">Thử thay đổi từ khóa tìm kiếm hoặc chuyển sang bộ lọc khác.</p>
-          {(searchQuery || filterTab !== 'all') && (
-            <button
-              onClick={() => { setSearchQuery(''); setFilterTab('all'); }}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-slate-200 font-bold text-xs transition mt-3"
-            >
-              Xóa bộ lọc
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-3 pt-1">
-          {filteredProperties.map((p) => {
-            const imageSrc = p.images && p.images.length > 0 
-              ? p.images[0] 
-              : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&q=80';
-
-            const isLive = p.status === 'active' || p.status === 'approved'
-            const isLoadingThis = actionLoadingId === p.id
-
-            return (
-              <div 
-                key={p.id}
-                className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs hover:border-slate-200 dark:hover:border-gray-750 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+      {/* Single Grouped Container Card for All Items (Unified View Box) */}
+      <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 rounded-3xl p-2 sm:p-3 shadow-xs">
+        {filteredProperties.length === 0 ? (
+          <div className="p-10 text-center">
+            <div className="w-12 h-12 bg-slate-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-lg">
+              <i className="fa-solid fa-folder-open" />
+            </div>
+            <h3 className="text-xs font-extrabold text-slate-700 dark:text-slate-300">Không tìm thấy tin đăng phù hợp</h3>
+            <p className="text-[11px] text-slate-400 mt-1">Thử thay đổi từ khóa tìm kiếm hoặc chuyển sang bộ lọc xem riêng khác.</p>
+            {(searchQuery || filterTab !== 'all') && (
+              <button
+                onClick={() => { setSearchQuery(''); setFilterTab('all'); }}
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-slate-200 font-bold text-xs transition mt-3"
               >
-                {/* Left: Thumbnail & Compact Details */}
-                <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-slate-100 dark:border-gray-800 shrink-0 bg-slate-100">
-                    <img 
-                      src={imageSrc} 
-                      alt={p.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                Xóa bộ lọc
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-100 dark:divide-gray-800/80">
+            {filteredProperties.map((p) => {
+              const imageSrc = p.images && p.images.length > 0 
+                ? p.images[0] 
+                : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&q=80';
 
-                  <div className="flex-1 min-w-0 space-y-0.5">
-                    {/* Line 1: Title & Status */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Link 
-                        href={`/property/${p.id}`} 
-                        className="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-white hover:text-primary transition line-clamp-1"
-                      >
-                        {p.title}
-                      </Link>
-                      <span className={`text-[11px] font-bold ${isLive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500'}`}>
-                        {isLive ? 'Đang hiển thị' : 'Đã ẩn / Tạm ngưng'}
-                      </span>
+              const isLive = p.status === 'active' || p.status === 'approved'
+              const isLoadingThis = actionLoadingId === p.id
+
+              return (
+                <div 
+                  key={p.id}
+                  className="p-3 sm:p-3.5 hover:bg-slate-50/80 dark:hover:bg-gray-850/50 rounded-2xl transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                >
+                  {/* Left: Thumbnail & Compact Details */}
+                  <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-slate-100 dark:border-gray-800 shrink-0 bg-slate-100">
+                      <img 
+                        src={imageSrc} 
+                        alt={p.title} 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
 
-                    {/* Line 2: Address */}
-                    <p className="text-[11px] text-slate-400 font-medium line-clamp-1">
-                      {p.address || 'Chưa cập nhật địa chỉ'}
-                    </p>
+                    <div className="flex-1 min-w-0 space-y-0.5">
+                      {/* Line 1: Title & Status */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Link 
+                          href={`/property/${p.id}`} 
+                          className="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-white hover:text-primary transition line-clamp-1"
+                        >
+                          {p.title}
+                        </Link>
+                        <span className={`text-[11px] font-bold ${isLive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500'}`}>
+                          {isLive ? 'Đang hiển thị' : 'Đã ẩn / Tạm ngưng'}
+                        </span>
+                      </div>
 
-                    {/* Line 3: Price, Views, Date */}
-                    <div className="flex items-center gap-3 text-[11px] text-slate-800 dark:text-slate-200 font-semibold pt-0.5 flex-wrap">
-                      <span>
-                        Giá: <strong className="text-primary font-bold">{formatPrice(p.price, p.priceLabel)}</strong>
-                      </span>
-                      <span>
-                        Lượt xem: <strong className="font-bold">{p.viewsCount || 0}</strong>
-                      </span>
-                      <span>
-                        Ngày đăng: <strong className="font-bold">{formatDate(p.createdAt)}</strong>
-                      </span>
+                      {/* Line 2: Address */}
+                      <p className="text-[11px] text-slate-400 font-medium line-clamp-1">
+                        {p.address || 'Chưa cập nhật địa chỉ'}
+                      </p>
+
+                      {/* Line 3: Price, Views, Date */}
+                      <div className="flex items-center gap-3 text-[11px] text-slate-800 dark:text-slate-200 font-semibold pt-0.5 flex-wrap">
+                        <span>
+                          Giá: <strong className="text-primary font-bold">{formatPrice(p.price, p.priceLabel)}</strong>
+                        </span>
+                        <span>
+                          Lượt xem: <strong className="font-bold">{p.viewsCount || 0}</strong>
+                        </span>
+                        <span>
+                          Ngày đăng: <strong className="font-bold">{formatDate(p.createdAt)}</strong>
+                        </span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Right: Balanced Action Icon Buttons */}
+                  <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center pt-1 sm:pt-0">
+                    {/* Edit */}
+                    <Link
+                      href={`/owner/properties/${p.id}/edit`}
+                      className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-655 dark:text-slate-300 flex items-center justify-center text-xs transition cursor-pointer border border-slate-100 dark:border-gray-700"
+                      title="Chỉnh sửa tin đăng"
+                    >
+                      <i className="fa-regular fa-pen-to-square" />
+                    </Link>
+
+                    {/* Hide / Show */}
+                    <button
+                      type="button"
+                      disabled={isLoadingThis}
+                      onClick={() => handleToggleStatus(p.id, p.status)}
+                      className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-655 dark:text-slate-300 flex items-center justify-center text-xs transition cursor-pointer border border-slate-100 dark:border-gray-700"
+                      title={isLive ? 'Ẩn tin đăng' : 'Hiện tin đăng'}
+                    >
+                      <i className={`fa-solid ${isLive ? 'fa-eye-slash' : 'fa-eye'}`} />
+                    </button>
+
+                    {/* Extend */}
+                    <button
+                      type="button"
+                      disabled={isLoadingThis}
+                      onClick={() => handleExtend(p.id)}
+                      className="w-8 h-8 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400 flex items-center justify-center text-xs transition cursor-pointer border border-sky-100 dark:border-sky-900/30"
+                      title="Gia hạn tin đăng"
+                    >
+                      <i className="fa-solid fa-chart-line" />
+                    </button>
+
+                    {/* Delete button (triggers Modal) */}
+                    <button
+                      type="button"
+                      disabled={isLoadingThis}
+                      onClick={() => setDeleteModalItem(p)}
+                      className="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-500 dark:bg-rose-955/40 dark:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer border border-rose-100 dark:border-rose-900/30"
+                      title="Xóa tin đăng"
+                    >
+                      <i className="fa-solid fa-trash-can" />
+                    </button>
+                  </div>
                 </div>
-
-                {/* Right: Balanced Action Icon Buttons */}
-                <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center pt-1 sm:pt-0">
-                  {/* Edit */}
-                  <Link
-                    href={`/owner/properties/${p.id}/edit`}
-                    className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-655 dark:text-slate-300 flex items-center justify-center text-xs transition cursor-pointer border border-slate-100 dark:border-gray-700"
-                    title="Chỉnh sửa tin đăng"
-                  >
-                    <i className="fa-regular fa-pen-to-square" />
-                  </Link>
-
-                  {/* Hide / Show */}
-                  <button
-                    type="button"
-                    disabled={isLoadingThis}
-                    onClick={() => handleToggleStatus(p.id, p.status)}
-                    className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-655 dark:text-slate-300 flex items-center justify-center text-xs transition cursor-pointer border border-slate-100 dark:border-gray-700"
-                    title={isLive ? 'Ẩn tin đăng' : 'Hiện tin đăng'}
-                  >
-                    <i className={`fa-solid ${isLive ? 'fa-eye-slash' : 'fa-eye'}`} />
-                  </button>
-
-                  {/* Extend */}
-                  <button
-                    type="button"
-                    disabled={isLoadingThis}
-                    onClick={() => handleExtend(p.id)}
-                    className="w-8 h-8 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400 flex items-center justify-center text-xs transition cursor-pointer border border-sky-100 dark:border-sky-900/30"
-                    title="Gia hạn tin đăng"
-                  >
-                    <i className="fa-solid fa-chart-line" />
-                  </button>
-
-                  {/* Delete button (triggers Modal) */}
-                  <button
-                    type="button"
-                    disabled={isLoadingThis}
-                    onClick={() => setDeleteModalItem(p)}
-                    className="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-500 dark:bg-rose-955/40 dark:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer border border-rose-100 dark:border-rose-900/30"
-                    title="Xóa tin đăng"
-                  >
-                    <i className="fa-solid fa-trash-can" />
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
+              )
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Delete Confirmation Modal */}
       {deleteModalItem && (
