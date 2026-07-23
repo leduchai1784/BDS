@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react"
 import ChatBot from "@/components/ai/ChatBot"
 import ShareModal from "@/components/ShareModal"
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["vietnamese", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-be-vietnam-pro",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`h-full bg-slate-50 ${plusJakartaSans.variable}`}>
+    <html lang="vi" className={`h-full bg-slate-50 ${beVietnamPro.variable}`}>
       <head>
         {/* Font Awesome Icons */}
         <link 

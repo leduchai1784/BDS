@@ -94,6 +94,7 @@ html {
 
 @theme {
   --font-*: initial;
+  --font-sans: var(--font-be-vietnam-pro), "Nunito Sans", "Inter", sans-serif;
   --font-outfit: Outfit, sans-serif;
 
   --breakpoint-*: initial;
