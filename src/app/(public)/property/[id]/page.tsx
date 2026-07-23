@@ -8,6 +8,7 @@ import DetailMapWrapper from '@/components/property/DetailMapWrapper'
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import PropertyActions from '@/components/property/PropertyActions'
+import AgentAvatar from '@/components/property/AgentAvatar'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,7 +18,7 @@ interface PropertyDetailPageProps {
 
 function formatAvatarUrl(avatar: string | null | undefined, name: string): string {
   if (!avatar || avatar.trim() === '' || avatar === 'null' || avatar === 'undefined') {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0077bb&color=fff&font-size=0.35`
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=0077bb&color=fff&bold=true`
   }
   let url = avatar.trim()
   if (url.startsWith('http://')) {
@@ -25,7 +26,8 @@ function formatAvatarUrl(avatar: string | null | undefined, name: string): strin
   } else if (url.startsWith('//')) {
     url = 'https:' + url
   } else if (!url.startsWith('http') && !url.startsWith('data:image')) {
-    url = `https://data.nks.vn/storage/${url.replace(/^\//, '')}`
+    const cleanPath = url.replace(/^\//, '')
+    url = cleanPath.startsWith('storage/') ? `https://data.nks.vn/${cleanPath}` : `https://data.nks.vn/${cleanPath}`
   }
   return url
 }
@@ -446,13 +448,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               
               {/* Agent card details */}
               <div className="flex items-center space-x-4 pb-4 border-b border-slate-100 mb-5 pr-20">
-                <div className="w-14 h-14 rounded-full overflow-hidden border border-slate-150 shadow-sm shrink-0 bg-slate-100 flex items-center justify-center">
-                  <img 
-                    src={property.agent.avatar} 
-                    alt={property.agent.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <AgentAvatar avatar={property.agent.avatar} name={property.agent.name} className="w-14 h-14" />
                 <div>
                   <h4 className="text-base font-bold text-slate-800 leading-tight mb-0.5">{property.agent.name}</h4>
                   <span className="text-xs font-semibold text-slate-400 block">Chủ nhà chính chủ</span>
