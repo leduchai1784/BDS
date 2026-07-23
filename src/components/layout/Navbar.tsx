@@ -242,7 +242,7 @@ export default function Navbar() {
             {/* Đăng tin Button */}
             <div className="relative flex-shrink-0">
               <Link 
-                href="/property/create"
+                href="/owner/properties/create"
                 className="inline-flex items-center justify-center px-2.5 lg:px-3.5 py-1.5 lg:py-2 border border-transparent text-xs lg:text-sm font-extrabold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-primary/30 transform hover:-translate-y-0.5 transition duration-200 whitespace-nowrap flex-shrink-0 cursor-pointer"
               >
                 <i className="fa-solid fa-circle-plus mr-1 lg:mr-1.5"></i> Đăng tin
@@ -564,7 +564,7 @@ export default function Navbar() {
                 {/* Đăng tin (Mobile CTA) */}
                 <div className="w-full">
                   <Link 
-                    href="/property/create"
+                    href="/owner/properties/create"
                     onClick={() => setMobileMenuOpen(false)}
                     className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/25 transition focus:outline-none cursor-pointer"
                   >
