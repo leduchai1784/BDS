@@ -397,7 +397,9 @@ export async function getNksProperties(): Promise<any[]> {
         const location = address.replace(', Việt Nam', '').replace(', Afghanistan', '').trim()
 
         let featureImg = item.featureimg || '/images/apartment_placeholder.png'
-        if (featureImg.startsWith('//')) {
+        if (featureImg.startsWith('http://')) {
+          featureImg = featureImg.replace('http://', 'https://')
+        } else if (featureImg.startsWith('//')) {
           featureImg = 'https:' + featureImg
         }
 
@@ -414,6 +416,8 @@ export async function getNksProperties(): Promise<any[]> {
                 let fullImgUrl = img
                 if (!fullImgUrl.startsWith('http') && !fullImgUrl.startsWith('//')) {
                   fullImgUrl = `https://data.nks.vn/storage/${img.replace(/^\//, '')}`
+                } else if (fullImgUrl.startsWith('http://')) {
+                  fullImgUrl = fullImgUrl.replace('http://', 'https://')
                 } else if (fullImgUrl.startsWith('//')) {
                   fullImgUrl = 'https:' + fullImgUrl
                 }

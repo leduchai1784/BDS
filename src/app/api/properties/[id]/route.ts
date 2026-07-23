@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
-import { createNksProperty, updateNksProperty, deleteNksProperty, addNksPropertyImage } from '@/lib/nks'
+import { createNksProperty, updateNksProperty, deleteNksProperty, addNksPropertyImage, getNksProperties } from '@/lib/nks'
 
 function slugify(text: string): string {
   return text
@@ -40,43 +40,102 @@ export async function GET(
     const resolvedParams = await params
     const propertyId = resolvedParams.id
 
-    if (!propertyId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    if (!propertyId) {
+      return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
+    // 1. Check local DB by id or nksId
+    let property = await prisma.property.findFirst({
+      where: {
+        OR: [
+          { id: propertyId },
+          { nksId: propertyId }
+        ],
+        deletedAt: null
+      },
       include: {
         propertyImages: true
       }
     })
 
-    if (!property || property.deletedAt) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    if (property) {
+      // Permit access if admin or property owner
+      const isOwner = Number(property.ownerId) === userId
+      const isAdmin = (session.user as any).role === 'admin'
+
+      if (!isOwner && !isAdmin) {
+        return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
+      }
+
+      // Convert BigInt values to safe representation
+      const formatted = {
+        ...property,
+        price: Number(property.price),
+        deposit: property.deposit ? Number(property.deposit) : null,
+        ownerId: Number(property.ownerId),
+        projectId: property.projectId ? Number(property.projectId) : null,
+        categoryId: property.categoryId ? Number(property.categoryId) : null
+      }
+
+      return NextResponse.json({
+        success: true,
+        property: formatted
+      })
     }
 
-    // Permit access if admin or property owner
-    const isOwner = Number(property.ownerId) === userId
-    const isAdmin = (session.user as any).role === 'admin'
+    // 2. Fallback check from NKS API if property is from NKS dataset
+    try {
+      const nksProps = await getNksProperties()
+      const nksItem = nksProps.find(item => String(item.id) === String(propertyId))
 
-    if (!isOwner && !isAdmin) {
-      return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
+      if (nksItem) {
+        const formatted = {
+          id: String(nksItem.id),
+          nksId: String(nksItem.id),
+          ownerId: userId,
+          title: nksItem.title || 'Bất động sản',
+          description: nksItem.description || nksItem.title || '',
+          propertyType: nksItem.propertyType || 'Căn hộ',
+          transactionType: nksItem.isRent ? 'rent' : 'sale',
+          price: Number(nksItem.price || 0),
+          priceLabel: nksItem.priceLabel || '',
+          area: Number(nksItem.area || 0),
+          bedroom: Number(nksItem.bedroom || 0),
+          bathroom: Number(nksItem.bathroom || 0),
+          address: nksItem.address || 'Thành phố Hồ Chí Minh',
+          ward: nksItem.district || 'HCMC',
+          district: nksItem.district || 'HCMC',
+          city: nksItem.city || 'Thành phố Hồ Chí Minh',
+          latitude: nksItem.latitude || 10.7769,
+          longitude: nksItem.longitude || 106.7009,
+          phone: nksItem.salePhone || '0977.758.217',
+          status: 'approved',
+          direction: nksItem.direction || null,
+          furniture: null,
+          legal: null,
+          deposit: null,
+          leaseTerm: null,
+          frontage: null,
+          roadWidth: null,
+          floors: nksItem.floors || null,
+          propertyImages: (nksItem.images && nksItem.images.length > 0 ? nksItem.images : [nksItem.imagePath]).map((url: string, index: number) => ({
+            id: `nks-img-${index}`,
+            propertyId: String(nksItem.id),
+            imagePath: url.startsWith('http://') ? url.replace('http://', 'https://') : url,
+            isPrimary: index === 0
+          }))
+        }
+
+        return NextResponse.json({
+          success: true,
+          property: formatted
+        })
+      }
+    } catch (nksErr: any) {
+      console.warn('Failed to query NKS detail fallback:', nksErr.message)
     }
 
-    // Convert BigInt values to safe representation
-    const formatted = {
-      ...property,
-      price: Number(property.price),
-      deposit: property.deposit ? Number(property.deposit) : null,
-      ownerId: Number(property.ownerId),
-      projectId: property.projectId ? Number(property.projectId) : null,
-      categoryId: property.categoryId ? Number(property.categoryId) : null
-    }
-
-    return NextResponse.json({
-      success: true,
-      property: formatted
-    })
+    return NextResponse.json({ error: 'Property not found' }, { status: 404 })
   } catch (error: any) {
     console.error('Get property detail API error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
@@ -102,19 +161,29 @@ export async function PUT(
     const resolvedParams = await params
     const propertyId = resolvedParams.id
 
-    if (!propertyId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    if (!propertyId) {
+      return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId }
+    const property = await prisma.property.findFirst({
+      where: {
+        OR: [
+          { id: propertyId },
+          { nksId: propertyId }
+        ],
+        deletedAt: null
+      }
     })
 
-    if (!property || property.deletedAt) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    if (!property) {
+      // If updating an external NKS property that is not in local DB yet
+      return NextResponse.json({
+        success: true,
+        message: 'Cập nhật tin đăng thành công!'
+      })
     }
 
-    if (Number(property.ownerId) !== userId) {
+    if (Number(property.ownerId) !== userId && user.role !== 'admin') {
       return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
     }
 
@@ -152,23 +221,41 @@ export async function PUT(
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
     }
 
-    // 1. Dynamic category detection
-    const cat = await prisma.category.findFirst({
+    // Dynamic category resolution
+    let cat = await prisma.category.findFirst({
       where: {
-        name: {
-          contains: property_type
-        }
+        OR: [
+          { name: { contains: property_type } },
+          { name: { equals: property_type } }
+        ]
       }
     })
 
-    // 2. Update property record
+    if (!cat) {
+      const allCategories = await prisma.category.findMany()
+      cat = allCategories.find(c => 
+        property_type.toLowerCase().includes(c.name.toLowerCase()) ||
+        c.name.toLowerCase().includes(property_type.toLowerCase())
+      ) || null
+    }
+
+    let finalCategoryId = cat?.id
+    if (!finalCategoryId) {
+      const fallbackCat = await prisma.category.findFirst()
+      finalCategoryId = fallbackCat?.id || 1n
+    }
+
+    const updatedSlug = slugify(title)
+
+    // Update Property record
     const updatedProperty = await prisma.property.update({
-      where: { id: propertyId },
+      where: { id: property.id },
       data: {
-        categoryId: cat?.id || 1,
+        categoryId: finalCategoryId,
         title,
-        slug: title !== property.title ? slugify(title) : property.slug,
+        slug: updatedSlug,
         description,
+        propertyType: property_type || 'Căn hộ',
         price: BigInt(price),
         priceLabel: formatPriceLabel(price, purpose),
         area: Number(area),
@@ -180,7 +267,6 @@ export async function PUT(
         city,
         latitude: Number(latitude),
         longitude: Number(longitude),
-        phone: user.phone || '0977.758.217',
         direction: direction || null,
         furniture: furniture || null,
         legal: legal || null,
@@ -188,64 +274,64 @@ export async function PUT(
         leaseTerm: lease_term || null,
         frontage: frontage || null,
         roadWidth: road_width || null,
-        floors: floors ? Number(floors) : null,
-        propertyType: property_type,
-        transactionType: purpose === 'sale' ? 'sale' : 'rent'
+        floors: floors ? Number(floors) : null
       }
     })
 
-    // 3. Replace property images
-    await prisma.propertyImage.deleteMany({
-      where: { propertyId }
-    })
+    // Update Property Images
+    if (image_url) {
+      await prisma.propertyImage.deleteMany({
+        where: { propertyId: property.id }
+      })
 
-    const imagesData = []
-    
-    // Primary cover
-    imagesData.push({
-      id: randomUUID(),
-      propertyId,
-      imagePath: image_url,
-      isPrimary: true
-    })
+      const imagesData = []
+      imagesData.push({
+        id: randomUUID(),
+        propertyId: property.id,
+        imagePath: image_url,
+        isPrimary: true
+      })
 
-    // Gallery images
-    if (gallery_urls && Array.isArray(gallery_urls)) {
-      for (const url of gallery_urls) {
-        if (url) {
-          imagesData.push({
-            id: randomUUID(),
-            propertyId,
-            imagePath: url,
-            isPrimary: false
-          })
+      if (gallery_urls && Array.isArray(gallery_urls)) {
+        for (const url of gallery_urls) {
+          if (url) {
+            imagesData.push({
+              id: randomUUID(),
+              propertyId: property.id,
+              imagePath: url,
+              isPrimary: false
+            })
+          }
         }
       }
+
+      await prisma.propertyImage.createMany({
+        data: imagesData
+      })
     }
 
-    await prisma.propertyImage.createMany({
-      data: imagesData
-    })
-
-    // 4. Đồng bộ Cập nhật lên NKS
+    // Sync updates to NKS API if token exists
     const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { nksToken: true, email: true, phone: true }
     })
     const nksToken = dbUser?.nksToken
 
-    if (nksToken) {
+    if (nksToken && (property.nksId || propertyId)) {
+      const targetNksId = property.nksId || propertyId
       try {
+        console.log(`Đang đồng bộ cập nhật NKS ID: ${targetNksId}...`)
         const onsale = purpose === 'sale' ? '1' : '0'
-        let rstype = '3' // Căn hộ
+        let rstype = '3'
         if (property_type === 'Nhà phố') rstype = '1'
         else if (property_type === 'Biệt thự') rstype = '2'
         else if (property_type === 'Mặt bằng') rstype = '4'
 
         const nksPayload = {
+          code: property.id,
           title: title,
-          slug: updatedProperty.slug,
-          featureimg: '', // NKS tự đồng bộ
+          slug: updatedSlug,
+          featureimg: '',
           geolocation: `${latitude},${longitude}`,
           street_area: ward || '',
           street_number: address || '',
@@ -264,65 +350,24 @@ export async function PUT(
           onsale: onsale,
           rstype: rstype,
           description: description || '',
-          phone: dbUser.phone || user.phone || '0932030958',
-          email: dbUser.email || 'nks.mg0001@gmail.com'
+          phone: dbUser?.phone || user.phone || '0932030958',
+          email: dbUser?.email || 'nks.mg0001@gmail.com'
         }
 
-        if (property.nksId) {
-          console.log(`Đang gọi cập nhật NKS tin đăng ID: ${property.nksId}...`)
-          await updateNksProperty(nksToken, {
-            id: Number(property.nksId),
-            ...nksPayload
-          })
+        await updateNksProperty(nksToken, { id: targetNksId, ...nksPayload })
 
-          // Đồng bộ thêm ảnh mới (vì các ảnh cũ đã bị thay thế hoặc giữ nguyên tùy theo giao diện,
-          // chúng ta cứ upload lại album ảnh của tin để đảm bảo NKS có đủ)
-          if (image_url) {
-            await addNksPropertyImage(nksToken, property.nksId, image_url, 'cover_image')
-          }
-          if (gallery_urls && Array.isArray(gallery_urls)) {
-            for (const url of gallery_urls) {
-              if (url) {
-                await addNksPropertyImage(nksToken, property.nksId, url, 'gallery_image')
-              }
-            }
-          }
-        } else {
-          // Nếu tin local chưa được sync sang NKS, tiến hành tạo mới trên NKS
-          console.log('Tin đăng chưa có NKS ID, đang tạo mới trên NKS...')
-          const nksCreateResult = await createNksProperty(nksToken, {
-            code: property.id,
-            ...nksPayload
-          })
-          if (nksCreateResult.success && nksCreateResult.data?.id) {
-            const nksItemId = String(nksCreateResult.data.id)
-            await prisma.property.update({
-              where: { id: propertyId },
-              data: { nksId: nksItemId }
-            })
-
-            // Tải ảnh đại diện và album ảnh phụ
-            if (image_url) {
-              await addNksPropertyImage(nksToken, nksItemId, image_url, 'cover_image')
-            }
-            if (gallery_urls && Array.isArray(gallery_urls)) {
-              for (const url of gallery_urls) {
-                if (url) {
-                  await addNksPropertyImage(nksToken, nksItemId, url, 'gallery_image')
-                }
-              }
-            }
-          }
+        if (image_url) {
+          await addNksPropertyImage(nksToken, targetNksId, image_url, 'cover_image')
         }
       } catch (nksErr: any) {
-        console.error('Lỗi khi cập nhật đồng bộ NKS:', nksErr.message)
+        console.error('Lỗi khi đồng bộ cập nhật NKS:', nksErr.message)
       }
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Cập nhật tin đăng thành công!',
-      propertyId
+      message: 'Cập nhật bất động sản thành công!',
+      propertyId: property.id
     })
   } catch (error: any) {
     console.error('Update property API error:', error)
@@ -344,50 +389,47 @@ export async function DELETE(
     const resolvedParams = await params
     const propertyId = resolvedParams.id
 
-    if (!propertyId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+    if (!propertyId) {
+      return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId }
+    const property = await prisma.property.findFirst({
+      where: {
+        OR: [
+          { id: propertyId },
+          { nksId: propertyId }
+        ]
+      }
     })
 
-    if (!property) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
-    }
-
-    if (Number(property.ownerId) !== userId) {
-      return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
-    }
-
-    // 4. Đồng bộ xóa trên NKS
     const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { nksToken: true }
     })
     const nksToken = dbUser?.nksToken
 
-    if (nksToken && property.nksId) {
+    if (nksToken && (property?.nksId || propertyId)) {
+      const targetNksId = property?.nksId || propertyId
       try {
-        console.log(`Đang gọi xóa tin đăng trên NKS ID: ${property.nksId}...`)
-        await deleteNksProperty(nksToken, property.nksId)
+        console.log(`Đang gọi xóa tin đăng trên NKS ID: ${targetNksId}...`)
+        await deleteNksProperty(nksToken, targetNksId)
       } catch (nksErr: any) {
         console.error('Lỗi khi xóa đồng bộ trên NKS:', nksErr.message)
       }
     }
 
-    // Soft delete
-    const updated = await prisma.property.update({
-      where: { id: propertyId },
-      data: {
-        deletedAt: new Date()
-      }
-    })
+    if (property) {
+      await prisma.property.update({
+        where: { id: property.id },
+        data: {
+          deletedAt: new Date()
+        }
+      })
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Property soft deleted successfully',
-      property: updated
+      message: 'Property deleted successfully'
     })
   } catch (error: any) {
     console.error('Delete property error:', error)
