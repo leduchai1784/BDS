@@ -135,7 +135,7 @@ export default function OwnerPropertiesPage() {
                       </td>
                       <td className="py-4 text-right space-x-1 whitespace-nowrap">
                         <Link
-                          href={`/property/${p.id}/edit`}
+                          href={`/owner/properties/${p.id}/edit`}
                           className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 dark:border-gray-800 hover:bg-slate-50 dark:hover:bg-gray-800 text-slate-500 dark:text-slate-400 hover:text-primary transition"
                           title="Sửa tin"
                         >
