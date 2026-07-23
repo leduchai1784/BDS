@@ -305,10 +305,10 @@ export default function Navbar() {
                             <i className="fa-solid fa-id-badge mr-2 text-sm text-amber-500"></i> Hồ sơ Môi giới
                           </Link>
                         )}
-                        <Link href="/profile?tab=properties" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <Link href="/owner/properties" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                           <i className="fa-solid fa-list-check mr-2 text-sm text-slate-400"></i> Quản lý tin đăng
                         </Link>
-                        <Link href="/profile?tab=appointments" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
+                        <Link href="/owner/appointments" onClick={() => setUserDropdownOpen(false)} className="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-primary transition">
                           <i className="fa-solid fa-calendar-days mr-2 text-sm text-slate-400"></i> Lịch hẹn
                         </Link>
                       </>

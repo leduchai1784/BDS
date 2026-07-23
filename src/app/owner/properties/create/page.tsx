@@ -494,7 +494,7 @@ export default function OwnerPropertyCreatePage() {
         toast.success('Đăng tin bất động sản thành công!')
         // Clean draft
         localStorage.removeItem('bds_property_draft')
-        router.push('/profile?tab=properties')
+        router.push('/owner/properties')
       } else {
         setErrorMsg(data.error || data.message || 'Lỗi đăng tin bất động sản.')
       }
