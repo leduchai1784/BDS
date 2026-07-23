@@ -207,7 +207,7 @@ export default function Navbar() {
             </Link>
             {status === 'authenticated' && user && ['admin', 'owner', 'agent'].includes((user as any).role) && (
               <Link href="/system" className={`font-bold text-sm lg:text-base transition duration-150 whitespace-nowrap ${navClass('/system')}`}>
-                Hệ thống BDS
+                Quản lý BDS
               </Link>
             )}
           </nav>
@@ -488,7 +488,7 @@ export default function Navbar() {
                 className={`block px-3 py-3 rounded-xl text-base font-semibold transition flex items-center ${isActive('/system') ? 'text-primary bg-primary-light font-bold' : 'text-slate-700 hover:bg-slate-50 hover:text-primary'}`}
               >
                 <i className="fa-solid fa-network-wired text-slate-400 mr-3 text-base w-5 text-center transition-colors"></i>
-                <span>Hệ thống BDS</span>
+                <span>Quản lý BDS</span>
               </Link>
             )}
             
