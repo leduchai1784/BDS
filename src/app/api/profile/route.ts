@@ -110,7 +110,9 @@ export async function GET() {
       select: {
         name: true,
         email: true,
-        avatar: true
+        avatar: true,
+        phone: true,
+        role: true
       }
     })
 
@@ -118,9 +120,40 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    const dbProperties = await prisma.property.findMany({
+      where: {
+        ownerId: userId,
+        deletedAt: null
+      },
+      include: {
+        propertyImages: {
+          where: { isPrimary: true }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    const properties = dbProperties.map(p => ({
+      id: p.id,
+      title: p.title,
+      price: Number(p.price),
+      priceLabel: p.priceLabel,
+      area: p.area,
+      address: p.address,
+      status: p.status,
+      viewsCount: p.viewsCount,
+      images: p.propertyImages.map(img => img.imagePath),
+      createdAt: p.createdAt ? p.createdAt.toISOString() : null
+    }))
+
     return NextResponse.json({
       success: true,
-      data: user
+      data: {
+        ...user,
+        properties
+      }
     })
   } catch (error: any) {
     console.error('Fetch profile error:', error)
