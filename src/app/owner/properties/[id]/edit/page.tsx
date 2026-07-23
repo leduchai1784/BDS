@@ -490,6 +490,11 @@ export default function OwnerPropertyEditPage() {
                   placeholder="Ví dụ: 12000000" 
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-xl text-xs font-semibold outline-none transition"
                 />
+                {price && Number(price) > 0 && (
+                  <span className="block text-[10px] text-primary font-bold mt-1 px-1">
+                    Hiển thị: {Number(price) >= 1000000000 ? `${(Number(price) / 1000000000).toFixed(1).replace(/\.0$/, '')} tỷ` : Number(price) >= 1000000 ? `${(Number(price) / 1000000).toFixed(1).replace(/\.0$/, '')} triệu` : `${Number(price).toLocaleString('vi-VN')} đ`}{purpose === 'rent' ? '/tháng' : ''}
+                  </span>
+                )}
               </div>
               <div className="space-y-1">
                 <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Diện tích (m²) <span className="text-rose-500">*</span></label>
