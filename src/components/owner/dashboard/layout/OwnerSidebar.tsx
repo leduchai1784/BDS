@@ -103,15 +103,17 @@ const OwnerSidebar: React.FC = () => {
                 <span className={isActive ? "text-white" : "text-slate-500"}>
                   {nav.icon}
                 </span>
-                {isExpanded && (
-                  <span className="text-sm font-medium">{nav.name}</span>
-                )}
+                <span className={`text-sm font-medium whitespace-nowrap transition-all duration-150 ease-out ${
+                  isExpanded ? "opacity-100 max-w-[200px]" : "opacity-0 max-w-0 overflow-hidden"
+                }`}>
+                  {nav.name}
+                </span>
               </div>
               
-              {isExpanded && nav.statsKey && stats[nav.statsKey] > 0 && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+              {nav.statsKey && stats[nav.statsKey] > 0 && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-all duration-150 ease-out ${
                   isActive ? "bg-white/20 text-white" : "bg-slate-100 dark:bg-gray-800 text-slate-655"
-                }`}>
+                } ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-0 w-0 overflow-hidden"}`}>
                   {stats[nav.statsKey]}
                 </span>
               )}
@@ -138,16 +140,16 @@ const OwnerSidebar: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-md shadow-primary/20 flex-shrink-0">
             <i className="fa-solid fa-house-chimney text-sm"></i>
           </div>
-          {isExpanded && (
-            <div className="flex flex-col text-left">
-              <span className="font-black text-sm text-slate-800 dark:text-white leading-none">
-                BDS <span className="text-primary">Rental</span>
-              </span>
-              <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mt-1.5 leading-none">
-                Trung tâm quản lý
-              </span>
-            </div>
-          )}
+          <div className={`flex flex-col text-left transition-all duration-150 ease-out origin-left ${
+            isExpanded ? "opacity-100 max-w-[200px] translate-x-0" : "opacity-0 max-w-0 overflow-hidden -translate-x-2"
+          }`}>
+            <span className="font-black text-sm text-slate-800 dark:text-white leading-none whitespace-nowrap">
+              BDS <span className="text-primary">Rental</span>
+            </span>
+            <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mt-1.5 leading-none whitespace-nowrap">
+              Trung tâm quản lý
+            </span>
+          </div>
         </Link>
       </div>
 
@@ -155,21 +157,21 @@ const OwnerSidebar: React.FC = () => {
       <div className="flex-1 py-4 overflow-y-auto px-4 space-y-6">
         {/* Overview section */}
         <div>
-          {isExpanded && (
-            <span className="block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-              Tổng quan
-            </span>
-          )}
+          <span className={`block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 transition-all duration-150 ease-out whitespace-nowrap ${
+            isExpanded ? "opacity-100 max-h-5 overflow-visible" : "opacity-0 max-h-0 overflow-hidden mb-0"
+          }`}>
+            Tổng quan
+          </span>
           {renderMenuItems(overviewItems)}
         </div>
 
         {/* Management section */}
         <div>
-          {isExpanded && (
-            <span className="block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-              Quản lý
-            </span>
-          )}
+          <span className={`block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 transition-all duration-150 ease-out whitespace-nowrap ${
+            isExpanded ? "opacity-100 max-h-5 overflow-visible" : "opacity-0 max-h-0 overflow-hidden mb-0"
+          }`}>
+            Quản lý
+          </span>
           {renderMenuItems(managementItems)}
         </div>
       </div>
@@ -183,9 +185,11 @@ const OwnerSidebar: React.FC = () => {
           <span>
             <i className="fa-solid fa-arrow-left text-sm" />
           </span>
-          {isExpanded && (
-            <span className="text-sm font-medium">Về web chính</span>
-          )}
+          <span className={`text-sm font-medium whitespace-nowrap transition-all duration-150 ease-out ${
+            isExpanded ? "opacity-100 max-w-[200px]" : "opacity-0 max-w-0 overflow-hidden"
+          }`}>
+            Về web chính
+          </span>
         </Link>
       </div>
     </aside>

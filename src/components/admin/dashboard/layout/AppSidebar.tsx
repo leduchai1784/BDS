@@ -124,19 +124,17 @@ const AppSidebar: React.FC = () => {
               >
                 {nav.icon}
               </span>
-              {(isExpanded || isMobileOpen) && (
-                <span className={`menu-item-text`}>{nav.name}</span>
-              )}
-              {(isExpanded || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200  ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
-              )}
+              <span className={`menu-item-text whitespace-nowrap transition-all duration-150 ease-out ${
+                isExpanded || isMobileOpen ? "opacity-100 max-w-[200px]" : "opacity-0 max-w-0 overflow-hidden"
+              }`}>{nav.name}</span>
+              <ChevronDownIcon
+                className={`ml-auto w-5 h-5 transition-all duration-150 ease-out ${
+                  openSubmenu?.type === menuType &&
+                  openSubmenu?.index === index
+                    ? "rotate-180 text-brand-500"
+                    : ""
+                } ${isExpanded || isMobileOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 w-0 overflow-hidden"}`}
+              />
             </button>
           ) : (
             nav.path && (
@@ -155,20 +153,18 @@ const AppSidebar: React.FC = () => {
                 >
                   {nav.icon}
                 </span>
-                {(isExpanded || isMobileOpen) && (
-                  <>
-                    <span className={`menu-item-text`}>{nav.name}</span>
+                    <span className={`menu-item-text whitespace-nowrap transition-all duration-150 ease-out ${
+                      isExpanded || isMobileOpen ? "opacity-100 max-w-[200px]" : "opacity-0 max-w-0 overflow-hidden"
+                    }`}>{nav.name}</span>
                     {nav.statsKey && (
-                      <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full transition-all duration-150 ease-out ${
                         isActive(nav.path)
                           ? "bg-brand-600 text-white"
                           : "bg-gray-100 text-slate-550 dark:bg-gray-800 dark:text-slate-400"
-                      }`}>
+                      } ${isExpanded || isMobileOpen ? "opacity-100 scale-100" : "opacity-0 scale-0 w-0 overflow-hidden"}`}>
                         {stats[nav.statsKey] || 0}
                       </span>
                     )}
-                  </>
-                )}
               </Link>
             )
           )}
@@ -316,16 +312,16 @@ const AppSidebar: React.FC = () => {
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-md shadow-primary/20 flex-shrink-0 text-white font-bold">
             <i className="fa-solid fa-house-chimney text-sm" />
           </div>
-          {(isExpanded || isMobileOpen) && (
-            <div className="flex flex-col text-left">
-              <span className="font-black text-sm text-slate-800 dark:text-white leading-none">
-                BDS <span className="text-primary">Rental</span>
-              </span>
-              <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mt-1.5 leading-none">
-                Trung tâm quản lý
-              </span>
-            </div>
-          )}
+          <div className={`flex flex-col text-left transition-all duration-150 ease-out origin-left ${
+            isExpanded || isMobileOpen ? "opacity-100 max-w-[200px] translate-x-0" : "opacity-0 max-w-0 overflow-hidden -translate-x-2"
+          }`}>
+            <span className="font-black text-sm text-slate-800 dark:text-white leading-none whitespace-nowrap">
+              BDS <span className="text-primary">Rental</span>
+            </span>
+            <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mt-1.5 leading-none whitespace-nowrap">
+              Trung tâm quản lý
+            </span>
+          </div>
         </Link>
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
@@ -334,15 +330,16 @@ const AppSidebar: React.FC = () => {
             {/* Overview section */}
             <div>
               <h2
-                className={`mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 ${
-                  !isExpanded
-                    ? "lg:justify-center"
-                    : "justify-start px-4"
+                className={`mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 transition-all duration-150 ease-out ${
+                  !isExpanded ? "lg:justify-center" : "justify-start px-4"
                 }`}
               >
-                {isExpanded || isMobileOpen ? (
-                  "Tổng quan"
-                ) : (
+                <span className={`transition-all duration-150 ease-out whitespace-nowrap ${
+                  isExpanded || isMobileOpen ? "opacity-100 max-h-5" : "opacity-0 max-h-0 overflow-hidden"
+                }`}>
+                  Tổng quan
+                </span>
+                {(!isExpanded && !isMobileOpen) && (
                   <HorizontaLDots />
                 )}
               </h2>
@@ -351,15 +348,20 @@ const AppSidebar: React.FC = () => {
 
             {/* Management section */}
             <div>
-              {isExpanded || isMobileOpen ? (
-                <h2 className="mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 justify-start px-4">
+              <h2
+                className={`mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 transition-all duration-150 ease-out ${
+                  !isExpanded ? "lg:justify-center" : "justify-start px-4"
+                }`}
+              >
+                <span className={`transition-all duration-150 ease-out whitespace-nowrap ${
+                  isExpanded || isMobileOpen ? "opacity-100 max-h-5" : "opacity-0 max-h-0 overflow-hidden"
+                }`}>
                   Quản lý
-                </h2>
-              ) : (
-                <h2 className="mb-3 text-[10px] font-extrabold uppercase flex leading-[20px] text-slate-400 lg:justify-center">
+                </span>
+                {(!isExpanded && !isMobileOpen) && (
                   <HorizontaLDots />
-                </h2>
-              )}
+                )}
+              </h2>
               {renderMenuItems(managementItems, "main")}
             </div>
           </div>
