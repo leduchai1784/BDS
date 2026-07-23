@@ -112,7 +112,8 @@ export async function GET() {
         email: true,
         avatar: true,
         phone: true,
-        role: true
+        role: true,
+        nksToken: true
       }
     })
 
@@ -120,6 +121,7 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    // 1. Fetch properties from local database
     const dbProperties = await prisma.property.findMany({
       where: {
         ownerId: userId,
@@ -137,6 +139,7 @@ export async function GET() {
 
     let properties = dbProperties.map(p => ({
       id: p.id,
+      nksId: p.nksId || null,
       title: p.title,
       price: Number(p.price),
       priceLabel: p.priceLabel,
@@ -148,43 +151,57 @@ export async function GET() {
       createdAt: p.createdAt ? p.createdAt.toISOString() : null
     }))
 
-    // Fallback: If local database properties is empty, fetch NKS API properties list
-    if (properties.length === 0) {
-      try {
+    // 2. Fetch authenticated user properties from NKS API if token exists or fallback filter
+    try {
+      let nksUserProperties: any[] = []
+
+      if (user.nksToken) {
+        // Authenticated direct query from NKS for this exact logged in user
+        const { getUserNksProperties } = await import('@/lib/nks')
+        nksUserProperties = await getUserNksProperties(user.nksToken)
+      } else {
+        // Strict filter on public list by email or phone match
         const nksProps = await getNksProperties()
         if (Array.isArray(nksProps) && nksProps.length > 0) {
-          // Attempt filtering by user email or phone if matching
-          let matchedNks = nksProps.filter(
+          nksUserProperties = nksProps.filter(
             p => (user.email && p.saleEmail && p.saleEmail.toLowerCase() === user.email.toLowerCase()) ||
-                 (user.phone && p.salePhone && p.salePhone.includes(user.phone))
+                 (user.phone && p.salePhone && (p.salePhone.includes(user.phone) || user.phone.includes(p.salePhone)))
           )
-          // If no specific match found, return top NKS properties so user page is populated
-          if (matchedNks.length === 0) {
-            matchedNks = nksProps.slice(0, 10)
-          }
+        }
+      }
 
-          properties = matchedNks.map(p => ({
-            id: p.id,
-            title: p.title,
-            price: p.price || 0,
-            priceLabel: p.priceLabel || '',
-            area: p.area || 0,
-            address: p.address || 'Thành phố Hồ Chí Minh',
+      // Append NKS properties that are not already present in dbProperties
+      const existingIds = new Set(properties.map(p => String(p.id)))
+      const existingNksIds = new Set(properties.map(p => String(p.nksId)).filter(Boolean))
+
+      for (const nksP of nksUserProperties) {
+        const nksIdStr = String(nksP.id)
+        if (!existingIds.has(nksIdStr) && !existingNksIds.has(nksIdStr)) {
+          properties.push({
+            id: nksP.id,
+            nksId: nksP.id,
+            title: nksP.title,
+            price: nksP.price || 0,
+            priceLabel: nksP.priceLabel || '',
+            area: nksP.area || 0,
+            address: nksP.address || 'Thành phố Hồ Chí Minh',
             status: 'approved',
             viewsCount: Math.floor(Math.random() * 20) + 1,
-            images: p.images && p.images.length > 0 ? p.images : [p.imagePath],
+            images: nksP.images && nksP.images.length > 0 ? nksP.images : [nksP.imagePath],
             createdAt: new Date().toISOString()
-          }))
+          })
         }
-      } catch (nksErr: any) {
-        console.warn('Failed to load fallback NKS properties:', nksErr.message)
       }
+    } catch (nksErr: any) {
+      console.warn('Failed to fetch user NKS properties:', nksErr.message)
     }
+
+    const { nksToken, ...userInfo } = user
 
     return NextResponse.json({
       success: true,
       data: {
-        ...user,
+        ...userInfo,
         properties
       }
     })

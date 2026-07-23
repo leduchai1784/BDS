@@ -470,6 +470,108 @@ export async function getNksProperties(): Promise<any[]> {
   }
 }
 
+/**
+ * Lấy danh sách tin đăng thực tế thuộc sở hữu của người dùng đang đăng nhập NKS.
+ * URL: https://account.nks.vn/api/nks/user/rsitems
+ */
+export async function getUserNksProperties(token: string): Promise<any[]> {
+  try {
+    const response = await axios.post(`${BASE_URL}/rsitems`, {
+      access_token: token
+    }, { timeout: 10000, httpsAgent })
+
+    const json = response.data
+    if (json && json.success && Array.isArray(json.data)) {
+      return json.data.map((item: any) => {
+        const id = String(item.id)
+        const title = item.title || 'Bất động sản'
+        const isRent = item.onsale === 0 || item.onsale === '0' || item.type === 'rent'
+        const price = Number(isRent ? item.rentprice || item.price : item.price) || 0
+        let priceLabel = 'Thỏa thuận'
+        if (item.formatedRentPrice) {
+          priceLabel = item.formatedRentPrice.replace('triệu', 'tr').trim() + '/tháng'
+        } else if (item.formatedPrice) {
+          priceLabel = item.formatedPrice.replace('triệu', 'tr').trim()
+        } else if (price > 0) {
+          priceLabel = isRent ? `${(price / 1000000).toLocaleString('vi-VN')} tr/tháng` : price >= 1000000000 ? `${(price / 1000000000).toLocaleString('vi-VN')} tỷ` : `${(price / 1000000).toLocaleString('vi-VN')} tr`
+        }
+        const area = Number(item.total_area || item.area || item.sqr) || 0
+        const geo = (item.geolocation || '').split(',')
+        const lat = parseFloat(geo[0]) || 10.7769
+        const lng = parseFloat(geo[1]) || 106.7009
+
+        let featureImg = item.featureimg || '/images/apartment_placeholder.png'
+        if (featureImg.startsWith('http://')) {
+          featureImg = featureImg.replace('http://', 'https://')
+        } else if (featureImg.startsWith('//')) {
+          featureImg = 'https:' + featureImg
+        }
+
+        let allImages: string[] = []
+        if (featureImg) {
+          allImages.push(featureImg)
+        }
+        if (item.images) {
+          try {
+            const parsedImgs = typeof item.images === 'string' ? JSON.parse(item.images) : item.images
+            if (Array.isArray(parsedImgs)) {
+              parsedImgs.forEach((img: string) => {
+                let fullImgUrl = img
+                if (!fullImgUrl.startsWith('http') && !fullImgUrl.startsWith('//')) {
+                  fullImgUrl = `https://data.nks.vn/${img.replace(/^\//, '')}`
+                } else if (fullImgUrl.startsWith('http://')) {
+                  fullImgUrl = fullImgUrl.replace('http://', 'https://')
+                } else if (fullImgUrl.startsWith('//')) {
+                  fullImgUrl = 'https:' + fullImgUrl
+                }
+                if (!allImages.includes(fullImgUrl)) {
+                  allImages.push(fullImgUrl)
+                }
+              })
+            }
+          } catch (e) {}
+        }
+
+        let propertyType = 'Căn hộ'
+        if (item.rstype === '1' || item.rstype === 1) propertyType = 'Nhà phố'
+        else if (item.rstype === '2' || item.rstype === 2) propertyType = 'Biệt thự'
+        else if (item.rstype === '4' || item.rstype === 4) propertyType = 'Mặt bằng'
+
+        return {
+          id,
+          title,
+          price,
+          priceLabel,
+          sqrPriceLabel: item.formatedSqrPrice ? `${item.formatedSqrPrice}/m²` : '',
+          area,
+          bedroom: Number(item.bed || item.bedroom) || 0,
+          bathroom: Number(item.bath || item.bathroom) || 0,
+          direction: item.direction || 'Không xác định',
+          floors: Number(item.floors) || 0,
+          address: item.street_number || item.province || 'Thành phố Hồ Chí Minh',
+          district: item.district || 'HCMC',
+          city: item.province || 'Thành phố Hồ Chí Minh',
+          latitude: lat,
+          longitude: lng,
+          imagePath: featureImg,
+          images: allImages,
+          isVip: !!item.is_vip || false,
+          isNew: !!item.is_new || false,
+          propertyType,
+          isRent: !!isRent,
+          saleEmail: item.email || '',
+          salePhone: item.phone || '',
+          sale: item.sale || null
+        }
+      })
+    }
+    return []
+  } catch (error: any) {
+    console.warn('Failed to fetch user properties from NKS API:', error.message)
+    return []
+  }
+}
+
 import { unstable_cache } from 'next/cache'
 
 /**
