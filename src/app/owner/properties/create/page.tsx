@@ -480,14 +480,38 @@ export default function OwnerPropertyCreatePage() {
     <div className="space-y-6 text-left max-w-4xl mx-auto">
       <Toaster position="top-right" richColors />
 
-      {/* Header Title */}
-      <div className="border-b border-slate-100 dark:border-gray-800 pb-5">
-        <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-          Đăng tin mới
-        </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
-          Giao diện tạo tin đăng từng bước chuyên nghiệp liên kết đồng bộ NKS.
-        </p>
+      {/* Header Title & Purpose Switcher */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-gray-800 pb-5">
+        <div>
+          <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+            Đăng tin mới
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
+            Giao diện tạo tin đăng từng bước chuyên nghiệp liên kết đồng bộ NKS.
+          </p>
+        </div>
+
+        {/* Transaction Purpose Switcher */}
+        <div className="flex bg-slate-100 dark:bg-gray-850 p-1.5 rounded-2xl w-max self-start sm:self-center">
+          <button
+            type="button"
+            onClick={() => setPurpose('rent')}
+            className={`px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              purpose === 'rent' ? 'bg-white dark:bg-gray-800 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Tin Cho Thuê
+          </button>
+          <button
+            type="button"
+            onClick={() => setPurpose('sale')}
+            className={`px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              purpose === 'sale' ? 'bg-white dark:bg-gray-800 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Tin Mua Bán
+          </button>
+        </div>
       </div>
 
       {/* Draft Notification Alert Banner */}
@@ -599,30 +623,7 @@ export default function OwnerPropertyCreatePage() {
                 Bước 1: Thông tin cơ bản bất động sản
               </h3>
 
-              {/* Segment switch */}
-              <div className="space-y-1">
-                <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Hình thức giao dịch</label>
-                <div className="flex bg-slate-100 dark:bg-gray-850 p-1.5 rounded-2xl w-max">
-                  <button
-                    type="button"
-                    onClick={() => setPurpose('rent')}
-                    className={`px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      purpose === 'rent' ? 'bg-white dark:bg-gray-800 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    Tin Cho Thuê
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPurpose('sale')}
-                    className={`px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      purpose === 'sale' ? 'bg-white dark:bg-gray-800 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    Tin Mua Bán
-                  </button>
-                </div>
-              </div>
+
 
               {/* Dropdown for Property Type */}
               <div className="space-y-1">
