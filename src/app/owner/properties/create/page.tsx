@@ -173,6 +173,69 @@ export default function OwnerPropertyCreatePage() {
     }
   }, [])
 
+  const fillSampleData = () => {
+    setTitle('Căn hộ Studio Vinhomes Grand Park Quận 9 Full Nội Thất')
+    setPrice(purpose === 'rent' ? '7000000' : '2300000000')
+    setArea('35')
+    setBedroom('1')
+    setBathroom('1')
+    setDescription('Căn hộ studio full nội thất tại Vinhomes Grand Park Quận 9. Đầy đủ máy giặt, điều hòa, giường tủ, tủ lạnh, bếp từ. An ninh 24/7, có hồ bơi, công viên lớn, siêu thị dưới sảnh. Thích hợp cho nhân viên văn phòng hoặc sinh viên thuê lâu dài.')
+    setAddress('Tòa S8.03 Vinhomes Grand Park, Nguyễn Xiển')
+    
+    if (purpose === 'rent') {
+      setDeposit('14000000')
+      setLeaseTerm('Tối thiểu 1 năm')
+    } else {
+      setFrontage('5')
+      setRoadWidth('12')
+      setFloors('1')
+    }
+    setDirection('Đông Nam')
+    setLegal('Sổ hồng riêng')
+    setFurniture('Đầy đủ nội thất cao cấp')
+
+    if (!contactName) setContactName('Lê Anh')
+    if (!contactPhone) setContactPhone('0912345678')
+
+    // Find HCM Province
+    const hcm = provinces.find(p => p.Name.toLowerCase().includes('hồ chí minh'))
+    if (hcm) {
+      setSelectedProvince(hcm)
+      setProvinceSearch(hcm.Name)
+      setProvinceOpen(false)
+
+      setSelectedDistrict(null)
+      setDistrictSearch('')
+      setSelectedWard(null)
+      setWardSearch('')
+      setNksAdministratives([])
+
+      fetch(`/api/nks/administratives?province_id=${hcm.Id}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
+            const adminWards = data.data.map((item: any) => ({
+              Id: String(item.id),
+              Name: item.title
+            }))
+            setNksAdministratives(adminWards)
+            // Pick a sample ward
+            const sampleWard = adminWards[0]
+            setSelectedWard(sampleWard)
+            setWardSearch(sampleWard.Name)
+          }
+        })
+        .catch(err => console.error(err))
+    }
+
+    setImageUrl('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80')
+    setGalleryUrlsText(
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80\n' +
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80'
+    )
+    toast.success('Đã nhập dữ liệu mẫu khu vực TP. Hồ Chí Minh thành công!')
+  }
+
   // Load NKS Wards when province changes
   const handleProvinceSelect = (province: Province) => {
     setSelectedProvince(province)
@@ -483,9 +546,18 @@ export default function OwnerPropertyCreatePage() {
       {/* Header Title & Purpose Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-gray-800 pb-5">
         <div>
-          <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-            Đăng tin mới
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+              Đăng tin mới
+            </h1>
+            <button
+              type="button"
+              onClick={fillSampleData}
+              className="inline-flex items-center justify-center px-2.5 py-1 border border-primary/20 text-[9px] font-black rounded-lg text-primary bg-primary/5 hover:bg-primary/10 transition cursor-pointer active:scale-98"
+            >
+              <i className="fa-solid fa-wand-magic-sparkles mr-1"></i> Nhập dữ liệu mẫu (TP.HCM)
+            </button>
+          </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
             Giao diện tạo tin đăng từng bước chuyên nghiệp liên kết đồng bộ NKS.
           </p>
