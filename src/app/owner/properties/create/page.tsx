@@ -703,7 +703,7 @@ export default function OwnerPropertyCreatePage() {
                 <select 
                   value={propertyType} 
                   onChange={(e) => setPropertyType(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-55 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-xl text-xs font-bold outline-none transition"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-bold outline-none transition cursor-pointer"
                 >
                   <option value="Căn hộ">Căn hộ</option>
                   <option value="Nhà phố">Nhà phố</option>
@@ -760,7 +760,7 @@ export default function OwnerPropertyCreatePage() {
                   <select 
                     value={bedroom} 
                     onChange={(e) => setBedroom(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-xl text-xs font-bold outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-bold outline-none transition cursor-pointer"
                   >
                     <option value="0">0 (Studio / Mặt bằng)</option>
                     <option value="1">1 phòng ngủ</option>
@@ -774,7 +774,7 @@ export default function OwnerPropertyCreatePage() {
                   <select 
                     value={bathroom} 
                     onChange={(e) => setBathroom(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-xl text-xs font-bold outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-bold outline-none transition cursor-pointer"
                   >
                     <option value="0">0 phòng tắm</option>
                     <option value="1">1 phòng tắm</option>
@@ -865,13 +865,21 @@ export default function OwnerPropertyCreatePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1">
                     <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Hướng nhà/ban công</label>
-                    <input 
-                      type="text" 
+                    <select 
                       value={direction}
                       onChange={(e) => setDirection(e.target.value)}
-                      placeholder="Ví dụ: Đông Nam, Tây Bắc" 
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-xl text-xs font-semibold outline-none transition"
-                    />
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-bold outline-none transition cursor-pointer"
+                    >
+                      <option value="">-- Chọn hướng nhà / ban công --</option>
+                      <option value="Đông">Đông</option>
+                      <option value="Tây">Tây</option>
+                      <option value="Nam">Nam</option>
+                      <option value="Bắc">Bắc</option>
+                      <option value="Đông Nam">Đông Nam</option>
+                      <option value="Đông Bắc">Đông Bắc</option>
+                      <option value="Tây Nam">Tây Nam</option>
+                      <option value="Tây Bắc">Tây Bắc</option>
+                    </select>
                   </div>
                   <div className="space-y-1">
                     <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Tình trạng pháp lý</label>
@@ -913,7 +921,7 @@ export default function OwnerPropertyCreatePage() {
                   <button
                     type="button"
                     onClick={() => setProvinceOpen(!provinceOpen)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 text-left rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 text-left rounded-2xl text-xs font-semibold flex items-center justify-between cursor-pointer"
                   >
                     <span>{selectedProvince ? selectedProvince.Name : 'Chọn Tỉnh / Thành phố'}</span>
                     <i className={`fa-solid fa-chevron-down text-[10px] transition ${provinceOpen ? 'rotate-180' : ''}`} />
@@ -955,7 +963,7 @@ export default function OwnerPropertyCreatePage() {
                       }
                       setWardOpen(!wardOpen)
                     }}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 text-left rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 text-left rounded-2xl text-xs font-semibold flex items-center justify-between cursor-pointer"
                   >
                     <span>{selectedWard ? selectedWard.Name : 'Chọn Phường / Xã'}</span>
                     <i className={`fa-solid fa-chevron-down text-[10px] transition ${wardOpen ? 'rotate-180' : ''}`} />
@@ -1007,15 +1015,31 @@ export default function OwnerPropertyCreatePage() {
               </div>
 
               {/* Map Coordinates & MapPicker display */}
-              <div className="space-y-2 pt-2">
-                <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1">Định vị tọa độ bất động sản trên bản đồ</span>
+              <div className="space-y-3 pt-2">
+                <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1">Định vị & Ô nhập tọa độ bất động sản</span>
                 
-                <div className="grid grid-cols-2 gap-4 mb-2">
-                  <div className="px-3.5 py-2 bg-slate-55 dark:bg-gray-955 border border-slate-150/80 dark:border-gray-850 rounded-xl text-[10px] font-semibold text-slate-500">
-                    Kinh độ (Longitude): <span className="font-extrabold text-slate-800 dark:text-white ml-1">{longitude.toFixed(6)}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Vĩ độ (Latitude) <span className="text-rose-500">*</span></label>
+                    <input 
+                      type="number" 
+                      step="any"
+                      value={latitude}
+                      onChange={(e) => setLatitude(Number(e.target.value) || 0)}
+                      placeholder="Ví dụ: 10.7769" 
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-semibold outline-none transition"
+                    />
                   </div>
-                  <div className="px-3.5 py-2 bg-slate-55 dark:bg-gray-955 border border-slate-150/80 dark:border-gray-850 rounded-xl text-[10px] font-semibold text-slate-500">
-                    Vĩ độ (Latitude): <span className="font-extrabold text-slate-800 dark:text-white ml-1">{latitude.toFixed(6)}</span>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1 px-1">Kinh độ (Longitude) <span className="text-rose-500">*</span></label>
+                    <input 
+                      type="number" 
+                      step="any"
+                      value={longitude}
+                      onChange={(e) => setLongitude(Number(e.target.value) || 0)}
+                      placeholder="Ví dụ: 106.7009" 
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-955 border border-slate-200 dark:border-gray-850 focus:border-primary focus:bg-white dark:focus:bg-gray-900 rounded-2xl text-xs font-semibold outline-none transition"
+                    />
                   </div>
                 </div>
 
