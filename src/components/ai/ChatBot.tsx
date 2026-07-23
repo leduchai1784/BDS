@@ -27,10 +27,7 @@ export default function ChatBot() {
   const pathname = usePathname()
   const { data: session } = useSession()
 
-  // Do not render AI ChatBot on admin, owner/agent, or system dashboard layouts
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/owner') || pathname?.startsWith('/system')) {
-    return null
-  }
+
 
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
@@ -195,7 +192,7 @@ export default function ChatBot() {
     })
   }
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/owner') || pathname?.startsWith('/system')) {
     return null
   }
 
