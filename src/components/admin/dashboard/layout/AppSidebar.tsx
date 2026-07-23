@@ -29,7 +29,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
-    name: "Thống kê tổng quan",
+    name: "Dashboard",
     path: "/admin/dashboard",
   },
   {
@@ -66,7 +66,7 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen } = useSidebar();
   const pathname = usePathname();
   const [stats, setStats] = useState<Record<string, number>>({
     users: 0,
@@ -107,7 +107,7 @@ const AppSidebar: React.FC = () => {
                   ? "menu-item-active"
                   : "menu-item-inactive"
                } cursor-pointer ${
-                !isExpanded && !isHovered
+                !isExpanded
                   ? "lg:justify-center"
                   : "lg:justify-start"
               }`}
@@ -121,10 +121,10 @@ const AppSidebar: React.FC = () => {
               >
                 {nav.icon}
               </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
+              {(isExpanded || isMobileOpen) && (
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
+              {(isExpanded || isMobileOpen) && (
                 <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200  ${
                     openSubmenu?.type === menuType &&
@@ -152,7 +152,7 @@ const AppSidebar: React.FC = () => {
                 >
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
+                {(isExpanded || isMobileOpen) && (
                   <>
                     <span className={`menu-item-text`}>{nav.name}</span>
                     {nav.statsKey && (
@@ -169,7 +169,7 @@ const AppSidebar: React.FC = () => {
               </Link>
             )
           )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
+          {nav.subItems && (isExpanded || isMobileOpen) && (
             <div
               ref={(el) => {
                 subMenuRefs.current[`${menuType}-${index}`] = el;
@@ -295,7 +295,7 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed mt-[72px] flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -305,18 +305,23 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0`}
     >
       <div
-        className={`py-8 flex  ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+        className={`flex items-center h-[72px] border-b border-gray-200 dark:border-gray-800 -mx-5 px-5 mb-6 ${
+          !isExpanded ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 flex-shrink-0">
-            <i className="fa-solid fa-house-chimney text-white text-lg" />
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-md shadow-primary/20 flex-shrink-0 text-white font-bold">
+            <i className="fa-solid fa-house-chimney text-sm" />
           </div>
-          {(isExpanded || isHovered || isMobileOpen) && (
-            <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white transition-colors duration-300">
-              BDS<span className="text-primary">Rental</span>
-            </span>
+          {(isExpanded || isMobileOpen) && (
+            <div className="flex flex-col text-left">
+              <span className="font-black text-sm text-slate-800 dark:text-white leading-none">
+                BDS <span className="text-primary">Rental</span>
+              </span>
+              <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mt-1.5 leading-none">
+                Trung tâm quản lý
+              </span>
+            </div>
           )}
         </Link>
       </div>
@@ -326,13 +331,13 @@ const AppSidebar: React.FC = () => {
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
+                  !isExpanded
                     ? "lg:justify-center"
                     : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
+                {isExpanded || isMobileOpen ? (
+                  "Tổng quan"
                 ) : (
                   <HorizontaLDots />
                 )}
