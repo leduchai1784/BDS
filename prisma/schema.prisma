@@ -121,6 +121,7 @@ model Property {
   legal           String?         @db.VarChar(255)
   isVip           Boolean         @default(false) @map("is_vip")
   isNew           Boolean         @default(true) @map("is_new")
+  nksId           String?         @map("nks_id") @db.VarChar(255)
   metaTitle       String?         @map("meta_title") @db.VarChar(255)
   metaDescription String?         @map("meta_description")
   deletedAt       DateTime?       @map("deleted_at") @db.Timestamp(0)
@@ -159,6 +160,7 @@ model PropertyImage {
   propertyId String    @map("property_id") @db.Uuid
   imagePath  String    @map("image_path")
   isPrimary  Boolean   @default(false) @map("is_primary")
+  nksId      String?   @map("nks_id") @db.VarChar(255)
   createdAt  DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
   property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "property_images_property_id_foreign")

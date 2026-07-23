@@ -272,7 +272,9 @@ export default function PropertyCreatePage() {
           latitude,
           longitude,
           image_url: imageUrl,
-          gallery_urls: galleryUrls
+          gallery_urls: galleryUrls,
+          nksProvinceId: selectedProvince.Id,
+          nksAdministrativeId: selectedWard.Id
         })
       })
 

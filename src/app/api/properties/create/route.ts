@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
+import { createNksProperty, addNksPropertyImage } from '@/lib/nks'
 
 function slugify(text: string): string {
   return text
@@ -65,7 +66,9 @@ export async function POST(req: Request) {
       latitude,
       longitude,
       image_url,
-      gallery_urls
+      gallery_urls,
+      nksProvinceId,
+      nksAdministrativeId
     } = body
 
     if (!title || !property_type || !price || !area || !city || !district || !ward || !address) {
@@ -161,6 +164,86 @@ export async function POST(req: Request) {
     await prisma.propertyImage.createMany({
       data: imagesData
     })
+
+    // 4. Đồng bộ NKS nếu tài khoản có nksToken
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { nksToken: true, email: true, phone: true }
+    })
+    const nksToken = dbUser?.nksToken
+
+    if (nksToken) {
+      try {
+        console.log('Bắt đầu đồng bộ tin đăng mới sang NKS API...')
+        const onsale = purpose === 'sale' ? '1' : '0'
+        
+        let rstype = '3' // Mặc định: Căn hộ
+        if (property_type === 'Nhà phố') rstype = '1'
+        else if (property_type === 'Biệt thự') rstype = '2'
+        else if (property_type === 'Mặt bằng') rstype = '4'
+
+        const nksPayload = {
+          code: property.id, // UUID local làm code NKS
+          title: title,
+          slug: slug,
+          featureimg: '', // Để trống, ảnh bìa sẽ được tải lên CDN của NKS qua rsitemimg/add
+          geolocation: `${latitude},${longitude}`,
+          street_area: ward || '',
+          street_number: address || '',
+          road_id: '1',
+          administrative_id: String(nksAdministrativeId || '12227'),
+          province_id: String(nksProvinceId || '79'),
+          country_id: '192', // Việt Nam
+          price: onsale === '1' ? String(price) : '0',
+          sqrprice: onsale === '1' && area > 0 ? String(Math.round(Number(price) / area)) : null,
+          rentprice: onsale === '0' ? String(price) : '0',
+          sqrrentprice: onsale === '0' && area > 0 ? String(Math.round(Number(price) / area)) : null,
+          rentdeposit: onsale === '0' && deposit ? String(deposit) : '0',
+          total_area: String(area),
+          bed: String(bedroom || 0),
+          bath: String(bathroom || 0),
+          onsale: onsale,
+          rstype: rstype,
+          description: description || '',
+          phone: dbUser.phone || user.phone || '0932030958',
+          email: dbUser.email || 'nks.mg0001@gmail.com'
+        }
+
+        const nksCreateResult = await createNksProperty(nksToken, nksPayload)
+        
+        if (nksCreateResult.success && nksCreateResult.data?.id) {
+          const nksItemId = String(nksCreateResult.data.id)
+          console.log(`Đăng tin NKS thành công. NKS ID: ${nksItemId}`)
+
+          // Cập nhật nksId local
+          await prisma.property.update({
+            where: { id: property.id },
+            data: { nksId: nksItemId }
+          })
+
+          // Đồng bộ Ảnh bìa (Primary Cover)
+          if (image_url) {
+            console.log('Đang đồng bộ ảnh đại diện chính lên NKS...')
+            await addNksPropertyImage(nksToken, nksItemId, image_url, 'cover_image')
+          }
+
+          // Đồng bộ Album ảnh phụ (Gallery)
+          if (gallery_urls && Array.isArray(gallery_urls)) {
+            console.log('Đang đồng bộ album ảnh phụ lên NKS...')
+            for (const url of gallery_urls) {
+              if (url) {
+                await addNksPropertyImage(nksToken, nksItemId, url, 'gallery_image')
+              }
+            }
+          }
+        } else {
+          console.warn('Không thể đồng bộ tin đăng NKS:', nksCreateResult.message)
+        }
+      } catch (nksErr: any) {
+        console.error('Lỗi trong quá trình đồng bộ NKS API:', nksErr.message)
+        // Không block phản hồi thành công local nếu NKS API bị lỗi
+      }
+    }
 
     return NextResponse.json({
       success: true,

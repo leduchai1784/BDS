@@ -580,3 +580,75 @@ export async function deleteNksProperty(token: string, propertyId: string | numb
     return { success: false, message: error.response?.data?.message || 'Lỗi kết nối NKS API xóa tin.' }
   }
 }
+
+/**
+ * 10. Thêm ảnh tin đăng (Authentication) - Multipart Form-Data
+ * URL: https://account.nks.vn/api/nks/user/rsitemimg/add
+ */
+export async function addNksPropertyImage(
+  token: string,
+  propertyId: string | number,
+  base64Image: string,
+  note = 'gallery_image'
+): Promise<NksResult> {
+  try {
+    // Làm sạch đầu chuỗi Base64
+    let cleanBase64 = base64Image
+    if (base64Image.startsWith('data:image/')) {
+      // Giữ nguyên Data URL prefix cho NKS API
+    } else {
+      // Nếu chưa có prefix, mặc định thêm prefix jpeg
+      cleanBase64 = `data:image/jpeg;base64,${base64Image}`
+    }
+
+    const formData = new FormData()
+    formData.append('access_token', token)
+    formData.append('rsitem_id', String(propertyId))
+    formData.append('image', cleanBase64)
+    formData.append('note', note)
+
+    const response = await fetch(`${BASE_URL}/rsitemimg/add`, {
+      method: 'POST',
+      body: formData
+    })
+
+    const json = await response.json()
+    if (response.ok && json && json.success) {
+      return { success: true, message: json.message || 'Thêm ảnh NKS thành công.', data: json.data }
+    }
+    return { success: false, message: json?.message || 'Không thể thêm ảnh lên NKS.' }
+  } catch (error: any) {
+    console.error('NKS addPropertyImage failed:', error.message)
+    return { success: false, message: error.message || 'Lỗi kết nối NKS API thêm ảnh.' }
+  }
+}
+
+/**
+ * 11. Xóa ảnh tin đăng (Authentication) - Multipart Form-Data
+ * URL: https://account.nks.vn/api/nks/user/rsitemimg/delete
+ */
+export async function deleteNksPropertyImage(
+  token: string,
+  imageCode: string
+): Promise<NksResult> {
+  try {
+    const formData = new FormData()
+    formData.append('access_token', token)
+    formData.append('code', imageCode)
+
+    const response = await fetch(`${BASE_URL}/rsitemimg/delete`, {
+      method: 'POST',
+      body: formData
+    })
+
+    const json = await response.json()
+    if (response.ok && json && json.success) {
+      return { success: true, message: json.message || 'Xóa ảnh NKS thành công.' }
+    }
+    return { success: false, message: json?.message || 'Không thể xóa ảnh trên NKS.' }
+  } catch (error: any) {
+    console.error('NKS deletePropertyImage failed:', error.message)
+    return { success: false, message: error.message || 'Lỗi kết nối NKS API xóa ảnh.' }
+  }
+}
+

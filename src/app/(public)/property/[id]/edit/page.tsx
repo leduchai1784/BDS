@@ -296,7 +296,9 @@ export default function PropertyEditPage() {
           latitude,
           longitude,
           image_url: imageUrl,
-          gallery_urls: galleryUrls
+          gallery_urls: galleryUrls,
+          nksProvinceId: selectedProvince.Id,
+          nksAdministrativeId: selectedWard.Id
         })
       })
 

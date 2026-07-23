@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
+import { createNksProperty, updateNksProperty, deleteNksProperty, addNksPropertyImage } from '@/lib/nks'
 
 function slugify(text: string): string {
   return text
@@ -142,7 +143,9 @@ export async function PUT(
       latitude,
       longitude,
       image_url,
-      gallery_urls
+      gallery_urls,
+      nksProvinceId,
+      nksAdministrativeId
     } = body
 
     if (!title || !property_type || !price || !area || !city || !district || !ward || !address) {
@@ -224,6 +227,98 @@ export async function PUT(
       data: imagesData
     })
 
+    // 4. Đồng bộ Cập nhật lên NKS
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { nksToken: true, email: true, phone: true }
+    })
+    const nksToken = dbUser?.nksToken
+
+    if (nksToken) {
+      try {
+        const onsale = purpose === 'sale' ? '1' : '0'
+        let rstype = '3' // Căn hộ
+        if (property_type === 'Nhà phố') rstype = '1'
+        else if (property_type === 'Biệt thự') rstype = '2'
+        else if (property_type === 'Mặt bằng') rstype = '4'
+
+        const nksPayload = {
+          title: title,
+          slug: updatedProperty.slug,
+          featureimg: '', // NKS tự đồng bộ
+          geolocation: `${latitude},${longitude}`,
+          street_area: ward || '',
+          street_number: address || '',
+          road_id: '1',
+          administrative_id: String(nksAdministrativeId || '12227'),
+          province_id: String(nksProvinceId || '79'),
+          country_id: '192',
+          price: onsale === '1' ? String(price) : '0',
+          sqrprice: onsale === '1' && area > 0 ? String(Math.round(Number(price) / area)) : null,
+          rentprice: onsale === '0' ? String(price) : '0',
+          sqrrentprice: onsale === '0' && area > 0 ? String(Math.round(Number(price) / area)) : null,
+          rentdeposit: onsale === '0' && deposit ? String(deposit) : '0',
+          total_area: String(area),
+          bed: String(bedroom || 0),
+          bath: String(bathroom || 0),
+          onsale: onsale,
+          rstype: rstype,
+          description: description || '',
+          phone: dbUser.phone || user.phone || '0932030958',
+          email: dbUser.email || 'nks.mg0001@gmail.com'
+        }
+
+        if (property.nksId) {
+          console.log(`Đang gọi cập nhật NKS tin đăng ID: ${property.nksId}...`)
+          await updateNksProperty(nksToken, {
+            id: Number(property.nksId),
+            ...nksPayload
+          })
+
+          // Đồng bộ thêm ảnh mới (vì các ảnh cũ đã bị thay thế hoặc giữ nguyên tùy theo giao diện,
+          // chúng ta cứ upload lại album ảnh của tin để đảm bảo NKS có đủ)
+          if (image_url) {
+            await addNksPropertyImage(nksToken, property.nksId, image_url, 'cover_image')
+          }
+          if (gallery_urls && Array.isArray(gallery_urls)) {
+            for (const url of gallery_urls) {
+              if (url) {
+                await addNksPropertyImage(nksToken, property.nksId, url, 'gallery_image')
+              }
+            }
+          }
+        } else {
+          // Nếu tin local chưa được sync sang NKS, tiến hành tạo mới trên NKS
+          console.log('Tin đăng chưa có NKS ID, đang tạo mới trên NKS...')
+          const nksCreateResult = await createNksProperty(nksToken, {
+            code: property.id,
+            ...nksPayload
+          })
+          if (nksCreateResult.success && nksCreateResult.data?.id) {
+            const nksItemId = String(nksCreateResult.data.id)
+            await prisma.property.update({
+              where: { id: propertyId },
+              data: { nksId: nksItemId }
+            })
+
+            // Tải ảnh đại diện và album ảnh phụ
+            if (image_url) {
+              await addNksPropertyImage(nksToken, nksItemId, image_url, 'cover_image')
+            }
+            if (gallery_urls && Array.isArray(gallery_urls)) {
+              for (const url of gallery_urls) {
+                if (url) {
+                  await addNksPropertyImage(nksToken, nksItemId, url, 'gallery_image')
+                }
+              }
+            }
+          }
+        }
+      } catch (nksErr: any) {
+        console.error('Lỗi khi cập nhật đồng bộ NKS:', nksErr.message)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Cập nhật tin đăng thành công!',
@@ -263,6 +358,22 @@ export async function DELETE(
 
     if (Number(property.ownerId) !== userId) {
       return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
+    }
+
+    // 4. Đồng bộ xóa trên NKS
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { nksToken: true }
+    })
+    const nksToken = dbUser?.nksToken
+
+    if (nksToken && property.nksId) {
+      try {
+        console.log(`Đang gọi xóa tin đăng trên NKS ID: ${property.nksId}...`)
+        await deleteNksProperty(nksToken, property.nksId)
+      } catch (nksErr: any) {
+        console.error('Lỗi khi xóa đồng bộ trên NKS:', nksErr.message)
+      }
     }
 
     // Soft delete
