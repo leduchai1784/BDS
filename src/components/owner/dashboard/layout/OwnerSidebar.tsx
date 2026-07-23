@@ -22,7 +22,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
-    name: "Tổng quan Dashboard",
+    name: "Dashboard",
     path: "/owner/dashboard",
   },
   {
@@ -143,7 +143,7 @@ const OwnerSidebar: React.FC = () => {
         <div>
           {isExpanded && (
             <span className="block px-4 mb-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-              Chức năng quản trị
+              Tổng quan
             </span>
           )}
           {renderMenuItems(navItems)}
