@@ -15,6 +15,21 @@ interface PropertyDetailPageProps {
   params: Promise<{ id: string }>
 }
 
+function formatAvatarUrl(avatar: string | null | undefined, name: string): string {
+  if (!avatar || avatar.trim() === '' || avatar === 'null' || avatar === 'undefined') {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0077bb&color=fff&font-size=0.35`
+  }
+  let url = avatar.trim()
+  if (url.startsWith('http://')) {
+    url = url.replace('http://', 'https://')
+  } else if (url.startsWith('//')) {
+    url = 'https:' + url
+  } else if (!url.startsWith('http') && !url.startsWith('data:image')) {
+    url = `https://data.nks.vn/storage/${url.replace(/^\//, '')}`
+  }
+  return url
+}
+
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
   const resolvedParams = await params
   const id = resolvedParams.id
@@ -62,9 +77,9 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
 
       // Format property details
       const images = dbProp.propertyImages.map(img => img.imagePath)
-      const agentName = dbProp.owner.name || 'Chủ nhà'
-      const agentPhone = dbProp.phone || dbProp.owner.phone || '0977.758.217'
-      const agentAvatar = dbProp.owner.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(agentName)}&background=0077bb&color=fff`
+      const agentName = dbProp.owner?.name || 'Chủ nhà'
+      const agentPhone = dbProp.phone || dbProp.owner?.phone || '0977.758.217'
+      const agentAvatar = formatAvatarUrl(dbProp.owner?.avatar, agentName)
 
       property = {
         id: dbProp.id,
@@ -99,8 +114,8 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
           name: agentName,
           phone: agentPhone,
           avatar: agentAvatar,
-          email: dbProp.owner.email,
-          zalo: dbProp.zalo || dbProp.owner.phone
+          email: dbProp.owner?.email || '',
+          zalo: dbProp.zalo || dbProp.owner?.phone || agentPhone
         }
       }
     }
@@ -117,7 +132,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
       const agentName = nksProp.sale?.name || 'Môi giới BDS'
       const agentPhone = nksProp.sale?.phone || '0977.758.217'
       const agentEmail = nksProp.sale?.email || 'info@bdsrental.vn'
-      const agentAvatar = nksProp.sale?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(agentName)}&background=0077bb&color=fff`
+      const agentAvatar = formatAvatarUrl(nksProp.sale?.avatar, agentName)
 
       property = {
         id: nksProp.id,
@@ -431,11 +446,13 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               
               {/* Agent card details */}
               <div className="flex items-center space-x-4 pb-4 border-b border-slate-100 mb-5 pr-20">
-                <img 
-                  src={property.agent.avatar} 
-                  alt={property.agent.name} 
-                  className="w-14 h-14 rounded-full object-cover border border-slate-150 shadow-sm"
-                />
+                <div className="w-14 h-14 rounded-full overflow-hidden border border-slate-150 shadow-sm shrink-0 bg-slate-100 flex items-center justify-center">
+                  <img 
+                    src={property.agent.avatar} 
+                    alt={property.agent.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <div>
                   <h4 className="text-base font-bold text-slate-800 leading-tight mb-0.5">{property.agent.name}</h4>
                   <span className="text-xs font-semibold text-slate-400 block">Chủ nhà chính chủ</span>
