@@ -48,7 +48,7 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
   const mobileScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Sync initial state values with URL parameters
-  useState(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
       setKeyword(params.get('keyword') || params.get('search') || '')
@@ -66,7 +66,7 @@ export default function MapPageClient({ initialProperties }: MapPageClientProps)
         setActiveId(targetId)
       }
     }
-  })
+  }, [])
 
   // Filter list in memory for maximum speed and interactivity
   const filteredList = useMemo(() => {
