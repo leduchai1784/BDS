@@ -126,9 +126,14 @@ const OwnerSidebar: React.FC = () => {
             <i className="fa-solid fa-house-chimney text-sm"></i>
           </div>
           {isExpanded && (
-            <span className="font-extrabold text-sm text-slate-800 dark:text-white">
-              BDS <span className="text-primary">System</span>
-            </span>
+            <div className="flex flex-col text-left">
+              <span className="font-black text-sm text-slate-800 dark:text-white leading-none">
+                BDS <span className="text-primary">Rental</span>
+              </span>
+              <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mt-1.5 leading-none">
+                Trung tâm quản lý
+              </span>
+            </div>
           )}
         </Link>
       </div>
