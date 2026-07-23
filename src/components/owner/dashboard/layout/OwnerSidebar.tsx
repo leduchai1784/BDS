@@ -35,11 +35,6 @@ const managementItems: NavItem[] = [
     statsKey: "properties",
   },
   {
-    icon: <i className="fa-solid fa-circle-plus text-lg" />,
-    name: "Đăng tin mới",
-    path: "/owner/properties/create",
-  },
-  {
     icon: <CalenderIcon />,
     name: "Lịch hẹn xem nhà",
     path: "/owner/appointments",
