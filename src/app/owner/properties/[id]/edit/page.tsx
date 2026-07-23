@@ -400,17 +400,9 @@ export default function OwnerPropertyEditPage() {
       {/* Header Title & Purpose Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-gray-800 pb-5">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-              Chỉnh sửa tin đăng
-            </h1>
-            <Link
-              href="/owner/properties"
-              className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white transition"
-            >
-              <i className="fa-solid fa-arrow-left mr-1" /> Trở về Quản lý BĐS
-            </Link>
-          </div>
+          <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+            Chỉnh sửa tin đăng
+          </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
             Cập nhật chi tiết thông tin và đồng bộ trực tiếp lên hệ thống NKS.
           </p>
