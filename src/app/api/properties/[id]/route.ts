@@ -44,13 +44,14 @@ export async function GET(
       return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
-    // 1. Check local DB by id or nksId
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)
+
+    // 1. Check local DB by id or nksId safely
     let property = await prisma.property.findFirst({
       where: {
-        OR: [
-          { id: propertyId },
-          { nksId: propertyId }
-        ],
+        OR: isUuid
+          ? [{ id: propertyId }, { nksId: propertyId }]
+          : [{ nksId: propertyId }],
         deletedAt: null
       },
       include: {
@@ -165,12 +166,13 @@ export async function PUT(
       return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)
+
     const property = await prisma.property.findFirst({
       where: {
-        OR: [
-          { id: propertyId },
-          { nksId: propertyId }
-        ],
+        OR: isUuid
+          ? [{ id: propertyId }, { nksId: propertyId }]
+          : [{ nksId: propertyId }],
         deletedAt: null
       }
     })
@@ -393,12 +395,13 @@ export async function DELETE(
       return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)
+
     const property = await prisma.property.findFirst({
       where: {
-        OR: [
-          { id: propertyId },
-          { nksId: propertyId }
-        ]
+        OR: isUuid
+          ? [{ id: propertyId }, { nksId: propertyId }]
+          : [{ nksId: propertyId }]
       }
     })
 

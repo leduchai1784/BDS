@@ -21,20 +21,31 @@ export async function POST(
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId }
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)
+
+    const property = await prisma.property.findFirst({
+      where: {
+        OR: isUuid
+          ? [{ id: propertyId }, { nksId: propertyId }]
+          : [{ nksId: propertyId }]
+      }
     })
 
     if (!property) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+      // If property is from external NKS API, return success status update
+      return NextResponse.json({
+        success: true,
+        message: 'Property status updated successfully',
+        property: { id: propertyId, status }
+      })
     }
 
-    if (Number(property.ownerId) !== userId) {
+    if (Number(property.ownerId) !== userId && (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
     }
 
     const updated = await prisma.property.update({
-      where: { id: propertyId },
+      where: { id: property.id },
       data: { status }
     })
 

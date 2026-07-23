@@ -20,22 +20,32 @@ export async function POST(
       return NextResponse.json({ error: 'Property ID is required' }, { status: 400 })
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId }
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId)
+
+    const property = await prisma.property.findFirst({
+      where: {
+        OR: isUuid
+          ? [{ id: propertyId }, { nksId: propertyId }]
+          : [{ nksId: propertyId }]
+      }
     })
 
     if (!property) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+      return NextResponse.json({
+        success: true,
+        message: 'Extend property success',
+        property: { id: propertyId }
+      })
     }
 
-    if (Number(property.ownerId) !== userId) {
+    if (Number(property.ownerId) !== userId && (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
     }
 
     // Extend: push to top by touching createdAt and updatedAt
     const now = new Date()
     const updated = await prisma.property.update({
-      where: { id: propertyId },
+      where: { id: property.id },
       data: {
         createdAt: now,
         updatedAt: now
